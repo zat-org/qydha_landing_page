@@ -2,7 +2,7 @@
 import type { Link } from '#ui-colors/components';
 <template>
     <div class="p-3 border-t border-[#F6BD68] bg-transparent flex flex-col md:flex-row space-y-3 md:space-y-0">
-        <div class="w-full md:w-3/4 flex justify-center items-center">
+        <div class="w-full md:w-1/4 flex justify-center items-center">
             <NuxtLink to="/"><img src="/images/logo.png" alt="Qydha" class="w-28" /></NuxtLink>
         </div>
         <div class="w-full md:w-2/4 flex justify-center items-center">
