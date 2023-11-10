@@ -1,18 +1,18 @@
 
 import type { Link } from '#ui-colors/components';
 <template>
-    <div class="p-3 border-t border-[#F6BD68] bg-transparent flex flex-row">
-        <div class="w-1/4 flex justify-center items-center">
+    <div class="p-3 border-t border-[#F6BD68] bg-transparent flex flex-col md:flex-row space-y-3 md:space-y-0">
+        <div class="w-full md:w-3/4 flex justify-center items-center">
             <NuxtLink to="/"><img src="/images/logo.png" alt="Qydha" class="w-28" /></NuxtLink>
         </div>
-        <div class="w-2/4 flex justify-center items-center">
+        <div class="w-full md:w-2/4 flex justify-center items-center">
             <ul class="flex flex-row  ">
                 <li v-for="l in links" class="mx-2">
                     <NuxtLink :to="l.href">{{ l.text }}</NuxtLink>
                 </li>
             </ul>
         </div>
-        <div class="w-1/4 flex justify-center items-center">
+        <div class="w-full md:w-1/4 flex justify-center items-center">
             <a href="https://twitter.com/QydhaApp" target="_blank"
                 class="h-10 w-10 bg-gray-300 rounded-lg flex justify-center items-center mx-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 128 128">
@@ -52,7 +52,7 @@ import type { Link } from '#ui-colors/components';
 </template>
 
 <script setup lang="ts">
-let links = [{ text: "الشروط والاحكام", href: "/privacy-policy" }, { text: "سياسة الخصوصية", href: "/terms-of-use" }]
+let links = [{ text: "الشروط والاحكام", href: "/terms-of-use" }, { text: "سياسة الخصوصية", href: "/privacy-policy" }]
 </script>
 
 <style scoped></style>

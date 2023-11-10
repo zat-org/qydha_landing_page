@@ -1,5 +1,5 @@
 <template>
-    <div class=" py-5  px-10">
+    <div class=" py-5 px-1 md:px-10">
         <div v-for="d in data" class="mt-5">
             <h2 class="text-4xl">{{ d.title }}</h2>
             <p class="mt-5">{{ d.description }}</p>
