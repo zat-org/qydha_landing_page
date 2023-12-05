@@ -5,12 +5,21 @@ import type { Link } from '#ui-colors/components';
         <div class="w-full md:w-1/4 flex justify-center items-center">
             <NuxtLink to="/"><img src="/images/logo.png" alt="Qydha" class="w-28" /></NuxtLink>
         </div>
-        <div class="w-full md:w-2/4 flex justify-center items-center">
+        <div class="w-full md:w-2/4 flex justify-center items-center flex-col">
             <ul class="flex flex-row  ">
                 <li v-for="l in links" class="mx-2">
                     <NuxtLink :to="l.href">{{ l.text }}</NuxtLink>
                 </li>
             </ul>
+            <div class="text-center my-3 text-gray-600">
+                <p class="">
+                    مؤسسة اسامه عبدالله بن محمد السحيباني لتطبيقات
+                    وخدمات ويب نظم المعلومات الجيومكانية
+                </p>
+                <p>966553814881 +</p>
+                <p>س.ت: 1010881915</p>
+                <p>الرياض - الياسمين - 13325</p>
+            </div>
         </div>
         <div class="w-full md:w-1/4 flex justify-center items-center">
             <a href="https://twitter.com/QydhaApp" target="_blank"
@@ -48,6 +57,7 @@ import type { Link } from '#ui-colors/components';
                 </svg>
             </a>
         </div>
+
     </div>
 </template>
 
