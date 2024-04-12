@@ -11,7 +11,7 @@ import type { Link } from '#ui-colors/components';
                     <NuxtLink :to="l.href">{{ l.text }}</NuxtLink>
                 </li>
             </ul>
-            <div class="text-center my-3 text-gray-600">
+            <!-- <div class="text-center my-3 text-gray-600">
                 <p class="">
                     مؤسسة اسامه عبدالله بن محمد السحيباني لتطبيقات
                     وخدمات ويب نظم المعلومات الجيومكانية
@@ -19,7 +19,7 @@ import type { Link } from '#ui-colors/components';
                 <p>966553814881+</p>
                 <p>س.ت: 1010881915</p>
                 <p>الرياض - الياسمين - 13325</p>
-            </div>
+            </div> -->
         </div>
         <div class="w-full md:w-1/4 flex justify-center items-center">
             <a href="https://twitter.com/QydhaApp" target="_blank"
