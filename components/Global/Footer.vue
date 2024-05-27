@@ -16,9 +16,13 @@ import type { Link } from '#ui-colors/components';
                     مؤسسة اسامه عبدالله بن محمد السحيباني لتطبيقات
                     وخدمات ويب نظم المعلومات الجيومكانية
                 </p>
-                <p>966553814881+</p>
-                <p>س.ت: 1010881915</p>
-                <p>الرياض - الياسمين - 13325</p>
+                <!-- <p>966553814881+</p> -->
+                <!-- <p>س.ت: 1010881915</p> -->
+                <!-- <p>الرياض - الياسمين - 13325</p> -->
+                <a href="mailto:customer-support@qydha.com"
+                    class="underline underline-offset-2 ">customer-support@qydha.com</a>
+                <p>966551707168+</p>
+
             </div>
         </div>
         <div class="w-full md:w-1/4 flex justify-center items-center">

@@ -4,9 +4,10 @@
         <HomeCalculators />
         <HomeStatistics />
         <HomeDownload />
-        <HomeBlogs />
         <HomeFeatures />
         <HomeSubscription />
+        <HomeClients />
+        <HomeBlogs />
     </div>
 </template>
 
