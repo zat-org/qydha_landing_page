@@ -1,6 +1,6 @@
 <template>
     <section id="subscriptions" class="text-center">
-        <h2 class="text-2xl">على استعداد للبدء معنا</h2>
+        <h2 class="text-2xl">عروض مميزه على الباقات لاتفوتك 👍🏻</h2>
         <p class="text-lg text-gray-600">احصل على افضل العروض</p>
         <div class="grid grid-cols-1 gap-5 lg:grid-cols-3 mt-5">
             <UCard class=" text-[#1d2145]" :ui="{

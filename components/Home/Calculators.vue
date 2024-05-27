@@ -1,6 +1,6 @@
 <template>
     <section id="calculators">
-        <h2 class="text-center text-4xl mb-1 ">خدمات قيدها</h2>
+        <h2 class="text-center text-4xl mb-1 ">حاسبات قيدها</h2>
         <p class="text-center text-xl mb-5 text-gray-700">اختر العبة اللى تريدها وحنا نقيدها</p>
 
         <div class="grid justify-center items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 px-5">
@@ -10,7 +10,7 @@
                 ring: 'ring-0'
             }">
                 <img src="@/assets/images/hand.svg" class="h-20 w-20 " alt="hand">
-                <h3 class="text-xl mb-3 text-[#1d2145]"> حاسبة هاند/كنكان </h3>
+                <h3 class="text-xl mb-3 text-[#1d2145]"> حاسبة هاند </h3>
                 <p class="text-xs text-gray-400 leading-5">
                     الهاند هي لعبة ورقية تُلعب بشكل شائع في منطقة الشرق الأوسط، تتطلب مهارة واستراتيجية. تُلعب باستخدام
                     مجموعة أوراق لعب كاملة (52 ورقة)، ويشارك فيها عادة من 2 إلى 5 لاعبين. تهدف اللعبة إلى تكوين مجموعات
