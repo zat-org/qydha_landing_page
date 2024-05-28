@@ -15,8 +15,7 @@
                 </template>
                 <div class="text-right">
                     <p class="text-xl mb-5 text-center"> 9.99 ريال</p>
-                    <h2>مميزات المستخدم الذهبية من قيدها</h2>
-                    <ul class="ms-5 list-decimal ">
+                    <ul class="ms-5 list-disc ">
                         <li>كتيب قوانين البلوت</li>
                         <li>التسجيل المتقدم</li>
                         <li>ازالة الاعلانات</li>
@@ -39,8 +38,7 @@
                 </template>
                 <div class="text-right">
                     <p class="text-xl mb-5 text-center"> 24.99 ريال</p>
-                    <h2>مميزات المستخدم الذهبية من قيدها</h2>
-                    <ul class="ms-5 list-decimal ">
+                    <ul class="ms-5 list-disc ">
                         <li>كتيب قوانين البلوت</li>
                         <li>التسجيل المتقدم</li>
                         <li>ازالة الاعلانات</li>
@@ -63,8 +61,7 @@
                 </template>
                 <div class="text-right">
                     <p class="text-xl mb-5 text-center"> 99.99 ريال</p>
-                    <h2>مميزات المستخدم الذهبية من قيدها</h2>
-                    <ul class="ms-5 list-decimal ">
+                    <ul class="ms-5 list-disc ">
                         <li>كتيب قوانين البلوت</li>
                         <li>التسجيل المتقدم</li>
                         <li>ازالة الاعلانات</li>
