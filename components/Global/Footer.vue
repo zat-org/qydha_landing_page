@@ -22,6 +22,7 @@ import type { Link } from '#ui-colors/components';
                 <a href="mailto:customer-support@qydha.com"
                     class="underline underline-offset-2 ">customer-support@qydha.com</a>
                 <p>966551707168+</p>
+                <p>966503211289+</p>
 
             </div>
         </div>

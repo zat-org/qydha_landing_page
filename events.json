@@ -1,0 +1,398 @@
+[
+  {
+    "$type": "Qydha.Domain.Entities.StartBalootGameEvent, Qydha.Domain",
+    "usName": "لنا",
+    "themName": "لهم",
+    "eventName": "StartBalootGameEvent",
+    "triggeredAt": "2024-05-27T18:45:58.473861+00:00",
+    "sakkaCountPerGame": 1
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartSakkaEvent, Qydha.Domain",
+    "eventName": "StartSakkaEvent",
+    "triggeredAt": "2024-05-27T18:45:58.473875+00:00",
+    "isSakkaMashdoda": false
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T18:45:58.473883+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.PauseGameEvent, Qydha.Domain",
+    "eventName": "PauseGameEvent",
+    "triggeredAt": "2024-05-27T18:46:05.891512+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.ResumeGameEvent, Qydha.Domain",
+    "eventName": "ResumeGameEvent",
+    "triggeredAt": "2024-05-27T18:55:16.098361+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.PauseGameEvent, Qydha.Domain",
+    "eventName": "PauseGameEvent",
+    "triggeredAt": "2024-05-27T18:55:30.889658+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.ResumeGameEvent, Qydha.Domain",
+    "eventName": "ResumeGameEvent",
+    "triggeredAt": "2024-05-27T19:43:40.925208+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.ChangeSakkaCountPerGameEvent, Qydha.Domain",
+    "eventName": "ChangeSakkaCountPerGameEvent",
+    "triggeredAt": "2024-05-27T19:44:46.570554+00:00",
+    "sakkaPerGameCount": 3
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:44:48.687801+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 30,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:44:48.687808+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:46:16.318421+00:00",
+    "moshtaraData": {
+      "usAbnat": 30,
+      "themAbnat": 0,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:46:16.318434+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:47:36.068377+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 26,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:47:36.068391+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:49:24.769914+00:00",
+    "moshtaraData": {
+      "usAbnat": 14,
+      "themAbnat": 4,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:49:24.769926+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:51:16.6368+00:00",
+    "moshtaraData": {
+      "usAbnat": 26,
+      "themAbnat": 0,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:51:16.636809+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:52:41.934983+00:00",
+    "moshtaraData": {
+      "usAbnat": 24,
+      "themAbnat": 22,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:52:41.934996+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:54:34.932572+00:00",
+    "moshtaraData": {
+      "usAbnat": 8,
+      "themAbnat": 22,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:54:34.932583+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:55:37.845785+00:00",
+    "moshtaraData": {
+      "usAbnat": 2,
+      "themAbnat": 14,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:55:37.845804+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:58:16.903622+00:00",
+    "moshtaraData": {
+      "usAbnat": 7,
+      "themAbnat": 9,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:58:16.903638+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:58:25.465275+00:00",
+    "moshtaraData": {
+      "usAbnat": 2,
+      "themAbnat": 0,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:58:25.46528+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:59:43.21848+00:00",
+    "moshtaraData": {
+      "usAbnat": 16,
+      "themAbnat": 2,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T19:59:43.218491+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:00:38.54846+00:00",
+    "moshtaraData": {
+      "usAbnat": 22,
+      "themAbnat": 14,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:00:38.548472+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:01:47.14523+00:00",
+    "moshtaraData": {
+      "usAbnat": 10,
+      "themAbnat": 16,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndSakkaEvent, Qydha.Domain",
+    "winner": "Us",
+    "eventName": "EndSakkaEvent",
+    "drawHandler": "ExtraMoshtara",
+    "triggeredAt": "2024-05-27T20:01:47.145243+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartSakkaEvent, Qydha.Domain",
+    "eventName": "StartSakkaEvent",
+    "triggeredAt": "2024-05-27T20:01:53.50766+00:00",
+    "isSakkaMashdoda": false
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:01:53.507676+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:03:23.839613+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 20,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:03:23.839629+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:04:30.62862+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 34,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:04:30.628632+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:05:43.076969+00:00",
+    "moshtaraData": {
+      "usAbnat": 2,
+      "themAbnat": 24,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:05:43.076988+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:05:49.594405+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 10,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:05:49.594414+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:01.854862+00:00",
+    "moshtaraData": {
+      "usAbnat": 14,
+      "themAbnat": 12,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:01.854874+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.AddMashare3ToLastMoshtaraEvent, Qydha.Domain",
+    "usAbnat": 4,
+    "eventName": "AddMashare3ToLastMoshtaraEvent",
+    "themAbnat": 4,
+    "triggeredAt": "2024-05-27T20:07:04.676019+00:00",
+    "recordingMode": "Regular"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.RemoveMoshtaraEvent, Qydha.Domain",
+    "eventName": "RemoveMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:10.767486+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.RemoveMoshtaraEvent, Qydha.Domain",
+    "eventName": "RemoveMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:11.700876+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:26.135803+00:00",
+    "moshtaraData": {
+      "usAbnat": 20,
+      "themAbnat": 10,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:26.135822+00:00"
+  },
+  {
+    "$type": "Qydha.Domain.Entities.EndMoshtaraEvent, Qydha.Domain",
+    "eventName": "EndMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:31.963905+00:00",
+    "moshtaraData": {
+      "usAbnat": 0,
+      "themAbnat": 90,
+      "recordingMode": "Regular",
+      "advancedDetails": null
+    }
+  },
+  {
+    "$type": "Qydha.Domain.Entities.StartMoshtaraEvent, Qydha.Domain",
+    "eventName": "StartMoshtaraEvent",
+    "triggeredAt": "2024-05-27T20:07:31.963915+00:00"
+  }
+]
