@@ -9,8 +9,9 @@ const LogoURL = "https://storage.googleapis.com/qydha_bucket/qydha_assets/qydha.
 const WebsiteUrl = "https://qydha.com/"
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  modules: ['@nuxt/ui'],
+  modules: ['@nuxt/ui','@pinia/nuxt'],
   css: ["~/assets/css/main.css"],
+
   app: {
     head: {
       htmlAttrs: {
@@ -34,5 +35,9 @@ export default defineNuxtConfig({
           <p style='text-align: center;color:white ; background-color:rgb(218, 55, 55); margin:5px 10px; padding: 10px 5px ;  border-radius:10px '>Warning: Please Enable Js</p>
         ` }],
     }
-  }
+  },
+  colorMode: {
+    preference: 'light'
+  },
+  compatibilityDate: "2024-08-20"
 });
