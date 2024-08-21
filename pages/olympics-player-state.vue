@@ -1,6 +1,6 @@
 <template>
- <div class=" mt-5 w-[80%] max-w-[800px] mx-auto">
- <UCard>
+ <div class=" flex justify-center  items-center h-screen  w-full">
+ <UCard class="w-[80%] max-w-[800px]">
   <template #header>
     <h1 class="lg:text-3xl font-semibold text-center">تاكد  من تواجدك في  بطولة المملكة </h1>
   </template>

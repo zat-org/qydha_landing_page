@@ -1,14 +1,9 @@
-export enum stateStatus{
-    "مقبول بفريق"=1,
-    "مقبول بدون  بفريق",
-    "تحت الانتظار لاكمال البيانات",
-    "مرفوض",
-}
+
 export  enum PlayerState
 {
-    Approved=1,
-    Pending,
-    Rejected,
+    Approved="Approved",
+    Pending ="Pending",
+    Rejected="Rejected",
 }
 export interface State{
     id:string
@@ -16,7 +11,6 @@ export interface State{
     phone:string ;
     email:string;
     comment:string;
-    key:string
     state:PlayerState 
     teamId:string|null
 }

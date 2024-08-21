@@ -15,8 +15,9 @@
           dir="ltr"
           :defaultCountry="+966"
           :validCharactersOnly="true"
-          :inputOptions="{ showDialCode: true ,maxlength:9}"
+          :inputOptions="{ showDialCode: true, maxlength: 12 }"
           invalidMsg=""
+          :dropdownOptions="{showDialCodeInSelection:true}"
           :autoFormat="false"
           @validate="onValidate"
           :onlyCountries="countries"
@@ -34,12 +35,28 @@
     <div v-if="checkState.status.value == 'success' && checkState.data.value">
       <StateResult :playerstate="checkState.data.value.data" />
     </div>
-    <div v-if="checkState.status.value == 'error'" class="bg-red-500/50 p-5">
-      {{ checkState.error }}
+    <div v-if="checkState.status.value == 'error'" class="bg-red-500/50 p-5 rounded-xl">
+      <p>
+        {{
+          checkState.error.value?.statusCode == 404
+            ? "هذا الرقم غير موجود في البطولة"
+            : ""
+        }}
+     تاكد من الرقم
+      </p>
     </div>
   </div>
-  <StateResult
-    :playerstate="{name:'hazem',id:'5555',phone:'5555',email:'dssd',comment:'i have error in regetiration ',key:'key',state:1,teamId:null}" />
+  <!-- <StateResult
+    :playerstate="{
+      name: 'hazem',
+      id: '5555',
+      phone: '5555',
+      email: 'dssd',
+      comment: 'i have error in regetiration ',
+      key: 'key',
+      state: 2,
+      teamId: null,
+    }" /> -->
 </template>
 
 <script lang="ts" setup>
@@ -55,7 +72,7 @@ const phone_is_valid = ref();
 
 const state = reactive({ phonenumber: "" });
 const schema = object({
-  phonenumber: string().required(),
+  phonenumber: string().required("يرجي ادخال رقم الهاتف "),
 });
 const onSubmit = async () => {
   form.value.clear();
