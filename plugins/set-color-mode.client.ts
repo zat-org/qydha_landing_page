@@ -3,5 +3,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     const colorMode = useColorMode();
     colorMode.preference = "light";
     localStorage.setItem("color-mode", "light");
+    localStorage.setItem(" nuxt-color-mode", "light");
+   
+   
   }
 })
