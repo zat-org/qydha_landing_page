@@ -4,7 +4,7 @@
       <div class="flex flex-col gap-5">
         <h2 class="text-2xl">برجاء تسجيل الرقم المرسل اليكم</h2>
 
-        <OtpInput @complete="onComplete" />
+        <GlobalOtpInput @complete="onComplete" />
       </div>
       <template #footer>
         <UButton label="ارسال" :disabled="otp ? false : true" @click="onSubmit" />
