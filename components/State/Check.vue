@@ -15,9 +15,9 @@
           dir="ltr"
           :defaultCountry="+966"
           :validCharactersOnly="true"
-          :inputOptions="{ showDialCode: true }"
+          :inputOptions="{ showDialCode: true ,maxlength:9}"
           invalidMsg=""
-          :autoFormat="true"
+          :autoFormat="false"
           @validate="onValidate"
           :onlyCountries="countries"
           v-model="state.phonenumber"></vue-tel-input>
@@ -39,7 +39,7 @@
     </div>
   </div>
   <StateResult
-    :playerstate="{name:'hazem',id:'5555',phone:'5555',email:'dssd',comment:'i have error in regetiration ',key:'key',state:2,teamId:null}" />
+    :playerstate="{name:'hazem',id:'5555',phone:'5555',email:'dssd',comment:'i have error in regetiration ',key:'key',state:1,teamId:null}" />
 </template>
 
 <script lang="ts" setup>

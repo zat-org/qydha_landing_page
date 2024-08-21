@@ -40,7 +40,7 @@ import type { State } from "~/models/Player";
 const props = defineProps<{ playerstate: State }>();
 
 const sendMessage = () => {
-  const phoneNumber = "01124475157"; // Replace with the recipient's phone number
+  const phoneNumber = "+201124475157"; // Replace with the recipient's phone number
   const message = `
   الرقم المرجعي  ${props.playerstate.key}
   الاسم ${props.playerstate.name}
