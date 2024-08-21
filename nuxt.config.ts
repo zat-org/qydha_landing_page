@@ -46,5 +46,11 @@ export default defineNuxtConfig({
     preference: "light",
   },
   compatibilityDate: "2024-08-20",
+  runtimeConfig: {
+    public: {
+      apiBase: "https://sam-baloot-admin.online/saudi-baloot-olympics/prod/",
+    },
+  },
+
 
 });
