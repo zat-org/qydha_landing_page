@@ -8,8 +8,6 @@
   </div>
 </template>
 <script setup lang="ts">
-const colorMode = useColorMode()
-colorMode.preference="light"
-localStorage.setItem('color-mode', 'light');
+
 </script>
 <style></style>
