@@ -1,73 +1,32 @@
 <template>
   <div class="flex flex-col gap-5">
-    <UForm
-      :state="state"
-      :schema="schema"
-      @submit="onSubmit"
-      ref="form"
-      class="flex flex-col gap-3">
-      <div class="flex justify-cenetr">
+    <UForm :state="state" :schema="schema" @submit="onSubmit" ref="form" class="flex flex-col gap-3">
+      <div class="flex justify-center">
         <UButtonGroup size="2xs" orientation="horizontal">
-          <UButton
-            :color="index == 0 ? 'green' : 'gray'"
-            label="الهاتف"
-            icon="ic:baseline-phone"
+          <UButton :color="index == 0 ? 'green' : 'gray'" label="الهاتف" icon="ic:baseline-phone"
             @click="searchWith(0)" />
-          <UButton
-            :color="index == 1 ? 'green' : 'gray'"
-            label=" الايميل"
-            icon="ic:baseline-email"
+          <UButton :color="index == 1 ? 'green' : 'gray'" label=" الايميل" icon="ic:baseline-email"
             @click="searchWith(1)" />
-          <UButton
-            :color="index == 2 ? 'green' : 'gray'"
-            label="الرقم المرجعي"
-            icon="mdi:key"
-            @click="searchWith(2)" />
+          <UButton :color="index == 2 ? 'green' : 'gray'" label="الرقم المرجعي" icon="mdi:key" @click="searchWith(2)" />
         </UButtonGroup>
       </div>
-      <UFormGroup
-        v-show="index == 0"
-        help="برجاء ادخال الرقم بدون الكود"
-        class="duration-300 transition-all grow"
-        label="ادخل رقم الهاتف المسجل في البطولة"
-        name="phonenumber">
-        <vue-tel-input
-          mode="auto"
-          @country-changed="onCountrychange"
-          :autoFormat="true"
-          :customValidate="/^.{0,12}$/"
-          dir="ltr"
-          :defaultCountry="+966"
-          :validCharactersOnly="true"
-          :inputOptions="{ showDialCode: true, maxlength: 13 }"
-          invalidMsg=""
-          :dropdownOptions="{ showDialCodeInSelection: true }"
-          @validate="onValidate"
-          :onlyCountries="countries"
+      <UFormGroup v-show="index == 0" help="برجاء ادخال الرقم بدون الكود" class="duration-300 transition-all grow"
+        label="ادخل رقم الهاتف المسجل في البطولة" name="phonenumber">
+        <vue-tel-input mode="auto" @country-changed="onCountrychange" :autoFormat="true" :customValidate="/^.{0,12}$/"
+          dir="ltr" :defaultCountry="+966" :validCharactersOnly="true"
+          :inputOptions="{ showDialCode: true, maxlength: 13 }" invalidMsg=""
+          :dropdownOptions="{ showDialCodeInSelection: true }" @validate="onValidate" :onlyCountries="countries"
           v-model="state.phonenumber"></vue-tel-input>
       </UFormGroup>
-      <UFormGroup
-        label="الايميل"
-        name="email"
-        v-show="index == 1"
-        class="duration-300 transition-all grow">
+      <UFormGroup label="الايميل" name="email" v-show="index == 1" class="duration-300 transition-all grow">
         <UInput v-model="state.email" />
       </UFormGroup>
-      <UFormGroup
-        label="الرقم المرجعي"
-        name="id"
-        class="duration-300 transition-all grow"
-        v-show="index == 2">
-        <UInput v-model="state.id"
-      /></UFormGroup>
+      <UFormGroup label="الرقم المرجعي" name="id" class="duration-300 transition-all grow" v-show="index == 2">
+        <UInput v-model="state.id" />
+      </UFormGroup>
 
       <div class="flex justify-center items-center">
-        <UButton
-          type="submit"
-          label="بحث"
-          icon="material-symbols:search"
-          color="emerald"
-          variant="outline" />
+        <UButton type="submit" label="بحث" icon="material-symbols:search" color="emerald" variant="outline" />
       </div>
     </UForm>
     <div v-if="selected_user!">
@@ -113,7 +72,7 @@ const state = reactive({ phonenumber: "", email: "", id: "" });
 const schema = ref(
   object({
     phonenumber: string(),
-    
+
     email: string(),
     id: string(),
   })
@@ -167,8 +126,8 @@ watch(index, (new_value, old_value) => {
 
   if (new_value == 0) {
     schema.value = object({
-      phonenumber: string()  .length(9, "يرجي ادخال رقم صحيح")
-      .required("يرجي ادخال رقم الهاتف "),
+      phonenumber: string().length(9, "يرجي ادخال رقم صحيح")
+        .required("يرجي ادخال رقم الهاتف "),
       email: string(),
       id: string(),
     });
