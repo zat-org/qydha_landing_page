@@ -5,11 +5,33 @@
       :schema="schema"
       @submit="onSubmit"
       ref="form"
-      class="flex gap-3">
+      class="flex flex-col gap-3">
+      <div class="flex justify-cenetr">
+        <UButtonGroup size="2xs" orientation="horizontal">
+          <UButton
+          :color="index==0?'green':'gray'"
+            label="الهاتف"
+            icon="ic:baseline-phone"
+            @click="searchWith(0)" />
+          <UButton
+          :color="index==1?'green':'gray'"
+
+            label=" الايميل"
+            icon="ic:baseline-email"
+            @click="searchWith(1)" />
+          <UButton
+          :color="index==2?'green':'gray'"
+
+            label="الرقم المرجعي"
+            icon="mdi:key"
+            @click="searchWith(2)" />
+        </UButtonGroup>
+      </div>
       <UFormGroup
+        v-show="index == 0"
+        class="duration-300 transition-all grow"
         label="ادخل رقم الهاتف المسجل في البطولة"
-        name="phonenumber"
-        class="grow">
+        name="phonenumber">
         <vue-tel-input
           mode="auto"
           dir="ltr"
@@ -17,32 +39,43 @@
           :validCharactersOnly="true"
           :inputOptions="{ showDialCode: true, maxlength: 12 }"
           invalidMsg=""
-          :dropdownOptions="{showDialCodeInSelection:true}"
+          :dropdownOptions="{ showDialCodeInSelection: true }"
           :autoFormat="false"
           @validate="onValidate"
           :onlyCountries="countries"
           v-model="state.phonenumber"></vue-tel-input>
       </UFormGroup>
-      <div class="flex justify-center items-center p-3">
+      <UFormGroup
+        label="الايميل"
+        name="email"
+        v-show="index == 1"
+        class="duration-300 transition-all grow">
+        <UInput v-model="state.email" />
+      </UFormGroup>
+      <UFormGroup
+        label="الرقم المرجعي"
+        name="id"
+        class="duration-300 transition-all grow"
+        v-show="index == 2">
+        <UInput v-model="state.id"
+      /></UFormGroup>
+
+      <div class="flex justify-center items-center ">
         <UButton
           type="submit"
           label="بحث"
+          icon="material-symbols:search"
           color="emerald"
-          size="xl"
           variant="outline" />
       </div>
     </UForm>
-    <div v-if="checkState.status.value == 'success' && checkState.data.value">
-      <StateResult :playerstate="checkState.data.value.data" />
+    <div v-if="selected_user!">
+      <StateResult :playerstate="selected_user" />
     </div>
-    <div v-if="checkState.status.value == 'error'" class="bg-red-500/50 p-5 rounded-xl">
+    <div v-if="error" class="bg-red-500/50 p-5 rounded-xl">
       <p>
-        {{
-          checkState.error.value?.statusCode == 404
-            ? "هذا الرقم غير موجود في البطولة"
-            : ""
-        }}
-     تاكد من الرقم
+        {{ error }}
+        تاكد من الرقم
       </p>
     </div>
   </div>
@@ -64,37 +97,92 @@ import { object, string } from "yup";
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
 import type { State } from "~/models/Player";
-const user_data = reactive({});
+
 const form = ref();
 const leagueApi = useLeague();
-const checkState = await leagueApi.checkExist();
-const phone_is_valid = ref();
+const checkStatePhone = await leagueApi.checkExistByPhone();
+const checkStateEmail = await leagueApi.checkExistByEmail();
+const checkStateID = await leagueApi.checkExistByID();
 
-const state = reactive({ phonenumber: "" });
-const schema = object({
-  phonenumber: string().required("يرجي ادخال رقم الهاتف "),
-});
+const phone_is_valid = ref();
+const selected_user = ref<State|null>();
+const error = ref<String|null>();
+
+const state = reactive({ phonenumber: "", email: "", id: "" });
+const schema = ref(
+  object({
+    phonenumber: string(),
+    email: string(),
+    id: string(),
+  })
+);
 const onSubmit = async () => {
-  form.value.clear();
-  if (phone_is_valid.value) {
-    const number = state.phonenumber.replace(/\s+/g, "");
-    // ----- send req
-    await checkState.fetchREQ(number);
-    if (checkState.status.value == "success") {
+  error.value=null
+  selected_user.value=null
+
+  if (index.value == 0) {
+    form.value.clear();
+    if (phone_is_valid.value) {
+      const number = state.phonenumber.replace(/\s+/g, "");
+      // ----- send req
+      await checkStatePhone.fetchREQ(state.phonenumber);
+      if (checkStatePhone.status.value == "success") {
+        selected_user.value = checkStatePhone.data.value?.data;
+      } else if (checkStatePhone.status.value == "error") {
+        error.value = "هذا الرقم غير موجود في البطوله";
+      }
+    } else {
+      form.value.setErrors([
+        { path: "phonenumber", message: "الرقم غير صحيح" },
+      ]);
     }
-  } else {
-    form.value.setErrors([{ path: "phonenumber", message: "الرقم غير صحيح" }]);
+  } else if (index.value == 1) {
+    await checkStateEmail.fetchREQ(state.email);
+    if (checkStateEmail.status.value == "success") {
+      selected_user.value = checkStateEmail.data.value?.data;
+    } else if (checkStateEmail.status.value == "error") {
+      error.value = "هذا الايميل غير موجود في البطوله";
+    }
+  } else if (index.value == 2) {
+    await checkStateID.fetchREQ(state.id);
+    if (checkStateID.status.value == "success") {
+      selected_user.value = checkStateID.data.value?.data;
+    } else if (checkStateID.status.value == "error") {
+      error.value = "هذا الرقم المرجعي غير موجود في البطوله";
+    }
   }
 };
 const onValidate = (data: any) => {
+  console.log(data)
   phone_is_valid.value = data.valid;
 };
 
 const countries = ["ae", "sa"];
-
-function checkExist() {
-  throw new Error("Function not implemented.");
-}
+const index = ref(0);
+watch(index, (new_value, old_value) => {
+  if (new_value == 0) {
+    schema.value = object({
+      phonenumber: string().required("يرجي ادخال رقم الهاتف "),
+      email: string(),
+      id: string(),
+    });
+  } else if (new_value == 1) {
+    schema.value = object({
+      phonenumber: string(),
+      email: string().email("يرجي ادخال ايميل ").required("يرجي ادخال الايميل"),
+      id: string(),
+    });
+  } else if (new_value == 2) {
+    schema.value = object({
+      phonenumber: string(),
+      email: string(),
+      id: string().required("يرجي ادخال الرقم المرجعي"),
+    });
+  }
+});
+const searchWith = (_index: number) => {
+  index.value = _index;
+};
 </script>
 
 <style></style>
