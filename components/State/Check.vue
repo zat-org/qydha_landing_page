@@ -30,7 +30,7 @@
       </div>
     </UForm>
     <div v-if="selected_user!">
-      <StateResult :playerstate="selected_user" />
+      <StateResult :playerState="selected_user" />
     </div>
     <div v-if="error" class="bg-red-500/50 p-5 rounded-xl">
       <p>
