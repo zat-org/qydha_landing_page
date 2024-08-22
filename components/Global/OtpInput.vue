@@ -1,43 +1,40 @@
 <template>
-  <div style="display: flex; flex-direction:row"dir="rtl">
+  <div style="display: flex; flex-direction: row" dir="ltr">
     <v-otp-input
       ref="otpInput"
       input-classes="otp-input"
-      :conditionalClass="['one', 'two', 'three', 'four','five']"
+      :conditionalClass="['one', 'two', 'three', 'four', 'five', 'six']"
       separator="-"
       inputType="number"
-      :num-inputs="5"
-      v-model:value="bindValue"
-      :should-auto-focus="true"
-      :should-focus-order="true"
-      @on-complete="handleOnComplete"
-      :placeholder="['*', '*', '*', '*','*']"
-      />
+      :num-inputs="6"
+      :value="modelValue"
+      :should-auto-focus="false"
+      :should-focus-order="false"
+      @on-change="onchange"
+      :placeholder="['*', '*', '*', '*', '*', '*']" />
   </div>
-
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
 import VOtpInput from "vue3-otp-input";
-const otpInput = ref<InstanceType<typeof VOtpInput> | null>(null);
+const props = defineProps<{ modelValue: string }>();
+const emit = defineEmits(["update:modelValue"]);
+const bindModal = ref("");
 
-const bindValue = ref<string>(''); // Initialize bindValue
-const emit = defineEmits(["complete"])
-const handleOnComplete = (value: string) => {
+const onchange = (value: string) => {
 
- emit("complete",value)
+  emit("update:modelValue", value);
 };
-
+const otpInput = ref<InstanceType<typeof VOtpInput> | null>(null);
+const model = defineModel<string>();
 
 </script>
 <style>
 .otp-input {
-  width: 80px;
-  height: 80px;
+  @apply w-7 md:w-16 h-7 md:h-16  text-[1.5rem] md:text-[3.5rem];
   padding: 5px;
-  margin: 0 10px;
-  font-size: 50px;
+  margin: 0 5px;
   border-radius: 4px;
   border: 1px solid rgba(0, 0, 0, 0.3);
   text-align: center;

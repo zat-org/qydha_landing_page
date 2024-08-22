@@ -6,7 +6,8 @@
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-  </div>
+    <UNotifications />
+</div>
 </template>
 <script setup lang="ts"></script>
 <style></style>
