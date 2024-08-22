@@ -136,7 +136,7 @@ h2 {
   @apply text-xl font-bold text-center;
 }
 h3{
-  @apply md:flex gap-3
+  @apply md:flex text-center md:text-start gap-3
 }
 p{
   @apply text-center md:inline-block
