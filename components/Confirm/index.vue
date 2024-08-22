@@ -149,7 +149,7 @@
 <script lang="ts" setup>
 import { type TeamData } from "~/models/Player";
 
-import { object, string } from "yup";
+import { object, string,ref as YUPref } from "yup";
 const items = [
   {
     slot: "Regesteration",
@@ -167,7 +167,8 @@ const regesterationState = reactive({
 });
 const regesterationscheam = object({
   firstPlayerId: string().required("يرجي ادخال الرقم المرجعي للاعب الاول"),
-  secondPlayerId: string().required("يرجي ادخال الرقم المرجعي للاعب الثاني"),
+  secondPlayerId: string().required("يرجي ادخال الرقم المرجعي للاعب الثاني")
+  .notOneOf([YUPref("firstPlayerId")],'الرقمين المرجعيين لا يجب ان يكونا متشابهي'),
 });
 const confirmationState = reactive({
   firstPlayerOtp: "",
