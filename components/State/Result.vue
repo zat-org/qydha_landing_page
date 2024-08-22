@@ -1,7 +1,7 @@
 <template>
   <div v-if="playerState.player.state == 'Approved' && playerState.player.teamId != null">
     <div class="flex flex-col gap-5 bg-green-500/50 p-5 rounded-xl">
-      <h2 class="Result-header">تم قبولك فى تجارب الأداء</h2>
+      <h2 class="Result-header">مستوفى كافة الشروط</h2>
       <StateResultPlayerData :playerState="playerState" />
     </div>
   </div>
