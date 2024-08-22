@@ -35,7 +35,7 @@ export const useLeague = () => {
     const { data, pending, error, refresh, execute, status } =
       await useAsyncData<{ message: string; data: State }>(
         "checkExist",
-        () => $api(`/players/id/${id.value}`),
+        () => $api(`/players/${id.value}`),
         { immediate: false }
       );
     const fetchREQ = async (_id: string) => {

@@ -155,7 +155,6 @@ const onSubmit = async () => {
   }
 };
 const onValidate = (data: any) => {
-  console.log(data);
   phone_is_valid.value = data.valid;
 };
 
