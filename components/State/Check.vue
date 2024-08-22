@@ -9,19 +9,17 @@
       <div class="flex justify-cenetr">
         <UButtonGroup size="2xs" orientation="horizontal">
           <UButton
-          :color="index==0?'green':'gray'"
+            :color="index == 0 ? 'green' : 'gray'"
             label="الهاتف"
             icon="ic:baseline-phone"
             @click="searchWith(0)" />
           <UButton
-          :color="index==1?'green':'gray'"
-
+            :color="index == 1 ? 'green' : 'gray'"
             label=" الايميل"
             icon="ic:baseline-email"
             @click="searchWith(1)" />
           <UButton
-          :color="index==2?'green':'gray'"
-
+            :color="index == 2 ? 'green' : 'gray'"
             label="الرقم المرجعي"
             icon="mdi:key"
             @click="searchWith(2)" />
@@ -29,18 +27,21 @@
       </div>
       <UFormGroup
         v-show="index == 0"
+        help="برجاء ادخال الرقم بدون الكود"
         class="duration-300 transition-all grow"
         label="ادخل رقم الهاتف المسجل في البطولة"
         name="phonenumber">
         <vue-tel-input
           mode="auto"
+          @country-changed="onCountrychange"
+          :autoFormat="true"
+          :customValidate="/^.{0,12}$/"
           dir="ltr"
           :defaultCountry="+966"
           :validCharactersOnly="true"
-          :inputOptions="{ showDialCode: true, maxlength: 12 }"
+          :inputOptions="{ showDialCode: true, maxlength: 13 }"
           invalidMsg=""
           :dropdownOptions="{ showDialCodeInSelection: true }"
-          :autoFormat="false"
           @validate="onValidate"
           :onlyCountries="countries"
           v-model="state.phonenumber"></vue-tel-input>
@@ -60,7 +61,7 @@
         <UInput v-model="state.id"
       /></UFormGroup>
 
-      <div class="flex justify-center items-center ">
+      <div class="flex justify-center items-center">
         <UButton
           type="submit"
           label="بحث"
@@ -97,7 +98,7 @@ import { object, string } from "yup";
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
 import type { State } from "~/models/Player";
-
+const dialcode = ref();
 const form = ref();
 const leagueApi = useLeague();
 const checkStatePhone = await leagueApi.checkExistByPhone();
@@ -105,37 +106,38 @@ const checkStateEmail = await leagueApi.checkExistByEmail();
 const checkStateID = await leagueApi.checkExistByID();
 
 const phone_is_valid = ref();
-const selected_user = ref<State|null>();
-const error = ref<String|null>();
+const selected_user = ref<State | null>();
+const error = ref<String | null>();
 
 const state = reactive({ phonenumber: "", email: "", id: "" });
 const schema = ref(
   object({
     phonenumber: string(),
+    
     email: string(),
     id: string(),
   })
 );
 const onSubmit = async () => {
-  error.value=null
-  selected_user.value=null
+  error.value = null;
+  selected_user.value = null;
 
   if (index.value == 0) {
     form.value.clear();
-    if (phone_is_valid.value) {
-      const number = state.phonenumber.replace(/\s+/g, "");
-      // ----- send req
-      await checkStatePhone.fetchREQ(state.phonenumber);
-      if (checkStatePhone.status.value == "success") {
-        selected_user.value = checkStatePhone.data.value?.data;
-      } else if (checkStatePhone.status.value == "error") {
-        error.value = "هذا الرقم غير موجود في البطوله";
-      }
-    } else {
-      form.value.setErrors([
-        { path: "phonenumber", message: "الرقم غير صحيح" },
-      ]);
+    // if (phone_is_valid.value) {
+    const number = dialcode.value + state.phonenumber;
+    // ----- send req
+    await checkStatePhone.fetchREQ(number);
+    if (checkStatePhone.status.value == "success") {
+      selected_user.value = checkStatePhone.data.value?.data;
+    } else if (checkStatePhone.status.value == "error") {
+      error.value = "هذا الرقم غير موجود في البطوله";
     }
+    // } else {
+    //   form.value.setErrors([
+    //     { path: "phonenumber", message: "الرقم غير صحيح" },
+    //   ]);
+    // }
   } else if (index.value == 1) {
     await checkStateEmail.fetchREQ(state.email);
     if (checkStateEmail.status.value == "success") {
@@ -153,16 +155,21 @@ const onSubmit = async () => {
   }
 };
 const onValidate = (data: any) => {
-  console.log(data)
+  console.log(data);
   phone_is_valid.value = data.valid;
 };
 
+const onCountrychange = (data: any) => {
+  dialcode.value = data.dialCode;
+};
 const countries = ["ae", "sa"];
-const index = ref(0);
+const index = ref();
 watch(index, (new_value, old_value) => {
+
   if (new_value == 0) {
     schema.value = object({
-      phonenumber: string().required("يرجي ادخال رقم الهاتف "),
+      phonenumber: string()  .length(9, "يرجي ادخال رقم صحيح")
+      .required("يرجي ادخال رقم الهاتف "),
       email: string(),
       id: string(),
     });
@@ -180,6 +187,8 @@ watch(index, (new_value, old_value) => {
     });
   }
 });
+index.value = 0;
+
 const searchWith = (_index: number) => {
   index.value = _index;
 };
