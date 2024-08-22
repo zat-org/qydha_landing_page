@@ -4,39 +4,39 @@
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="mdi:user" class="me-1" /> الاسم
         </span>
-        <p class="text-center">{{ playerState.name }}</p>
+        <p class="text-center">{{ playerState.player.name }}</p>
     </div>
     <div class="space-y-2">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="ic:baseline-phone" class="me-1" /> رقم الهاتف
         </span>
-        <p class="text-center">{{ playerState.phone }}</p>
+        <p class="text-center">{{ playerState.player.phone }}</p>
     </div>
 
     <div class="space-y-2">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="ic:baseline-email" class="me-1" /> الايميل
         </span>
-        <p class="text-center">{{ playerState.email }}</p>
+        <p class="text-center">{{ playerState.player.email }}</p>
     </div>
 
     <div class="space-y-2">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="mdi:key" class="me-1" /> الرقم المرجعي
         </span>
-        <p class="text-center">{{ playerState.id }}</p>
+        <p class="text-center">{{ playerState.player.id }}</p>
     </div>
-    <div class="space-y-2" v-if="playerState.comment">
+    <div class="space-y-2" v-if="playerState.player.comment">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="mdi:comment" class="me-1" /> التعليق
         </span>
-        <p class="text-center">{{ playerState.comment }}</p>
+        <p class="text-center">{{ playerState.player.comment }}</p>
     </div>
-    <div class="space-y-2" v-if="playerState.teamId">
+    <div class="space-y-2" v-if="playerState.player.teamId && playerState.team">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
             <UIcon name="ri:team-fill" class="me-1" /> الفريق الخاص بك
         </span>
-        <p class="text-center">{{ playerState.teamId }}</p>
+        <StateResultTeamData :team-data="playerState.team" />
     </div>
 </template>
 

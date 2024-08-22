@@ -33,7 +33,7 @@
       <StateResult :playerState="selected_user" />
     </div>
     <div v-if="error" class="bg-red-500/50 p-5 rounded-xl">
-      <p>
+      <p class="font-bold text-xl">
         {{ error }}
         تاكد من الرقم
       </p>
@@ -80,26 +80,20 @@ const schema = ref(
 const onSubmit = async () => {
   error.value = null;
   selected_user.value = null;
+  form.value.clear();
 
   if (index.value == 0) {
-    form.value.clear();
-    // if (phone_is_valid.value) {
     const number = dialcode.value + state.phonenumber;
-    // ----- send req
     await checkStatePhone.fetchREQ(number);
     if (checkStatePhone.status.value == "success") {
       selected_user.value = checkStatePhone.data.value?.data;
     } else if (checkStatePhone.status.value == "error") {
       error.value = "هذا الرقم غير موجود في البطوله";
     }
-    // } else {
-    //   form.value.setErrors([
-    //     { path: "phonenumber", message: "الرقم غير صحيح" },
-    //   ]);
-    // }
   } else if (index.value == 1) {
     await checkStateEmail.fetchREQ(state.email);
     if (checkStateEmail.status.value == "success") {
+
       selected_user.value = checkStateEmail.data.value?.data;
     } else if (checkStateEmail.status.value == "error") {
       error.value = "هذا الايميل غير موجود في البطوله";

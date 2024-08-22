@@ -6,7 +6,12 @@ export  enum PlayerState
     Rejected="Rejected",
 }
 export interface State{
-    id:string
+    player:PlayerData , 
+    team:TeamData|null
+}
+
+export interface PlayerData{
+    id:string ;
     name:string ;
     phone:string ;
     email:string;
@@ -14,4 +19,9 @@ export interface State{
     state:PlayerState 
     teamId:string|null
 }
-
+export interface TeamData{
+    id:string ;
+    name:string ;
+    state:PlayerState 
+    players:PlayerData[]
+}
