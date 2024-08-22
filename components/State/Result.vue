@@ -10,8 +10,8 @@
       <h2 class="Result-header">تحتاج الى تحديد فريقك</h2>
       <StateResultPlayerData :playerState="playerState" />
       <div class="text-center">
-        <UButton :disabled="true" label="حدد فريقك مع خويك" to="/register-baloot-olympics-teams" />
-        <p class="font-bold text-red-500 mt-2">سيتم فتح باب تحديد الفرق خلال ساعات</p>
+        <UButton  label="حدد فريقك مع خويك" to="/register-baloot-olympics-teams" />
+        <!-- <p class="font-bold text-red-500 mt-2">سيتم فتح باب تحديد الفرق خلال ساعات</p> -->
       </div>
     </div>
   </div>

@@ -1,4 +1,4 @@
-import type { State } from "~/models/Player";
+import type { State, TeamData } from "~/models/Player";
 
 export const useLeague = () => {
   const { $api } = useNuxtApp();
@@ -48,7 +48,7 @@ export const useLeague = () => {
   const sendOtp = async () => {
     const body = reactive({ firstPlayerId: "", secondPlayerId: "" });
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData(
+      await useAsyncData<{data:{requestId:string},message:string },{code:string ,error:string ,message:string}>(
         "send-team-confirmation-otp",
         () =>
           $api("/send-team-confirmation-otp", { method: "post", body: body }),
@@ -72,7 +72,7 @@ export const useLeague = () => {
       requestId: "",
     });
     const { data, pending, error, refresh, execute, status } =
-      await useAsyncData(
+      await useAsyncData<{data:TeamData, message:string },{code:string ,error:string ,message:string}>(
         "confirm-team-otp",
         () => $api("/confirm-team-otp", { method: "post",body:body }),
         { immediate: false }
