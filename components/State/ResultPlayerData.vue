@@ -28,7 +28,7 @@
     </div>
     <div class="space-y-2" v-if="playerState.player.comment">
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
-            <UIcon name="mdi:comment" class="me-1" /> التعليق
+            <UIcon name="mdi:comment" class="me-1" /> المتطلبات
         </span>
         <p class="text-center">{{ playerState.player.comment }}</p>
     </div>
