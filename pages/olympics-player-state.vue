@@ -9,13 +9,13 @@
         <img src="https://www.sfms.sa/assets/front/images/fav.png" class="w-16 md:w-20 h-16 md:h-20" />
       </a>
 
-      <a href="https://zatbaloot.com/" target="_blank">
+      <!-- <a href="https://zatbaloot.com/" target="_blank">
         <img src="~/assets/images/zat-logo-black.svg" class="w-16 md:w-20 h-16 md:h-20" />
       </a>
 
       <a href="https://qydha.com/" target="_blank">
         <img src="~/assets/images/01_app_icon.png" class="w-16 md:w-20 h-16 md:h-20" />
-      </a>
+      </a> -->
     </div>
     <UCard class="w-[95%] md:w-[80%] max-w-[800px] self-center mb-3 overflow-y-scroll">
       <template #header>
