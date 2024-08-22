@@ -1,46 +1,33 @@
 <template>
   <div class="flex justify-center   w-full ">
     <UCard class="w-[95%] max-w-[1000px]">
-      
-      <UTabs
-        v-model="selectedTab"
-        orientation="vertical"
-        class="w-full"
-        :items="items"
-        :ui="{
-          list: {
-            width: 'w-48',
-            base: 'hidden',
-          },
-          wrapper: 'flex items-center gap-4',
-        }">
+      <UTabs v-model="selectedTab" orientation="vertical" class="w-full" :items="items" :ui="{
+        list: {
+          width: 'w-48',
+          base: 'hidden',
+        },
+        wrapper: 'flex items-center gap-4',
+      }">
         <template #Regesteration="{ item }">
           <div class="flex flex-col gap-5 justify-center items-center w-full">
             <h1 class="text-xl text-center md:text-2xl font-bold">
               برجاء ادخال الكود المرجعي للاعبين
             </h1>
 
-            <UForm
-              :state="regesterationState"
-              :schema="regesterationscheam"
-              @submit="onSubmit"
-              class="flex flex-col gap-5 bg-white">
+            <UForm :state="regesterationState" :schema="regesterationscheam" @submit="onSubmit"
+              class="flex flex-col gap-5 w-full bg-white">
               <div
                 class="flex flex-col md:flex-row gap-2 md:gap-10 items-center justify-center w-full transition-all duration-300">
-                <div class="rounded-xl">
-                  <UFormGroup
-                    label="الرقم المرجعي للاعب الاول"
-                    name="firstPlayerId">
+                <div class="rounded-xl ">
+                  <UFormGroup label="الرقم المرجعي للاعب الاول" name="firstPlayerId">
                     <UButtonGroup orientation="horizontal">
                       <UButton icon="ri:number-1" />
                       <UInput v-model="regesterationState.firstPlayerId" />
                     </UButtonGroup>
                   </UFormGroup>
                 </div>
-                <div class="rounded-xl">
-                  <UFormGroup
-                    label="الرقم المرجعي للاعب الثاني"
-                    name="secondPlayerId">
+                <div class="rounded-xl ">
+                  <UFormGroup label="الرقم المرجعي للاعب الثاني" name="secondPlayerId">
                     <UButtonGroup orientation="horizontal">
                       <UButton icon="ri:number-2" />
                       <UInput v-model="regesterationState.secondPlayerId" />
@@ -48,56 +35,50 @@
                   </UFormGroup>
                 </div>
               </div>
-              <p class="text-xs text-gray-800/55 text-center">
-                سيتم ارسال الكود علي الواتس اب وعن طريق الايميل الذي تم التسجيل
-                بهما
-              </p>
+              <UAlert icon="hugeicons:alert-02" color="white" variant="solid">
+                <template #description>
+                  سيتم ارسال كود لكل لاعب من خلال الواتس اب
+                  <UIcon name="logos:whatsapp-icon" class="me-2" />و الايميل
+                  <UIcon name="twemoji:envelope-with-arrow" />
+                  المستخدمان فى التسجيل للبطولة
+                </template>
+              </UAlert>
               <div class="flex justify-center">
-                <UButton
-                  :loading="sendOtpREQ.status.value=='pending'"
-                  variant="outline"
-                  icon="bi:send"
-
-                  type="submit"
-                  label="ارسال "
-                  class="w-full md:w-1/2 transition-all duration-300"
-                  block />
+                <UButton :loading="sendOtpREQ.status.value == 'pending'" variant="outline" icon="bi:send" type="submit"
+                  label="ارسال " class="w-full md:w-1/2 transition-all duration-300" block />
               </div>
             </UForm>
           </div>
         </template>
         <template #Confirmation="{ item }">
-          <UButton icon="ic:baseline-arrow-forward" label="  اتعديل الكود المرجعي" size="2xs" color="gray" @click="selectedTab=0"/>
-          <UForm
-            class="flex flex-col gap-10"
-            :state="confirmationState"
-            :schema="confirmationscheam"
+          <UButton icon="ic:baseline-arrow-forward" label="  اتعديل الكود المرجعي" size="2xs" color="gray"
+            @click="selectedTab = 0" />
+          <UForm class="flex flex-col gap-10 mt-5" :state="confirmationState" :schema="confirmationscheam"
             @submit="ConirmationSubmit">
-            <div
-              class="flex flex-col  md:gap-10 gap-5 justify-center items-center transition-all duration-300">
-              <UFormGroup label="كود الاعب الاول" name="firstPlayerOtp">
-                <UButtonGroup orientation="horizontal">
-                  <UButton icon="ri:number-1" class="md:px-4"/>
-                  <OtpInput v-model="confirmationState.firstPlayerOtp" />
-                </UButtonGroup>
+            <div class="flex flex-col  md:gap-10 gap-5 justify-center items-center transition-all duration-300">
+              <UFormGroup label="" name="firstPlayerOtp">
+                <p class="mb-2 text-center text-xl lg:text-3xl flex items-center justify-center ">
+                  <span class="bg-green-500 h-8 w-8 me-2 rounded-lg flex justify-center items-center">
+                    <UIcon name="ri:number-1" class="text-white" />
+                  </span>
+                  كود اللاعب الاول
+                </p>
+                <!-- <UButton icon="ri:number-1" class="md:px-4" /> -->
+                <OtpInput v-model="confirmationState.firstPlayerOtp" />
               </UFormGroup>
-              <UFormGroup label="كود الاعب الثاني" name="secondPlayerOtp">
-                <UButtonGroup orientation="horizontal">
-                  <UButton icon="ri:number-2"class="md:px-4 " />
-                  <OtpInput v-model="confirmationState.secondPlayerOtp" />
-                </UButtonGroup>
+              <UFormGroup label="" name="secondPlayerOtp">
+                <p class="mb-2 text-center text-xl lg:text-3xl flex items-center justify-center ">
+                  <span class="bg-green-500 h-8 w-8 me-2 rounded-lg flex justify-center items-center">
+                    <UIcon name="ri:number-2" class="text-white" />
+                  </span>
+                  كود اللاعب الثاني
+                </p>
+                <OtpInput v-model="confirmationState.secondPlayerOtp" />
               </UFormGroup>
             </div>
             <div class="flex justify-center">
-              <UButton
-              :loading="confirmOtpREQ.status.value=='pending'"
-                variant="outline"
-                label="ارسال"
-                type="submit"
-                icon="bi:send"
-
-                block
-                class="w-full md:w-1/2 transition-all duration-300" />
+              <UButton :loading="confirmOtpREQ.status.value == 'pending'" variant="outline" label="ارسال" type="submit"
+                icon="bi:send" block class="w-full md:w-1/2 transition-all duration-300" />
             </div>
           </UForm>
         </template>
