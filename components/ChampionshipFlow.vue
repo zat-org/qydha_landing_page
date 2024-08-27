@@ -49,7 +49,7 @@ let RoundNatchCounter: Record<number, number> = {};
 });
 const calculateNodePosition = ( m:Match,level: number, index: number) => {
   const xOffset =400; // Horizontal spacing between rounds
-  const yOffset = 350; // Vertical spacing between matches
+  const yOffset = 400; // Vertical spacing between matches
   const x = (maxRoundNumebr.value! - level) * xOffset;
   let y=index * yOffset;
   if (level!=1){
@@ -71,10 +71,10 @@ const calculateNodePosition = ( m:Match,level: number, index: number) => {
       if (level== 2)     {
         if (parentmatch?.matchQualifyThemTeamId  == m.id){
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+80;
+        y = (parentnode.position.y)+100;
 
       }else{
-        y = (parentnode.position.y)-80;
+        y = (parentnode.position.y)-100;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
       } 
       }
@@ -82,10 +82,10 @@ const calculateNodePosition = ( m:Match,level: number, index: number) => {
       if (level== 3)     {
         if (parentmatch?.matchQualifyThemTeamId  == m.id){
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+40;
+        y = (parentnode.position.y)+50;
 
       }else{
-        y = (parentnode.position.y)-40;
+        y = (parentnode.position.y)-50;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
       } 
       }
