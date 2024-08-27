@@ -33,13 +33,13 @@
       </div>
       <div
         class="flex justify-between text-center h-7">
-   
+<!--    
         <div class="flex items-center  bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2  ">
           <UIcon name="mingcute:time-line" class="text-xl" />
           <p >
             {{ new Date(data.startAt).toLocaleString()  }}
           </p>
-        </div>
+        </div> -->
 
         <div class="flex items-center bg-gray-300 rounded  rounded-t-none border boreder-gray-500 px-1  gap-2">
           <UIcon name="mingcute:sleep-fill" vif="true"/>
