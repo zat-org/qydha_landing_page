@@ -1,9 +1,8 @@
 <template>
   <div class="w-full h-screen">
     <ClientOnly>
-    <ChampionshipFlow  :group_id="+groupQuery"/>
+      <ChampionshipFlow :group_id="group" />
     </ClientOnly>
-  
   </div>
 </template>
 
@@ -11,12 +10,16 @@
 definePageMeta({
   layout: "custom",
 });
- 
-const route = useRoute()
-const groupQuery = route.query.group 
 
+const route = useRoute();
+const groupQuery = route.query.group;
+// console.log("page", groupQuery);
+let group: numebr | undefied;
+if (groupQuery !== undefined) {
+  group = +groupQuery;
+} else {
+  group = undefined;
+}
 </script>
 
-<style>
-
-</style>
+<style></style>

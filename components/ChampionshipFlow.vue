@@ -155,13 +155,13 @@ const add_childre = (pm: Match) => {
   }
 };
 if (groupsREQ.status.value == "success") {
-  if (props.group_id!== undefined){
+  // console.log( groupsREQ.data.value?.data[0].id)
+  selected_group.value = groupsREQ.data.value?.data[0].id;
+  // typeof value !== 'undefined' && !isNaN(value)
+  if (typeof props.group_id!== 'undefined'){
     selected_group.value=props.group_id
-  }else{
+  }  
 
-    selected_group.value = groupsREQ.data.value?.data[0].id;
-  }
-  
   await groupMatchesREQ.fetchREQ(selected_group.value);
   if (groupMatchesREQ.data.value) {
   const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
