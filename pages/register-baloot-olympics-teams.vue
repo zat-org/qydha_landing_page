@@ -22,6 +22,9 @@
 </template>
 
 <script lang="ts" setup>
+const toast = useToast()
+toast.add({title:"تم اغلاق باب التقديم"})
+navigateTo("/olympics-player-state")
 definePageMeta({
   layout: 'custom'
 })
