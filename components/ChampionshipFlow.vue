@@ -21,6 +21,7 @@
 </template>
 
 <script lang="ts" setup>
+
 import { VueFlow,useVueFlow  } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import type { Node, Edge } from "@vue-flow/core";
@@ -28,11 +29,14 @@ import MatchNode from "./MatchNode.vue";
 import type { Match } from "~/models/group";
 const { onPaneReady } = useVueFlow()
 onPaneReady((instance) => instance.fitView())
+const props= defineProps<{group_id?:number}>()
 const groupApi = useGroup();
 const groupsREQ = await groupApi.getGroups();
 await groupsREQ.fetchREQ();
 const groupMatchesREQ = await groupApi.getGroupMatches();
 const selected_group = ref();
+const router = useRouter()
+const route = useRoute()
 const new_edges = ref<{ id: string; source: string; target: string }[]>([]);
 const new_nodes = ref<any[]>([]);
 
@@ -45,7 +49,7 @@ let RoundNatchCounter: Record<number, number> = {};
 });
 const calculateNodePosition = ( m:Match,level: number, index: number) => {
   const xOffset =400; // Horizontal spacing between rounds
-  const yOffset = 300; // Vertical spacing between matches
+  const yOffset = 350; // Vertical spacing between matches
   const x = (maxRoundNumebr.value! - level) * xOffset;
   let y=index * yOffset;
   if (level!=1){
@@ -151,8 +155,13 @@ const add_childre = (pm: Match) => {
   }
 };
 if (groupsREQ.status.value == "success") {
-  selected_group.value = groupsREQ.data.value?.data[0].id;
+  if (props.group_id!== undefined){
+    selected_group.value=props.group_id
+  }else{
 
+    selected_group.value = groupsREQ.data.value?.data[0].id;
+  }
+  
   await groupMatchesREQ.fetchREQ(selected_group.value);
   if (groupMatchesREQ.data.value) {
   const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
@@ -166,6 +175,7 @@ if (groupsREQ.status.value == "success") {
 }
 const onSelect = (group_id: number) => {
   selected_group.value = group_id;
+  router.push({path:route.path ,query:{group:group_id}})
 };
 watch(selected_group, async (new_value, old_value) => {
   RoundNatchCounter={}
@@ -185,122 +195,6 @@ watch(selected_group, async (new_value, old_value) => {
 
 
 
-// if (groupMatchesREQ.data.value) {
-//   const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
-//     return m.level == 1;
-//   });
-//   winner_round.map((wm) => {
-//     add_node(wm);
-//     add_childre(wm);
-//   });
-// }
-// const new_nodes = computed(() => {
-//   if (groupMatchesREQ.data.value) {
-//     const nodes = groupMatchesREQ.data.value.data.matches.reverse().map((m) => {
-//       if (RoundNatchCounter[m.level] === undefined) {
-//         RoundNatchCounter[m.level] = 0;
-//       }
-//       const new_m: Node = {
-//         id: m.id.toString(),
-//         data: m,
-//         type: "match",
-//         draggable: false,
-//         position: calculateNodePosition(m.level, RoundNatchCounter[m.level]),
-//       };
-//       RoundNatchCounter[m.level]++;
-//       // console.log(m.level);
-//       // console.log(m.matchQualifyThemTeamId);
-//       // console.log(m.matchQualifyUsTeamId);
-
-//       if (m.matchQualifyThemTeamId !== null) {
-//         console.log(m.level);
-//         new_edges.value.push({
-//           id: m.matchQualifyThemTeamId.toString() + "=>" + m.id.toString(),
-//           source: m.matchQualifyThemTeamId.toString(),
-//           target: m.id.toString(),
-//         });
-//       }
-//       if (m.matchQualifyUsTeamId !== null) {
-//         console.log(m.level);
-
-//         new_edges.value.push({
-//           id: m.matchQualifyUsTeamId.toString() + "=>" + m.id.toString(),
-//           source: m.matchQualifyUsTeamId.toString(),
-//           target: m.id.toString(),
-//         });
-//       }
-
-//       return new_m;
-//     });
-//     return nodes;
-//   }
-// });
-const nodes = ref<any[]>([
-  {
-    id: "1",
-    round: 1,
-    // all nodes can have a data object containing any data you want to pass to the node
-    // a label can property can be used for default nodes
-    data: { team1: "team1", team2: "team2" },
-    type: "match",
-    draggable: false,
-  },
-  // default node, you can omit `type: 'default'` as it's the fallback type
-  {
-    id: "2",
-    round: 1,
-    data: { team1: "team1", team2: "team2" },
-    type: "match",
-    draggable: false,
-  },
-
-  // An output node, specified by using `type: 'output'`
-  {
-    id: "3",
-    round: 2,
-    data: { team1: "team1", team2: "team2" },
-    type: "match",
-    draggable: false,
-  },
-]);
-const matchCounters: Record<number, number> = {};
-
-// const calculateNodePosition = (round: number, index: number) => {
-//   const xOffset = 250; // Horizontal spacing between rounds
-//   const yOffset = 100; // Vertical spacing between matches
-//   const x = (maxRoundNumebr.value! - round) * xOffset;
-//   const y = (maxRoundNumebr.value! - round) * 50 + index * yOffset;
-//   return { x, y };
-// };
-nodes.value.forEach((node, index) => {
-  const round = node.round;
-  if (matchCounters[round] === undefined) {
-    matchCounters[round] = 0; // Initialize match counter for this round
-  }
-  // const position = calculateNodePosition(node.round, matchCounters[round]);
-  matchCounters[round]++;
-  // node.position = position;
-});
-
-const edges = ref<Edge[]>([
-  // default bezier edge
-  // consists of an edge id, source node id and target node id
-  {
-    id: "e1->3",
-    source: "1",
-    target: "3",
-  },
-
-  // set `animated: true` to create an animated edge path
-  {
-    id: "e2->3",
-    source: "2",
-    target: "3",
-  },
-
-  // a custom edge, specified by using a custom type name
-  // we choose `type: 'special'` for this example
-]);
 </script>
 
 <style>

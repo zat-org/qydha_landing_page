@@ -36,5 +36,5 @@ export interface Match {
     state: string;
     groupId: number;
   };
-  winner: number | null;
+  winner: string  | null;
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-screen">
     <ClientOnly>
-    <ChampionshipFlow />
+    <ChampionshipFlow  :group_id="+groupQuery"/>
     </ClientOnly>
   
   </div>
@@ -11,6 +11,9 @@
 definePageMeta({
   layout: "custom",
 });
+ 
+const route = useRoute()
+const groupQuery = route.query.group 
 
 </script>
 
