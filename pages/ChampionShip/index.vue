@@ -14,8 +14,8 @@ definePageMeta({
 const route = useRoute();
 const groupQuery = route.query.group;
 // console.log("page", groupQuery);
-let group: numebr | undefied;
-if (groupQuery !== undefined) {
+let group: number | undefined;
+if ( groupQuery && groupQuery !== undefined) {
   group = +groupQuery;
 } else {
   group = undefined;
