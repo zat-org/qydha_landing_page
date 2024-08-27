@@ -109,7 +109,7 @@ const add_node = (m: Match) => {
     id: m.id.toString(),
     data: m,
     type: "match",
-    // draggable: false,
+    draggable: false,
     position: calculateNodePosition(m, m.level, RoundNatchCounter[m.level]),
   });
   RoundNatchCounter[m.level]++;

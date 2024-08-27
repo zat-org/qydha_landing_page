@@ -4,11 +4,11 @@
     <div class="flex flex-col w-[200px] h-[50px] text-xs font-semibold">
       <p
         class="px-2 bg-gray-300 rounded border boreder-gray-500 text-center h-10">
-        {{ data.usTeam?.id }}-{{ data.usTeam?.name }}
+        {{ data.usTeamId }} {{ data.usTeam?.name }}
       </p>
       <p
         class="px-2 bg-gray-300 rounded border boreder-gray-500 text-center h-10">
-        {{ data.usTeam?.id }}- {{ data.themTeam?.name }}
+        {{ data.themTeamId }} {{ data.themTeam?.name }}
       </p>
       <p
         class="px-2 bg-gray-300 rounded border boreder-gray-500 text-center h-10">
