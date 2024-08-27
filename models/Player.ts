@@ -24,4 +24,12 @@ export interface TeamData{
     name:string ;
     state:PlayerState 
     players:PlayerData[]
+    groupId: number,
+    group:GroupData,
+}
+export interface GroupData{
+    id: number,
+    name:string,
+    checkInAt: Date
+    startPlayAt: Date
 }

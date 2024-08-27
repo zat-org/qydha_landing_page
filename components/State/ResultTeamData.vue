@@ -15,11 +15,34 @@
 
     <div class=" flex justify-start">
         <span class="flex justify-center items-center bg-slate-100 rounded-r-full px-3 text-sm">
-            <UIcon name="mingcute:paper-line" class="me-1" /> حالة الفريق
+            <UIcon name="clarity:group-line" class="me-1" /> المجموعة
         </span>
-        <p class="text-center bg-slate-200 grow h-full p-0 m-0 rounded-l-full text-sm">{{ teamState }}</p>
+        <p class="text-center bg-slate-200 grow h-full p-0 m-0 rounded-l-full text-sm">{{ teamData.group.name }}</p>
     </div>
-
+    <div class=" flex justify-start">
+        <span class="flex justify-center items-center bg-slate-100 rounded-r-full px-3 text-sm">
+            <UIcon name="mdi:clock-time-ten" class="me-1" /> موعد الوصول
+        </span>
+        <p class="text-center bg-slate-200 grow h-full p-0 m-0 rounded-l-full text-sm">
+            {{ new Date(teamData.group.checkInAt).toISOString().split('T')[0] }} -
+            {{ new Date(teamData.group.checkInAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            }) }}
+        </p>
+    </div>
+    <UAlert class="mt-2" icon="hugeicons:alert-02" color="red" variant="soft">
+        <template #icon="{ icon }">
+            <UIcon :name="icon" class="text-2xl" />
+        </template>
+        <template #description>
+            <div class="text-red-600">
+                <p class="text-right">
+                    فى حالة تأخرك عن موعد الوصول المحدد بـ 40 دقيقة سيتم استبعادك من البطولة
+                </p>
+            </div>
+        </template>
+    </UAlert>
 </template>
 
 <script lang="ts" setup>

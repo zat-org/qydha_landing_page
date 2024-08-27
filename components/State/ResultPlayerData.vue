@@ -32,12 +32,7 @@
         </span>
         <p class="text-center">{{ playerState.player.comment }}</p>
     </div>
-    <div class="space-y-2" v-if="playerState.player.teamId && playerState.team">
-        <span class="flex justify-center items-center bg-slate-100 rounded-full">
-            <UIcon name="ri:team-fill" class="me-1" /> الفريق الخاص بك
-        </span>
-        <StateResultTeamData :team-data="playerState.team" />
-    </div>
+
 </template>
 
 <script lang="ts" setup>
