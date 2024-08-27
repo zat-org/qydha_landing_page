@@ -44,7 +44,7 @@ let RoundNatchCounter: Record<number, number> = {};
   }
 });
 const calculateNodePosition = ( m:Match,level: number, index: number) => {
-  const xOffset =250; // Horizontal spacing between rounds
+  const xOffset =400; // Horizontal spacing between rounds
   const yOffset = 300; // Vertical spacing between matches
   const x = (maxRoundNumebr.value! - level) * xOffset;
   let y=index * yOffset;

@@ -1,7 +1,7 @@
 <template>
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
-    <div class="flex flex-col w-[200px] h-[50px] text-xs font-semibold">
+    <div class="flex flex-col w-[300px] h-[50px] text-xs font-semibold">
       <p
         class="px-2 bg-gray-300 rounded border boreder-gray-500 text-center h-10">
         {{ data.usTeamId }} {{ data.usTeam?.name }}
