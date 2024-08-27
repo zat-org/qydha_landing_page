@@ -92,10 +92,10 @@ const calculateNodePosition = ( m:Match,level: number, index: number) => {
       if (level== 4)     {
         if (parentmatch?.matchQualifyThemTeamId  == m.id){
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+10;
+        y = (parentnode.position.y)+15;
 
       }else{
-        y = (parentnode.position.y)-10;
+        y = (parentnode.position.y)-15;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
       } 
       }
