@@ -17,8 +17,8 @@ export interface Match {
   level: number;
   matchQualifyThemTeamId: null | number;
   matchQualifyUsTeamId: null | number;
-  qydhaGameId: null | number | string;
-  refereeId: null | number | string;
+  qydhaGameId: null | string;
+  refereeId: null | string;
   startAt: string;
   state: string;
   tableNumber: number;
