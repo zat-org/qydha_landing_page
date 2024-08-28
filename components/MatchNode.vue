@@ -56,6 +56,16 @@
 
         </div>
 
+        <div 
+        :class="{'bg-emerald-400':data.level==1 ,'bg-amber-400':data.level==2 ,'bg-indigo-400':data.level==3,'bg-cyan-400':data.level==4 }"
+        class="flex items-center  rounded  rounded-t-none border boreder-gray-500 px-1  gap-2">
+          <!-- <UIcon name="material-symbols:table-restaurant" class="text-xl" /> -->
+          <p class="text-white">
+            المستوي
+             {{ data.level }}
+          </p>
+        </div>
+
         <div class="flex items-center bg-gray-300 rounded  rounded-t-none border boreder-gray-500 px-1  gap-2">
           <UIcon name="material-symbols:table-restaurant" class="text-xl" />
           <p>

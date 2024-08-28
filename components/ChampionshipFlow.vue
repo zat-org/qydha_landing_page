@@ -184,7 +184,7 @@ watch(selected_group, async (new_value, old_value) => {
   }
 });
 
-
+console.log(new_nodes.value)
 
 </script>
 
