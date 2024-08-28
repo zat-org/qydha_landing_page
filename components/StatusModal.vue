@@ -1,5 +1,5 @@
 <template>
-  <UModal>
+  <UModal class="w-[500px]">
     <UTabs :items="items" class="w-full">
       <template #status="{ item }">
         <UDivider>احصائيات المباراة</UDivider>
@@ -11,7 +11,7 @@
                 {{ m.usTeam?.name }}
               </th>
               <th>
-                <Icon name="fxemoji:squaredvs" width="30" height="30" />
+                <UIcon name="fxemoji:squaredvs" width="30" height="30" />
               </th>
               <th class="text-lg text-gray-900 dark:text-white">
                 {{ m.themTeam.name }}
