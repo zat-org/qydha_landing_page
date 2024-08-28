@@ -6,14 +6,14 @@
         <table
           class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
           <thead >
-            <tr class="h-12 bg-gray-200 dark:bg-slate-700 flex">
-              <th class=" text-gray-900 dark:text-white grow ">
+            <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-sm ">
+              <th class=" text-gray-900 dark:text-white  ">
                 {{ m.usTeam?.name }}
               </th>
               <th>
                 <UIcon name="fxemoji:squaredvs"class="text-2xl" />
               </th>
-              <th class=" text-gray-900 dark:text-white grow ">
+              <th class=" text-gray-900 dark:text-white  ">
                 {{ m.themTeam.name }}
               </th>
             </tr>
@@ -190,7 +190,17 @@
         </table>
       </template>
 
-      <template #news="{ item }"> label: 'النشرة' </template>
+      <template #news="{ item }">
+        <div class="flex flex-col gap-2">
+
+
+
+        </div>
+
+
+
+
+      </template>
     </UTabs>
   </UModal>
 </template>
