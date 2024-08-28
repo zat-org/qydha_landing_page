@@ -51,26 +51,24 @@ export interface IMatchData {
   usGameScore: number;
   themGameScore: number;
   maxSakkaPerGame: number;
-  winner: string;
+  winner: string|null;//us --them 
   gameInterval: number;
-  sakkas: [
-    {
-      id: 72206;
-      state: "Ended";
-      isMashdoda: false;
-      winner: "Us";
-      usSakkaScore: 155;
-      themSakkaScore: 75;
-      moshtaras: {
-        id: number;
-        usAbnat: number;
-        themAbnat: number;
-        state: string;
-      }[];
-    }
-  ];
+  sakkas: {
+    id: number;
+    state: string;
+    isMashdoda: boolean;
+    winner: string;
+    usSakkaScore: number;
+    themSakkaScore: number;
+    moshtaras: {
+      id: number;
+      usAbnat: number;
+      themAbnat: number;
+      state: string;
+    }[];
+  }[];
   location: {
-    longitude: number   ;
+    longitude: number;
     latitude: number;
   };
 }
