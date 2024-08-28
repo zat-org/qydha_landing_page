@@ -38,3 +38,9 @@ export interface Match {
   };
   winner: string  | null;
 }
+export interface MatchWithPlayer extends Match{
+player1?:{id:string ,name:string,winner:boolean|null},
+player2?:{id:string ,name:string,winner:boolean|null},
+next?:number|null
+
+}
