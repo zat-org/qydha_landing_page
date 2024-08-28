@@ -7,13 +7,13 @@
           class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
           <thead>
             <tr class="h-12 bg-gray-200 dark:bg-slate-700">
-              <th class="text-lg text-gray-900 dark:text-white">
+              <th class=" text-gray-900 dark:text-white">
                 {{ m.usTeam?.name }}
               </th>
               <th>
-                <UIcon name="fxemoji:squaredvs" width="30" height="30" />
+                <UIcon name="fxemoji:squaredvs"class="text-2xl" />
               </th>
-              <th class="text-lg text-gray-900 dark:text-white">
+              <th class=" text-gray-900 dark:text-white">
                 {{ m.themTeam.name }}
               </th>
             </tr>
