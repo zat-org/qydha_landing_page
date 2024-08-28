@@ -1,16 +1,7 @@
 <template>
-  <UButtonGroup
-    size="2xs"
-    orientation="horizontal"
-    v-if="groupsREQ.data.value"
-    class="flex flex-wrap">
-    <UButton
-      class="basis-[20px] grow"
-      v-for="item in groupsREQ.data.value.data"
-      :label="`${item.name}`"
-      :color="selected_group == item.id ? 'green' : 'white'"
-      block
-      @click="onSelect(item.id)" />
+  <UButtonGroup size="2xs" orientation="horizontal" v-if="groupsREQ.data.value" class="flex flex-wrap">
+    <UButton class="basis-[20px] grow" v-for="item in groupsREQ.data.value.data" :label="`${item.name}`"
+      :color="selected_group == item.id ? 'green' : 'white'" block @click="onSelect(item.id)" />
   </UButtonGroup>
   <VueFlow v-if="new_nodes" :nodes="new_nodes" :edges="new_edges">
     <Background />
@@ -22,14 +13,14 @@
 
 <script lang="ts" setup>
 
-import { VueFlow,useVueFlow  } from "@vue-flow/core";
+import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import type { Node, Edge } from "@vue-flow/core";
 import MatchNode from "./MatchNode.vue";
 import type { Match } from "~/models/group";
 const { onPaneReady } = useVueFlow()
 onPaneReady((instance) => instance.fitView())
-const props= defineProps<{group_id?:number}>()
+const props = defineProps<{ group_id?: number }>()
 const groupApi = useGroup();
 const groupsREQ = await groupApi.getGroups();
 await groupsREQ.fetchREQ();
@@ -42,63 +33,63 @@ const new_nodes = ref<any[]>([]);
 
 
 let RoundNatchCounter: Record<number, number> = {};
-  const maxRoundNumebr = computed(() => {
+const maxRoundNumebr = computed(() => {
   if (groupMatchesREQ.data.value) {
     return groupMatchesREQ.data.value.data[0].level;
   }
 });
-const calculateNodePosition = ( m:Match,level: number, index: number) => {
-  const xOffset =400; // Horizontal spacing between rounds
+const calculateNodePosition = (m: Match, level: number, index: number) => {
+  const xOffset = 400; // Horizontal spacing between rounds
   const yOffset = 400; // Vertical spacing between matches
   const x = (maxRoundNumebr.value! - level) * xOffset;
-  let y=index * yOffset;
-  if (level!=1){
+  let y = index * yOffset;
+  if (level != 1) {
     const parentmatch = groupMatchesREQ.data.value?.data.find((ma) => {
       return ma.matchQualifyThemTeamId == m.id || ma.matchQualifyUsTeamId == m.id;
     });
-    const parentnode =new_nodes.value.find(n=>{return parentmatch!.id==n.id})
-    
-      // if (parentmatch?.matchQualifyThemTeamId  == m.id){
-      //   // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-      //   y = (parentnode.position.y)+50;
+    const parentnode = new_nodes.value.find(n => { return parentmatch!.id == n.id })
 
-      // }else{
-      //   y = (parentnode.position.y)-50;
-      //   // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
+    // if (parentmatch?.matchQualifyThemTeamId  == m.id){
+    //   // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
+    //   y = (parentnode.position.y)+50;
 
-      // }
-  
-      if (level== 2)     {
-        if (parentmatch?.matchQualifyThemTeamId  == m.id){
+    // }else{
+    //   y = (parentnode.position.y)-50;
+    //   // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
+
+    // }
+
+    if (level == 2) {
+      if (parentmatch?.matchQualifyThemTeamId == m.id) {
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+100;
+        y = (parentnode.position.y) + 100;
 
-      }else{
-        y = (parentnode.position.y)-100;
+      } else {
+        y = (parentnode.position.y) - 100;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
-      } 
       }
-        
-      if (level== 3)     {
-        if (parentmatch?.matchQualifyThemTeamId  == m.id){
+    }
+
+    if (level == 3) {
+      if (parentmatch?.matchQualifyThemTeamId == m.id) {
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+50;
+        y = (parentnode.position.y) + 50;
 
-      }else{
-        y = (parentnode.position.y)-50;
+      } else {
+        y = (parentnode.position.y) - 50;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
-      } 
       }
-      if (level== 4)     {
-        if (parentmatch?.matchQualifyThemTeamId  == m.id){
+    }
+    if (level == 4) {
+      if (parentmatch?.matchQualifyThemTeamId == m.id) {
         // y = (parentnode.position.y)+(yOffset/(maxRoundNumebr.value!)-level);
-        y = (parentnode.position.y)+15;
+        y = (parentnode.position.y) + 15;
 
-      }else{
-        y = (parentnode.position.y)-15;
+      } else {
+        y = (parentnode.position.y) - 15;
         // y = (parentnode.position.y)-(yOffset/(maxRoundNumebr.value!)-level);
-      } 
       }
+    }
   }
 
   return { x, y };
@@ -108,7 +99,7 @@ const add_node = (m: Match) => {
   if (RoundNatchCounter[m.level] === undefined) {
     RoundNatchCounter[m.level] = 0;
   }
-  
+
   new_nodes.value.push({
     id: m.id.toString(),
     data: m,
@@ -158,39 +149,39 @@ if (groupsREQ.status.value == "success") {
   // console.log( groupsREQ.data.value?.data[0].id)
   selected_group.value = groupsREQ.data.value?.data[0].id;
   // typeof value !== 'undefined' && !isNaN(value)
-  if (typeof props.group_id!== 'undefined'){
-    selected_group.value=props.group_id
-  }  
+  if (typeof props.group_id !== 'undefined') {
+    selected_group.value = props.group_id
+  }
 
   await groupMatchesREQ.fetchREQ(selected_group.value);
   if (groupMatchesREQ.data.value) {
-  const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
-    return m.level == 1;
-  });
-  winner_round.map((wm) => {
-    add_node(wm);
-    add_childre(wm);
-  });
-}
+    const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
+      return m.level == 1;
+    });
+    winner_round.map((wm) => {
+      add_node(wm);
+      add_childre(wm);
+    });
+  }
 }
 const onSelect = (group_id: number) => {
   selected_group.value = group_id;
-  router.push({path:route.path ,query:{group:group_id}})
+  router.push({ path: route.path, query: { group: group_id } })
 };
 watch(selected_group, async (new_value, old_value) => {
-  RoundNatchCounter={}
-  new_nodes.value=[]
-  new_edges.value =[]
+  RoundNatchCounter = {}
+  new_nodes.value = []
+  new_edges.value = []
   await groupMatchesREQ.fetchREQ(new_value);
   if (groupMatchesREQ.data.value) {
-  const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
-    return m.level == 1;
-  });
-  winner_round.map((wm) => {
-    add_node(wm);
-    add_childre(wm);
-  });
-}
+    const winner_round = groupMatchesREQ.data.value.data.filter((m) => {
+      return m.level == 1;
+    });
+    winner_round.map((wm) => {
+      add_node(wm);
+      add_childre(wm);
+    });
+  }
 });
 
 

@@ -46,10 +46,12 @@
             </div>
           </template>
         </UAlert>
-        <div class="flex items-center justify-between gap-5 mt-5">
+        <div class="text-center mt-2">
           <UButton target="_blank" label="موقع البطولة علي جوجل ماب " icon="logos:google-maps"
             to="https://www.google.com/maps?q=24.6489763,46.6511424&entry=gps&lucs=,94231799,94224825,94227247,94227248,47071704,47069508,94218641,94203019,47084304,94208458,94208447&g_ep=CAISDTYuMTI5LjEuODA5MjAYACCenQoqYyw5NDIzMTc5OSw5NDIyNDgyNSw5NDIyNzI0Nyw5NDIyNzI0OCw0NzA3MTcwNCw0NzA2OTUwOCw5NDIxODY0MSw5NDIwMzAxOSw0NzA4NDMwNCw5NDIwODQ1OCw5NDIwODQ0N0ICQUU%3D&g_st=com.google.maps.preview.copy" />
+        </div>
 
+        <div class="text-center mt-2">
           <UButton color="amber" icon="mdi:bracket" class=""
             :to="`https://qydha.com/championship?group=${playerState.team.groupId}`" target="_blank">توجه الى جدول
             البطولة

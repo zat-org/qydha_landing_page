@@ -17,7 +17,7 @@ export const useGroup = () => {
   const getGroupMatches = async () => {
     const group_id = ref();
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{messgae:string ,data:Match[] }>(
+      await useAsyncData<{message:string ,data:Match[] }>(
         "getGroupMatch",
         () => $api(`/groups/${group_id.value}/matches`),
         { immediate: false }
