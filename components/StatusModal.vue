@@ -1,7 +1,7 @@
 <template>
   <UModal class="w-[500px]">
     <UTabs :items="items" class="w-full">
-      <template #status="{ item }">
+      <template #status="{ item }" class="p-5">
        
         <table
           class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
