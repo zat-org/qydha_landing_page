@@ -7,6 +7,7 @@
       <NuxtPage />
     </NuxtLayout>
     <UNotifications />
+    <UModals /> 
 </div>
 </template>
 <script setup lang="ts"></script>

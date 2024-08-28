@@ -48,9 +48,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-08-20",
   runtimeConfig: {
     public: {
-      apiBase:  process.env.API_BASE_URL,
-    },
+      apiBase: process.env.API_BASE_URL,
+      qydhaToken: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJhZTlkNmE4Ny1kOWQ1LTQxODgtOWNhMy1iMmUxMzRkMjFiMWIiLCJ1bmlxdWVfbmFtZSI6Im9seW1waWNzIGJyYWNrZXQiLCJUb2tlblR5cGUiOiJTZXJ2aWNlQWNjb3VudFRva2VuIiwibmJmIjoxNzI0ODc5ODg1LCJleHAiOjE3MjQ4ODcwODUsImlhdCI6MTcyNDg3OTg4NSwiaXNzIjoicXlkaGFBcGkiLCJhdWQiOiJxeWRoYUFwaV9hdWRpZW5jZSJ9.Ald7LOCQ0LIdXbjw2BiLcyTxh4N-KKVQK9bfKZAJj8Q`,
+      qydhaapiBase:"https://sam-baloot-admin.online/qydha"
+      },
   },
-
-
 });
