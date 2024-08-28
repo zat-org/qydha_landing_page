@@ -135,7 +135,7 @@ const modal = useModal()
 
 const onClick= ()=>{
   if (props.data.qydhaGameId){
-    modal.open(StatusModal,{id:props.data.qydhaGameId,
+    modal.open(StatusModal,{m:props.data,
      onSuccess(){
        modal.close()
      }

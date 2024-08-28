@@ -1,3 +1,5 @@
+import type { IMathStat } from "~/models/MatchStat";
+
 export const useMatch = () => {
   const { $qaydhaapi } = useNuxtApp();
   const getMatchData = async () => {
@@ -21,8 +23,8 @@ export const useMatch = () => {
   const getMatchStatstics = async () => {
     const game_id = ref("");
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData(
-        "",
+      await useAsyncData<{message:string ,data:IMathStat}>(
+        "getMatchStatstics",
         () => $qaydhaapi(`baloot-games/${game_id.value}/statistics`),
         {
           immediate: false,
