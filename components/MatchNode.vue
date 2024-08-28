@@ -2,6 +2,7 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div
+      :class="{ 'bg-blue-400': data.state == 'Running' }"
       class="flex flex-col w-[300px] h-[75px] text-xs font-semibold bg-white p-1 rounded">
       <div
         :class="{
@@ -109,8 +110,13 @@
           </p>
         </div>
 
-        <div v-if="data.qydhaGameId" class="h-full items-center flex justify-center " >
-          <UIcon name="material-symbols:info" class="text-xl text-green-400 cursor-pointer" @click="onClick"/>
+        <div
+          v-if="data.qydhaGameId"
+          class="h-full items-center flex justify-center">
+          <UIcon
+            name="material-symbols:info"
+            class="text-xl text-green-400 cursor-pointer"
+            @click="onClick" />
         </div>
         <div
           class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
@@ -131,18 +137,18 @@ import { Handle } from "@vue-flow/core";
 import type { Match } from "~/models/group";
 import StatusModal from "./StatusModal.vue";
 const props = defineProps<{ data: Match }>();
-const modal = useModal()
+const modal = useModal();
 
-const onClick= ()=>{
-  if (props.data.qydhaGameId){
-    modal.open(StatusModal,{m:props.data,
-     onSuccess(){
-       modal.close()
-     }
-   
-    })
+const onClick = () => {
+  if (props.data.qydhaGameId) {
+    modal.open(StatusModal, {
+      m: props.data,
+      onSuccess() {
+        modal.close();
+      },
+    });
   }
-}
+};
 </script>
 
 <style></style>

@@ -5,15 +5,15 @@
        
         <table
           class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
-          <thead>
-            <tr class="h-12 bg-gray-200 dark:bg-slate-700">
-              <th class=" text-gray-900 dark:text-white">
+          <thead >
+            <tr class="h-12 bg-gray-200 dark:bg-slate-700 flex">
+              <th class=" text-gray-900 dark:text-white grow ">
                 {{ m.usTeam?.name }}
               </th>
               <th>
                 <UIcon name="fxemoji:squaredvs"class="text-2xl" />
               </th>
-              <th class=" text-gray-900 dark:text-white">
+              <th class=" text-gray-900 dark:text-white grow ">
                 {{ m.themTeam.name }}
               </th>
             </tr>
