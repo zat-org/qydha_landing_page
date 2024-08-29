@@ -1,9 +1,9 @@
 <template>
-  <UModal class="w-[500px]">
-    <UCard>
+  <UModal class="w-[500px] ">
    
-      <div class="flex justify-end">
-      <UButton color="red " icon="material-symbols:close" variant="soft" @click="modal.close()" />
+   
+      <div class="flex justify-end p-1">
+      <UButton color="red" icon="material-symbols:close" variant="soft" @click="modal.close()" />
       </div> 
     <UTabs :items="items" class="w-full p-5">
       <template #status="{ item }">
@@ -251,7 +251,7 @@
         </div>
       </template>
     </UTabs>
-  </UCard>
+  
   </UModal>
 </template>
 
