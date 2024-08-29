@@ -8,7 +8,8 @@ export  enum PlayerState
 export interface State{
     player:PlayerData , 
     team:TeamData|null,
-    level:number
+    level:number,
+    tableNumber:number
 }
 
 export interface PlayerData{
