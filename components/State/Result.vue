@@ -9,7 +9,7 @@
         <span class="flex justify-center items-center bg-slate-100 rounded-full">
           <UIcon name="ri:team-fill" class="me-1" /> الفريق الخاص بك
         </span>
-        <StateResultTeamData :team-data="playerState.team" />
+        <StateResultTeamData :team-data="playerState.team" :level="playerState.level" />
       </div>
       <div class="text-center">
         <UButton color="red" icon="simple-line-icons:close" class="mb-2" @click="sendMessage">
