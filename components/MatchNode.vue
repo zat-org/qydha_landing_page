@@ -2,8 +2,8 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div
-      :class="{ 'bg-blue-400': data.state == 'Running' }"
-      class="flex flex-col w-[300px] h-[75px] text-xs font-semibold bg-white p-1 rounded">
+      :class="{ 'bg-blue-400': data.state == 'Running' ,'bg-white-400': data.state !== 'Running'  }"
+      class="flex flex-col w-[300px] h-[75px] text-xs font-semibold  p-1 rounded">
       <div
         :class="{
           'bg-green-300': data.winner == 'Us',
