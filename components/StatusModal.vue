@@ -209,6 +209,7 @@
               </p>
             </div>
           </div>
+          {{   m.winner?m.winner.toLowerCase():''}}
           <p> winner :{{ m.winner&& m.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p>
 
           <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
