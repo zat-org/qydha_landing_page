@@ -3,16 +3,16 @@
     <UTabs :items="items" class="w-full p-5">
       <template #status="{ item }">
         <table
-          class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
+          class="w-full rounded-xl text-center table-fixed table-pin-rows my-3 shadow-lg">
           <thead>
-            <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-sm">
-              <th class="text-gray-900 dark:text-white">
+            <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
+              <th class="text-gray-900 dark:text-white text-sm">
                 {{ m.usTeam?.name }}
               </th>
               <th>
                 <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               </th>
-              <th class="text-gray-900 dark:text-white">
+              <th class="text-gray-900 dark:text-white text-sm">
                 {{ m.themTeam.name }}
               </th>
             </tr>
