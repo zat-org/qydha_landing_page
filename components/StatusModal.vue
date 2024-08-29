@@ -1,19 +1,18 @@
 <template>
   <UModal class="w-[500px]">
     <UTabs :items="items" class="w-full p-5">
-      <template #status="{ item }" >
-       
+      <template #status="{ item }">
         <table
           class="w-full rounded-t-lg text-center table-fixed table-pin-rows my-3 shadow-lg">
-          <thead >
-            <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-sm ">
-              <th class=" text-gray-900 dark:text-white  ">
+          <thead>
+            <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-sm">
+              <th class="text-gray-900 dark:text-white">
                 {{ m.usTeam?.name }}
               </th>
               <th>
-                <UIcon name="fxemoji:squaredvs"class="text-2xl" />
+                <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               </th>
-              <th class=" text-gray-900 dark:text-white  ">
+              <th class="text-gray-900 dark:text-white">
                 {{ m.themTeam.name }}
               </th>
             </tr>
@@ -191,15 +190,36 @@
       </template>
 
       <template #news="{ item }">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-2 w-full overflow-y-scroll h-[500px] ">
+          <div class="flex justify-between font-bold">
+            <div class="flex flex-col gap-5">
+              <p  >{{ m.usTeam?.name }}</p>
+              <p>{{ game.usGameScore }}</p>
+            </div>
+            <div class="flx flex-col gap-5">
+              <UIcon name="fxemoji:squaredvs" class="text-2xl" />
+              <p>:</p>
+            </div>
+            <div>
+              <p>
+                {{ m.themTeam?.name }}
+              </p>
+              <p>
+                {{ game.themGameScore }}
+              </p>
+            </div>
+          </div>
+          <p> winner :{{ m.winner&& m.winner == 'us'? m.usTeam.name : m.themTeam.name }}</p>
 
-
-
+          <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
+          <p>{{ new Date(game.startedAt).toLocaleString() }}</p>
+          <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
+          <div v-for="sakka in game.sakkas">
+            <p> sakka winner :{{ sakka.winner&& m.winner == 'us'? m.usTeam.name : m.themTeam.name }}</p>
+            
+          </div>
+          
         </div>
-
-
-
-
       </template>
     </UTabs>
   </UModal>
@@ -231,6 +251,9 @@ const statusUs = computed(() => {
 });
 const statusThem = computed(() => {
   return statusREQ.data.value?.data.statistics.themStatistics;
+});
+const game = computed(() => {
+  return DataREQ.data.value?.data!;
 });
 
 function onSuccess() {
