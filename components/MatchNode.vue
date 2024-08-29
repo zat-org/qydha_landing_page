@@ -123,7 +123,10 @@
         </div>
         <div
           class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon name="material-symbols:table-restaurant" class="text-xl" />
+          <UIcon
+            name="material-symbols:table-restaurant"
+            class="text-xl cursor-pointer"
+            @click="copyClibboard" />
           <p>
             {{ data.tableNumber }}
           </p>
@@ -150,6 +153,23 @@ const onClick = () => {
       },
     });
   }
+};
+const copyClibboard = async() => {
+  try {
+    await navigator.clipboard.writeText(`
+    id:${props.data.id}
+    qydhaGameId: ${props.data.qydhaGameId} 
+    refereeId: ${props.data.refereeId}
+    `);
+    setTimeout(() => {
+    }, 2000);
+  } catch (error) {
+    console.error('Failed to copy text to clipboard:', error);
+  }
+  console.log(props.data);
+  props.data.id
+  props.data.qydhaGameId
+  props.data.refereeId
 };
 </script>
 
