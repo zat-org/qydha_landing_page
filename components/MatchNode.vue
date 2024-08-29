@@ -4,7 +4,7 @@
     <div
       class="flex flex-col w-[300px] h-[65px] text-xs font-semibold p-1 rounded"
       :class="{
-        'bg-blue-400': data.state == 'Running',
+        'bg-blue-200': data.state == 'Running',
         'bg-white': data.state == 'Created' || data.state == 'Ended',
       }">
       <div
