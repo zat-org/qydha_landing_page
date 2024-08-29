@@ -246,6 +246,7 @@
         </div>
       </template>
     </UTabs>
+    <UButton color="red" label="اغلاق" block/>
   </UModal>
 </template>
 

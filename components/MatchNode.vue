@@ -2,8 +2,11 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div
-      :class="{ 'bg-blue-400': data.state == 'Running' ,'bg-white-400': data.state !== 'Running'  }"
-      class="flex flex-col w-[300px] h-[65px] text-xs font-semibold  p-1 rounded">
+      class="flex flex-col w-[300px] h-[65px] text-xs font-semibold p-1 rounded"
+      :class="{
+        'bg-blue-400': data.state == 'Running',
+        'bg-white': data.state == 'Created' || data.state == 'Ended',
+      }">
       <div
         :class="{
           'bg-green-300': data.winner == 'Us',
@@ -138,7 +141,6 @@ import type { Match } from "~/models/group";
 import StatusModal from "./StatusModal.vue";
 const props = defineProps<{ data: Match }>();
 const modal = useModal();
-
 const onClick = () => {
   if (props.data.qydhaGameId) {
     modal.open(StatusModal, {
