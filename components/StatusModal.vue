@@ -192,15 +192,15 @@
       <template #news="{ item }">
         <div class="flex flex-col gap-2 w-full overflow-y-scroll h-[500px] ">
           <div class="flex justify-between font-bold">
-            <div class="flex flex-col gap-1 justify-center itesms-center " >
+            <div class="flex flex-col gap-1 justify-center items-center " >
               <p  >{{ m.usTeam?.name }}</p>
               <p>{{ game.usGameScore }}</p>
             </div>
-            <div class="flex flex-col gap-1 justify-center itesms-center ">
+            <div class="flex flex-col gap-1 justify-center items-center ">
               <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               <p>:</p>
             </div>
-            <div class="flex flex-col gap-1 justify-center itesms-center ">
+            <div class="flex flex-col gap-1 justify-center items-center ">
               <p>
                 {{ m.themTeam?.name }}
               </p>
