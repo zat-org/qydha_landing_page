@@ -1,5 +1,10 @@
 <template>
   <UModal class="w-[500px]">
+    <UCard>
+   
+      <div class="flex justify-end">
+      <UButton color="red " icon="material-symbols:close" variant="soft" @click="modal.close()" />
+      </div> 
     <UTabs :items="items" class="w-full p-5">
       <template #status="{ item }">
         <table
@@ -246,7 +251,7 @@
         </div>
       </template>
     </UTabs>
-    <UButton color="red" label="اغلاق" block/>
+  </UCard>
   </UModal>
 </template>
 
