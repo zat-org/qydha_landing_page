@@ -21,8 +21,7 @@
     </div>
     <div class=" flex justify-start">
         <span class="flex justify-center items-center bg-slate-100 rounded-r-full px-3 text-sm">
-            <UIcon name="mdi:bracket" class="me-1" /> المستوي
-        </span>
+            <UIcon name="mdi:bracket" class="me-1" /> المستوى        </span>
         <p 
         :class="{
             'bg-emerald-400': level == 1,
@@ -30,7 +29,7 @@
             'bg-indigo-400': level == 3,
             'bg-cyan-400': level == 4,
           }"
-        class="text-center grow h-full p-0 m-0 rounded-l-full text-sm">  المستوي {{level }}</p>
+        class="text-center grow h-full p-0 m-0 rounded-l-full text-sm">  المستوى {{level }}</p>
     </div>
 
     <div class=" flex justify-start">
