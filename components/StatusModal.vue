@@ -9,7 +9,7 @@
               <th class="text-gray-900 dark:text-white text-sm">
                 {{ m.usTeam?.name }}
               </th>
-              <th>
+              <th style="width:20%">
                 <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               </th>
               <th class="text-gray-900 dark:text-white text-sm">
@@ -192,15 +192,15 @@
       <template #news="{ item }">
         <div class="flex flex-col gap-2 w-full overflow-y-scroll h-[500px] ">
           <div class="flex justify-between font-bold">
-            <div class="flex flex-col gap-5">
+            <div class="flex flex-col gap-1 justify-center itesms-center " >
               <p  >{{ m.usTeam?.name }}</p>
               <p>{{ game.usGameScore }}</p>
             </div>
-            <div class="flx flex-col gap-5">
+            <div class="flex flex-col gap-1 justify-center itesms-center ">
               <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               <p>:</p>
             </div>
-            <div>
+            <div class="flex flex-col gap-1 justify-center itesms-center ">
               <p>
                 {{ m.themTeam?.name }}
               </p>
