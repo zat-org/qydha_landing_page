@@ -9,7 +9,7 @@
               <th class="text-gray-900 dark:text-white text-sm">
                 {{ m.usTeam?.name }}
               </th>
-              <th style="width:20%">
+              <th style="width: 20%">
                 <UIcon name="fxemoji:squaredvs" class="text-2xl" />
               </th>
               <th class="text-gray-900 dark:text-white text-sm">
@@ -190,18 +190,19 @@
       </template>
 
       <template #news="{ item }">
-        <div class="flex flex-col gap-2 w-full overflow-y-scroll h-[500px] ">
-          <div class="flex justify-between font-bold">
-            <div class="flex flex-col gap-1 justify-center items-center " >
-              <p  >{{ m.usTeam?.name }}</p>
-              <p>{{ game.usGameScore }}</p>
+        <div
+          class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px]">
+          <div class="flex justify-between gap-2 items-center font-bold">
+            <div class="flex flex-col gap-1 justify-center items-center">
+              <p class="text-xs md:text-lg">{{ m.usTeam?.name }}</p>
+              <p >{{ game.usGameScore }}</p>
             </div>
-            <div class="flex flex-col gap-1 justify-center items-center ">
-              <UIcon name="fxemoji:squaredvs" class="text-2xl" />
+            <div class="flex flex-col gap-1 justify-center items-center">
+              <UIcon name="fxemoji:squaredvs" class="text-lg md:text-2xl" />
               <p>:</p>
             </div>
-            <div class="flex flex-col gap-1 justify-center items-center ">
-              <p>
+            <div class="flex flex-col gap-1 justify-center items-center">
+              <p class="text-xs md:text-lg">
                 {{ m.themTeam?.name }}
               </p>
               <p>
@@ -209,17 +210,39 @@
               </p>
             </div>
           </div>
-          {{  m.winner&&m.winner!== null? m.winner?.toLowerCase():'ss'}}
-          <p> winner :{{ m.winner&& m.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p>
 
-          <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
-          <p>{{ new Date(game.startedAt).toLocaleString() }}</p>
-          <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
-          <div v-for="sakka in game.sakkas">
-            <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p>
-            
+          <UBadge size="lg">
+            الفائز :{{
+              game.winner != null &&
+              (game.winner as string).toLowerCase() == "us"
+                ? m.usTeam.name
+                : m.themTeam.name
+            }}
+          </UBadge>
+          <!-- <div class="flex justify-center gap-10">
+            <p class="text-xs">
+              {{ new Date(game.startedAt).toLocaleString() }}
+            </p>
+            <p class="text-xs">{{ new Date(game.endedAt).toLocaleString() }}</p>
+          </div> -->
+          <!-- <div class="w-full flex justify-center gap-5 items-center">
+        الاسكور
+          </div> -->
+          <div v-for="sakka in game.sakkas" class="w-full">
+            <!-- <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p> -->
+
+            <div
+              v-for="mos in sakka.moshtaras"
+              class="w-full flex justify-center gap-20 items-center">
+              <p>{{ mos.usAbnat }}</p>
+              <p>{{ mos.themAbnat }}</p>
+            </div>
+            <UDivider />
+            <div class="w-full flex justify-center gap-20 items-center">
+              <p>{{ sakka.usSakkaScore }}</p>
+              <p>{{ sakka.themSakkaScore }}</p>
+            </div>
           </div>
-          
         </div>
       </template>
     </UTabs>
