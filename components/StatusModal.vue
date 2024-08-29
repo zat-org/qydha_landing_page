@@ -215,7 +215,7 @@
           <p>{{ new Date(game.startedAt).toLocaleString() }}</p>
           <p>{{ new Date(game.endedAt).toLocaleString() }}</p>
           <div v-for="sakka in game.sakkas">
-            <p> sakka winner :{{ sakka.winner&& m.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p>
+            <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p>
             
           </div>
           
