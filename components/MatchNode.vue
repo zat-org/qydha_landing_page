@@ -2,7 +2,7 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div
-      class="flex flex-col w-[300px] h-[65px] text-xs font-semibold p-1 rounded"
+      class="flex flex-col w-[300px] h-[75px] text-xs font-semibold p-1 rounded"
       :class="{
         'bg-blue-200': data.state == 'Running',
         'bg-white': data.state == 'Created' || data.state == 'Ended',
@@ -13,7 +13,7 @@
           'bg-red-300':
             data.state == 'Ended' && (data.winner != 'Us' || !data.winner),
         }"
-        class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-10 w-full">
+        class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[40px] w-full">
         <!-- <UBadge v-if="data.usTeamId" color="sky" :label="data.usTeamId"></UBadge> -->
 
         <div
@@ -51,7 +51,7 @@
           'bg-red-300':
             data.state == 'Ended' && (data.winner != 'Them' || !data.winner),
         }"
-        class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-10 w-full">
+        class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-[40px] w-full">
         <div
           class="border-e-2 w-[30px] h-full border-gray-900 text-center flex justify-center items-center bg-gray-300">
           <p>

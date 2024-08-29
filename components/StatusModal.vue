@@ -1,6 +1,6 @@
 <template>
   <UModal class="w-[500px] ">
-   
+   <div class="flex flex-col">
    
       <div class="flex justify-end p-1">
       <UButton color="red" icon="material-symbols:close" variant="soft" @click="modal.close()" />
@@ -251,7 +251,7 @@
         </div>
       </template>
     </UTabs>
-  
+  </div>
   </UModal>
 </template>
 
