@@ -23,7 +23,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr
+            <!-- <tr
               class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
               <td
                 class="font-semibold text-md text-blue-950 dark:text-slate-50">
@@ -34,8 +34,8 @@
                 class="font-semibold text-md text-blue-950 dark:text-slate-50">
                 {{ statusThem?.ekak }}
               </td>
-            </tr>
-            <tr
+            </tr> -->
+            <!-- <tr
               class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
               <td
                 class="font-semibold text-md text-blue-950 dark:text-slate-50">
@@ -46,7 +46,7 @@
                 class="font-semibold text-md text-blue-950 dark:text-slate-50">
                 {{ statusThem?.aklat }}
               </td>
-            </tr>
+            </tr> -->
 
             <tr
               class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
