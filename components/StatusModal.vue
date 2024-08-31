@@ -164,7 +164,8 @@
           <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px]">
             <div class="flex justify-between gap-2 items-center font-bold">
               <div class="flex flex-col gap-1 justify-center items-center">
-                <p class="text-xs md:text-lg">{{ m.usTeam?.name }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.usTeam?.name.split("|")[0] }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.usTeam?.name.split("|")[1] }}</p>
                 <p>{{ game.usGameScore }}</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
@@ -172,16 +173,15 @@
                 <p>:</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
-                <p class="text-xs md:text-lg">
-                  {{ m.themTeam?.name }}
-                </p>
+                <p class="text-xs md:text-lg text-center">{{ m.themTeam?.name.split("|")[0] }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.themTeam?.name.split("|")[1] }}</p>
                 <p>
                   {{ game.themGameScore }}
                 </p>
               </div>
             </div>
 
-            <UBadge size="lg">
+            <UBadge size="lg" v-if="game.winner">
               الفائز :{{
                 game.winner != null &&
                   (game.winner as string).toLowerCase() == "us"
@@ -202,22 +202,25 @@
               <!-- <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p> -->
 
               <div v-for="mos in sakka.moshtaras" class="w-full flex justify-center gap-20 items-center">
-                <p>{{ mos.usAbnat }}</p>
-                <p>{{ mos.themAbnat }}</p>
+                <div v-if="mos.state != 'Running'">
+                  <p>{{ mos.usAbnat }}</p>
+                  <p>{{ mos.themAbnat }}</p>
+                </div>
               </div>
               <UDivider />
-              <div class="w-full flex justify-center gap-20 items-center">
-                <p>{{ sakka.usSakkaScore }}</p>
-                <p>{{ sakka.themSakkaScore }}</p>
+              <div class="w-full flex justify-center gap-20 items-center mt-5">
+                <UBadge>{{ sakka.usSakkaScore }}</UBadge>
+                <UBadge>{{ sakka.themSakkaScore }}</UBadge>
               </div>
             </div>
           </div>
         </template>
       </UTabs>
-      <UTooltip :text="m.state">
-        <UButton color="gray" label="" />
-      </UTooltip>
+
     </div>
+    <UTooltip :text="game.state">
+      <UButton color="gray" label="" />
+    </UTooltip>
   </UModal>
 </template>
 
