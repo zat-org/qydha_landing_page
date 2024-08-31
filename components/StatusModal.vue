@@ -183,10 +183,10 @@
 
             <UBadge size="lg" v-if="game.winner">
               الفائز :{{
-                game.winner != null &&
-                  (game.winner as string).toLowerCase() == "us"
-                  ? m.usTeam.name
-                  : m.themTeam.name
+              game.winner != null &&
+              (game.winner as string).toLowerCase() == "us"
+              ? m.usTeam.name
+              : m.themTeam.name
               }}
             </UBadge>
             <!-- <div class="flex justify-center gap-10">
@@ -201,8 +201,8 @@
             <div v-for="sakka in game.sakkas" class="w-full">
               <!-- <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p> -->
 
-              <div v-for="mos in sakka.moshtaras" class="w-full flex justify-center gap-20 items-center">
-                <div v-if="mos.state != 'Running'">
+              <div v-for="mos in sakka.moshtaras">
+                <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-20 items-center">
                   <p>{{ mos.usAbnat }}</p>
                   <p>{{ mos.themAbnat }}</p>
                 </div>
