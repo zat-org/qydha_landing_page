@@ -30,6 +30,8 @@
 </template>
 
 <script lang="ts" setup>
+navigateTo("/championship")
+
 definePageMeta({
   layout: "custom",
 });
