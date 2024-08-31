@@ -44,52 +44,52 @@ const new_edges = ref<{ id: string; source: string; target: string }[]>([]);
 const new_nodes = ref<any[]>([]);
 const socketMatch = ref<Match[]>([]);
 
-const connection = new signalR.HubConnectionBuilder()
-  .withUrl(
-    "https://sam-baloot-admin.online/saudi-baloot-olympics/prod/bracket-hub",
-    {
-      withCredentials: true,
-    }
-  )
-  .build();
+// const connection = new signalR.HubConnectionBuilder()
+//   .withUrl(
+//     "https://sam-baloot-admin.online/saudi-baloot-olympics/prod/bracket-hub",
+//     {
+//       withCredentials: true,
+//     }
+//   )
+//   .build();
 
-onMounted(async () => {
-  try {
-    await connection.start();
+// onMounted(async () => {
+  // try {
+  //   await connection.start();
 
-    gameString.value = await connection.invoke(
-      "GetGroupBracket",
-      selected_group.value
-    );
+  //   gameString.value = await connection.invoke(
+  //     "GetGroupBracket",
+  //     selected_group.value
+  //   );
 
-    if (gameString.value) {
-      var gameObject = JSON.parse(gameString.value);
-      socketMatch.value = gameObject;
-    }
-  } catch (err) {
-    console.error(err);
-  }
-  connection.on("BracketChanged", (groupId: number, groupData: string) => {
-    console.log(groupId)
-    if (groupId == selected_group.value) {
-      gameString.value = groupData;
-      if (gameString.value) {
-        var gameObject = JSON.parse(gameString.value);
-        socketMatch.value = gameObject.data;
-        RoundNatchCounter = {};
-        new_nodes.value = [];
-        new_edges.value = [];
-        const winner_round = socketMatch.value.filter((m) => {
-          return m.level == 1;
-        });
-        winner_round.map((wm) => {
-          add_node(wm);
-          add_childre(wm);
-        });
-      }
-    }
-  });
-});
+  //   if (gameString.value) {
+  //     var gameObject = JSON.parse(gameString.value);
+  //     socketMatch.value = gameObject;
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  // }
+//   connection.on("BracketChanged", (groupId: number, groupData: string) => {
+//     console.log(groupId)
+//     if (groupId == selected_group.value) {
+//       gameString.value = groupData;
+//       if (gameString.value) {
+//         var gameObject = JSON.parse(gameString.value);
+//         socketMatch.value = gameObject.data;
+//         RoundNatchCounter = {};
+//         new_nodes.value = [];
+//         new_edges.value = [];
+//         const winner_round = socketMatch.value.filter((m) => {
+//           return m.level == 1;
+//         });
+//         winner_round.map((wm) => {
+//           add_node(wm);
+//           add_childre(wm);
+//         });
+//       }
+//     }
+//   });
+// });
 
 const gameString = ref<null | string>(null);
 
@@ -249,22 +249,25 @@ watch(selected_group, async (new_value, old_value) => {
   RoundNatchCounter = {};
   new_nodes.value = [];
   new_edges.value = [];
-  try {
-    gameString.value = await connection.invoke(
-      "GetGroupBracket",
-      selected_group.value
-    );
+  // try {
+  //   gameString.value = await connection.invoke(
+  //     "GetGroupBracket",
+  //     selected_group.value
+  //   );
 
-    if (gameString.value) {
-      var gameObject: { data: Match[]; message: string } = JSON.parse(
-        gameString.value
-      );
-      socketMatch.value = gameObject.data;
-      // console.log(gameObject.Data)
-    }
-  } catch (err) {
-    console.error(err);
-  }
+  //   if (gameString.value) {
+  //     var gameObject: { data: Match[]; message: string } = JSON.parse(
+  //       gameString.value
+  //     );
+  //     socketMatch.value = gameObject.data;
+  //     // console.log(gameObject.Data)
+  //   }
+  // } catch (err) {
+  //   console.error(err);
+  // }
+  await groupMatchesREQ.fetchREQ(selected_group.value);
+  if (groupMatchesREQ.data.value) {
+    socketMatch.value = groupMatchesREQ.data.value.data;
 
   const winner_round = socketMatch.value.filter((m) => {
     return m.level == 1;
@@ -274,7 +277,9 @@ watch(selected_group, async (new_value, old_value) => {
     add_node(wm);
     add_childre(wm);
   });
+  }
 });
+
 </script>
 
 <style>
