@@ -108,7 +108,7 @@ let links = [
   { text: "الشروط والاحكام", href: "/terms-of-use" },
   { text: "سياسة الخصوصية", href: "/privacy-policy" },
 ];
-const phonenumber = "966508253266+";
+const phonenumber = "+966508253266";
 const sendMessage = () => {
   const url = `https://wa.me/${phonenumber}`;
   window.open(url, "_blank");
