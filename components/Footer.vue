@@ -12,17 +12,17 @@ import type { Link } from '#ui-colors/components';
                 </li>
             </ul>
             <div class="text-center my-3 text-gray-600">
-                <p class="">
+                <!-- <p class="">
                     مؤسسة اسامه عبدالله بن محمد السحيباني لتطبيقات
                     وخدمات ويب نظم المعلومات الجيومكانية
-                </p>
+                </p> -->
                 <!-- <p>966553814881+</p> -->
                 <!-- <p>س.ت: 1010881915</p> -->
                 <!-- <p>الرياض - الياسمين - 13325</p> -->
                 <a href="mailto:customer-support@qydha.com"
                     class="underline underline-offset-2 ">customer-support@qydha.com</a>
-                <p>966551707168+</p>
-                <p>966503211289+</p>
+                <p @click="sendMessage">{{phonenumber}}</p>
+                <!-- <p>966503211289+</p> -->
 
             </div>
         </div>
@@ -69,6 +69,15 @@ import type { Link } from '#ui-colors/components';
 
 <script setup lang="ts">
 let links = [{ text: "الشروط والاحكام", href: "/terms-of-use" }, { text: "سياسة الخصوصية", href: "/privacy-policy" }]
+const phonenumber = "966508253266+"
+const sendMessage = () => {
+  const message = ` `; // Custom message text
+  const url = `https://wa.me/${phonenumber}?text=${encodeURIComponent(
+    message
+  )}`;
+
+  window.open(url, "_blank");
+};
 </script>
 
 <style scoped></style>
