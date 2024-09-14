@@ -11,7 +11,7 @@
 
 
 <script lang="ts" setup>
-navigateTo('/')
+// navigateTo('/')
 definePageMeta({
   layout: "custom",
 });
