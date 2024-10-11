@@ -3,6 +3,7 @@ export interface Group {
   name: string;
   checkInAt: string;
   startPlayAt: string;
+  isFinalGroup: boolean;
 }
 export interface Team {
   groupId: number;
@@ -15,10 +16,15 @@ export interface Match {
   groupId: number;
   id: number;
   level: number;
+  name: string;
   matchQualifyThemTeamId: null | number;
   matchQualifyThemTeam: undefined | Match;
+  matchQualifyThemTeamFrom: string | null;
+
   matchQualifyUsTeamId: null | number;
   matchQualifyUsTeam: undefined | Match;
+  matchQualifyUsTeamFrom: string | null;
+
   qydhaGameId: null | string;
   refereeId: null | string;
   startAt: string;

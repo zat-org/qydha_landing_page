@@ -1,10 +1,6 @@
 <template>
-  <UButtonGroup size="2xs" orientation="horizontal" v-if="groupsREQ.data.value" class="flex flex-wrap">
-    <UButton class="basis-[20px] grow" v-for="item in groupsREQ.data.value.data" :label="`${item.name}`"
-      :color="selected_group == item.id ? 'green' : 'white'" block @click="handleGroupSelection(item.id)" />
-  </UButtonGroup>
-  <VueFlow v-if="groupMatchesREQ.graphData.value" :nodes="OrderedNodes" :edges="groupMatchesREQ.graphData.value.edges"
-    @nodes-initialized="layoutGraph('LR')">
+  <VueFlow v-if="OrderedNodes" :nodes="OrderedNodes.nodes" :fit-view-on-init="true" :edges="OrderedNodes.edges"
+    :default-zoom="1" :min-zoom="0.2" :max-zoom="4">
     <Background />
     <template #node-match="matchProps">
       <MatchNode v-bind="matchProps" />
@@ -16,43 +12,31 @@
 import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import MatchNode from "./MatchNode.vue";
-import { ref } from "vue";
-const { onPaneReady, fitView } = useVueFlow();
-const props = defineProps<{ group_id?: number }>();
-const { layout } = useLayout()
+import type { Group } from "~/models/group";
+const props = defineProps<{ group: Group }>();
+const direction = computed(() => props.group.isFinalGroup ? "LRC" : "LR");
 
-const selected_group = ref<number>(props.group_id ?? 0);
-
-const handleGroupSelection = (group_id: number) => {
-  selected_group.value = group_id;
-  useRouter().push({ path: useRoute().path, query: { group: group_id } });
-};
-
+// const { fitView, onNodesChange } = useVueFlow();
+const { layoutFromMatchesTree } = useLayout()
 const groupApi = useGroup();
-const groupsREQ = await groupApi.getGroups();
-await groupsREQ.fetchREQ();
+const { matchesTree, fetchREQ, loserMatches } = await groupApi.getGroupMatches();
 
-const groupMatchesREQ = await groupApi.getGroupMatches();
-
-if (groupsREQ.status.value == "success" && groupsREQ.data.value && selected_group.value === 0) {
-  selected_group.value = groupsREQ.data.value.data[0].id;
-}
-await groupMatchesREQ.fetchREQ(selected_group.value);
-const OrderedNodes = ref(groupMatchesREQ.graphData.value ? groupMatchesREQ.graphData.value.nodes : undefined);
-
-// onPaneReady((instance) => instance.fitView());
-async function layoutGraph(direction: "TB" | "BT" | "LR" | "RL") {
-  if (!groupMatchesREQ.graphData.value) return;
-  OrderedNodes.value = layout(groupMatchesREQ.graphData.value.nodes, groupMatchesREQ.graphData.value.edges, direction)
-  nextTick(() => {
-    fitView()
-  })
-}
-
-watch(selected_group, async (new_value, old_value) => {
-
+onMounted(async () => {
+  await fetchREQ(props.group.id);
 });
 
+// onNodesChange(() => {
+//   fitView({ duration: 1000 });
+// })
+
+watch(() => props.group.id, async (new_value) => {
+  await fetchREQ(new_value);
+});
+
+const OrderedNodes = computed(() => {
+  if (!matchesTree.value || !loserMatches.value) return undefined;
+  return layoutFromMatchesTree(matchesTree.value, loserMatches.value, direction.value);
+})
 </script>
 
 <style>

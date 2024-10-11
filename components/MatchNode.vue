@@ -1,139 +1,111 @@
 <template>
-  <div>
-    <Handle type="target" :position="Position.Left" style="opacity: 0" />
-    <div
-      class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded"
-      :class="{
-        'bg-blue-200': data.state == 'Running',
-        'bg-white': data.state == 'Created' || data.state == 'Ended',
-      }">
-      <div
-        :class="{
-          'bg-green-300': data.winner == 'Us',
-          'bg-red-300':
-            data.state == 'Ended' && (data.winner != 'Us' || !data.winner),
-        }"
+  <div v-if="match">
+    <Handle type="target" :position="data.directions.target" style="opacity: 0" />
+
+    <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded" :class="{
+      'bg-blue-200': match.state == 'Running',
+      'bg-white': match.state == 'Created' || match.state == 'Ended',
+    }">
+      <div :class="{
+        'bg-green-300': match.winner == 'Us',
+        'bg-red-300':
+          match.state == 'Ended' && (match.winner != 'Us' || !match.winner),
+      }"
         class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[22px] w-full">
-        <!-- <UBadge v-if="data.usTeamId" color="sky" :label="data.usTeamId"></UBadge> -->
+        <!-- <UBadge v-if="match.usTeamId" color="sky" :label="match.usTeamId"></UBadge> -->
 
         <div
           class="border-e-2 w-[30px] h-full border-gray-900 text-center flex justify-center items-center bg-gray-300">
           <p>
-            {{ data.usTeamId }}
+            {{ match.usTeamId }}
           </p>
         </div>
-        <p
-          v-if="data.usTeam"
-          class="grow text-center"
-          :class="{
-            'line-through':
-              data.state == 'Ended' &&
-              !data.qydhaGameId &&
-              (data.winner != 'Us' || !data.winner),
-          }">
-          {{ data.usTeam.name }}
+        <p v-if="match.usTeam" class="grow text-center" :class="{
+          'line-through':
+            match.state == 'Ended' &&
+            !match.qydhaGameId &&
+            (match.winner != 'Us' || !match.winner),
+        }">
+          {{ match.usTeam.name }}
         </p>
-        <p
-          class="grow text-center"
-          v-else-if="!data.usTeam && data.state !== 'Ended'">
+        <p class="grow text-center" v-else-if="!match.usTeam && match.state !== 'Ended'">
           لم يحدد بعد
         </p>
-        <p
-          class="grow text-center"
-          v-else-if="!data.usTeam && data.state === 'Ended'">
+        <p class="grow text-center" v-else-if="!match.usTeam && match.state === 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
 
-      <div
-        :class="{
-          'bg-green-300': data.winner == 'Them',
-          'bg-red-300':
-            data.state == 'Ended' && (data.winner != 'Them' || !data.winner),
-        }"
+      <div :class="{
+        'bg-green-300': match.winner == 'Them',
+        'bg-red-300':
+          match.state == 'Ended' && (match.winner != 'Them' || !match.winner),
+      }"
         class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-[22px] w-full">
         <div
           class="border-e-2 w-[30px] h-full border-gray-900 text-center flex justify-center items-center bg-gray-300">
           <p>
-            {{ data.themTeamId }}
+            {{ match.themTeamId }}
           </p>
         </div>
-        <p
-          v-if="data.themTeam"
-          class="grow text-center"
-          :class="{
-            'line-through':
-              data.state == 'Ended' &&
-              !data.qydhaGameId &&
-              (data.winner != 'Them' || !data.winner),
-          }">
-          {{ data.themTeam.name }}
+        <p v-if="match.themTeam" class="grow text-center" :class="{
+          'line-through':
+            match.state == 'Ended' &&
+            !match.qydhaGameId &&
+            (match.winner != 'Them' || !match.winner),
+        }">
+          {{ match.themTeam.name }}
         </p>
-        <p
-          class="grow text-center"
-          v-else-if="!data.themTeam && data.state != 'Ended'">
+        <p class="grow text-center" v-else-if="!match.themTeam && match.state != 'Ended'">
           لم يحدد بعد
         </p>
-        <p
-          class="grow text-center"
-          v-else-if="!data.themTeam && data.state == 'Ended'">
+        <p class="grow text-center" v-else-if="!match.themTeam && match.state == 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
       <div class="flex justify-between text-center h-7">
-        <!--    
+        <div class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
+          <UIcon v-if="match.state == 'Created'" name="mingcute:sleep-fill" />
+          <UIcon v-if="match.state == 'Running'" name="eos-icons:loading" />
+          <UIcon v-if="match.state == 'Ended'" name="material-symbols:done-all" />
+        </div>
         <div class="flex items-center  bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2  ">
           <UIcon name="mingcute:time-line" class="text-xl" />
-          <p >
-            {{ new Date(data.startAt).toLocaleString()  }}
-          </p>
-        </div> -->
-
-        <div
-          class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon v-if="data.state == 'Created'" name="mingcute:sleep-fill" />
-          <UIcon v-if="data.state == 'Running'" name="eos-icons:loading" />
-          <UIcon
-            v-if="data.state == 'Ended'"
-            name="material-symbols:done-all" />
-        </div>
-
-        <div
-          :class="{
-            'bg-emerald-400': data.level == 1,
-            'bg-amber-400': data.level == 2,
-            'bg-indigo-400': data.level == 3,
-            'bg-cyan-400': data.level == 4,
-          }"
-          class="flex items-center rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <!-- <UIcon name="material-symbols:table-restaurant" class="text-xl" /> -->
-          <p class="text-white">
-            المستوي
-            {{ data.level }}
-          </p>
-        </div>
-
-        <div
-          v-if="data.qydhaGameId"
-          class="h-full items-center flex justify-center">
-          <UIcon
-            name="material-symbols:info"
-            class="text-xl text-green-400 cursor-pointer"
-            @click="onClick" />
-        </div>
-        <div
-          class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon
-            name="material-symbols:table-restaurant"
-            class="text-xl cursor-pointer"
-            @click="copyClibboard" />
           <p>
-            {{ data.tableNumber }}
+            {{ new Date(match.startAt).toLocaleTimeString('Ar-Eg') }}
+          </p>
+        </div>
+
+
+
+        <div :class="{
+          'bg-emerald-400': match.level == 1,
+          'bg-cyan-400': match.level == 2,
+          'bg-indigo-400': match.level == 3,
+          'bg-purple-400': match.level == 4,
+          'bg-pink-400': match.level == 5,
+          'bg-amber-400': match.level == 6,
+          'bg-yellow-400': match.level == 7,
+        }" class="flex items-center rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
+          <p class="text-white">
+            الجولة
+            {{ match.level }}
+          </p>
+        </div>
+
+        <div v-if="match.qydhaGameId" class="h-full items-center flex justify-center">
+          <UIcon name="material-symbols:info" class="text-xl text-green-400 cursor-pointer" @click="onClick" />
+        </div>
+        <div class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
+          <UIcon name="material-symbols:table-restaurant" class="text-xl cursor-pointer" @click="copyClipboard" />
+          <p>
+            {{ match.tableNumber }}
           </p>
         </div>
       </div>
     </div>
-    <Handle type="source" :position="Position.Right" style="opacity: 0" />
+
+    <Handle type="source" :position="data.directions.source" style="opacity: 0" />
   </div>
 </template>
 
@@ -142,24 +114,25 @@ import { Position } from "@vue-flow/core";
 import { Handle } from "@vue-flow/core";
 import type { Match } from "~/models/group";
 import StatusModal from "./StatusModal.vue";
-const props = defineProps<{ data: Match }>();
+const props = defineProps<{ data: { match: Match, directions: { target: Position, source: Position } } }>();
+const match = computed(() => props.data.match);
 const modal = useModal();
 const onClick = () => {
-  if (props.data.qydhaGameId) {
+  if (match.value) {
     modal.open(StatusModal, {
-      m: props.data,
+      m: match.value,
       onSuccess() {
         modal.close();
       },
     });
   }
 };
-const copyClibboard = async() => {
+const copyClipboard = async () => {
   try {
     await navigator.clipboard.writeText(`
-    id:${props.data.id}
-    qydhaGameId: ${props.data.qydhaGameId} 
-    refereeId: ${props.data.refereeId}
+    id:${match.value.id}
+    qydhaGameId: ${match.value.qydhaGameId} 
+    refereeId: ${match.value.refereeId}
     `);
     setTimeout(() => {
     }, 2000);
@@ -167,9 +140,9 @@ const copyClibboard = async() => {
     console.error('Failed to copy text to clipboard:', error);
   }
   console.log(props.data);
-  props.data.id
-  props.data.qydhaGameId
-  props.data.refereeId
+  match.value.id
+  match.value.qydhaGameId
+  match.value.refereeId
 };
 </script>
 
