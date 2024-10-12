@@ -1,10 +1,10 @@
 <template>
  
-    <Header />
-    <main class="grow w-full relative">
-      <slot />
+    <Header ></Header>
+    <main class="w-full  mt-[20px] flex grow  ">
+      <slot ></slot>
     </main>
-    <Footer />
+    <Footer ></Footer>
  
 </template>
 

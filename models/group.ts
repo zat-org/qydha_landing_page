@@ -3,6 +3,7 @@ export interface Group {
   name: string;
   checkInAt: string;
   startPlayAt: string;
+  type: string;
 }
 export interface Team {
   groupId: number;
@@ -13,30 +14,33 @@ export interface Team {
 
 export interface Match {
   groupId: number;
-  id: number;
+  id: string;
   level: number;
+  name: string;
   matchQualifyThemTeamId: null | number;
+  matchQualifyThemTeamNamee: null |string;
+  matchQualifyThemTeam: undefined | Match;
+  matchQualifyThemTeamFrom: string | null;
+
   matchQualifyUsTeamId: null | number;
-  qydhaGameId: null | string;
-  refereeId: null | string;
+  matchQualifyUsTeamName: null | string;
+  matchQualifyUsTeam: undefined | Match;
+  matchQualifyUsTeamFrom: string | null;
+
+  qydhaGameId:   string;
+
+  referee: {id: string, username: string}
   startAt: string;
   state: string;
-  tableNumber: number;
+  tableName: string;
+  tableId: string;
   usTeamId: number;
-  usTeam: {
-    id: number;
-    name:string;
-    state: string;
-    groupId: number;
-  };
+  usTeamName: string;
+
   themTeamId: number;
-  themTeam: {
-    id: number;
-    name: string;
-    state: string;
-    groupId: number;
-  };
-  winner: string  | null;
+  themTeamName: string;
+
+  winner: string | null;
 }
 export interface MatchWithPlayer extends Match{
 player1?:{id:string ,name:string,winner:boolean|null},

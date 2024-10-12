@@ -1,6 +1,6 @@
 <template>
   <main class="grow w-full relative">
-    <slot />
+    <slot ></slot>
   </main>
 </template>
 

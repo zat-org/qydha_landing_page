@@ -4,79 +4,84 @@
     <div
       class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded"
       :class="{
-        'bg-blue-200': data.state == 'Running',
-        'bg-white': data.state == 'Created' || data.state == 'Ended',
+        'bg-blue-200': data.match.state == 'Running',
+        'bg-white': data.match.state == 'Created' || data.match.state == 'Ended',
       }">
       <div
         :class="{
-          'bg-green-300': data.winner == 'Us',
+          'bg-green-300': data.match.winner == 'Us',
           'bg-red-300':
-            data.state == 'Ended' && (data.winner != 'Us' || !data.winner),
+            data.match.state == 'Ended' && (data.match.winner != 'Us' || !data.match.winner),
         }"
         class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[22px] w-full">
         <!-- <UBadge v-if="data.usTeamId" color="sky" :label="data.usTeamId"></UBadge> -->
 
-        <div
+        <div 
           class="border-e-2 w-[30px] h-full border-gray-900 text-center flex justify-center items-center bg-gray-300">
           <p>
-            {{ data.usTeamId }}
+            <!-- {{ data.match.usTeamId }}
+               -->
+          {{ data.match.usTeamName&&data.match.usTeamName.split("-").length>1  ? data.match.usTeamName.split("-")[0]: data.match.usTeamId }}
+
           </p>
         </div>
         <p
-          v-if="data.usTeam"
+          v-if="data.match.usTeamId"
           class="grow text-center"
           :class="{
             'line-through':
-              data.state == 'Ended' &&
-              !data.qydhaGameId &&
-              (data.winner != 'Us' || !data.winner),
+              data.match.state == 'Ended' &&
+              !data.match.qydhaGameId &&
+              (data.match.winner != 'Us' || !data.match.winner),
           }">
-          {{ data.usTeam.name }}
+          {{ data.match.usTeamName }}
         </p>
         <p
           class="grow text-center"
-          v-else-if="!data.usTeam && data.state !== 'Ended'">
+          v-else-if="!data.match.usTeamId && data.match.state !== 'Ended'">
           لم يحدد بعد
         </p>
         <p
           class="grow text-center"
-          v-else-if="!data.usTeam && data.state === 'Ended'">
+          v-else-if="!data.match.usTeamId && data.match.state === 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
 
       <div
         :class="{
-          'bg-green-300': data.winner == 'Them',
+          'bg-green-300': data.match.winner == 'Them',
           'bg-red-300':
-            data.state == 'Ended' && (data.winner != 'Them' || !data.winner),
+            data.match.state == 'Ended' && (data.match.winner != 'Them' || !data.match.winner),
         }"
         class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-[22px] w-full">
         <div
           class="border-e-2 w-[30px] h-full border-gray-900 text-center flex justify-center items-center bg-gray-300">
           <p>
-            {{ data.themTeamId }}
+            <!-- {{ data.match.themTeamId }} -->
+            {{ data.match.themTeamName&&data.match.themTeamName.split("-").length>1?data.match.themTeamName.split("-")[0] :data.match.themTeamId }}
+
           </p>
         </div>
         <p
-          v-if="data.themTeam"
+          v-if="data.match.themTeamName"
           class="grow text-center"
           :class="{
             'line-through':
-              data.state == 'Ended' &&
-              !data.qydhaGameId &&
-              (data.winner != 'Them' || !data.winner),
+              data.match.state == 'Ended' &&
+              !data.match.qydhaGameId &&
+              (data.match.winner != 'Them' || !data.match.winner),
           }">
-          {{ data.themTeam.name }}
+          {{ data.match.themTeamName }}
         </p>
         <p
           class="grow text-center"
-          v-else-if="!data.themTeam && data.state != 'Ended'">
+          v-else-if="!data.match.themTeamId && data.match.state != 'Ended'">
           لم يحدد بعد
         </p>
         <p
           class="grow text-center"
-          v-else-if="!data.themTeam && data.state == 'Ended'">
+          v-else-if="!data.match.themTeamId && data.match.state == 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
@@ -91,35 +96,57 @@
 
         <div
           class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon v-if="data.state == 'Created'" name="mingcute:sleep-fill" />
-          <UIcon v-if="data.state == 'Running'" name="eos-icons:loading" />
+          <UIcon v-if="data.match.state == 'Created'" name="mingcute:sleep-fill" />
+          <UIcon v-if="data.match.state == 'Running'" name="eos-icons:loading" />
           <UIcon
-            v-if="data.state == 'Ended'"
+            v-if="data.match.state == 'Ended'"
             name="material-symbols:done-all" />
         </div>
 
         <div
           :class="{
-            'bg-emerald-400': data.level == 1,
-            'bg-amber-400': data.level == 2,
-            'bg-indigo-400': data.level == 3,
-            'bg-cyan-400': data.level == 4,
+            'bg-emerald-400': data.match.level == 1,
+            'bg-amber-400': data.match.level == 2,
+            'bg-indigo-400': data.match.level == 3,
+            'bg-cyan-400': data.match.level == 4,
           }"
           class="flex items-center rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
           <!-- <UIcon name="material-symbols:table-restaurant" class="text-xl" /> -->
-          <p class="text-white">
+          <p 
+          :class="{'text-black':data.match.level >4, 'text-white':data.match.level<=4}">
             المستوي
-            {{ data.level }}
+            {{ data.match.level }} 
           </p>
         </div>
 
         <div
-          v-if="data.qydhaGameId"
+          v-if="data.match.qydhaGameId"
           class="h-full items-center flex justify-center">
           <UIcon
             name="material-symbols:info"
             class="text-xl text-green-400 cursor-pointer"
             @click="onClick" />
+        </div>
+        <div class=" h-full items-center flex justify-center " 
+          v-if="privilege?.toLowerCase()=='admin'||privilege?.toLowerCase()=='owner' || permissions.includes('') "
+        >
+          <UIcon 
+            name="weui:setting-filled"
+            class="text-xl text-yellow-500 cursor-pointer"
+            @click="onEdit"
+             />
+        </div>
+
+        <div class=" h-full items-center flex justify-center " 
+          v-if="(privilege?.toLowerCase()=='admin'||privilege?.toLowerCase()=='owner' || permissions.includes('')) && data.match.referee"
+        >
+        <UTooltip :text="data.match.referee.username" >
+
+          <UIcon 
+            name="fluent-mdl2:party-leader"
+            class="text-xl text-blue-500 cursor-pointer"  
+             />
+        </UTooltip>
         </div>
         <div
           class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
@@ -128,7 +155,7 @@
             class="text-xl cursor-pointer"
             @click="copyClibboard" />
           <p>
-            {{ data.tableNumber }}
+            {{ data.match.tableName }}
           </p>
         </div>
       </div>
@@ -142,12 +169,17 @@ import { Position } from "@vue-flow/core";
 import { Handle } from "@vue-flow/core";
 import type { Match } from "~/models/group";
 import StatusModal from "./StatusModal.vue";
-const props = defineProps<{ data: Match }>();
+import { useMyAuthStore } from "~/store/Auth";
+import EditModal from "./EditModal.vue";
+const props = defineProps<{ data: {match:Match}}>();
+
+const useStore = useMyAuthStore()
+const {privilege ,permissions} = storeToRefs(useStore)
 const modal = useModal();
 const onClick = () => {
-  if (props.data.qydhaGameId) {
+  if (props.data.match.qydhaGameId) {
     modal.open(StatusModal, {
-      m: props.data,
+      m: props.data.match,
       onSuccess() {
         modal.close();
       },
@@ -157,9 +189,9 @@ const onClick = () => {
 const copyClibboard = async() => {
   try {
     await navigator.clipboard.writeText(`
-    id:${props.data.id}
-    qydhaGameId: ${props.data.qydhaGameId} 
-    refereeId: ${props.data.refereeId}
+    id:${props.data.match.id}
+    qydhaGameId: ${props.data.match.qydhaGameId} 
+    refereeId: ${props.data.match.referee.id}
     `);
     setTimeout(() => {
     }, 2000);
@@ -167,10 +199,18 @@ const copyClibboard = async() => {
     console.error('Failed to copy text to clipboard:', error);
   }
   console.log(props.data);
-  props.data.id
-  props.data.qydhaGameId
-  props.data.refereeId
+  // props.data.id
+  // props.data.qydhaGameId
+  // props.data.refereeId
 };
+
+const onEdit=()=>{
+  console.log("clicked")
+  modal.open(EditModal,
+  {
+    match:props.data.match
+  })
+  }
 </script>
 
 <style></style>

@@ -11,7 +11,7 @@ const LogoURL =
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   devtools: { enabled: false },
-  modules: ["@nuxt/ui", "@pinia/nuxt"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "@samk-dev/nuxt-vcalendar"],
   css: ["~/assets/css/main.css"],
 
   app: {
@@ -20,6 +20,7 @@ export default defineNuxtConfig({
         lang: "ar",
         dir: "rtl",
       },
+      link: [{ rel: "stylesheet", href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" ,integrity:"sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" , crossorigin:""}],
       title: Title,
       meta: [
         { name: "image", property: "og:image", content: LogoURL },
@@ -49,8 +50,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.API_BASE_URL,
-      qydhaToken: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiJhZTlkNmE4Ny1kOWQ1LTQxODgtOWNhMy1iMmUxMzRkMjFiMWIiLCJ1bmlxdWVfbmFtZSI6Im9seW1waWNzIGJyYWNrZXQiLCJUb2tlblR5cGUiOiJTZXJ2aWNlQWNjb3VudFRva2VuIiwibmJmIjoxNzI0ODc5ODg1LCJleHAiOjE3MjQ4ODcwODUsImlhdCI6MTcyNDg3OTg4NSwiaXNzIjoicXlkaGFBcGkiLCJhdWQiOiJxeWRoYUFwaV9hdWRpZW5jZSJ9.Ald7LOCQ0LIdXbjw2BiLcyTxh4N-KKVQK9bfKZAJj8Q`,
-      qydhaapiBase:"https://sam-baloot-admin.online/qydha"
-      },
+      qydhaToken: `eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ijk4Y2IxMGI1LTQyYWYtNGRlOC1hNDUzLWM3NWVmNmMyYTE2ZiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJReWRoYSBCcmFja2V0cyIsIlRva2VuVHlwZSI6IlNlcnZpY2VBY2NvdW50VG9rZW4iLCJhdWQiOiJxeWRoYUFwaV9hdWRpZW5jZSIsImlzcyI6InF5ZGhhQXBpIiwiZXhwIjoxNzI4NzA0MDExLCJpYXQiOjE3Mjg2OTY4MTEsIm5iZiI6MTcyODY5NjgxMX0.BJPddC8Io0QbOpS13ysKzi2FRWQro1OtZ1Jq461KUbs`,
+      qydhaapiBase: "https://sam-baloot-admin.online/dev/"
+    },
   },
 });
