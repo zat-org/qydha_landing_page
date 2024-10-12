@@ -23,7 +23,7 @@
           :class="{ 'text-green-500': row.showInQydha, 'text-black': !row.showInQydha }" />
       </template>
     </UTable>
-    <UPagination v-model="page!" :page-count="10" :total="getAllREQ.data.value?.data.totalCount!"  class="mx-auto mt-auto"/>
+    <UPagination v-model="page" :page-count="10" :total="getAllREQ.data.value?.data.totalCount!"  class="mx-auto mt-auto"/>
   </div>
 </template>
 
@@ -64,7 +64,7 @@ const rows = computed(() => {
   
   
 })
-const page = ref(getAllREQ.data.value?.data.currentPage)
+const page = ref(getAllREQ.data.value?.data.currentPage!)
 watch(page,()=>{
   getAllREQ.fetchREQ(page.value)
 })
