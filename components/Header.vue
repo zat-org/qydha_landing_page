@@ -28,7 +28,7 @@ const onLogOut = async () => {
     const logout = await authApi.logout();
     await logout.fetchREQ()
     if(logout.status.value =="success"){
-        return navigateTo("/login")
+        return navigateTo("/")
     }
 }
 </script>

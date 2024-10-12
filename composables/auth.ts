@@ -36,7 +36,7 @@ export const useAuth = () => {
       await execute();
       if (status.value == "success") {
         user.value = null;
-
+      
       }
     };
     return{ data, pending, error, refresh, status, fetchREQ }

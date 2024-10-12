@@ -13,7 +13,7 @@ import type { Link } from '#ui-colors/components';
           <NuxtLink :to="l.href">{{ l.text }}</NuxtLink>
         </li>
       </ul>
-      <div class="text-center my-3 text-gray-600">
+      <div class="text-center flex gap-2 my-3 text-gray-600">
         <!-- <p class="">
                     مؤسسة اسامه عبدالله بن محمد السحيباني لتطبيقات
                     وخدمات ويب نظم المعلومات الجيومكانية
@@ -21,14 +21,19 @@ import type { Link } from '#ui-colors/components';
         <!-- <p>966553814881+</p> -->
         <!-- <p>س.ت: 1010881915</p> -->
         <!-- <p>الرياض - الياسمين - 13325</p> -->
-        <a
+       
+        <!-- <a
           href="mailto:customer-support@qydha.com"
           class="underline underline-offset-2"
           >customer-support@qydha.com</a
-        >
+        > -->
+        <UButtonGroup size="sm" orientation="horizontal">
+          <UBadge color="gray" label="customer-support@qydha.com" />
+          <UButton icon="hugeicons:customer-support" color="green"  to="mailto:customer-support@qydha.com" type="button"  />
+        </UButtonGroup>
         <UButtonGroup size="sm" orientation="horizontal">
           <UBadge color="gray" :label="phonenumber" />
-          <UButton icon="i-heroicons-phone" color="green" @click="sendMessage" />
+          <UButton icon="i-heroicons-phone" color="green" @click="sendMessage"  type="button"/>
         </UButtonGroup>
         <!-- <p @click="sendMessage">{{phonenumber}}</p> -->
         <!-- <p>966503211289+</p> -->

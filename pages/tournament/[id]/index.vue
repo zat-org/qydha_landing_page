@@ -8,6 +8,7 @@
 
 const route = useRoute ()
 const id = +route.params.id
+definePageMeta({middleware:'auth'})
 </script>
 
 <style>

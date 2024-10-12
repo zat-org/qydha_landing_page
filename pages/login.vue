@@ -1,12 +1,12 @@
 <template>
   <div class="mx-auto w-1/2 mt-[100px]">
     <UForm :state="state" :schema="schema" class="flex flex-col gap-10" @submit="loginClick">
-      <UFormGroup label="اسم المستخدم " name="username" size="xl">
-        <UInput v-model="state.username" color="blue" />
+      <UFormGroup   label="اسم المستخدم " name="username" size="xl">
+        <UInput  dir="ltr"v-model="state.username" color="blue" />
       </UFormGroup>
 
       <UFormGroup label="كلمة المرور" name="password" size="xl">
-        <UInput v-model="state.password" type="password" color="blue" />
+        <UInput dir="ltr" v-model="state.password" type="password" color="blue" />
       </UFormGroup>
 
 
