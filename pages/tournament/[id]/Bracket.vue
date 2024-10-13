@@ -13,9 +13,13 @@
 </template>
 
 <script lang="ts" setup>
+import { useMyTournamentStore } from '~/store/tournament';
+
 definePageMeta({
   layout: "custom",
 });
+const tourStore  =useMyTournamentStore()
+await tourStore.IntializeConnection()
 const route = useRoute();
 const tourid = route.params.id.toString()
 const groupApi = useGroup();

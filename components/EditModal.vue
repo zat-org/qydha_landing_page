@@ -26,11 +26,14 @@
         </UForm>
       </div>
       <template #footer>
-        <UDropdown :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
-          v-if="match.state.toLowerCase() == 'created'" :ui="{ width: 'w-[300px]' }">
-          <UButton color="red" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
-        </UDropdown>
-        <UButton  v-else-if="privilege==Privilege.Admin||privilege==Privilege.Owner"  color="red" label="اعادة الضبط" @click="onReset" />
+        <div v-if="match.themTeamId || match.usTeamId " >
+
+          <UDropdown :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
+            v-if="match.state.toLowerCase() == 'created'" :ui="{ width: 'w-[300px]' }">
+            <UButton color="red" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
+          </UDropdown>
+          <UButton  v-else-if="privilege==Privilege.Admin||privilege==Privilege.Owner"  color="red" label="اعادة الضبط" @click="onReset" />
+        </div>
 
       </template>
     </UCard>
@@ -45,6 +48,7 @@ import type { IMatchUpdate } from "~/models/match";
 import { Privilege } from "~/models/user";
 import { useMyAuthStore } from "~/store/Auth";
 const props = defineProps<{ match: Match }>()
+console.log(props.match)
 const userStore = useMyAuthStore()
 const { permissions, privilege } = storeToRefs(userStore)
 const { getTables } = useTable()

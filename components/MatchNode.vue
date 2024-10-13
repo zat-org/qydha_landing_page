@@ -131,6 +131,7 @@
           v-if="privilege?.toLowerCase()=='admin'||privilege?.toLowerCase()=='owner' || permissions.includes('') "
         >
           <UIcon 
+          
             name="weui:setting-filled"
             class="text-xl text-yellow-500 cursor-pointer"
             @click="onEdit"

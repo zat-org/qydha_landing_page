@@ -51,7 +51,9 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.API_BASE_URL,
       qydhaToken: `eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6Ijk4Y2IxMGI1LTQyYWYtNGRlOC1hNDUzLWM3NWVmNmMyYTE2ZiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJReWRoYSBCcmFja2V0cyIsIlRva2VuVHlwZSI6IlNlcnZpY2VBY2NvdW50VG9rZW4iLCJhdWQiOiJxeWRoYUFwaV9hdWRpZW5jZSIsImlzcyI6InF5ZGhhQXBpIiwiZXhwIjoxNzI4NzA0MDExLCJpYXQiOjE3Mjg2OTY4MTEsIm5iZiI6MTcyODY5NjgxMX0.BJPddC8Io0QbOpS13ysKzi2FRWQro1OtZ1Jq461KUbs`,
-      qydhaapiBase: "https://sam-baloot-admin.online/dev/"
+      // qydhaapiBase: "http://192.168.1.2:5101"
+     
+      qydhaapiBase: "https://sam-baloot-admin.online/"
     },
   },
 });
