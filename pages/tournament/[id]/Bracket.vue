@@ -19,7 +19,7 @@ definePageMeta({
   layout: "custom",
 });
 const tourStore  =useMyTournamentStore()
-await tourStore.IntializeConnection()
+// await tourStore.IntializeConnection()
 const route = useRoute();
 const tourid = route.params.id.toString()
 const groupApi = useGroup();
