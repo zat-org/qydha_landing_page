@@ -55,3 +55,5 @@ export interface ITournamentDetailed extends ITournament {
         avatarUrl: string
     },
 }
+
+

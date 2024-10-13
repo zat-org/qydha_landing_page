@@ -40,7 +40,7 @@ const userStore = useMyAuthStore()
     const tour_id = ref()
     const group_id = ref();
     const {
-      data: matches,
+      data ,
       pending,
       error,
       refresh,
@@ -52,51 +52,10 @@ const userStore = useMyAuthStore()
       () => $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`),
       { immediate: false }
     );
-    const matchesTree = computed((): Match[] | undefined => {
-      if (!matches.value || !matches.value.data) return undefined;
-      let heads: Match[] = [];
-      matches.value.data.forEach((m) => {
-        if (
-          m.level == 1 &&
-          (!m.matchQualifyUsTeamFrom ||
-            m.matchQualifyUsTeamFrom === "Winner") &&
-          (!m.matchQualifyThemTeamFrom ||
-            m.matchQualifyThemTeamFrom === "Winner")
-        ) {
-          populateChildren(m, matches.value!.data);
-          heads.push(m);
-        }
-      });
+ 
+  
 
-      return heads;
-    });
-    const loserMatches = computed((): Match[] | undefined => {
-      if (!matches.value || !matches.value.data) return undefined;
-      return matches.value.data.filter((m) => {
-        if (
-          m.matchQualifyUsTeamFrom === "Loser" &&
-          m.matchQualifyUsTeamId &&
-          m.matchQualifyThemTeamFrom === "Loser" &&
-          m.matchQualifyThemTeamId
-        ) {
-          return m;
-        }
-      });
-    });
-
-    const populateChildren = (match: Match | undefined, matches: Match[]) => {
-      if (!match) return undefined;
-      if (match.matchQualifyThemTeamId)
-        match.matchQualifyThemTeam = matches.find(
-          (m) => +m.id == match.matchQualifyThemTeamId
-        );
-      if (match.matchQualifyUsTeamId)
-        match.matchQualifyUsTeam = matches.find(
-          (m) => +m.id == match.matchQualifyUsTeamId
-        );
-      populateChildren(match.matchQualifyThemTeam, matches);
-      populateChildren(match.matchQualifyUsTeam, matches);
-    };
+  
 
     const fetchREQ = async (_tour_id: string, _group_id: number) => {
       group_id.value = _group_id;
@@ -104,9 +63,7 @@ const userStore = useMyAuthStore()
       await execute();
     };
     return {
-      matches,
-      matchesTree,
-      loserMatches,
+      data,
       pending,
       error,
       refresh,

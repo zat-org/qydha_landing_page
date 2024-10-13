@@ -5,8 +5,11 @@
       class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded"
       :class="{
         'bg-blue-200': data.match.state == 'Running' ||  data.match.state == 'Paused' ,
-        'bg-white': data.match.state == 'Created' || data.match.state == 'Ended',
-      }">
+        'bg-white': data.match.level != 1 && data.match.state == 'Created' || data.match.state == 'Ended',
+        'bg-gradient-to-b from-amber-200 to-yellow-400':data.match.level == 1 && data.match.matchQualifyThemTeamFrom=='Winner' &&   data.match.matchQualifyUsTeamFrom =='Winner' ,
+        'bg-gradient-to-b from-slate-300 to-slate-500':data.match.level == 1 &&  data.match.matchQualifyThemTeamFrom=='Loser' &&   data.match.matchQualifyUsTeamFrom =='Loser' ,
+    
+    }">
       <div
         :class="{
           'bg-green-300': data.match.winner == 'Us',
@@ -103,7 +106,7 @@
             name="material-symbols:done-all" />
         </div>
 
-        <div
+        <div v-if="data.match.roundName"
           :class="{
             'bg-emerald-400': data.match.level == 1,
             'bg-amber-400': data.match.level == 2,
@@ -112,17 +115,16 @@
           }"
           class="flex items-center rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
           <!-- <UIcon name="material-symbols:table-restaurant" class="text-xl" /> -->
-          <p 
+          <p  
           :class="{'text-black':data.match.level >4, 'text-white':data.match.level<=4}">
-            المستوي
-            {{ data.match.level }} 
+                       {{ data.match.roundName }} 
           </p>
         </div>
 
         <div
           v-if="data.match.qydhaGameId"
           class="h-full items-center flex justify-center">
-          <UIcon
+          <UIcon v-if="data.match.state !='Created'"
             name="material-symbols:info"
             class="text-xl text-green-400 cursor-pointer"
             @click="onClick" />

@@ -18,12 +18,12 @@ export interface Match {
   level: number;
   name: string;
   matchQualifyThemTeamId: null | number;
-  matchQualifyThemTeamNamee: null |string;
+  // matchQualifyThemTeamName: null |string;
   matchQualifyThemTeam: undefined | Match;
   matchQualifyThemTeamFrom: string | null;
 
   matchQualifyUsTeamId: null | number;
-  matchQualifyUsTeamName: null | string;
+  // matchQualifyUsTeamName: null | string;
   matchQualifyUsTeam: undefined | Match;
   matchQualifyUsTeamFrom: string | null;
 
@@ -36,7 +36,8 @@ export interface Match {
   tableId: string;
   usTeamId: number;
   usTeamName: string;
-
+  isMarked:boolean ;
+  roundName:string
   themTeamId: number;
   themTeamName: string;
 
