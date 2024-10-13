@@ -41,10 +41,6 @@ const selectedGroup = computed(() => {
       groupsREQ.data.value.data.groups[groupsREQ.data.value.data.groups.length - 1];
       });
 
-onMounted(async()=>{
-  const tour_store = await useMyTournamentStore()
-  await tour_store.IntializeConnection(selectedGroup.value?.id!)
-})
 
 const handleGroupSelection = (group_id: number) => {
   useRouter().push({ path: useRoute().path, query: { group: group_id } });

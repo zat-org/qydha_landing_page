@@ -26,6 +26,9 @@ const groupApi = useGroup();
 const { data, fetchREQ, status } = await groupApi.getGroupMatches();
 
 
+  const tour_store = await useMyTournamentStore()
+  await tour_store.IntializeConnection(selectedGroup.value?.id!)
+
 const tourStore = useMyTournamentStore()
 onMounted(async () => {
   await fetchREQ(tourt_id, props.group.id);
