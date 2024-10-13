@@ -34,6 +34,7 @@
     "jwt-decode": "^3.1.2",
     "pinia-plugin-persistedstate": "^4.1.1",
     "vue-tel-input": "^9.1.4",
-    "vue-tournament-bracket": "^3.0.0"
+    "vue-tournament-bracket": "^3.0.0",
+    "ws": "^8.18.0"
   }
 }
