@@ -25,15 +25,7 @@ const { layoutFromMatchesTree } = useLayout()
 const groupApi = useGroup();
 const { data, fetchREQ, status } = await groupApi.getGroupMatches();
 
-const matches = computed({
-  get() {
-    return data.value?.data!
-  },
-  set(new_matchees: Match[]) {
-    if (data.value)
-      data.value.data = new_matchees
-  }
-})
+
 const tourStore = useMyTournamentStore()
 onMounted(async () => {
   await fetchREQ(tourt_id, props.group.id);
