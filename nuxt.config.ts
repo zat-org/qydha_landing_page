@@ -49,11 +49,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-08-20",
   runtimeConfig: {
     public: {
-      apiBase: process.env.API_BASE_URL,
-      qydhaToken: `eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImFlOWQ2YTg3LWQ5ZDUtNDE4OC05Y2EzLWIyZTEzNGQyMWIxYiIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL25hbWUiOiJvbHltcGljcyBicmFja2V0IiwiVG9rZW5UeXBlIjoiU2VydmljZUFjY291bnRUb2tlbiIsImF1ZCI6InF5ZGhhQXBpX2F1ZGllbmNlIiwiaXNzIjoicXlkaGFBcGkiLCJleHAiOjE3Mjg4MzA3NDYsImlhdCI6MTcyODgyMzU0NiwibmJmIjoxNzI4ODIzNTQ2fQ.5sJt0kLXYskA6vIb4mORFKP4yVVTTP_47zPs9DjeUec`,
-      // qydhaapiBase: "http://192.168.1.2:5101"
+      qydhaapiBase: process.env.QydhaApiBase,
+      qydhaToken:process.env.QydhaToken,
      
-      qydhaapiBase: "https://sam-baloot-admin.online/qydha"
     },
   },
 });
