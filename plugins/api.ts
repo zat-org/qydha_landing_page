@@ -36,7 +36,7 @@ export default defineNuxtPlugin(() => {
             console.log(response)
             authStore.user =response.data
             console.log('Token refreshed successfully.');
-            
+
           } catch (error) {
             console.error('Failed to refresh token:', error);
             authStore.user=null
@@ -44,7 +44,7 @@ export default defineNuxtPlugin(() => {
           }
         } 
 
-        options.headers= {...options.headers,Authorization:`Bearer ${token}`}
+        options.headers= {...options.headers,Authorization:`Bearer ${ authStore.user?.jwtToken}`}
       
     }else{
       options.headers= {...options.headers,Authorization:`Bearer ${config.public.qydhaToken}`}
