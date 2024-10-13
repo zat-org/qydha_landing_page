@@ -4,7 +4,7 @@
     <div
       class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded"
       :class="{
-        'bg-blue-200': data.match.state == 'Running',
+        'bg-blue-200': data.match.state == 'Running' ||  data.match.state == 'Paused' ,
         'bg-white': data.match.state == 'Created' || data.match.state == 'Ended',
       }">
       <div
@@ -96,8 +96,8 @@
 
         <div
           class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon v-if="data.match.state == 'Created'" name="mingcute:sleep-fill" />
-          <UIcon v-if="data.match.state == 'Running'" name="eos-icons:loading" />
+          <UIcon v-if="data.match.state == 'Created' || data.match.state == 'Paused' " name="mingcute:sleep-fill" />
+          <UIcon v-if="data.match.state == 'Running' " name="eos-icons:loading" />
           <UIcon
             v-if="data.match.state == 'Ended'"
             name="material-symbols:done-all" />
