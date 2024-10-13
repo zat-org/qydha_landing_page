@@ -24,7 +24,9 @@ const tourid = route.params.id.toString()
 const groupApi = useGroup();
 const groupsREQ = await groupApi.getGroups();
 await groupsREQ.fetchREQ(tourid);
-if (groupsREQ.status.value =="error")navigateTo("/tournament")
+if (groupsREQ.status.value =="error")  {
+console.log(groupsREQ.error)
+}
 
 
 const selectedGroup = computed(() => {
