@@ -128,9 +128,9 @@ const schema = object({
   endAt: string().required("برجاء ادخال تاريخ الانتهاء"),
   ownerId: string().required("برجاء ادخال مالك البطولة")
 })
-const userApi = useUsers()
 const tournamentApi =useTournament()
 const createREQ = await tournamentApi.createTournament()
+const userApi = useUsers()
 const allUsersREQ = await userApi.getAllUsers()
 await allUsersREQ.fetchREQ("")
 const users = computed(() => {

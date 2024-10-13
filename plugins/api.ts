@@ -17,7 +17,6 @@ export default defineNuxtPlugin(() => {
       let token = authStore.user?.jwtToken
       if (token){
         const decodedToken = jwtDecode<DecodedToken>(token);
-
         // Check if the token is expired.
         const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds.
         if (decodedToken.exp < currentTime) {
@@ -36,11 +35,10 @@ export default defineNuxtPlugin(() => {
 
             console.log(response)
             authStore.user =response.data
-
             console.log('Token refreshed successfully.');
+            
           } catch (error) {
             console.error('Failed to refresh token:', error);
-            
             authStore.user=null
             navigateTo("/login");
           }

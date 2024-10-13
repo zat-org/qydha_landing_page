@@ -1,22 +1,33 @@
 <template>
-  <UModal class="z-[10]">
+  <UModal prevent-close>
     <UCard :ui="{}">
       <template #header>
 
       </template>
-     
-      <UTabs :items="items" @change="onChange">
-        <template #logo>
-          
-        </template>
-        <template #Qydha_Owner>
-          <UForm :state="QState" :schema="QSchema">
 
+      <UTabs :items="items" @change="onChange">
+        <!-- <template #logo>
+          
+        </template> -->
+        <template #Qydha_Owner>
+          <UForm :state="QState" :schema="QSchema" ref="qForm" @submit="onSubmit">
+            <UFormGroup name="owner_id" label="المالك">
+              <UInputMenu :options="users" :search="search" :loading="allUsersREQ.status.value == 'pending'"
+                v-model="QState.owner_id" option-attribute="username" value-attribute="id" />
+            </UFormGroup>
+
+            <UFormGroup name="showInQydha" label="قيدها">
+              <UToggle v-model="QState.showInQydha" size="xl" />
+            </UFormGroup>
           </UForm>
         </template>
       </UTabs>
       <template #footer>
+        <div class="flex justify-between items-center">
+          <UButton label="اغلاق" color="red" @click="modal.close" />
+          <UButton label="حفظ" colo="green"  @click="qForm?.submit()"/>
 
+        </div>
       </template>
     </UCard>
   </UModal>
@@ -28,8 +39,9 @@ import type { ITournamentDetailed } from '~/models/tournament';
 import { Privilege } from '~/models/user';
 import { useMyAuthStore } from '~/store/Auth';
 const props = defineProps<{ tour: ITournamentDetailed }>()
-
-const select  =ref(0)
+const modal = useModal()
+const select = ref(0)
+const qForm =ref<HTMLFormElement>()
 const userStore = useMyAuthStore()
 const { permissions, privilege } = storeToRefs(userStore)
 const items = computed(() => {
@@ -42,14 +54,38 @@ const items = computed(() => {
   return result
 })
 const QState = reactive<{ owner_id: string, showInQydha: boolean }>({ owner_id: props.tour.owner.id, showInQydha: props.tour.showInQydha })
-const QSchema = object({owner_id: string().required(), showInQydha: boolean().required()})
+const QSchema = object({ owner_id: string().required(), showInQydha: boolean().required() })
 
 const LState = reactive<{ image: string | null }>({ image: props.tour.logoUrl })
 const LSchema = object({ image: string().nullable() })
 
-function onChange (index:number) {
-select.value=index
+function onChange(index: number) {
+  select.value = index
 }
+const route =useRoute()
+const tour_id = route.params.id.toString()
+const userApi = useUsers()
+const allUsersREQ = await userApi.getAllUsers()
+await allUsersREQ.fetchREQ("")
+const tourApi = useTournament()
+const qydhaToggle = await tourApi.updatTourQydhaAndOwner()
+const search = async (q: string) => {
+  await allUsersREQ.fetchREQ(q)
+  return users.value!
+}
+const users = computed(() => {
+  return allUsersREQ.data.value?.data.items
+})
+
+const onSubmit =async()=>{
+  await qydhaToggle.fetchREQ(QState.showInQydha, QState.owner_id, +tour_id)
+  if (qydhaToggle.status.value == "success") {
+    refreshNuxtData('getTourById')
+    modal.close()
+  }
+}
+
+
 
 
 </script>
