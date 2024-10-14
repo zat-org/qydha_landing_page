@@ -139,64 +139,65 @@
 
         <template #news="{ item }">
           <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px] ">
-            <div class="flex  gap-2 items-center    " >
-              <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " 
-              :class="{'bg-green-400/20 text-green-500 border-green-300 ':game?.game.winner=='Us',
-                'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Them'
+            <div class="flex  gap-2 items-center    ">
+              <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " :class="{
+                'bg-green-400/20 text-green-500 border-green-300 ': game?.state.winner == 'Us',
+                'bg-red-400/20 text-red-500 border-red-300 ': game?.state.winner == 'Them'
               }">
                 <p class="text-xs  text-center">{{ m.usTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.usTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.game.usGameScore }}   صكة</p>
+                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.state.usGameScore
+                  }} صكة</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
                 <UIcon name="fxemoji:squaredvs" class="text-lg md:text-2xl" />
-              
+
               </div>
 
-              <div class="flex flex-col gap-1 justify-center items-center w-[200px] p-2  rounded-lg border "
-              :class="{'bg-green-400/20 text-green-500 border-green-300 ':game?.game.winner=='Them',
-                'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Us'
-              }"
-              >
+              <div class="flex flex-col gap-1 justify-center items-center w-[200px] p-2  rounded-lg border " :class="{
+                'bg-green-400/20 text-green-500 border-green-300 ': game?.state.winner == 'Them',
+                'bg-red-400/20 text-red-500 border-red-300 ': game?.state.winner == 'Us'
+              }">
                 <p class="text-xs  text-center">{{ m.themTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.themTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> 
-                  {{ game?.game.themGameScore }} 
+                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg">
+                  {{ game?.state.themGameScore }}
                 </p>
               </div>
             </div>
 
-            <!-- <UBadge size="lg" v-if="game?.game.winner">
+            <!-- <UBadge size="lg" v-if="game?.state.winner">
               الفائز :{{
-                game.game.winner != null &&
-                  (game.game.winner as string).toLowerCase() == "us"
+                game.state.winner != null &&
+                  (game.state.winner as string).toLowerCase() == "us"
                   ? m.usTeamName
                   : m.themTeamName
               }}
             </UBadge> -->
 
-            <!-- <UAccordion :items="game?.game.sakkas.">
+            <!-- <UAccordion :items="game?.state.sakkas.">
               <template #default="{ item, index, open }">
                 {{ item }}
               </template>
-            </UAccordion> -->
-             <div v-for="(sakka,index) in game?.game.sakkas.reverse()"  class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
+</UAccordion> -->
+            <div v-for="(sakka, index) in game?.state.sakkas.reverse()"
+              class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
 
               <div class="w-full flex justify-center items-center  gap-[80px] ">
-                
-                <UBadge :color="sakka.winner && sakka.winner =='Us'?'green':'red'">{{ sakka.usSakkaScore }}</UBadge>
-                  <p class="" > الصكة  {{game?.game.sakkas.length! - index }} </p>
-                <UBadge :color="sakka.winner && sakka.winner =='Them'?'green':'red'">{{ sakka.themSakkaScore }}</UBadge>
+
+                <UBadge :color="sakka.winner && sakka.winner == 'Us' ? 'green' : 'red'">{{ sakka.usSakkaScore }}</UBadge>
+                <p class=""> الصكة {{ game?.state.sakkas.length! - index }} </p>
+                <UBadge :color="sakka.winner && sakka.winner == 'Them' ? 'green' : 'red'">{{ sakka.themSakkaScore }}</UBadge>
               </div>
               <UDivider />
-             <div class="flex flex-col">
-               <div v-for="mos in sakka.moshtaras" >
-                 <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-[230px] items-center">
-                   <p>{{ mos.usAbnat }}</p>
-                   <p>{{ mos.themAbnat }}</p>
-                 </div>
-               </div>
-             </div>
+              <div class="flex flex-col">
+                <div v-for="mos in sakka.moshtaras">
+                  <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-[230px] items-center">
+                    <p>{{ mos.usAbnat }}</p>
+                    <p>{{ mos.themAbnat }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </template>
@@ -212,24 +213,24 @@
 <script lang="ts" setup>
 import type { Match } from "~/models/group";
 import type { IMatchData, IMathStat } from "~/models/MatchStat";
-import { useMyTournamentStore } from "~/store/tournament";
+// import { useMyTournamentStore } from "~/store/tournament";
 
 const props = defineProps<{ m: Match }>();
 const modal = useModal();
-const gameStore = useMyTournamentStore()
-const game = ref<{id:string ,game:IMatchData, statistics:IMathStat}>();
+// const gameStore = useMyTournamentStore()
+const game = ref<{ state: IMatchData, statistics: IMathStat }>();
 
-const start = async () => {
-  const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
-  if (selectedGame) {
-  //   game.value = selectedGame;
-  } else {
-    console.log("before fetch ")
-    await gameStore.fetchGame(props.m.qydhaGameId);
-    game.value = gameStore.games.find(g => g.id === props.m.qydhaGameId);
-  }
-}
-await start()
+
+
+const gameApi = useMatch()
+const matchData = await gameApi.getMatchData()
+await matchData.fetchREQ(props.m.qydhaGameId)
+if (matchData.status.value == "success" && matchData.data.value)
+  game.value = matchData.data.value.data
+// games.value.push({ id: matchData.data.value?.data.state.id, game: matchData.data.value?.data.state, statistics: matchData.data.value?.data.statistics })
+// console.log(games.value)
+
+
 // const game =computed(()=>{
 //   const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
 //   return selectedGame
