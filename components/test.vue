@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div dir="ltr">
         <Bracket :flat-tree="hh_rouunds">
             <template #player="{ player }">
@@ -78,4 +78,4 @@ const hh_rouunds = computed(() => {
 
 <style scoped>
 
-</style>
+</style> -->

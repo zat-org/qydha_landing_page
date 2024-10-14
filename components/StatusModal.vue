@@ -232,9 +232,9 @@ const start = async () => {
 }
 await start()
 
-watch(gameStore.games, async () => {
+watch(gameStore.games,  (new_value,old_value) => {
   console.log("start watch")
-  const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
+  const selectedGame = new_value.find(g => g.id === props.m.qydhaGameId);
   if (selectedGame) {
     game.value = selectedGame;
   } else {
