@@ -12,13 +12,13 @@
             <thead>
               <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.usTeamName }}
+                  {{ game?.state.usName }}
                 </th>
                 <th style="width: 20%">
                   <UIcon name="fxemoji:squaredvs" class="text-2xl" />
                 </th>
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.themTeamName }}
+                  {{game?.state.themName}}
                 </th>
               </tr>
             </thead>
@@ -144,8 +144,8 @@
                 'bg-green-400/20 text-green-500 border-green-300 ': game?.state.winner == 'Us',
                 'bg-red-400/20 text-red-500 border-red-300 ': game?.state.winner == 'Them'
               }">
-                <p class="text-xs  text-center">{{ m.usTeamName.split("|")[0] }}</p>
-                <p class="text-xs  text-center">{{ m.usTeamName.split("|")[1] }}</p>
+                <p class="text-xs  text-center">{{ game?.state.usName.split("|")[0] }}</p>
+                <p class="text-xs  text-center">{{ game?.state.usName.split("|")[1] }}</p>
                 <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.state.usGameScore
                   }} صكة</p>
               </div>
@@ -158,8 +158,8 @@
                 'bg-green-400/20 text-green-500 border-green-300 ': game?.state.winner == 'Them',
                 'bg-red-400/20 text-red-500 border-red-300 ': game?.state.winner == 'Us'
               }">
-                <p class="text-xs  text-center">{{ m.themTeamName.split("|")[0] }}</p>
-                <p class="text-xs  text-center">{{ m.themTeamName.split("|")[1] }}</p>
+                <p class="text-xs  text-center">{{ game?.state.themName.split("|")[0] }}</p>
+                <p class="text-xs  text-center">{{ game?.state.themName.split("|")[1] }}</p>
                 <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg">
                   {{ game?.state.themGameScore }}
                 </p>
@@ -202,7 +202,7 @@ import type { Match } from "~/models/group";
 import type { IMatchData, IMathStat } from "~/models/MatchStat";
 // import { useMyTournamentStore } from "~/store/tournament";
 
-const props = defineProps<{ m: Match }>();
+const props = defineProps<{ m: string }>();
 const modal = useModal();
 // const gameStore = useMyTournamentStore()
 const game = ref<{ state: IMatchData, statistics: IMathStat }>();
@@ -211,7 +211,7 @@ const game = ref<{ state: IMatchData, statistics: IMathStat }>();
 
 const gameApi = useMatch()
 const matchData = await gameApi.getMatchData()
-await matchData.fetchREQ(props.m.qydhaGameId)
+await matchData.fetchREQ(props.m)
 if (matchData.status.value == "success" && matchData.data.value)
   game.value = matchData.data.value.data
 

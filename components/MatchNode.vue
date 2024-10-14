@@ -146,7 +146,7 @@ const props = defineProps<{ data: { match: Match } }>();
 const useStore = useMyAuthStore()
 const { privilege, permissions } = storeToRefs(useStore)
 const modal = useModal();
-const match = props.data.match
+const match = props.data.match.qydhaGameId
 
 
 const onclick = () => {
