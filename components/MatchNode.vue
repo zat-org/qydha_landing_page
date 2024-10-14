@@ -4,12 +4,13 @@
     <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded" :class="{
       'bg-blue-200': data.match.state == 'Running' || data.match.state == 'Paused',
       'bg-white': data.match.level != 1 && data.match.state == 'Created' || data.match.state == 'Ended',
-      'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.level == 1 && data.match.matchQualifyThemTeamFrom == 'Winner' && data.match.matchQualifyUsTeamFrom == 'Winner',
-      'bg-gradient-to-r from-[#536976] to-[#292E49]': data.match.level == 1 && data.match.matchQualifyThemTeamFrom == 'Loser' && data.match.matchQualifyUsTeamFrom == 'Loser',
+      'border-2 border-[#FFD200] ': data.match.level == 1 && data.match.matchQualifyThemTeamFrom == 'Winner' && data.match.matchQualifyUsTeamFrom == 'Winner',
+      'border-2 border-[#536976] ': data.match.level == 1 && data.match.matchQualifyThemTeamFrom == 'Loser' && data.match.matchQualifyUsTeamFrom == 'Loser',
 
     }">
       <div :class="{
-        'bg-green-300': data.match.winner == 'Us',
+        'bg-green-300': data.match.winner == 'Us' && data.match.level!=1 ,
+        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner == 'Us' && data.match.level ==1,
         'bg-red-300':
           data.match.state == 'Ended' && (data.match.winner != 'Us' || !data.match.winner),
       }"
@@ -44,9 +45,13 @@
       </div>
 
       <div :class="{
-        'bg-green-300': data.match.winner == 'Them',
+        'bg-green-300': data.match.winner == 'Them' && data.match.level!=1,
+        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner == 'Them' && data.match.level ==1,
+
         'bg-red-300':
           data.match.state == 'Ended' && (data.match.winner != 'Them' || !data.match.winner),
+        'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner == 'Us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
+          
       }"
         class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-[22px] w-full">
         <div
