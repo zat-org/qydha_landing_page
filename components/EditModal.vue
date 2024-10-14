@@ -22,17 +22,23 @@
               </UFormGroup>
             </template>
           </VDatePicker>
+
+          <UFormGroup name="roundName" label="اسم الجولة">
+            <UInput v-model="state.roundName" />
+          </UFormGroup>
+
           <UButton label="حفظ" type="submit" class="w-1/2 mx-auto" block />
         </UForm>
       </div>
       <template #footer>
-        <div v-if="match.themTeamId || match.usTeamId " >
+        <div v-if="match.themTeamId && match.usTeamId">
 
           <UDropdown :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
             v-if="match.state.toLowerCase() == 'created'" :ui="{ width: 'w-[300px]' }">
             <UButton color="red" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
           </UDropdown>
-          <UButton  v-else-if="privilege==Privilege.Admin||privilege==Privilege.Owner"  color="red" label="اعادة الضبط" @click="onReset" />
+          <UButton v-else-if="privilege == Privilege.Admin || privilege == Privilege.Owner" color="red"
+            label="اعادة الضبط" @click="onReset" />
         </div>
 
       </template>
@@ -82,15 +88,18 @@ const Refres = computed(() => {
 const schema = object({
   refereeId: string().nullable(),
   tableId: string().nullable(),
-  startAt: string().nullable()
+  startAt: string().nullable(),
+  roundName: string(),
 })
-const state = reactive<IMatchUpdate>({ refereeId: props.match.referee ? props.match.referee.id : undefined, tableId: props.match.tableId ?? undefined, startAt: new Date(props.match.startAt) })
+const state = reactive<IMatchUpdate>({
+  refereeId: props.match.referee ? props.match.referee.id : undefined, tableId: props.match.tableId ?? undefined, startAt: new Date(props.match.startAt), roundName: props.match.roundName, isMarked: props.match.isMarked
+})
 
 
 const updateREQ = await updateMatch()
 const onSubmit = async () => {
   state.startAt = new Date(state.startAt).toISOString()
-  await updateREQ.fetchREQ(tour_id, props.match.id, state)
+  await updateREQ.fetchREQ(tour_id, props.match.id.toString(), state)
   if (updateREQ.status.value == "success") {
     toast.add({ title: "update done" })
     modal.close()
@@ -101,25 +110,25 @@ const onSubmit = async () => {
 const MatchStateREQ = await updateMatchState()
 const withdrawUS = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "Us")
-  if (MatchStateREQ.status.value=="success"){
+  if (MatchStateREQ.status.value == "success") {
     modal.close()
   }
 }
 const withdrawThem = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "Them")
-  if (MatchStateREQ.status.value=="success"){
+  if (MatchStateREQ.status.value == "success") {
     modal.close()
   }
 }
 const withdrawBoth = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "All")
-  if (MatchStateREQ.status.value=="success"){
+  if (MatchStateREQ.status.value == "success") {
     modal.close()
   }
 }
 const onReset = async () => {
   await MatchStateREQ.fetchRestREQ(props.match.qydhaGameId)
-  if (MatchStateREQ.status.value=="success"){
+  if (MatchStateREQ.status.value == "success") {
     modal.close()
   }
 }

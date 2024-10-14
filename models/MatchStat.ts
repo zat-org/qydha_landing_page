@@ -1,5 +1,5 @@
 export interface IMathStat {
-  statistics: {
+
     usStatistics: {
       //   playedSakkas: number;
       //   winnedSakkas: number;
@@ -36,7 +36,7 @@ export interface IMathStat {
       sunKaboot: number;
       hokmKaboot: number;
     };
-  };
+ 
 }
 
 export interface IMatchData {

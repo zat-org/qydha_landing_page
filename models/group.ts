@@ -14,16 +14,16 @@ export interface Team {
 
 export interface Match {
   groupId: number;
-  id: string;
+  id: number;
   level: number;
   name: string;
   matchQualifyThemTeamId: null | number;
-  // matchQualifyThemTeamName: null |string;
+  matchQualifyThemTeamName: null |string;
   matchQualifyThemTeam: undefined | Match;
   matchQualifyThemTeamFrom: string | null;
 
   matchQualifyUsTeamId: null | number;
-  // matchQualifyUsTeamName: null | string;
+  matchQualifyUsTeamName: null | string;
   matchQualifyUsTeam: undefined | Match;
   matchQualifyUsTeamFrom: string | null;
 

@@ -9,38 +9,40 @@ interface GraphData {
 }
 
 export const useGroup = () => {
-const userStore = useMyAuthStore()
+  const userStore = useMyAuthStore()
   const { $api } = useNuxtApp();
   const getGroups = async () => {
     const tourid = ref<string>()
-    const { data, pending, error, refresh, status, execute } = await 
-    useAsyncData<{
-       message: string,
-        data: { 
+    const { data, pending, error, refresh, status, execute } = await
+      useAsyncData<{
+        message: string,
+        data: {
           groups: Group[],
-           requesterPrivilege: {
-            permissions:string[]|null,
-            privilege:Privilege
-           } } }>(
-      "getGroups",
-      () => $api(`/tournaments/${tourid.value}/groups`), { immediate: false }
-    );
+          requesterPrivilege: {
+            permissions: string[] | null,
+            privilege: Privilege
+          }
+        }
+      }>(
+        "getGroups",
+        () => $api(`/tournaments/${tourid.value}/groups`), { immediate: false }
+      );
     const fetchREQ = async (_tour_id: string) => {
       tourid.value = _tour_id
       await execute()
-      if (status.value=="success" && data.value && data.value.data){
-        userStore.permissions  =data.value?.data.requesterPrivilege.permissions  ?? []
-        userStore.privilege  =data.value?.data.requesterPrivilege.privilege
+      if (status.value == "success" && data.value && data.value.data) {
+        userStore.permissions = data.value?.data.requesterPrivilege.permissions ?? []
+        userStore.privilege = data.value?.data.requesterPrivilege.privilege
       }
     }
     return { data, pending, error, refresh, status, fetchREQ };
   };
-  
+
   const getGroupMatches = async () => {
     const tour_id = ref()
     const group_id = ref();
     const {
-      data ,
+      data,
       pending,
       error,
       refresh,
@@ -52,10 +54,6 @@ const userStore = useMyAuthStore()
       () => $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`),
       { immediate: false }
     );
- 
-  
-
-  
 
     const fetchREQ = async (_tour_id: string, _group_id: number) => {
       group_id.value = _group_id;

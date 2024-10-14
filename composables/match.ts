@@ -7,9 +7,9 @@ export const useMatch = () => {
   const getMatchData = async () => {
     const game_id = ref("");
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{ data: IMatchData, message: string }>(
+      await useAsyncData<{ data: {state:IMatchData,statistics:IMathStat}, message: string }>(
         "getMatchData",
-        () => $qaydhaapi(`baloot-games/${game_id.value}`),
+        () => $qaydhaapi(`baloot-games/${game_id.value}/data`),
         {
           immediate: false,
         }
@@ -21,6 +21,7 @@ export const useMatch = () => {
     return { data, pending, error, refresh, status, fetchREQ };
   };
 
+  
 
   const getMatchStatstics = async () => {
     const game_id = ref("");
@@ -53,7 +54,7 @@ export const useMatch = () => {
       body.value = _data
       await execute()
       if (status.value == "success") {
-        refreshNuxtData("getGroupMatch")
+      
       }
     }
     return { data, pending, error, refresh, fetchREQ, status }
@@ -80,7 +81,7 @@ export const useMatch = () => {
       body[0].eventName="ResetGameEvent"
       await execute();
       if(status.value=="success"){
-        refreshNuxtData("getGroupMatch")
+     
       }
 
     }
@@ -90,7 +91,7 @@ export const useMatch = () => {
       body[0].eventName="WithdrawGameEvent"
       await execute();
       if(status.value=="success"){
-        refreshNuxtData("getGroupMatch")
+   
       }
     }
     return { data, pending, error, refresh, status, fetchRestREQ, fetchWithdrawREQ }

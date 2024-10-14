@@ -1,5 +1,6 @@
 <template>
   <UModal class="w-[500px] ">
+
     <div class="flex flex-col">
 
       <div class="flex justify-end p-1">
@@ -11,45 +12,21 @@
             <thead>
               <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
                 <th class="text-gray-900 dark:text-white text-sm">
-                  {{ m.usTeam?.name }}
+                  {{ m.usTeamName }}
                 </th>
                 <th style="width: 20%">
                   <UIcon name="fxemoji:squaredvs" class="text-2xl" />
                 </th>
                 <th class="text-gray-900 dark:text-white text-sm">
-                  {{ m.themTeam.name }}
+                  {{ m.themTeamName }}
                 </th>
               </tr>
             </thead>
             <tbody>
-              <!-- <tr
-              class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-              <td
-                class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                {{ statusUs?.ekak }}
-              </td>
-              <td class="px-0">عدد الأكك</td>
-              <td
-                class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                {{ statusThem?.ekak }}
-              </td>
-            </tr> -->
-              <!-- <tr
-              class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-              <td
-                class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                {{ statusUs?.aklat }}
-              </td>
-              <td class="px-0">الأكلات</td>
-              <td
-                class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                {{ statusThem?.aklat }}
-              </td>
-            </tr> -->
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.moshtaraSunCount }}
+                  {{ statusUs.moshtaraSunCount }}
                 </td>
                 <td class="px-0">مشترى صن</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
@@ -164,42 +141,35 @@
           <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px]">
             <div class="flex justify-between gap-2 items-center font-bold">
               <div class="flex flex-col gap-1 justify-center items-center">
-                <p class="text-xs md:text-lg text-center">{{ m.usTeam?.name.split("|")[0] }}</p>
-                <p class="text-xs md:text-lg text-center">{{ m.usTeam?.name.split("|")[1] }}</p>
-                <p>{{ game.usGameScore }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.usTeamName.split("|")[0] }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.usTeamName.split("|")[1] }}</p>
+                <p>{{ game?.game.usGameScore }}</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
                 <UIcon name="fxemoji:squaredvs" class="text-lg md:text-2xl" />
                 <p>:</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
-                <p class="text-xs md:text-lg text-center">{{ m.themTeam?.name.split("|")[0] }}</p>
-                <p class="text-xs md:text-lg text-center">{{ m.themTeam?.name.split("|")[1] }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.themTeamName.split("|")[0] }}</p>
+                <p class="text-xs md:text-lg text-center">{{ m.themTeamName.split("|")[1] }}</p>
                 <p>
-                  {{ game.themGameScore }}
+                  {{ game?.game.themGameScore }}
                 </p>
               </div>
             </div>
 
-            <UBadge size="lg" v-if="game.winner">
+            <UBadge size="lg" v-if="game?.game.winner">
               الفائز :{{
-              game.winner != null &&
-              (game.winner as string).toLowerCase() == "us"
-              ? m.usTeam.name
-              : m.themTeam.name
+                game.game.winner != null &&
+                  (game.game.winner as string).toLowerCase() == "us"
+                  ? m.usTeamName
+                  : m.themTeamName
               }}
             </UBadge>
-            <!-- <div class="flex justify-center gap-10">
-            <p class="text-xs">
-              {{ new Date(game.startedAt).toLocaleString() }}
-            </p>
-            <p class="text-xs">{{ new Date(game.endedAt).toLocaleString() }}</p>
-          </div> -->
-            <!-- <div class="w-full flex justify-center gap-5 items-center">
-        الاسكور
-          </div> -->
-            <div v-for="sakka in game.sakkas" class="w-full">
-              <!-- <p> sakka winner :{{ sakka.winner&& sakka.winner.toLowerCase() == 'us'? m.usTeam.name : m.themTeam.name }}</p> -->
+
+
+            <div v-for="sakka in game?.game.sakkas" class="w-full">
+
 
               <div v-for="mos in sakka.moshtaras">
                 <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-20 items-center">
@@ -218,46 +188,58 @@
       </UTabs>
 
     </div>
-    <UTooltip :text="game.state">
+    <!-- <UTooltip :text="game.state">
       <UButton color="gray" label="" />
-    </UTooltip>
+    </UTooltip> -->
   </UModal>
 </template>
 
 <script lang="ts" setup>
 import type { Match } from "~/models/group";
+import { useMyTournamentStore } from "~/store/tournament";
 
 const props = defineProps<{ m: Match }>();
-const emit = defineEmits(["success"]);
-const matchaapi = useMatch();
-const DataREQ = await matchaapi.getMatchData();
 const modal = useModal();
-const statusREQ = await matchaapi.getMatchStatstics();
-if (props.m.qydhaGameId) {
-  await DataREQ.fetchREQ(props.m.qydhaGameId);
-  if (DataREQ.status.value == "error") {
-    modal.close();
+const gameStore = useMyTournamentStore()
+const game = ref();
+
+const start = async () => {
+  const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
+  if (selectedGame) {
+    game.value = selectedGame;
+  } else {
+    console.log("before fetch ")
+    await gameStore.fetchGame(props.m.qydhaGameId);
+    game.value = gameStore.games.find(g => g.id === props.m.qydhaGameId);
+
   }
-  await statusREQ.fetchREQ(props.m.qydhaGameId);
-  if (statusREQ.status.value == "error") {
-    modal.close();
-  }
-} else {
-  modal.close();
 }
-const statusUs = computed(() => {
-  return statusREQ.data.value?.data.statistics.usStatistics;
-});
-const statusThem = computed(() => {
-  return statusREQ.data.value?.data.statistics.themStatistics;
-});
-const game = computed(() => {
-  return DataREQ.data.value?.data!;
+await start()
+
+watch(gameStore.games, async () => {
+  console.log("start watch")
+  const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
+  if (selectedGame) {
+    game.value = selectedGame;
+  } else {
+    console.log("before fetch ")
+
+  }
 });
 
-function onSuccess() {
-  emit("success");
-}
+
+const statusUs = computed(() => {
+  if (game.value)
+    return game.value!.statistics.usStatistics;
+});
+const statusThem = computed(() => {
+  if (game.value)
+    return game.value!.statistics.themStatistics;
+});
+
+
+
+
 
 const items = [
   {
