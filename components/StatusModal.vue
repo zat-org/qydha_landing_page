@@ -12,13 +12,13 @@
             <thead>
               <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.usTeamName.split('-')[1] }}
+                  {{ m.usTeamName }}
                 </th>
                 <th style="width: 20%">
                   <UIcon name="fxemoji:squaredvs" class="text-2xl" />
                 </th>
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.themTeamName.split('-')[1] }}
+                  {{ m.themTeamName }}
                 </th>
               </tr>
             </thead>
