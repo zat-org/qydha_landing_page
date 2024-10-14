@@ -217,32 +217,23 @@ import { useMyTournamentStore } from "~/store/tournament";
 const props = defineProps<{ m: Match }>();
 const modal = useModal();
 const gameStore = useMyTournamentStore()
-const game = ref<{id:string ,game:IMatchData, statistics:IMathStat}>();
+// const game = ref<{id:string ,game:IMatchData, statistics:IMathStat}>();
 
 const start = async () => {
   const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
   if (selectedGame) {
-    game.value = selectedGame;
+  //   game.value = selectedGame;
   } else {
     console.log("before fetch ")
     await gameStore.fetchGame(props.m.qydhaGameId);
-    game.value = gameStore.games.find(g => g.id === props.m.qydhaGameId);
-
+    // game.value = gameStore.games.find(g => g.id === props.m.qydhaGameId);
   }
 }
 await start()
-
-watch(gameStore.games,  (new_value,old_value) => {
-  console.log("start watch")
-  const selectedGame = new_value.find(g => g.id === props.m.qydhaGameId);
-  if (selectedGame) {
-    game.value = selectedGame;
-  } else {
-    console.log("before fetch ")
-
-  }
-});
-
+const game =computed(()=>{
+  const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
+  return selectedGame
+})
 
 const statusUs = computed(() => {
   if (game.value)
