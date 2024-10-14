@@ -7,7 +7,7 @@
         <UButton color="red" icon="material-symbols:close" variant="soft" @click="modal.close()" />
       </div>
       <UTabs :items="items" class="w-full p-5">
-        <template #status="{ item }">
+        <template #status>
           <table class="w-full rounded-xl text-center table-fixed table-pin-rows my-3 shadow-lg">
             <thead>
               <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
@@ -137,7 +137,7 @@
           </table>
         </template>
 
-        <template #news="{ item }">
+        <template #news>
           <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px] ">
             <div class="flex  gap-2 items-center    ">
               <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " :class="{
@@ -166,20 +166,7 @@
               </div>
             </div>
 
-            <!-- <UBadge size="lg" v-if="game?.state.winner">
-              الفائز :{{
-                game.state.winner != null &&
-                  (game.state.winner as string).toLowerCase() == "us"
-                  ? m.usTeamName
-                  : m.themTeamName
-              }}
-            </UBadge> -->
-
-            <!-- <UAccordion :items="game?.state.sakkas.">
-              <template #default="{ item, index, open }">
-                {{ item }}
-              </template>
-</UAccordion> -->
+            
             <div v-for="(sakka, index) in game?.state.sakkas.reverse()"
               class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
 
@@ -227,6 +214,7 @@ const matchData = await gameApi.getMatchData()
 await matchData.fetchREQ(props.m.qydhaGameId)
 if (matchData.status.value == "success" && matchData.data.value)
   game.value = matchData.data.value.data
+
 // games.value.push({ id: matchData.data.value?.data.state.id, game: matchData.data.value?.data.state, statistics: matchData.data.value?.data.statistics })
 // console.log(games.value)
 

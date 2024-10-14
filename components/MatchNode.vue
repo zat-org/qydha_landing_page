@@ -146,14 +146,14 @@ const props = defineProps<{ data: { match: Match } }>();
 const useStore = useMyAuthStore()
 const { privilege, permissions } = storeToRefs(useStore)
 const modal = useModal();
-
+const match = props.data.match
 
 
 const onclick = () => {
   console.log("clicked")
   modal.open(StatusModal,
     {
-      m: props.data.match
+      m: match
     });
 
 };
