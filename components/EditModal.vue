@@ -9,19 +9,16 @@
         <UForm :state="state" :scheam="schema" @submit="onSubmit" class="flex flex-col gap-5">
           <UFormGroup label="الحكم" name="refereeId" :ui="{ error: 'm-0' }">
             <UInputMenu v-model="state.refereeId" :options="Refres" value-attribute="id" option-attribute="username"
-              :search-attributes="['username']" />
+              :search-attributes="['username']" :popper="{placement:'left-end'}" />
           </UFormGroup>
           <UFormGroup label="الطاولة" name="tableId">
             <UInputMenu v-model="state.tableId" :options="Tables" value-attribute="id" option-attribute="name"
-              :search-attributes="['name']" />
+              :search-attributes="['name']"  :popper="{placement:'left-end'}"/>
           </UFormGroup>
-          <VDatePicker v-model="state.startAt" mode="dateTime" :popover="{ visibility: 'click' }">
-            <template #default="{ inputValue, inputEvents }">
-              <UFormGroup name="startAt" label="تبداء" class="grow">
-                <UInput :value="inputValue" v-on="inputEvents" />
-              </UFormGroup>
-            </template>
-          </VDatePicker>
+          <UFormGroup name="startAt" label="تبداء" class="grow">
+            <VDatePicker   v-model="state.startAt" mode="dateTime">      
+            </VDatePicker>
+          </UFormGroup>
 
           <UFormGroup name="roundName" label="اسم الجولة">
             <UInput v-model="state.roundName" />
@@ -92,13 +89,18 @@ const schema = object({
   roundName: string(),
 })
 const state = reactive<IMatchUpdate>({
-  refereeId: props.match.referee ? props.match.referee.id : undefined, tableId: props.match.tableId ?? undefined, startAt: new Date(props.match.startAt), roundName: props.match.roundName, isMarked: props.match.isMarked
+  refereeId: props.match.referee ? props.match.referee.id : undefined,
+  tableId: props.match.tableId ?? undefined,
+  startAt:new Date( props.match.startAt),
+  roundName: props.match.roundName,
+  isMarked: props.match.isMarked
 })
 
 
 const updateREQ = await updateMatch()
 const onSubmit = async () => {
   state.startAt = new Date(state.startAt).toISOString()
+  console.log(state.startAt)
   await updateREQ.fetchREQ(tour_id, props.match.id.toString(), state)
   if (updateREQ.status.value == "success") {
     toast.add({ title: "update done" })
