@@ -13,6 +13,7 @@
         'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner == 'Us' && data.match.level ==1,
         'bg-red-300':
           data.match.state == 'Ended' && (data.match.winner != 'Us' || !data.match.winner),
+          'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner != 'Us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
       }"
         class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[22px] w-full">
         <!-- <UBadge v-if="data.usTeamId" color="sky" :label="data.usTeamId"></UBadge> -->
