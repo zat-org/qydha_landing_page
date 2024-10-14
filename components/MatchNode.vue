@@ -150,6 +150,7 @@ const match = props.data.match.qydhaGameId
 
 
 const onclick = () => {
+  
   console.log("clicked")
   modal.open(StatusModal,
     {
