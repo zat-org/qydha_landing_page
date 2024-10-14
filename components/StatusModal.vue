@@ -144,7 +144,7 @@
               :class="{'bg-green-400/20 text-green-500 border-green-300 ':game?.game.winner=='Us',
                 'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Them'
               }">
-                <p class="text-xs  text-center">{{ m.usTeamName.split('-')[1].split("|")[0] }}</p>
+                <p class="text-xs  text-center">{{ m.usTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.usTeamName.split("|")[1] }}</p>
                 <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.game.usGameScore }}   صكة</p>
               </div>
@@ -158,7 +158,7 @@
                 'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Us'
               }"
               >
-                <p class="text-xs  text-center">{{ m.themTeamName.split('-')[1].split("|")[0] }}</p>
+                <p class="text-xs  text-center">{{ m.themTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.themTeamName.split("|")[1] }}</p>
                 <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> 
                   {{ game?.game.themGameScore }} 
