@@ -106,16 +106,16 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 	}
 
 	const handleMatchStateChanged = (eventName: string, game: string, statistics: string) => {
-		// const gameObject: IMatchData = JSON.parse(game)
-		// const statisticsObject: IMathStat = JSON.parse(statistics)
+		const gameObject: IMatchData = JSON.parse(game)
+		const statisticsObject: IMathStat = JSON.parse(statistics)
 
-		// const selectedGame = games.value.find(g => g.id == gameObject.id)
-		// if (selectedGame) {
-		// 	selectedGame.game = gameObject
-		// 	selectedGame.statistics = statisticsObject
-		// } else {
-		// 	games.value.push({ id: gameObject.id, game: gameObject, statistics: statisticsObject })
-		// }
+		const selectedGame = games.value.find(g => g.id == gameObject.id)
+		if (selectedGame) {
+			selectedGame.game = gameObject
+			selectedGame.statistics = statisticsObject
+		} else {
+			games.value.push({ id: gameObject.id, game: gameObject, statistics: statisticsObject })
+		}
 		console.log("MatchStateChanged")
 	}
 	const handleBracketChanged = (GroupId: number, groupMatches: string) => {
