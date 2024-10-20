@@ -26,6 +26,9 @@ const OrderedNodes = computed(() => {
   if (!matchesTree.value || !loserMatches.value) return undefined;
   return layoutFromMatchesTree(matchesTree.value, loserMatches.value, direction.value);
 })
+onUnmounted(()=>{
+  tourStore.closeConnection()
+})
 </script>
 
 <style>

@@ -37,6 +37,13 @@ export interface ITournament extends  ITournamentCreate {
     //     username: string,
     //     avatarUrl: string | null
     // }
+    owner: {
+        id: string,
+            phone: string,
+            name: null|string,
+            username: string,
+            avatarUrl: string
+        },
     id: number,
     logoUrl: null | string,
     showInQydha: boolean
@@ -47,13 +54,7 @@ export interface ITournamentDetailed extends ITournament {
     moderators:any[] ,
     referees :[]
     requesterPrivilege :{ privilege:Privilege, permissions: string[]|null }
-    owner: {
-    id: string,
-        phone: string,
-        name: null|string,
-        username: string,
-        avatarUrl: string
-    },
+    
 }
 
 

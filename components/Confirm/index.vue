@@ -129,10 +129,10 @@
                 block
                 class="w-full md:w-1/2 transition-all duration-300" />
             </div>
-            <StateResultTeamData
+            <!-- <StateResultTeamData
               v-if="teamdata"
               :teamData="teamdata"
-              class="w-full md:w-1/2 mx-auto" />
+              class="w-full md:w-1/2 mx-auto" /> -->
             <UButton
               v-if="teamdata"
               block

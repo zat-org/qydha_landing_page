@@ -11,7 +11,7 @@ const LogoURL =
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: false,
-  devtools: { enabled: false },
+ 
 
 
   modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "@samk-dev/nuxt-vcalendar"],
@@ -56,5 +56,15 @@ export default defineNuxtConfig({
       qydhaToken:process.env.QydhaToken,
      
     },
+  },
+  icon:{
+    clientBundle:{
+   
+      scan: {
+        // note that when you specify those values, the default behavior will be overridden
+        globInclude: ['components/**/*.vue', /* ... */],
+        globExclude: ['node_modules', 'dist', /* ... */],
+      },
+    }
   },
 });

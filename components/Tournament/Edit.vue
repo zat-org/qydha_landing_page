@@ -8,7 +8,7 @@
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton type="submit" label="اضافة" />
-          <UButton type="button" label="عودة" color="red" @click="navigateTo('/tournament')" />
+          <UButton type="button" label="عودة"  color="red" @click="navigateTo('/tournament')"/>
         </div>
 
       </template>
@@ -24,26 +24,28 @@
           <!-- dates -->
           <div class="flex gap-2">
             <UFormGroup name="startAt" label="تبداء" class="grow">
-              <VDatePicker v-model="state.startAt" mode="date" :popover="{ visibility: 'click' }">
-              </VDatePicker>
-            </UFormGroup>
+            <VDatePicker v-model="state.startAt" >
+            </VDatePicker>
+          </UFormGroup>
+            
 
-
-            <UFormGroup name="endAt" label="تنتهي" class="grow">
-              <VDatePicker v-model="state.endAt" mode="date" :popover="{ visibility: 'click' }">
-              </VDatePicker>
+          <UFormGroup name="endAt" label="تنتهي" class="grow">
+            <VDatePicker v-model="state.endAt">
+             </VDatePicker>
             </UFormGroup>
 
           </div>
           <div class="flex gap-2">
+         
             <UFormGroup class="grow" name="ownerId" label="المالك">
               <UInputMenu v-model="state.ownerId" :options="users" :search="search" option-attribute="username"
-                value-attribute="id" :loading="allUsersREQ.status.value == 'pending'" />
+                value-attribute="id" :loading="allUsersREQ.status.value == 'pending'"
+               />
             </UFormGroup>
 
             <UFormGroup class="grow" name="city" label="المدينة">
               <UButtonGroup size="sm" orientation="horizontal" class="flex">
-                <UInput v-model="state.city" class="grow" />
+                <UInput v-model="state.city"  class="grow"/>
 
                 <UButton label="اختر الموقع"
                   :color="state.location.latitude && state.location.longitude ? 'green' : 'red'" @click="getLocation" />
@@ -66,7 +68,7 @@
             </div>
             <div class="flex justify-start items-start   flex-wrap  flex-grow-0  basis-[100px] overflow-y-auto      ">
 
-              <UFormGroup v-for="(p, index) in state.prizes" :name="'prizes[' + index + ']'"
+              <UFormGroup v-for="(p, index) in state.prizes" :name="'prizes['+ index +']'" 
                 :label="'المركز' + (index + 1)">
 
                 <UButtonGroup orientation="horizontal" class="flex w-[150px]">
@@ -89,19 +91,25 @@
 <script lang="ts" setup>
 import "leaflet/dist/leaflet.css";
 import { object, string, number, array } from 'yup'
-import type { ITournamentCreate } from '~/models/tournament';
+import type { ITournament, ITournamentCreate } from '~/models/tournament';
 import { MapInputModal } from "#components"
+const props = defineProps<{tournament :ITournament}>()
 const modal = useModal()
+
+console.log( new Date (props.tournament.startAt)  )
+console.log(new Date (props.tournament.endAt)  )
+
+
 const state = reactive<ITournamentCreate>({
-  name: "",
-  description: "",
-  city: "",
+  name: props.tournament.name,
+  description: props.tournament.description,
+  city: props.tournament.city,
   location: { longitude: 0, latitude: 0 },
-  prizes: ["100000"],
-  prizesCurrency: "ريال",
-  startAt: new Date(),
-  endAt: new Date(),
-  ownerId: ""
+  prizes: props.tournament.prizes,
+  prizesCurrency: props.tournament.prizesCurrency,
+  startAt: new Date( ),
+  endAt: new Date(props.tournament.endAt ),
+  ownerId: props.tournament.owner.id
 })
 const schema = object({
   name: string().required("برجاء ادخال الاسم"),
@@ -111,19 +119,21 @@ const schema = object({
   prizes: array().of(string().required("برجاء ادخال قيمة الجائزة")),
   prizesCurrency: string().required("برجاء ادخال عملة الجائزة"),
   startAt: string().required("برجاء ادخال تاريخ البداية").test(
-    'is-valid-range',
-    'تاريخ البداية يجب أن يكون قبل تاريخ الانتهاء',
-    function (value) {
-      const { endAt } = this.parent;
-      return !endAt || new Date(value) <= new Date(endAt);
-    })
-  ,
+      'is-valid-range',
+      'تاريخ البداية يجب أن يكون قبل تاريخ الانتهاء',
+      function (value) {
+        const { endAt } = this.parent;
+        return !endAt || new Date(value) <= new Date(endAt);
+      })
+    ,
   endAt: string().required("برجاء ادخال تاريخ الانتهاء"),
   ownerId: string().required("برجاء ادخال مالك البطولة")
 })
 
-const tournamentApi = useTournament()
-const createREQ = await tournamentApi.createTournament()
+
+
+const tournamentApi =useTournament()
+const updateREQ = await tournamentApi.updateTour()
 const userApi = useUsers()
 const allUsersREQ = await userApi.getAllUsers()
 await allUsersREQ.fetchREQ("")
@@ -134,14 +144,14 @@ const search = async (q: string) => {
   await allUsersREQ.fetchREQ(q)
   return users.value!
 }
-const onSubmit = async () => {
+const onSubmit = async() => {
+  
 
-  // Object.assign(readystate,state)
-  await createREQ.fetchREQ(state)
-  if (createREQ.status.value == "success") { return navigateTo("/tournament") }
-  else if (createREQ.status.value == "error") {
-    console.log(createREQ.error.value)
-  }
+  await updateREQ.fetchREQ(props.tournament.id.toString() ,state)
+  if (updateREQ.status.value=="success"){return navigateTo("/tournament")} 
+  else if (updateREQ.status.value=="error"){
+    console.log(updateREQ.error.value)
+  } 
 }
 
 

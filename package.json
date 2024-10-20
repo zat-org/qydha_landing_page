@@ -10,10 +10,12 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@iconify-json/fluent-mdl2": "^1.2.0",
+    "@iconify-json/hugeicons": "^1.2.1",
+    "@iconify-json/mdi": "^1.2.1",
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.18.4",
     "@pinia/nuxt": "^0.5.3",
-    "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@types/vue-tel-input": "^2.1.7",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "leaflet": "^1.9.4",
@@ -31,6 +33,7 @@
     "@iconify-json/weui": "^1.2.1",
     "@microsoft/signalr": "^8.0.7",
     "@nuxt/ui": "^2.10.0",
+    "@samk-dev/nuxt-vcalendar": "^1.0.4",
     "@vue-flow/background": "^1.3.0",
     "@vue-flow/core": "^1.40.1",
     "dagre": "^0.8.5",

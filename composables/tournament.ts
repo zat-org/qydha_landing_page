@@ -1,3 +1,4 @@
+import { extendNuxtSchema } from "nuxt/kit";
 import type { ITournament, ITournamentCreate, ITournamentDetailed } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 
@@ -73,6 +74,27 @@ export const useTournament = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
+  const updateTour = async () => {
+    const tour_id = ref()
+    const newTour = ref<ITournamentCreate>()
+
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'updateTour',
+      () => $api(`/tournaments/${tour_id.value}`, {
+        method: "PUT", body: newTour.value
+      }),{immediate:false}
+    );
+
+    const fetchREQ = async (_tour_id: string,_new_tour:ITournamentCreate) => {
+      tour_id.value = _tour_id
+      newTour.value=_new_tour
+      newTour.value.endAt = new Date(_new_tour.endAt).toISOString().split('T')[0] as string
+      newTour.value.startAt = new Date(_new_tour.startAt).toISOString().split('T')[0] as string
+      console.log(newTour.value.endAt,newTour.value.startAt )
+      await execute()
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
   const updatTourQydhaAndOwner = async () => {
 
     const ID = ref<number>()
@@ -105,5 +127,5 @@ export const useTournament = () => {
     }
     return { data, pending, error, refresh, fetchREQ, status }
   }
-  return { getAllTournament, createTournament, getTourById, updatTourQydhaAndOwner, updateTourLogo }
+  return { getAllTournament, createTournament, getTourById, updatTourQydhaAndOwner, updateTourLogo,updateTour  }
 }

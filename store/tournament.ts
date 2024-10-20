@@ -10,7 +10,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 	const games = ref<{ id: string, game: IMatchData, statistics: IMathStat }[]>([])
 	const selectedTournamentId = ref<string>("");
 	const tournament = ref<{ data: Group, matches: Match[] }[]>([])
-
+	const connection  =ref<signalR.HubConnection>()
 
 	const matchesTree = computed((): Match[] | undefined => {
 		if (!selectedGroup.value) return undefined;
@@ -71,7 +71,11 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		return tournament.value.find((g) => g.data.id == groupId) ??
 			tournament.value.find(d => d.data.type == "final") ?? tournament.value[tournament.value.length - 1];
 	});
-
+  
+	const closeConnection  = ()=>{
+		if(	!connection.value) return ;
+			connection.value.stop()
+	}
 	const initStore = async (tournamentId: string) => {
 		selectedTournamentId.value = tournamentId;
 
@@ -94,7 +98,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		if (g == null) return;
 		g.matches = matchesREQ.data.value.data;
 
-		await initWebsocket(+tournamentId);
+		connection.value  = await initWebsocket(+tournamentId);
 	}
 	const fetchGame = async (id: string) => {
 		const gameApi = useMatch()
@@ -141,7 +145,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		connection.on("MatchStateChanged", handleMatchStateChanged)
 		connection.on("TournamentBracketChanged", handleBracketChanged)
 
-
+		return connection
 	}
-	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame }
+	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection }
 })

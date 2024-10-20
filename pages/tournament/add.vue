@@ -1,7 +1,7 @@
 <template>
   
     <ClientOnly>
-    <TournamentAdd   class=" mx-auto mt-[40px]"/>
+    <TournamentAdd   />
   </ClientOnly>
   
 </template>

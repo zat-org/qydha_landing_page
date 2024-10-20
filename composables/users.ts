@@ -1,23 +1,55 @@
-import type { User } from "~/models/user";
+import type { ISingleUser, User } from "~/models/user";
 
 export const useUsers = () => {
   const { $api } = useNuxtApp();
   const getAllUsers = async () => {
     const searchtoken = ref()
+    const pageNumber = ref()
+
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData<{
         data: { currentPage: number, hasNext: boolean, hasPrevious: boolean, items: User[], pageSize: number, totalCount: number, totalPages: number }, message: string
       }>(
         'getAllUsers',
-        () => $api('/users', { params: { SearchToken: searchtoken.value } }), { immediate: false }
+        () => $api('/users', { params: { SearchToken: searchtoken.value ,pageNumber:pageNumber.value
+        } }), { immediate: false }
       );
 
-    const fetchREQ = async (search_token: string) => {
+    const fetchREQ = async (search_token: string,_pageNumber?:number) => {
       searchtoken.value = search_token
+      if (_pageNumber){
+        pageNumber.value =_pageNumber
+      }
       await execute()
 
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
-  return { getAllUsers }
+  const updateUser = async () => {
+    const body = ref<{ roles: string[] }>({ roles: [] })
+    const user_id = ref()
+    const { data, pending, error, refresh, execute, status } = await useAsyncData(
+      'updateUser',
+      () => $api(`/users/${user_id.value}/roles`, { method: "patch", body: body.value }), { immediate: false }
+    );
+    const fetchREQ = async (_user_id:string,roles: string[]) => {
+      user_id.value =_user_id
+      body.value.roles = roles
+      await execute()
+    }
+    return { data, pending, error, refresh, fetchREQ, status }
+  }
+  const getSingleUser = async () => {
+    const user_id = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData<{data:ISingleUser,message:string}>(
+      'getSingleUser',
+      () => $api(`/users/${user_id.value}`), { immediate: false }
+    );
+    const fetchREQ = async (id: string) => {
+      user_id.value = id
+      await execute()
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+  return { getAllUsers, updateUser,getSingleUser }
 }

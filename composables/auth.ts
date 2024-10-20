@@ -25,6 +25,39 @@ export const useAuth = () => {
     };
     return { data, pending, error, refresh, status, fetchREQ };
   };
+
+  const loginWithQydha = async () => {
+    const body = reactive<{ username: string }>({ username: "" })
+    const { data, pending, error, refresh, status, execute } = await useAsyncData<{data:{requestId:string},message:string}>(
+      'loginWithQydha',
+      () => $api('/auth/login-with-qydha', { method: "POST", body: body }), { immediate: false }
+    );
+    const fetchREQ = async (_username: string) => {
+      body.username = _username
+
+      await execute()
+    }
+    return { data, pending, error, refresh, fetchREQ , status}
+  }
+
+const confirmLoginWithQydha = async()=>{
+  const requst_id = ref()
+  const body =reactive<{code:string}>({code:""})
+  const { data, pending, error, refresh,status,execute } = await useAsyncData<{data:IUserData,message:string}>(
+      'confirmLoginWithQydha ',
+      () => $api(`/auth/login-with-qydha/${requst_id.value}/confirm`,{method:"POST" ,body:body}),{immediate:false}
+  );
+  const fetchREQ = async(_request_id :string , _code:string)=>{
+    requst_id.value = _request_id
+    body.code =_code
+    await execute()
+    if (status.value =="success" && data.value){
+      userStore.user = data.value.data
+      return navigateTo("/tournament")
+    }
+  }
+  return{ data, pending, error, refresh,status,fetchREQ } 
+}
   const logout = async () => {
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData(
@@ -36,11 +69,11 @@ export const useAuth = () => {
       await execute();
       if (status.value == "success") {
         user.value = null;
-      
+
       }
     };
-    return{ data, pending, error, refresh, status, fetchREQ }
+    return { data, pending, error, refresh, status, fetchREQ }
   };
 
-  return { login,logout };
+  return { login, logout,loginWithQydha,confirmLoginWithQydha };
 };

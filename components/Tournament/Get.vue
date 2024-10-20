@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col grow mx-[20px]', body: { base: 'flex-1' } }">
+  <UCard :ui="{ base: 'flex flex-col h-full grow mx-[20px]', body: { base: 'flex-1' } }">
     <div class="flex flex-col ">
       <div class="flex justify-between  items-center px-5">
         <img
@@ -17,21 +17,21 @@
       </div>
       <div>
         <UTabs :items="items" class="w-full">
-          <template #prizes="{ item }">
+          <template #prizes>
             <div class="p-5 grid  place-content-center">
               <p v-for="(prize, index) in tour.prizes"> المركز{{ index + 1 }} : {{ prize }} {{ tour.prizesCurrency }}</p>
               <div v-if="tour.prizes.length == 0"> لا توجد جوائز</div>
             </div>
           </template>
-          <template #refer="{ item }">
+          <template #refer>
             <div class="p-5 grid  place-content-center">
-              <p v-for="(refre, index) in tour.referees"> المركز{{ index + 1 }} : {{ refre }} </p>
+              <p v-for="(refre, index) in tour.referees"> {{ refre }} </p>
               <div v-if="tour.referees.length == 0"> لا يوجد حكام</div>
             </div>
           </template>
-          <template #mod="{ item }">
+          <template #mod>
             <div class="p-5 grid  place-content-center">
-              <p v-for="(mod, index) in tour.moderators"> المركز{{ index + 1 }} : {{ mod }} </p>
+              <p v-for="(mod, index) in tour.moderators">  {{ mod }} </p>
               <div v-if="tour.moderators.length == 0"> لا يوجد مسؤوليين</div>
             </div>
           </template>
@@ -45,8 +45,12 @@
       <div class="flex justify-between">
         <UButton label="عودة" color="red" @click="navigateTo('/tournament')" />
         <UButton label="خريطة البطولة" :to="'/tournament/' + id + '/bracket'" class="mr-auto ml-[10px]" icon="mdi:bracket" target="_blank" />
-        <UButton color="yellow" label="تعديل" icon="weui:setting-filled"
-           @click="openEdit" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('')" />
+        <!-- <UButton color="yellow" label="تعديل" icon="weui:setting-filled"
+           @click="openEdit" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('')" /> -->
+
+           <UButton color="yellow" label="تعديل" icon="weui:setting-filled"
+          :to="'/tournament/'+id+'/edit'" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('ModifyTournamentData')" />
+
 
       </div>
     </template>

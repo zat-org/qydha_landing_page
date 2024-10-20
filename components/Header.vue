@@ -6,8 +6,8 @@
         <div class="flex justify-center items-center mx-auto">
             <NuxtLink to="/"><img src="@/assets/images/qydha-logo.svg" class="w-20" alt="Qydha Logo" /></NuxtLink>
         </div>
-        <UButton v-if="!authstore.logedin" color="black" icon="mdi:user" to="/login" class="mx-2" ></UButton>
-        <UButton v-else color="black" icon="simple-line-icons:logout" @click="onLogOut" class="mx-2"></UButton>
+        <UButton v-if="!authstore.logedin" color="black" icon="mdi:user" to="/login"  ></UButton>
+        <UButton v-else color="black" icon="simple-line-icons:logout" @click="onLogOut" ></UButton>
 
     </div>
 

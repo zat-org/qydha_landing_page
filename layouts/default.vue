@@ -1,9 +1,8 @@
 <template>
- 
     <Header ></Header>
-    <main class="  flex grow justify-between  ">
+    <main class="  flex grow    justify-between  " > 
       <SideBar  class=" w-[200px]" v-if="logedin"/>
-      <div class="grow ml-auto mt-[20px]">
+      <div class="  my-[20px]  w-[80%]  mx-auto"  >
 
        <slot ></slot>
      </div>
