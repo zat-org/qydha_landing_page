@@ -1,20 +1,15 @@
 <template>
-  <UCard :ui="{base:'h-full flex flex-col ' ,body:{base:'grow '}}">
-    <template #footer>
-      <div class="flex justify-between">
 
-        <UButton color="red" @click="navigateTo('/user')"> back</UButton>
-      </div>
-    </template>
+<UCard :ui="{base:'h-full flex flex-col',body:{base:'grow'}}">
 
-    <div class="grid grid-cols-2 grid-rows-2 h-full" style="grid-template-rows:150px 1fr;">
+  <div class="grid grid-cols-2 grid-rows-2 h-full" style="grid-template-rows:150px 1fr;">
       <div class="  row-span-1 col-start-1 col-end-2 flex flex-col gap-3 ">
         <p> الاسم :{{ userData?.user.username }}</p>
         <p>رقم الهاتف :{{ userData?.user.phone}}</p>
         <p>
           الفئة
-
           :
+        </p>
           <USelectMenu :popper="{ placement: 'left-end' }" value-attribute="value" option-attribute="value"
             v-if="userStore.user?.user.roles.includes('SuperAdmin')||userStore.user?.user.roles.includes('StaffAdmin')"
             v-model="roles" multiple :options="rolesOption">
@@ -29,14 +24,13 @@
             {{ userData?.user.roles.join(' , ')}}
           </span>
 
-        </p>
 
       </div>
       <div class=" row-span-1  col-start-2 col-end-3  grid justify-items-end">
         <img v-if="userData?.user.avatarUrl" class="w-[150px] h-[150px]" :src="userData?.user.avatarUrl" />
         <UIcon v-else name="mdi:user" class="text-[150px] bg-gradient-to-r from-amber-300" />
       </div>
-      <div class=" row-span-2  col-start-1 col-end-3">
+      <div class="row-span-2  col-start-1 col-end-3">
         <UTabs :items="tabsItems">
           <template #promo>
             <UTable :rows="userData?.promoCodes" :columns="promocols" />
@@ -46,16 +40,24 @@
 
           </template>
           <template #influncer>
-            <UTable :rows="userData?.influencerCodes" :columns="influncerCols" />
+            <UTable :rows="userData?.influencerCodes" :columns="influncerCols" >
             <template #category-name="{row}">
               <p>{{ row.category.name }}</p>
             </template>
-
+            </UTable>
           </template>
         </UTabs>
       </div>
     </div>
-  </UCard>
+
+  <template #footer>
+      <div class="flex justify-between">
+        <UButton color="red" @click="navigateTo('/user')"> back</UButton>
+      </div>
+    </template>
+
+  </UCard >
+  
 </template>
 
 <script lang="ts" setup>
