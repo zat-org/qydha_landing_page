@@ -2,19 +2,19 @@
   <UModal prevent-close>
     <UCard>
 
-      <UTabs :items="tabItems">
-        <template #notification> 
-        <NotificationForm  ref="notificationForm"/>
+      <UTabs :items="tabItems" @change="onChange">
+        <template #notification>
+          <NotificationForm ref="notForm" />
         </template>
+
         <template #popup>
-      hello in pop uup 
-        
+          <NotificationPopupForm ref="popForm" />
         </template>
       </UTabs>
-      <template #footer >
+      <template #footer>
         <div class="flex justify-between items-center">
-          <UButton label="close" color="red" @click="modal.close()"  />
-          <UButton label="add" color="green"  @click="onAdd"  />
+          <UButton label="close" color="red" @click="modal.close()" />
+          <UButton label="add" color="green" @click="onAdd" />
         </div>
 
       </template>
@@ -24,22 +24,25 @@
 </template>
 
 <script lang="ts" setup>
-import NotificationForm from './Form.vue'
-const  notificationForm = ref()
 
-const modal =useModal()
+const notForm = ref()
+const popForm = ref()
+const index = ref(0)
+const modal = useModal()
 
-const tabItems = [{slot:'notification',label:'اشعار'},{slot:'popup',label:' اشعار المنبثق'}]
+const tabItems = [{ slot: 'notification', label: 'اشعار' }, { slot: 'popup', label: ' اشعار المنبثق' }]
 
-
-const onAdd=()=>{
-  console.log(notificationForm.value)
-  notificationForm.value?.AddNotificatoion()
+const onAdd = () => {
+  if (index.value==0){
+    notForm.value?.AddNotificatoion()
+  }else if (index.value==1){
+    popForm.value.AddNotificatoion()
+  }
 
 }
-
+const onChange = (_index: number) => {
+  index.value = _index
+}
 </script>
 
-<style>
-
-</style>
+<style></style>

@@ -26,8 +26,10 @@ const route = useRoute();
 const tourid = route.params.id.toString()
 
 const tourStore =useMyTournamentStore();
+onMounted(async()=>{
 
-await tourStore.initStore(tourid)
+  await tourStore.initStore(tourid)
+})
 
 
 const handleGroupSelection = (group_id: number) => {

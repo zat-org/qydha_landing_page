@@ -1,32 +1,42 @@
 
-import type { INotificationCreate } from '~/models/notification';
+import type { INotificationCreate, INotificationPopupCreate } from '~/models/notification';
 import { Body } from './../.nuxt/components.d';
 export const useNotification = () => {
   const { $api } = useNuxtApp();
-const getAllNotifications=async()=>{
-   const { data, pending, error, refresh,status } = await useAsyncData(
+  const getAllNotifications = async () => {
+
+    const { data, pending, error, refresh, status } = await useAsyncData(
       'getAllNotifications',
       () => $api('/notifications/users/anonymous')
-  );
-  return {data, pending, error, refresh,status}
-}
-const sendNotificationToAllUsers = async()=>{
-  const body = ref<FormData>(new FormData())
-  const { data, pending, error, refresh,status,execute } = await useAsyncData(
-      'sendNotificationToAllUsers',
-      () => $api('/notifications/users/',{method:'post',body:body.value}),{immediate:false}
-  );
-  const fetchREQ =async(new_notification:INotificationCreate)=>{
-    body.value.append('actionPath',new_notification.actionPath)
-    body.value.append('actionType',new_notification.actionType)
-    body.value.append('description',new_notification.description)
-    body.value.append('title',new_notification.title)
-    // body.value.append('popUpImage',new_notification.popUpImage as File)
-
-    await execute()
+    );
+    return { data, pending, error, refresh, status }
   }
-  return { data, pending, error, refresh,status,fetchREQ }
-}
+  const sendNotificationToAllUsers = async () => {
+    const target= ref("")
+    const body = ref<FormData>(new FormData())
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'sendNotificationToAllUsers',
+      () => $api(`/notifications/users/${target.value}`, { method: 'post', body: body.value }), { immediate: false }
+    );
+    const fetchREQ = async (new_notification: INotificationCreate | INotificationPopupCreate ,to:"All"|"User"|"Anonymos"="All",user?:string ) => {
+      body.value.append('actionPath', new_notification.actionPath)
+      body.value.append('actionType', new_notification.actionType)
+      body.value.append('description', new_notification.description)
+      body.value.append('title', new_notification.title)
+      if ("popUpImage" in new_notification) {
+        body.value.append('popUpImage', new_notification.popUpImage as File)
+      }
+      if (to =="User" && user){
+        target.value = user
+      }else if(to=="Anonymos"){
+        target.value="anonymous"
+      }
+      
 
-return {sendNotificationToAllUsers}
+      await execute()
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  return { sendNotificationToAllUsers ,getAllNotifications}
 }

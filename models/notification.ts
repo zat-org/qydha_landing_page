@@ -7,7 +7,6 @@ export enum NotificationActionType {
 }
 
 export enum popUpActionType {
-    PopUp = 'PopUp',
     PopUpWithNoAction = "PopUpWithNoAction",
     PopUpWithGoToURL = "PopUpWithGoToURL",
     PopUpWithGoToScreen = "PopUpWithGoToScreen",
@@ -19,6 +18,16 @@ export interface INotificationCreate {
     description: string
     actionPath: string
     actionType: NotificationActionType
+    user:string
     // popUpImage: File|string|null
 
+}
+
+export interface INotificationPopupCreate {
+    title: string
+    description: string
+    actionPath: string
+    actionType: popUpActionType
+    popUpImage: File|string|null
+    user:string
 }

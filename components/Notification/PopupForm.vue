@@ -1,6 +1,6 @@
 <template>
 
-  <UForm :state="state" :schema="schema" ref="notificationForm" @submit="onSubmit" class="flex flex-col gap-2">
+  <UForm :state="state" :schema="schema" ref="notificationForm" @submit="onSubmit"  class="flex flex-col gap-2">
     <UButtonGroup class="mx-auto">
       <UButton :color="target == 'All' ? 'gray' : 'green'" @click="target = 'All'" label="All" />
       <UButton :color="target == 'Anonymos' ? 'gray' : 'green'" @click="target = 'Anonymos'" label="anonymous" />
@@ -11,43 +11,48 @@
     </UFormGroup>
     <UFormGroup label="title" name="title">
       <UInput v-model="state.title" />
-    </UFormGroup> 
+    </UFormGroup>
     <UFormGroup label="description" name="description">
       <UInput v-model="state.description" />
     </UFormGroup>
     <UFormGroup label="type" name="actionType">
       <USelect v-model="state.actionType" :options="notificationActionsArray" />
     </UFormGroup>
-    <UFormGroup label="path" name="actionPath" v-if="state.actionType != NotificationActionType.NoAction">
-      <UInput v-model="state.actionPath" v-if="state.actionType == NotificationActionType.GoToURL" />
+    <UFormGroup label="path" name="actionPath" v-if="state.actionType != popUpActionType.PopUpWithNoAction">
+      <UInput v-model="state.actionPath" v-if="state.actionType == popUpActionType.PopUpWithGoToURL" />
       <USelect v-model="state.actionPath"
-        :options="state.actionType == NotificationActionType.GoToScreen ? screenOptions : tabOptions"
-        v-if="state.actionType == NotificationActionType.GoToScreen || state.actionType == NotificationActionType.GoToTab" />
+        :options="state.actionType == popUpActionType.PopUpWithGoToScreen ? screenOptions : tabOptions"
+        v-if="state.actionType == popUpActionType.PopUpWithGoToScreen || state.actionType == popUpActionType.PopUpWithGoToTab " />
     </UFormGroup>
-
+    <div class="flex justify-between items-center">
+      <UFormGroup label="popUpImage" name="popUpImage" >
+        <UInput @change="filechange" type="file" />
+      </UFormGroup>
+      <img  :src="imageUrl" class="w-[100px] h-[100]"/>
+    </div>
   </UForm>
 </template>
 
 <script lang="ts" setup>
 import { string, object } from 'yup'
-import { NotificationActionType, type INotificationCreate } from '~/models/notification';
+import {  popUpActionType, type INotificationPopupCreate } from '~/models/notification';
 const notificationForm = ref<HTMLFormElement>()
-  const AddNotificatoion = () => {
+const toast =useToast()
+const modal = useModal()
+const imageUrl = ref("")
+
+const AddNotificatoion = () => {
   notificationForm.value?.submit()
 }
 
-
 defineExpose({ AddNotificatoion })
-const toast = useToast()
-const modal = useModal()
-const target = ref<"All" | "User" | "Anonymos">("All")
 const usergetREQ  = await useUsers().getAllUsers()
 await usergetREQ.fetchREQ("")
 const users =computed(()=>{
   return  usergetREQ.data.value?.data.items
 }) 
 
-
+const target = ref<"All" | "User" | "Anonymos">("All")
 watch(target, (newValue, oldValue) => {
   schema.fields.user = string()
   if (newValue == "User") {
@@ -60,20 +65,21 @@ const search = async (q: string) => {
 }
 
 
-const state = reactive<INotificationCreate>({
+const state = reactive<INotificationPopupCreate>({
   title: '',
   description: '',
   actionPath: '_',
-  actionType: NotificationActionType.NoAction,
-  user: ""
+  actionType: popUpActionType.PopUpWithNoAction,
+  popUpImage: "",
+  user:""
 })
-
 const schema = object({
-  title: string().required().min(5),
-  description: string().min(5),
+  title: string().required(),
+  description: string(),
   actionPath: string(),
   actionType: string().required(),
-  user: string()
+  popUpImage: string().required(),
+  user:string()
 })
 // screen name options
 const screenOptions = [
@@ -96,25 +102,31 @@ const tabOptions = [
 
 ]
 // handel file input 
-// const filechange = (event: FileList) => {
-//   if (event.item(0)) {
-//     console.log(event.item(0))
-//     state.popUpImage = event.item(0)
-//   }
-// }
+const filechange = (event: FileList) => {
+  imageUrl.value =""
+  const file =event.item(0)
+  if (file) {
+    state.popUpImage =file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      imageUrl.value = e.target?.result as string // Get the image URL
+    }
+    reader.readAsDataURL(file)
+  }
+}
 // handel notification action type data
-const notificationActionsArray = Object.values(NotificationActionType).map(action => ({
+const notificationActionsArray = Object.values(popUpActionType).map(action => ({
   value: action,
   label: action,
 }));
 
 watch(() => state.actionType, (newValue, oldValue) => {
   state.actionPath = ""
-  if (newValue == NotificationActionType.NoAction) {
+  if (newValue == popUpActionType.PopUpWithNoAction) {
     schema.fields.actionPath = string()
     state.actionPath = "_"
 
-  } else if (newValue == NotificationActionType.GoToURL) {
+  } else if (newValue == popUpActionType.PopUpWithGoToURL) {
 
     schema.fields.actionPath = string().url().required()
   }
@@ -123,12 +135,15 @@ watch(() => state.actionType, (newValue, oldValue) => {
   }
 }, { immediate: true })
 
+
+// handel sent req on form submit 
+
 const onSubmit = async () => {
   console.log(state)
-  await addREQ.fetchREQ(state, target.value, state.user)
+  await addREQ.fetchREQ(state,target.value,state.user)
   if (addREQ.status.value == "success")
-    toast.add({ title: "add new notification doen " })
-  modal.close()
+    toast.add({ title:"add new notification doen "})
+    modal.close()
 }
 
 
