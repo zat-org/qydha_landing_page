@@ -11,7 +11,7 @@
       <div :class="{
         'bg-green-300': data.match.winner?.toLowerCase() == 'us' && data.match.level!=1 ,
         'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner?.toLowerCase() == 'us' && data.match.level ==1,
-        'bg-red-300': data.match.state == 'Ended' && (data.match.winner?.toLowerCase() != 'us' || !data.match.winner),
+        'bg-red-300': data.match.state == 'Ended' && (data.match.winner?.toLowerCase() == 'them' || !data.match.winner),
           'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner?.toLowerCase() != 'us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
       }"
         class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[22px] w-full">
@@ -32,7 +32,7 @@
           'line-through':
             data.match.state == 'Ended' &&
             !data.match.qydhaGameId &&
-            (data.match.winner?.toLowerCase() != 'us' || !data.match.winner),
+            (data.match.winner?.toLowerCase() == 'them' || !data.match.winner),
         }">
           {{ data.match.usTeamName }}
         </p>
@@ -44,12 +44,12 @@
         </p>
       </div>
 
-      <div :class="{
+      <div  :class="{
         'bg-green-300': data.match.winner?.toLowerCase() == 'them' && data.match.level!=1,
         'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner?.toLowerCase()== 'them' && data.match.level ==1,
 
         'bg-red-300':
-          data.match.state == 'Ended' && (data.match.winner?.toLowerCase() != 'them' || !data.match.winner),
+          data.match.state == 'Ended' && (data.match.winner?.toLowerCase() == 'us' || !data.match.winner),
         'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner?.toLowerCase() == 'us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
           
       }"
@@ -69,7 +69,7 @@
           'line-through':
             data.match.state == 'Ended' &&
             !data.match.qydhaGameId &&
-            (data.match.winner?.toLowerCase() != 'them' || !data.match.winner),
+            (data.match.winner?.toLowerCase() == 'us' || !data.match.winner),
         }">
           {{ data.match.themTeamName }}
         </p>
