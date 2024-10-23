@@ -9,11 +9,10 @@
 
     }">
       <div :class="{
-        'bg-green-300': data.match.winner == 'Us' && data.match.level!=1 ,
-        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner == 'Us' && data.match.level ==1,
-        'bg-red-300':
-          data.match.state == 'Ended' && (data.match.winner != 'Us' || !data.match.winner),
-          'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner != 'Us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
+        'bg-green-300': data.match.winner?.toLowerCase() == 'us' && data.match.level!=1 ,
+        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner?.toLowerCase() == 'us' && data.match.level ==1,
+        'bg-red-300': data.match.state == 'Ended' && (data.match.winner?.toLowerCase() != 'us' || !data.match.winner),
+          'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner?.toLowerCase() != 'us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
       }"
         class="flex justify-between items-center pe-1 bg-gray-300 rounded rounded-b-none border boreder-gray-500 h-[22px] w-full">
         <!-- <UBadge v-if="data.usTeamId" color="sky" :label="data.usTeamId"></UBadge> -->
@@ -33,7 +32,7 @@
           'line-through':
             data.match.state == 'Ended' &&
             !data.match.qydhaGameId &&
-            (data.match.winner != 'Us' || !data.match.winner),
+            (data.match.winner?.toLowerCase() != 'us' || !data.match.winner),
         }">
           {{ data.match.usTeamName }}
         </p>
@@ -46,12 +45,12 @@
       </div>
 
       <div :class="{
-        'bg-green-300': data.match.winner == 'Them' && data.match.level!=1,
-        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner == 'Them' && data.match.level ==1,
+        'bg-green-300': data.match.winner?.toLowerCase() == 'them' && data.match.level!=1,
+        'bg-gradient-to-r from-[#F7971E] to-[#FFD200]': data.match.winner?.toLowerCase()== 'them' && data.match.level ==1,
 
         'bg-red-300':
-          data.match.state == 'Ended' && (data.match.winner != 'Them' || !data.match.winner),
-        'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner == 'Us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
+          data.match.state == 'Ended' && (data.match.winner?.toLowerCase() != 'them' || !data.match.winner),
+        'bg-gradient-to-r   to-slate-300 from-slate-500': data.match.winner?.toLowerCase() == 'us' && data.match.level ==1 &&  data.match.matchQualifyThemTeamFrom=='Winner',
           
       }"
         class="flex justify-between items-center pe-1 bg-gray-300 border boreder-gray-500 text-center h-[22px] w-full">
@@ -70,7 +69,7 @@
           'line-through':
             data.match.state == 'Ended' &&
             !data.match.qydhaGameId &&
-            (data.match.winner != 'Them' || !data.match.winner),
+            (data.match.winner?.toLowerCase() != 'them' || !data.match.winner),
         }">
           {{ data.match.themTeamName }}
         </p>

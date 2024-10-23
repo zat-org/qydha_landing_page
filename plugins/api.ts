@@ -2,18 +2,20 @@ import { type FetchOptions } from 'ofetch';
 import jwtDecode from 'jwt-decode';
 import { useMyAuthStore } from '~/store/Auth';
 import type { IUserData } from '~/models/user';
+import type { NuxtError } from '#app';
 interface DecodedToken {
   exp: number;
 }
 
 export default defineNuxtPlugin(() => {
   // get user data if it exist or not
-  
+  const authStore =useMyAuthStore()
+      const {user} =storeToRefs(authStore)
   const config = useRuntimeConfig();
   const $api = $fetch.create({
     baseURL: config.public.qydhaapiBase,
     onRequest:async({options}:{options:FetchOptions})=>{
-      const authStore =useMyAuthStore()
+      
       let token = authStore.user?.jwtToken
       if (token){
         // const decodedToken = jwtDecode<DecodedToken>(token);
@@ -50,7 +52,11 @@ export default defineNuxtPlugin(() => {
       options.headers= {...options.headers,Authorization:`Bearer ${config.public.qydhaToken}`}
     }
   },onResponseError:(error)=>{
-    console.log(error)
+    if(error.response.status ==403 || error.response.status ==401){
+      user.value = null;
+      navigateTo("/")
+    }
+
   }})
 
   return {

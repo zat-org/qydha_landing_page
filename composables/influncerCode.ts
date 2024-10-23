@@ -14,4 +14,5 @@ export const useInfluncerCode = () => {
     }
     return{data, pending, error, refresh,status ,fetchREQ}
   }
+  return {addInfCode}
 }

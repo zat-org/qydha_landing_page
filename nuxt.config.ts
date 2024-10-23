@@ -10,8 +10,6 @@ const LogoURL =
   "https://storage.googleapis.com/qydha_bucket/qydha_assets/qydha.com-assets/qydha-logo.svg";
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
-  ssr: false,
- 
 
 
   modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "@samk-dev/nuxt-vcalendar"],

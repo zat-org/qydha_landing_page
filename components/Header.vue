@@ -15,7 +15,8 @@
 
 <script setup lang="ts">
 import { useMyAuthStore } from '~/store/Auth';
-
+const userStore =useMyAuthStore()
+const {user}  =storeToRefs(userStore)
 const authstore = useMyAuthStore()
 const authApi = useAuth()
 let links = [
@@ -24,12 +25,10 @@ let links = [
     { text: "من نحن", link: "" },
     { text: "تواصل معنا", link: "" },
 ]
-const onLogOut = async () => {
-    const logout = await authApi.logout();
-    await logout.fetchREQ()
-    if(logout.status.value =="success"){
-        return navigateTo("/")
-    }
+const onLogOut =  () => {
+    user.value = null;
+    return navigateTo("/")
+
 }
 </script>
 

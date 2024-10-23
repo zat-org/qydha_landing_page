@@ -66,11 +66,12 @@ const confirmLoginWithQydha = async()=>{
         { immediate: false }
       );
     const fetchREQ = async () => {
-      await execute();
-      if (status.value == "success") {
+      // await execute();
+      // if (status.value == "success") {
         user.value = null;
+        return navigateTo("/")
 
-      }
+      // }
     };
     return { data, pending, error, refresh, status, fetchREQ }
   };
