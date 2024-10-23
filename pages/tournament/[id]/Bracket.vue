@@ -5,8 +5,9 @@
         <UButton class="basis-[20px] grow" v-for="item in tourStore.tournament" :label="`${item.data.name}`"
           :color="tourStore.selectedGroup?.data.id == item.data.id ? 'green' : 'white'" block @click="handleGroupSelection(item.data.id)" />
       </UButtonGroup>
-    
-        <TourBracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
+    <ClientOnly>
+      <TourBracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
+    </ClientOnly>
   
     </div>
   </div>
