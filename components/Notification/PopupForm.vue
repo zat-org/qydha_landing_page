@@ -2,9 +2,9 @@
 
   <UForm :state="state" :schema="schema" ref="notificationForm" @submit="onSubmit"  class="flex flex-col gap-2">
     <UButtonGroup class="mx-auto">
-      <UButton :color="target == 'All' ? 'gray' : 'green'" @click="target = 'All'" label="All" />
-      <UButton :color="target == 'Anonymos' ? 'gray' : 'green'" @click="target = 'Anonymos'" label="anonymous" />
-      <UButton :color="target == 'User' ? 'gray' : 'green'" @click="target = 'User'" label="user" />
+      <UButton :color="target == 'All' ? 'green' : 'gray'" @click="target = 'All'" label="All" />
+      <UButton :color="target == 'Anonymos' ? 'green' : 'gray'" @click="target = 'Anonymos'" label="anonymous" />
+      <UButton :color="target == 'User' ? 'green' : 'gray'" @click="target = 'User'" label="user" />
     </UButtonGroup>
     <UFormGroup label="user" name="user" v-if="target == 'User'">
       <UInputMenu v-model="state.user" :loading="usergetREQ.status.value=='pending'" :options="users" :search="search" option-attribute="username" value-attribute="id"  />

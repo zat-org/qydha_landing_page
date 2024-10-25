@@ -1,9 +1,8 @@
 <template>
-  <UCard :ui="{ base: 'h-full  flex flex-col ', body: { base: 'grow' } }">
+  <UCard :ui="{ base: 'h-full  flex flex-col ', body: { base: 'grow' } } ">
     <UTabs :items="items" @change="onChange">
       <template #infCode>
-        hello infcode
-
+       <UTable :rows="codes" :columns="cols"></UTable>
 
       </template>
       <template #category>
@@ -48,5 +47,17 @@ const openModal = () => {
   }
 }
 
+const getcodesREQ = await useInfluncerCode().getinfluncerCodes()
+const codes=computed(()=>{
+  return getcodesREQ.data.value?.data
+})
+const cols=[
+  {key:"code",label:"الاسم"},
+  {key:"numberOfDays",label:"عدد الايام"},
+  {key:"usedCount",label:"مرات الاستخدام"},
+  {key:"categoryName",label:"الفئة"},
+
+
+]
 </script>
 <style></style>

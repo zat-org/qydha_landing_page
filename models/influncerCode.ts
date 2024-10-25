@@ -1,13 +1,20 @@
 
 export interface InfluncerCode {
-    influencerCodeId: string,
+    id: string
+    code: string
     createdAt: string | Date,
     usedAt: string | Date,
     expireAt: string | Date,
     numberOfDays: number,
-    influencerCodeName: string,
-    category: ICategory
+    categoryName: string
+    categoryId: number
+    categoryMaxCodesPerUserInGroup: number
+    usedCount: number
+    maxInfluencedUsersCount: number
 }
+
+
+
 
 export interface InfluncerCodeCreate {
     code: string,
@@ -17,6 +24,7 @@ export interface InfluncerCodeCreate {
     maxInfluencedUsersCount: number
 }
 export interface ICategory {
+    id: string
     maxCodesPerUserInGroup: number
     categoryName: string
 }

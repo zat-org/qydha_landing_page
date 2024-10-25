@@ -3,7 +3,7 @@
     <template #action-data="{row}">
     <UButtonGroup>
       <UButton icon="material-symbols:edit" color='yellow' @click="openupdateModal(row)" /> 
-      <UButton icon="material-symbols:delete" color="red" @click="deletecat "/>
+      <UButton icon="material-symbols:delete" color="red" @click="deletecat(row) "/>
     </UButtonGroup>    
     </template>
   </UTable>
@@ -34,8 +34,11 @@ modal.open(UpdateCatModal , {
 })
 }
 
-const deletecat = ()=>{
-
+const deletecat =async  (row:ICategory)=>{
+  await deleteCatREQ.fetchREQ(row.id)
+  if (deleteCatREQ.status.value=="success"){
+    refreshNuxtData("getAllcategory")
+  }
 }
 </script>
 

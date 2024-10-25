@@ -11,7 +11,7 @@
            <UInput v-model="state.code" />
          </UFormGroup>
          <UFormGroup label="cat" name="categoryId">
-           <USelectMenu  v-model="state.categoryId" :options="categoryies" option-attribute="categoryName" value-attribute="categoryName"   />
+           <USelectMenu  v-model="state.categoryId" :options="categoryies" option-attribute="categoryName" value-attribute="id"   />
          </UFormGroup>
          
          <UFormGroup label="number of days" name="numberOfDays">

@@ -15,7 +15,7 @@
 
       <template #footer>
         <div class="flex justify-between">
-          <UButton label="اضافة" color="green" @click="CatForm.submit()"></UButton>
+          <UButton label="تعديل" color="green" @click="CatForm.submit()"></UButton>
           <UButton label=" عودة" color="red" @click="modal.close()" type="button"></UButton>
         </div>
       </template>
@@ -38,9 +38,9 @@ const schema =object({
   categoryName: string().required ("برجاء ادخال اسم الفئة"),
   maxCodesPerUserInGroup: number().required("عدد المرات المتاحة للاستخدام").min(1,"اصغر رقم متاح هو 1")
 })
-const addCatreq =await useCategory().AddCategry() 
+const addCatreq =await useCategory().updateCategry() 
 const onsubmit =async()=>{
-  await addCatreq.fetchREQ(state)
+  await addCatreq.fetchREQ(state,props.cat.id)
   if (addCatreq.status.value == "success"){
     modal.close()
     refreshNuxtData("getAllcategory")

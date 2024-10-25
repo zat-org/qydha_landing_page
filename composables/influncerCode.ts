@@ -1,4 +1,4 @@
-import type { InfluncerCodeCreate } from "~/models/influncerCode";
+import type { InfluncerCode, InfluncerCodeCreate } from "~/models/influncerCode";
 
 export const useInfluncerCode = () => {
   const { $api } = useNuxtApp();
@@ -14,5 +14,12 @@ export const useInfluncerCode = () => {
     }
     return{data, pending, error, refresh,status ,fetchREQ}
   }
-  return {addInfCode}
+  const getinfluncerCodes =async()=>{
+    const { data, pending, error, refresh } = await useAsyncData<{data:InfluncerCode[],message:string}>(
+        'getinfluncerCodes',
+        () => $api('/influencer-codes')
+    );
+    return {data, pending, error, refresh }
+  }
+  return {addInfCode,getinfluncerCodes}
 }
