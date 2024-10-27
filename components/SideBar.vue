@@ -20,11 +20,15 @@ if(userStore.roles?.includes('SuperAdmin')||userStore.roles?.includes('StaffAdmi
     {label:"اكواد ",to:"/promoCode",icon:"mdi:voucher"},
     {label:"المستخدمين ",to:"/user",icon:"mdi:users"},
     {label:"الاشعارات ",to:"/notification",icon:"mdi:bell"},
-    {label:"الاكونتات البرمجية ",to:"/tournament",icon:"pajamas:code",labelClass:'bg-yellow-500'},
-    {label:"الملف الثابت",to:"/assets",icon:"mdi:files",labelClass:'bg-yellow-500'},
-
+    {label:"الاكونتات البرمجية ",to:"/ServiceAccount",icon:"pajamas:code",labelClass:'bg-yellow-500'},
+    {label:"الملف الثابت",to:"/assets",icon:"mdi:files"},
     )
 }
+ if (userStore.roles?.includes('Streamer')){
+    links.push(
+    {label:"البث",to:"/stream",icon:"material-symbols-light:live-tv-outline"},
+    )
+ }
 </script>
 
 <style>
