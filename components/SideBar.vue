@@ -20,7 +20,7 @@ if(userStore.roles?.includes('SuperAdmin')||userStore.roles?.includes('StaffAdmi
     {label:"اكواد ",to:"/promoCode",icon:"mdi:voucher"},
     {label:"المستخدمين ",to:"/user",icon:"mdi:users"},
     {label:"الاشعارات ",to:"/notification",icon:"mdi:bell"},
-    {label:"الاكونتات البرمجية ",to:"/ServiceAccount",icon:"pajamas:code",labelClass:'bg-yellow-500'},
+    {label:"الاكونتات البرمجية ",to:"/ServiceAccount",icon:"pajamas:code"},
     {label:"الملف الثابت",to:"/assets",icon:"mdi:files"},
     )
 }
