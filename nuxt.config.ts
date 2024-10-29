@@ -14,7 +14,7 @@ export default defineNuxtConfig({
  
 
 
-  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "@samk-dev/nuxt-vcalendar"],
+  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', ],
   css: ["~/assets/css/main.css"],
 
   app: {

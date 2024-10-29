@@ -1,5 +1,5 @@
 import { extendNuxtSchema } from "nuxt/kit";
-import type { ITournament, ITournamentCreate, ITournamentDetailed } from "~/models/tournament";
+import type { ITournament, ITournamentCreate, ITournamentDetailed, ITournamentUpdate } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 
 export const useTournament = () => {
@@ -76,7 +76,7 @@ export const useTournament = () => {
   }
   const updateTour = async () => {
     const tour_id = ref()
-    const newTour = ref<ITournamentCreate>()
+    const newTour = ref<ITournamentUpdate>()
 
     const { data, pending, error, refresh, status, execute } = await useAsyncData(
       'updateTour',
@@ -85,7 +85,7 @@ export const useTournament = () => {
       }),{immediate:false}
     );
 
-    const fetchREQ = async (_tour_id: string,_new_tour:ITournamentCreate) => {
+    const fetchREQ = async (_tour_id: string,_new_tour:ITournamentUpdate) => {
       tour_id.value = _tour_id
       newTour.value=_new_tour
       newTour.value.endAt = new Date(_new_tour.endAt).toISOString().split('T')[0] as string
@@ -117,7 +117,7 @@ export const useTournament = () => {
     const body = ref<FormData>(new FormData())
     const { data, pending, error, refresh, execute, status } = await useAsyncData(
       'updateTourLogo',
-      () => $api(`tournaments/${tour_id}/logo`, { body: body.value, method: "PATCH" }), { immediate: false }
+      () => $api(`tournaments/${tour_id.value}/logo`, { body: body.value, method: "PATCH" }), { immediate: false }
     );
     const fetchREQ = async (_tour_id: string, _logo: File) => {
       tour_id.value = _tour_id

@@ -1,7 +1,7 @@
 <template>
     <Header ></Header>
     <main class="  flex grow    justify-between  " > 
-      <SideBar  class=" w-[200px]" v-if="logedin"/>
+      <!-- <SideBar  class=" w-[200px]" v-if="logedin"/> -->
       <div class="  my-[20px]  w-[80%]  mx-auto"  >
 
        <slot ></slot>

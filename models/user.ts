@@ -40,6 +40,16 @@ export interface User {
   expireDate: string
   roles: string[]
 }
+export interface MinUser {
+  id: string
+  username: string
+  name: any
+  phone: string
+  avatarUrl: any
+}
+
+
+
 
 export interface GeneralSettings {
   enableVibration: boolean

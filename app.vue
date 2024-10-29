@@ -8,6 +8,8 @@
     </NuxtLayout>
     <UNotifications />
     <UModals /> 
+    <USlideovers />
+
 </div>
 </template>
 <script setup lang="ts"></script>

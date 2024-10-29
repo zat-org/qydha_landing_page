@@ -18,6 +18,25 @@ export interface ITournamentCreate {
 }
 
 
+
+export interface ITournamentUpdate {
+
+    name: string,
+    description: string,
+    city: string,
+    location: {
+        longitude: number,
+        latitude: number
+    },
+    prizes: string[],
+    prizesCurrency: string,
+    startAt: string | Date,
+    endAt: string | Date,
+
+}
+
+
+
 export interface ITournament extends  ITournamentCreate {
     // name: string,
     // description: string,

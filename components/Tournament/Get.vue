@@ -11,45 +11,35 @@
           <p>المدينة : {{ tour.city }}</p>
           <p> التاريخ : {{ new Date(tour.startAt).toLocaleDateString() }} - {{ new Date(tour.endAt).toLocaleDateString()
             }}</p>
+
+
+          <p v-for="(prize, index) in tour.prizes"> المركز{{ index + 1 }} : {{ prize }} {{ tour.prizesCurrency }}
+          </p>
+          <div v-if="tour.prizes.length == 0"> لا توجد جوائز</div>
+
           <!-- <p> {{ tour.ownerId }}</p>       -->
         </div>
         <Map v-model:lat="tour.location.latitude" v-model:log="tour.location.longitude"></Map>
       </div>
-      <div>
-        <UTabs :items="items" class="w-full">
-          <template #prizes>
-            <div class="p-5 grid  place-content-center">
-              <p v-for="(prize, index) in tour.prizes"> المركز{{ index + 1 }} : {{ prize }} {{ tour.prizesCurrency }}</p>
-              <div v-if="tour.prizes.length == 0"> لا توجد جوائز</div>
-            </div>
-          </template>
-          <template #refer>
-            <div class="p-5 grid  place-content-center">
-              <p v-for="(refre, index) in tour.referees"> {{ refre }} </p>
-              <div v-if="tour.referees.length == 0"> لا يوجد حكام</div>
-            </div>
-          </template>
-          <template #mod>
-            <div class="p-5 grid  place-content-center">
-              <p v-for="(mod, index) in tour.moderators">  {{ mod }} </p>
-              <div v-if="tour.moderators.length == 0"> لا يوجد مسؤوليين</div>
-            </div>
-          </template>
+      <div class="flex flex-wrap gap-5 mt-[20px] justify-center">
+        <UButton  label="ادارة الحكام" size="xl" :to="'/tournament/'+id+'/refree'" />
+        <UButton  label=" ادارة المديرين" size="xl" :to="'/tournament/'+id+'/moderator'" />
+        <UButton  label="Team Mangment"size="xl" />
+        <UButton label="Group Mangment"size="xl" />
 
-
-        </UTabs>
 
       </div>
     </div>
     <template #footer>
       <div class="flex justify-between">
         <UButton label="عودة" color="red" @click="navigateTo('/tournament')" />
-        <UButton label="خريطة البطولة" :to="'/tournament/' + id + '/bracket'" class="mr-auto ml-[10px]" icon="mdi:bracket" target="_blank" />
+        <UButton label="خريطة البطولة" :to="'/tournament/' + id + '/bracket'" class="mr-auto ml-[10px]"
+          icon="mdi:bracket" target="_blank" />
         <!-- <UButton color="yellow" label="تعديل" icon="weui:setting-filled"
            @click="openEdit" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('')" /> -->
 
-           <UButton color="yellow" label="تعديل" icon="weui:setting-filled"
-          :to="'/tournament/'+id+'/edit'" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('ModifyTournamentData')" />
+        <UButton color="yellow" label="تعديل" icon="weui:setting-filled" :to="'/tournament/' + id + '/edit'"
+          v-if="privilege?.toLowerCase() == 'admin' || privilege?.toLowerCase() == 'owner' || permissions.includes('ModifyTournamentData')" />
 
 
       </div>
@@ -61,36 +51,32 @@
 </template>
 
 <script lang="ts" setup>
-import TournamentEditModal  from './EditModal.vue';
+import TournamentEditModal from './EditModal.vue';
 import { useMyAuthStore } from '~/store/Auth';
 
 const userStore = useMyAuthStore()
 const { permissions, privilege } = storeToRefs(userStore)
 
 const props = defineProps<{ id: number }>()
-const modal =useModal()
+const modal = useModal()
 const tourApi = useTournament()
 const qydhaToggle = await tourApi.updatTourQydhaAndOwner()
 const getREQ = await tourApi.getTourById()
 await getREQ.fetchREQ(props.id)
-if (getREQ.status.value =="error")navigateTo("/tournament")
+if (getREQ.status.value == "error") navigateTo("/tournament")
 const tour = computed(() => {
   return getREQ.data.value?.data!
 })
 
-const items = [
-  { slot: 'prizes', label: 'الجوائز' },
-  { slot: 'refer', label: 'الحكام' },
-  { slot: 'mod', label: 'المسؤوليين' },
-]
+
 const updateQydha = async () => {
   await qydhaToggle.fetchREQ(!tour.value.showInQydha, tour.value.owner.id, tour.value.id)
   if (qydhaToggle.status.value == "success") {
     await getREQ.fetchREQ(props.id)
   }
 }
-const openEdit =()=>{
-  modal.open(TournamentEditModal,{tour:tour.value})
+const openEdit = () => {
+  modal.open(TournamentEditModal, { tour: tour.value })
 }
 </script>
 

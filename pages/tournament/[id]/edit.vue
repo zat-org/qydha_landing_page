@@ -1,5 +1,7 @@
 <template>
- <TournamentEdit v-if="getREQ.data.value" :tournament="getREQ.data.value.data"> </TournamentEdit>
+    <ClientOnly>
+        <TournamentEdit v-if="getREQ.data.value" :tournament="getREQ.data.value.data"> </TournamentEdit>
+    </ClientOnly>
 </template>
 
 <script lang="ts" setup>
