@@ -10,7 +10,7 @@
           <UFormGroup label="الكود" name="code" >
             <UInput v-model="state.code" />
           </UFormGroup>
-          <UFormGroup label="المستخدم" name="userId">
+          <UFormGroup label="المستخدم" name="userId" class="grow">
             <USelectMenu v-model="state.userId"  :options="users"  :searchable="search" option-attribute="username"
             :search-attributes="['username']"
               value-attribute="id" :loading="getUsersREQ.status.value == 'pending'" />
@@ -65,13 +65,15 @@ const state = reactive<IPromoCodeCreate>({
   code: "",
   userId: "",
   numberOfDays: 10,
-  expireAt: new Date()
+  expireAt: new Date( new Date().getTime() + (24*60*60*1000))
 })
+
+// Create a new date for tomorrow by adding one day (24 hours in milliseconds)
 const schema = object({
   code: string().required(),
   userId: string().required(),
   numberOfDays: number().required(),
-  expireAt: date().required().min(new Date() ,'برجاء ادخال اليوم او تاريخ بعده')
+  expireAt: date().required().min(new Date( new Date().getTime() + (24*60*60*1000)) ,'برجاء ادخال اليوم او تاريخ بعده')
 })
 
 const onsubmit=async ()=>{
