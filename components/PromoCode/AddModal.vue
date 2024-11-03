@@ -5,12 +5,12 @@
         اضافة كود جديد
       </template>
       <UForm :state="state" :schema="schema" ref="Form" class="flex gap-2"  @submit="onsubmit">
-        <div class="flex flex-col gap-5 items-center justify-center  ">
+        <div class="flex flex-col gap-5   ">
 
           <UFormGroup label="الكود" name="code" >
             <UInput v-model="state.code" />
           </UFormGroup>
-          <UFormGroup label="المستخدم" name="userId" class="grow">
+          <UFormGroup label="المستخدم" name="userId" >
             <USelectMenu v-model="state.userId"  :options="users"  :searchable="search" option-attribute="username"
             :search-attributes="['username']"
               value-attribute="id" :loading="getUsersREQ.status.value == 'pending'" />
@@ -23,6 +23,7 @@
           <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right" />
 
 
+          
         </UFormGroup>
       </UForm>
       <template #footer>
