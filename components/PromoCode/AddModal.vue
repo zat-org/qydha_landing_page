@@ -12,6 +12,7 @@
           </UFormGroup>
           <UFormGroup label="المستخدم" name="userId">
             <UInputMenu v-model="state.userId" :options="users" :search="search" option-attribute="username"
+            :search-attributes="['username']"
               value-attribute="id" :loading="getUsersREQ.status.value == 'pending'" />
           </UFormGroup>
           <UFormGroup label="عدد الايام" name="numberOfDays">
