@@ -19,8 +19,9 @@
           </UFormGroup>
         </div>
         <UFormGroup label="تاريخ الانتهاء" name="expireAt">
-          <VDatePicker  dir="ltr" title-position="left" v-model="state.expireAt" mode="date" :popover="{ visibility: 'click' }">
-          </VDatePicker>
+          <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right" />
+
+
         </UFormGroup>
       </UForm>
       <template #footer>
@@ -35,7 +36,12 @@
   </UModal>
 </template>
 
+
 <script lang="ts" setup>
+
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
 import { object, string, number ,date} from 'yup'
 import type { IPromoCodeCreate } from '~/models/PromoCode';
 const Form =ref<HTMLFormElement>()

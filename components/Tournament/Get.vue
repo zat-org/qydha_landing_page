@@ -24,7 +24,7 @@
       <div class="flex flex-wrap gap-5 mt-[20px] justify-center">
         <UButton  label="ادارة الحكام" size="xl" :to="'/tournament/'+id+'/refree'" />
         <UButton  label=" ادارة المديرين" size="xl" :to="'/tournament/'+id+'/moderator'" />
-        <UButton  label="Team Mangment"size="xl" />
+        <UButton  label="Team Mangment"size="xl"  :to="'/tournament/'+id+'/team'"/>
         <UButton label="Group Mangment"size="xl" />
 
 

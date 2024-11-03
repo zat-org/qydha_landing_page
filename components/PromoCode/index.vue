@@ -30,7 +30,7 @@ const getREQ = await promoCodeApi.getPromoCodes()
 
 const modal = useModal()
 const rows = computed(() => {
-  return getREQ.data.value?.data
+  return getREQ.data.value?.data.splice(0,10)
 })
 const cols = [
   {label:'الكود',key:'code'},

@@ -11,10 +11,11 @@ const LogoURL =
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   // ssr: false,
- 
+
 
 
   modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', ],
+
   css: ["~/assets/css/main.css"],
 
   app: {
@@ -46,10 +47,13 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   colorMode: {
     preference: "light",
   },
+
   compatibilityDate: "2024-08-20",
+
   runtimeConfig: {
     public: {
       qydhaapiBase: process.env.QydhaApiBase,
@@ -57,14 +61,13 @@ export default defineNuxtConfig({
      
     },
   },
-  icon:{
-    clientBundle:{
-   
-      scan: {
-        // note that when you specify those values, the default behavior will be overridden
-        globInclude: ['components/**/*.vue', /* ... */],
-        globExclude: ['node_modules', 'dist', /* ... */],
-      },
+  icon: {
+    serverBundle: {
+      collections: ['uil', 'mdi','heroicons','material-symbols','mingcute','weui','fontisto','simple-line-icons' ] 
     }
+  },
+
+  devtools: {
+    enabled: false,
   },
 });

@@ -24,14 +24,15 @@
           <!-- dates -->
           <div class="flex gap-2">
             <UFormGroup name="startAt" label="تبداء" class="grow">
-              <VDatePicker v-model="state.startAt" mode="date" :popover="{ visibility: 'click' }">
-              </VDatePicker>
+              
+
+              <VueDatePicker v-model="state.startAt" :enable-time-picker="false" dir="ltr" position="right" />
             </UFormGroup>
 
 
             <UFormGroup name="endAt" label="تنتهي" class="grow">
-              <VDatePicker v-model="state.endAt" mode="date" :popover="{ visibility: 'click' }">
-              </VDatePicker>
+             
+<VueDatePicker v-model="state.endAt" :enable-time-picker="false" dir="ltr" position="right" />
             </UFormGroup>
 
           </div>
@@ -87,6 +88,9 @@
 </template>
 
 <script lang="ts" setup>
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
 import "leaflet/dist/leaflet.css";
 import { object, string, number, array } from 'yup'
 import type { ITournamentCreate } from '~/models/tournament';

@@ -16,8 +16,7 @@
               :search-attributes="['name']"  :popper="{placement:'left-end'}"/>
           </UFormGroup>
           <UFormGroup name="startAt" label="تبداء" class="grow">
-            <VDatePicker   v-model="state.startAt" mode="dateTime">      
-            </VDatePicker>
+            <VueDatePicker v-model="state.startAt" :enable-time-picker="false" dir="ltr" position="right" />
           </UFormGroup>
 
           <UFormGroup name="roundName" label="اسم الجولة">
@@ -45,6 +44,10 @@
 </template>
 <script lang="ts" setup>
 // refre and table 
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css';
+
+
 import { object, string } from "yup"
 import type { Match } from "~/models/group";
 import type { IMatchUpdate } from "~/models/match";
