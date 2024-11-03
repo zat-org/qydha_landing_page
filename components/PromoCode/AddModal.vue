@@ -11,7 +11,7 @@
             <UInput v-model="state.code" />
           </UFormGroup>
           <UFormGroup label="المستخدم" name="userId">
-            <UInputMenu v-model="state.userId" :options="users" :search="search" option-attribute="username"
+            <USelectMenu v-model="state.userId"  :options="users"  :searchable="search" option-attribute="username"
             :search-attributes="['username']"
               value-attribute="id" :loading="getUsersREQ.status.value == 'pending'" />
           </UFormGroup>
@@ -57,6 +57,7 @@ const users = computed(() => {
 })
 const search = async (q: string) => {
   await getUsersREQ.fetchREQ(q)
+  console.log(users.value)
   return users.value!
 }
 
