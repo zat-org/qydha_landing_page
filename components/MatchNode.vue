@@ -110,25 +110,26 @@
           </p>
         </div>
         <div v-if="data.match.qydhaGameId" class="h-full items-center flex justify-center">
-          <UIcon v-if="data.match.state != 'Created'" name="material-symbols:info"
+          
+          <IConInfo v-if="data.match.state != 'Created'" 
             class="text-xl text-green-400 cursor-pointer" @click="onclick" />
         </div>
 
         <div class=" h-full items-center flex justify-center "
           v-if="privilege?.toLowerCase() == 'admin' || privilege?.toLowerCase() == 'owner' || permissions.includes('')">
-          <UIcon name="weui:setting-filled" class="text-xl text-yellow-500 cursor-pointer" @click="onEdit" />
+          <IconSetting  class="text-xl text-yellow-500 cursor-pointer" @click="onEdit" />
         </div>
 
         <div class=" h-full items-center flex justify-center "
           v-if="(privilege?.toLowerCase() == 'admin' || privilege?.toLowerCase() == 'owner' || permissions.includes('')) && data.match.referee">
           <UTooltip :text="data.match.referee.username">
 
-            <UIcon name="fluent-mdl2:party-leader" class="text-xl text-blue-500 cursor-pointer" />
+            <IconRefree  class="text-xl text-blue-500 cursor-pointer" />
           </UTooltip>
         </div>
 
         <div class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon name="material-symbols:table-restaurant" class="text-xl cursor-pointer" @click="copyClibboard" />
+          <IconTable class="text-xl cursor-pointer" @click="copyClibboard" />
           <p>
             {{ data.match.tableName }}
           </p>

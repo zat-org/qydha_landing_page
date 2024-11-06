@@ -64,11 +64,13 @@ export const useTourrnamentTeam = () => {
       teamId.value =team_id
       body.value ={name}
       await execute()
-   
+      if (status.value == "success"){
+        refreshNuxtData("getAllTourTeams")
+      }
     }
     return {data, pending, error, refresh ,status,fetchREQ}
   }
 
 
-  return { getAllTourTeams, addTourTeam, deleteTourTeam }
+  return { getAllTourTeams, addTourTeam, deleteTourTeam,updateTourTeamName }
 }

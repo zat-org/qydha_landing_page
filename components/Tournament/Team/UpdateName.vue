@@ -1,6 +1,6 @@
 <template>
   <div>
-    <UForm :state="state" :schema="schema" @submit="onSubmit" ref="updateTeamForm">
+    <UForm :state="state" :schema="schema" @submit="onSubmit" ref="updateTeamNameForm">
       <UFormGroup name="name" label="name">
           <UInput v-model="state.name" />
       </UFormGroup>
@@ -13,19 +13,30 @@
 
 import { string ,object } from 'yup';
 import {type Form} from '#ui/types'
-const updateTeamForm =ref<Form<{name:string}>>()
-const props = defineProps<{name:string }>()
+import type { ITeam } from '~/models/tournamentTeam';
+const updateTeamNameForm =ref<Form<{name:string}>>()
+const props = defineProps<{team:ITeam }>()
 const state = reactive({
-  name:props.name
+  name:props.team.name
 })
 const modal=useModal()
 const schema = object({
   name:string()
 }) 
-const onSubmit=()=>{
-  console.log(state)
-}
 
+const submitNameForm = ()=>{
+  updateTeamNameForm.value!.submit()
+}
+const toast  =useToast()
+defineExpose({submitNameForm})
+const updateREQ =  await useTourrnamentTeam().updateTourTeamName()
+const onSubmit=async()=>{
+ 
+  await  updateREQ.fetchREQ(props.team.tournamentId.toString(),props.team.id.toString(),state)
+  if(updateREQ.status.value="success"){
+    toast.add({title:"update done"})
+  }
+}
 
 </script>
 

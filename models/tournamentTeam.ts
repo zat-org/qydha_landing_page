@@ -32,6 +32,15 @@ players: IPlayer[]
 tournamentId: number
 
 }
+
+export interface IPlayerCreate  {
+    // additionalData: {}
+email: string
+name: string
+phone: string
+qydhaUsername: string
+}
+
 export interface IPlayer {
     // additionalData: {}
 email: string

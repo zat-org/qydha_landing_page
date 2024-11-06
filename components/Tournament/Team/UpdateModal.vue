@@ -6,13 +6,13 @@
     </template>
     <UTabs :items="items"> 
       <template #name="{item}">
-        <UpdateName :name="team.name" ref="updateNameComponent"></UpdateName>
+        <UpdateName :team="team" ref="updateNameComponent"></UpdateName>
       </template>
     </UTabs>
     <template #footer>
       <div class="flex justify-between items-center ">
-        <UButton label="save"   />
-        <UButton label="close" @click="modal.close()" />
+        <UButton label="save"  @click="submitForm" />
+        <UButton label="close" color="red" @click="modal.close()" />
 
       </div>
       </template>
@@ -25,6 +25,7 @@ import { string ,object } from 'yup';
 import UpdateName from './UpdateName.vue'
 import type { ITeam } from '~/models/tournamentTeam';
 const modal =useModal()
+const updateNameComponent =ref()
 const tabIndex=ref(0)
 const indexChange= (index:number)=>{
   tabIndex.value = index 
@@ -33,6 +34,12 @@ const props = defineProps<{team:ITeam}>()
 const items=[
   {key:'name',label:'name',slot:"name"}
 ]
+const submitForm =()=>{
+  if(tabIndex.value== 0 ){
+    updateNameComponent.value.submitNameForm()
+  }
+
+}
 </script>
 
 <style>

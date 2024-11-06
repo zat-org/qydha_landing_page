@@ -10,8 +10,9 @@
     
     <UTable :rows="teams" :columns="columns" :ui="{td:{padding:'p-2'}}">
       <template #players-data ="{row}">
-        <div class="flex flex-col gap-1 justify-start items-start ">
-          <UBadge :label="row.players.map(p =>{return  p.name}).join(' | ') +' - '+ row.id" size="lg" color="gray" />
+        <div class="flex gap-1 justify-start items-start ">
+          <UBadge v-if="row.players.length>0" :label="getplayerString(row)" size="lg" color="gray" />
+            <UButton  label="Add player" @click="openAddPlayerModal(row.id)"/>
         </div>
       </template>
       <template #actions-data ="{row}">
@@ -26,6 +27,7 @@
     <template #footer>
       <div class="flex justify-between items-center ">
         <UButton  label="اضافة" @click="openAddModal"/>
+
         <UButton label="عودة " color="red" @click="navigateTo('/tournament/'+tour_id)"/>
       </div> 
     </template>
@@ -34,9 +36,10 @@
 </template>
 
 <script lang="ts" setup>
-import type { ITeam } from '~/models/tournamentTeam';
+import type { IPlayer, ITeam } from '~/models/tournamentTeam';
 import AddModal from './AddModal.vue';
 import UpdateModal from './UpdateModal.vue';
+import AddPlayerModal from './AddPlayerModal.vue';
 
 const route =useRoute()
 const modal =useModal()
@@ -76,6 +79,13 @@ const openUpdateModal =(row:ITeam)=>{
 modal.open(UpdateModal,{team:row})
 }
 
+const getplayerString =(row:ITeam)=>{
+  return row.players.map((p:IPlayer) =>{return  p.name}).join(' | ') +' - '+ row.id
+}
+
+const openAddPlayerModal =(team_id:number)=>{
+  modal.open(AddPlayerModal,{teamId:team_id})
+}
 </script>
 
 <style>
