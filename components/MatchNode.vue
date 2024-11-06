@@ -84,9 +84,9 @@
 
 
         <div class="flex items-center bg-gray-300 rounded rounded-t-none border boreder-gray-500 px-1 gap-2">
-          <UIcon v-if="data.match.state == 'Created' || data.match.state == 'Paused'" name="mingcute:sleep-fill" />
-          <UIcon v-if="data.match.state == 'Running'" name="eos-icons:loading" />
-          <UIcon v-if="data.match.state == 'Ended'" name="material-symbols:done-all" />
+          <IconSleepGame v-if="data.match.state == 'Created' || data.match.state == 'Paused'" />
+          <IconRunningGame if="data.match.state == 'Running'"  />
+          <IconEndedGame v-if="data.match.state == 'Ended'"  />
         </div>
 
         <div v-if="data.match.roundName" :class="{
@@ -111,7 +111,7 @@
         </div>
         <div v-if="data.match.qydhaGameId" class="h-full items-center flex justify-center">
           
-          <IConInfo v-if="data.match.state != 'Created'" 
+          <IconInfo v-if="data.match.state != 'Created'" 
             class="text-xl text-green-400 cursor-pointer" @click="onclick" />
         </div>
 
