@@ -43,6 +43,7 @@ const select=(row:User)=>{
 watch(query ,async (newValue,oldValue)=>{
 await usersREQ.fetchREQ(newValue)
   // page.value = usersREQ.data.value?.data.currentPage!
+  console.log(usersREQ.data.value?.data.totalCount)
   items.value = usersREQ.data.value?.data.totalCount!
 })
 </script>
