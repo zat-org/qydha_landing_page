@@ -42,11 +42,8 @@ const select=(row:User)=>{
 }
 watch(query ,async (newValue,oldValue)=>{
 await usersREQ.fetchREQ(newValue)
-if (usersREQ.status.value=="success"){
-
-  page.value = usersREQ.data.value?.data.currentPage!
+  // page.value = usersREQ.data.value?.data.currentPage!
   items.value = usersREQ.data.value?.data.totalCount!
-}  
 })
 </script>
 
