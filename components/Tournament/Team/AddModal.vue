@@ -111,15 +111,21 @@ const items = computed(()=>{
 const addTeamREQ =await useTourrnamentTeam().addTourTeam()
 const onSubmit = async() => {
  await  addTeamREQ.fetchREQ(tour_id,state)
- if (addTeamREQ.status.value=="error" &&  addTeamREQ.error.value && addTeamREQ.error.value.statusCode == 404)
+ if (addTeamREQ.status.value=="success"){
+  modal.close()
+ }
+ if (addTeamREQ.status.value=="error" &&  addTeamREQ.error.value )
  {
-  let errorPlayer =   state.players.find(p=>{
-
-    return p.qydhaUsername.toLowerCase() == addTeamREQ.error.value?.data?.message.split(":")[1].trim().toLowerCase()
-  })
-  console.log(errorPlayer)
-  teamForm.value?.setErrors([{path:'players' ,message:`برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب ${errorPlayer?.name} `}])
-
+  if (addTeamREQ.error.value.statusCode == 404){
+    let errorPlayer =   state.players.find(p=>{
+      return p.qydhaUsername.toLowerCase() == addTeamREQ.error.value?.data?.message.split(":")[1].trim().toLowerCase()
+    })
+    teamForm.value?.setErrors([{path:'players' ,message:`برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب ${errorPlayer?.name} `}])
+  }
+  else if (addTeamREQ.error.value.statusCode == 400 &&  addTeamREQ.error.value.data?.code == "CannotConnectSameUserToManyPlayers"){
+    teamForm.value?.setErrors([{path:'players' ,message:`لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب`}])
+    
+  }
  }
 }
 

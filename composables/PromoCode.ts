@@ -4,14 +4,28 @@ export const usePromoCode = () => {
   const { $api } = useNuxtApp();
 
   const getPromoCodes = async () => {
-    const { data, pending, error, refresh } = await useAsyncData < {
-      data:  IPromoCode[]
+    const page = ref()
+    const { data, pending, error, refresh , execute , status } = await useAsyncData < {
+      data:{
+        currentPage:number ,
+        items: IPromoCode[] ,
+        hasNext:boolean ,
+        hasPrevious:boolean,
+        pageSize:number, 
+        totalCount:number ,
+        totalPages:number
+         }
      , message: string
     } > (
         'getPromoCodes',
-        () => $api('/promo-codes')
+        () => $api('/promo-codes',{query:{PageNumber:page.value} }),{immediate:false}
       );
-    return { data, pending, error, refresh }
+      const fetchREQ = async(page_number:string="1")=>{
+        page.value = page_number
+        await execute () ; 
+
+      }
+    return { data, pending, error, refresh,status,fetchREQ }
   }
 
   const addPromoCodes = async () => {

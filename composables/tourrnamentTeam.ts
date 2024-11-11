@@ -15,7 +15,6 @@ export const useTourrnamentTeam = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
-
   const addTourTeam = async () => {
     const tourId = ref()
     const body = ref<ITeamCreate[]>([])
@@ -29,7 +28,9 @@ export const useTourrnamentTeam = () => {
       body.value.push(newTeam)
 
       await execute()
-
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
     }
 
     return { data, pending, error, refresh, status, fetchREQ }
@@ -47,6 +48,9 @@ export const useTourrnamentTeam = () => {
       tourId.value = tour_id
       teamId.value = team_id
       await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
     }
     return { data, pending, error, refresh, status, fetchREQ }
 
@@ -55,22 +59,63 @@ export const useTourrnamentTeam = () => {
     const tourId = ref()
     const teamId = ref()
     const body = ref<{ name: string }>()
-    const { data, pending, error, refresh ,status,execute } = await useAsyncData(
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
       'updateTourTeamName',
       () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}`, { method: 'put', body: body.value }), { immediate: false }
     );
-    const fetchREQ = async (tour_id:string ,team_id:string ,{name}:{name:string}) => {
-      tourId.value=tour_id
-      teamId.value =team_id
-      body.value ={name}
+    const fetchREQ = async (tour_id: string, team_id: string, { name }: { name: string }) => {
+      tourId.value = tour_id
+      teamId.value = team_id
+      body.value = { name }
       await execute()
-      if (status.value == "success"){
+      if (status.value == "success") {
         refreshNuxtData("getAllTourTeams")
       }
     }
-    return {data, pending, error, refresh ,status,fetchREQ}
+    return { data, pending, error, refresh, status, fetchREQ }
   }
 
+  const addPlayerToTeam = async () => {
+    const tourId = ref()
+    const teamId = ref()
+    const playerId = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'addPlayerToTeam',
+      () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}/players/${playerId.value}`, { method: 'post' }), { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, team_id: string, player_id: string) => {
+      tourId.value = tour_id
+      teamId.value = team_id
+      playerId.value = player_id
+      await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
+    }
 
-  return { getAllTourTeams, addTourTeam, deleteTourTeam,updateTourTeamName }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  const removePlayerFromTeam = async () => {
+    const tourId = ref()
+    const teamId = ref()
+    const playerId = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'addPlayerToTeam',
+      () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}/players/${playerId.value}`, { method: 'delete' }), { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, team_id: string, player_id: string) => {
+      tourId.value = tour_id
+      teamId.value = team_id
+      playerId.value = player_id
+      await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
+    }
+
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  return { getAllTourTeams, addTourTeam, deleteTourTeam, updateTourTeamName, addPlayerToTeam, removePlayerFromTeam }
 }

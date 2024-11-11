@@ -3,3 +3,8 @@ export interface ITable {
     name: string
     tournamentId: string
 }
+
+export interface ITableCreate {
+    name: string
+}
+

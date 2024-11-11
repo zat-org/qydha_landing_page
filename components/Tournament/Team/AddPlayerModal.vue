@@ -1,60 +1,50 @@
 <template>
-  <UModal>
+  <UModal prevent-close>
     <UCard>
       <template #header>
-
+        Join Player
       </template>
-      <UForm :state="state" :schema="schema" ref="PlayerForm" @submit="onSubmit">
-        <UFormGroup label="اسم الاعب" name="name">
-          <UInput v-model="state.name"></UInput>
-        </UFormGroup>
-        <UFormGroup label="الايميل" name=" email'">
-          <UInput v-model="state.email"></UInput>
-        </UFormGroup>
-        <UFormGroup label="رقم الهاتف" name="phone">
-          <vue-tel-input mode="auto" :autoFormat="true" dir="ltr" :validCharactersOnly="true" :autoDefaultCountry="true"
-            :inputOptions="{ showDialCode: true, showFlags: true }" invalidMsg="this phone is invalid "
-            :dropdownOptions="{ showDialCodeInSelection: true, showFlags: true, showSearchBox: true }"
-            v-model="state.phone"></vue-tel-input>
-        </UFormGroup>
-        <UFormGroup label="اسم المستخدم علي قيدها" name="qydhaUsername">
-          <UInput v-model="state.qydhaUsername"></UInput>
+      <UForm :schema="schema" :state="state" ref="AddPlayerForm" @submit="onSubmit">
+
+        <UFormGroup name="playerId">
+          <USelectMenu v-model="state.playerId" :options="players" value-attribute="id" option-attribute="name" />
         </UFormGroup>
       </UForm>
       <template #footer>
-        <div class="flex justify-between items-center">
-          <UButton label="Add" @click="PlayerForm?.submit()" />
-          <UButton label="close" />
+        <div class="flex justify-between items-center ">
+          <UButton label="add" @click="AddPlayerForm?.submit()"> </UButton>
+          <UButton label="close" color="red" @click="modal.close()"> </UButton>
         </div>
-
       </template>
-
     </UCard>
   </UModal>
 </template>
 
 <script lang="ts" setup>
-import { array, object, string } from 'yup';
-import type { IPlayerCreate } from '~/models/tournamentTeam';
-import { type Form } from "#ui/types"
-const props = defineProps<{ teamId: number }>()
-import "vue-tel-input/vue-tel-input.css";
-import { VueTelInput } from "vue-tel-input";
-const PlayerForm = ref<Form<IPlayerCreate>>()
+import { object, string } from 'yup'
+import { type Form } from '#ui/types'
 
-const state = reactive<IPlayerCreate>({ name: '', phone: '', email: '', qydhaUsername: '' }
-)
-const schema = object({
-  name: string().required("برجاء ادخال اسم اللاعب"),
-  phone: string().required("برجاء ادخال رقم الهاتف").min(11, 'يجب ان يكون رقم الهاتف صحيح'),
-  email: string().email(" برجاء ادخال البريد الالكتروني بشكل صحيح ").required(" برجاء ادخال البريد الالكتروني   "),
-  qydhaUsername: string()
+const AddPlayerForm = ref<Form<{ playerId: string }>>()
+const modal = useModal()
+const route = useRoute()
+const tour_id = route.params.id.toString()
+const props = defineProps<{ team_id: string }>()
+
+const getAllPlayers = await useTournamentPlayer().getPlayer()
+await getAllPlayers.fetchREQ(tour_id, false)
+const players = computed(() => {
+  return getAllPlayers.data.value?.data
 })
-const onSubmit = () => {
-  console.log(state )
-  console.log(  props.teamId )
-}
+const state = reactive({ playerId: "" })
+const schema = object({ playerId: string().required() })
 
+const addREQ = await useTourrnamentTeam().addPlayerToTeam()
+const onSubmit = async () => {
+  await addREQ.fetchREQ(tour_id, props.team_id, state.playerId)
+  if (addREQ.status.value == "success") {
+    modal.close()
+  }
+}
 </script>
 
 <style></style>

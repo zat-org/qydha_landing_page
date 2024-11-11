@@ -22,10 +22,13 @@
         <Map v-model:lat="tour.location.latitude" v-model:log="tour.location.longitude"></Map>
       </div>
       <div class="flex flex-wrap gap-5 mt-[20px] justify-center">
-        <UButton  label="ادارة الحكام" size="xl" :to="'/tournament/'+id+'/refree'" />
-        <UButton  label=" ادارة المديرين" size="xl" :to="'/tournament/'+id+'/moderator'" />
-        <UButton  label="Team Mangment"size="xl"  :to="'/tournament/'+id+'/team'"/>
-        <UButton label="Group Mangment"size="xl" />
+        <UButton  label="ادارة الحكام" size="lg" :to="'/tournament/'+id+'/refree'" />
+        <UButton  label=" ادارة المديرين" size="lg" :to="'/tournament/'+id+'/moderator'" />
+        <UButton  label="ادارة الفرق "size="lg"  :to="'/tournament/'+id+'/team'"/>
+        <UButton  label="player managment  "size="lg"  :to="'/tournament/'+id+'/player'"/>
+        <UButton label="table Mangment"size="lg"  :to="'/tournament/'+id+'/table'"/>
+        <UButton label="Group Mangment"size="lg" />
+
 
 
       </div>
