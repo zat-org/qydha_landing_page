@@ -11,6 +11,9 @@ export const useInfluncerCode = () => {
     const fetchREQ =async(new_code:InfluncerCodeCreate)=>{
       body.value =new_code
       await execute()
+      if ( status.value=="success"){
+        refreshNuxtData("getinfluncerCodes")
+      }
     }
     return{data, pending, error, refresh,status ,fetchREQ}
   }

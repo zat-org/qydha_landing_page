@@ -10,15 +10,15 @@
          <UFormGroup label="الكود" name="code">
            <UInput v-model="state.code" />
          </UFormGroup>
-         <UFormGroup label="cat" name="categoryId">
+         <UFormGroup label="الفئة" name="categoryId">
            <USelectMenu  v-model="state.categoryId" :options="categoryies" option-attribute="categoryName" value-attribute="id"   />
          </UFormGroup>
          
-         <UFormGroup label="number of days" name="numberOfDays">
+         <UFormGroup label="عدد الايام" name="numberOfDays">
            <UInput v-model="state.numberOfDays" type="number" />
          </UFormGroup>
 
-         <UFormGroup label="max number for use " name="maxInfluencedUsersCount">
+         <UFormGroup label="عدد مرات الاستخدام" name="maxInfluencedUsersCount">
            <UInput v-model="state.maxInfluencedUsersCount" type="number" />
          </UFormGroup>
        </div>
@@ -48,7 +48,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css';
 
 const modal =useModal()
-
+const toast =useToast()
 
 // refs
 const CodeForm =ref<HTMLFormElement>()
@@ -73,12 +73,18 @@ const influncerAPI = useInfluncerCode()
 const addREQ = await influncerAPI.addInfCode()
 const onSubmit =async()=>{
   await addREQ.fetchREQ(state)
+  if (addREQ.status.value == "success" ){
+    toast.add({title:'تم اضافة الكود بنجاح'})
+    modal.close()
+  }
+
 }
 // catergory options 
 const categoryAPI =useCategory()
 const getREQ= await categoryAPI.getAllcategory() 
 const categoryies = computed (()=>{
  return getREQ.data.value?.data 
+ 
 })
 </script>
 

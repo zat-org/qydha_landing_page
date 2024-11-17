@@ -48,6 +48,7 @@ import { object, string, number ,date} from 'yup'
 import type { IPromoCodeCreate } from '~/models/PromoCode';
 const Form =ref<HTMLFormElement>()
 const modal =useModal()
+const toast =useToast()
 const getUsersREQ = await useUsers().getAllUsers()
 await getUsersREQ.fetchREQ('')
 
@@ -79,7 +80,10 @@ const schema = object({
 
 const onsubmit=async ()=>{
     await addREQ.fetchREQ(state)
-  
+    if(addREQ.status.value=="success"){
+      toast.add({title:'تم اضافة كود بنجاح'})
+      modal.close()
+    }
 }
 
 </script>

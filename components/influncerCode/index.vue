@@ -1,6 +1,6 @@
 <template>
   <UCard :ui="{ base: 'h-full  flex flex-col ', body: { base: 'grow' } } ">
-    <UTabs :items="items" @change="onChange">
+    <UTabs :items="items" @change="onChange" :ui="{td:{padding:'py-1'},tr:{padding:'py-1'} }">
       <template #infCode>
        <UTable :rows="codes" :columns="cols"></UTable>
 
