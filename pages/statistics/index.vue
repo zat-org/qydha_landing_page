@@ -1,5 +1,8 @@
 <template>
-  <PromoCode />
+  <ClientOnly >
+    
+    <AppStatistics />
+  </ClientOnly>
 </template>
 
 <script lang="ts" setup>

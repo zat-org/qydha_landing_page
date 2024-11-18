@@ -1,6 +1,6 @@
-<template>
+  <template>
 
-    <div ref="mapContiner" id="map" class="w-[300px] h-[300px]  z-0"></div>    
+    <div ref="mapContiner" id="map" class=" h-300 w-300 z-0"></div>    
 
 </template>
 
@@ -19,10 +19,10 @@ const getLocation = () => {
     // log.value= position.coords.longitude
       
         console.log(map.value)
-        map.value = L.map("map", { attributionControl: false }).setView([lat.value, log.value], 9)
+        map.value = L.map("map", { attributionControl: false }).setView([lat.value, log.value], 4)
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          maxZoom: 19
+          maxZoom: 9
         }).addTo(map.value);
         L.marker([lat.value, log.value], { draggable:false}).addTo(map.value).on("dragend", (event: any) => {
           lat.value = event.target._latlng.lat
@@ -34,6 +34,7 @@ const getLocation = () => {
   }
 
 }
+
 onMounted(()=>{
   getLocation()
 })

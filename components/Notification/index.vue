@@ -1,7 +1,13 @@
 <template>
   <UCard :ui="{base:'flex h-full flex-col ',body:{base:'grow'}}">
     <template #header>
-      notfictions    
+      <div class="flex justify-between items-cenetr ">
+        <p>
+        notfictions    
+        </p>
+        <UButton label="add" color="green" @click="openAddModal" />
+
+      </div>
     </template>
     
     <div>
@@ -9,9 +15,6 @@
 test
     </div>
 
-    <template #footer >
-      <UButton label="add" color="green" @click="openAddModal" />
-    </template>
 
   </UCard>
   
@@ -27,7 +30,7 @@ const toast = useToast()
 // toast.add({title:"error in get notifications"})
 // }
 // const  nots=computed(()=>{
-//   return getAllNotREQ.data.value
+//     return getAllNotREQ.data.value
 // })
 const openAddModal =()=>{
   modal.open(AddNotificationModal)
