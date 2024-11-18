@@ -26,7 +26,6 @@
                 </div>
             </template>
             <template #map>
-                <LazyMap class="w-full " />
             </template>
         </UTabs>
     </UCard>
