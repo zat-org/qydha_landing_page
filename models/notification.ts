@@ -1,5 +1,5 @@
 export enum NotificationActionType {
-    NoAction = ' NoAction',
+    NoAction = 'NoAction',
     GoToURL = 'GotoURL',
     GoToScreen = 'GoToScreen',
     GoToTab = 'GoToTab',

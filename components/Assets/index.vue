@@ -15,7 +15,7 @@
 
 
     <template #footer>
-      <UButton label="update" color="yellow" @click="openModal" />
+      <UButton label="تعديل" color="yellow" @click="openModal" />
     </template>
 
   </UCard>

@@ -13,8 +13,8 @@
       </UTabs>
       <template #footer>
         <div class="flex justify-between items-center">
-          <UButton label="close" color="red" @click="modal.close()" />
-          <UButton label="add" color="green" @click="onAdd" />
+          <UButton label="اغلاق" color="red" @click="modal.close()" />
+          <UButton label="اضافة" color="green" @click="onAdd" />
         </div>
 
       </template>
