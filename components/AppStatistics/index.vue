@@ -14,7 +14,7 @@
         />
       </div>
     </template>
-    <UTabs :items="items">
+    <UTabs :items="items" v-model="tabIndex" @change="changeIndex">
       <template #data>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <!-- Users Statistics Card -->
@@ -34,7 +34,9 @@
           </UCard>
         </div>
       </template>
-      <template #map> </template>
+      <template #map> 
+        <Map v-if="tabIndex ==1" ></Map>
+      </template>
     </UTabs>
   </UCard>
 </template>
@@ -46,6 +48,11 @@ const items = [
   { label: "بيانات", slot: "data" },
   { label: "الخريطة", slot: "map" },
 ];
+const tabIndex = ref(0)
+const changeIndex =(index:number)=>{
+  tabIndex.value  =index
+}
+
 // option for select date
 const options = [
   { label: "اليوم", value: "today" },

@@ -16,6 +16,7 @@
     "@nuxt/devtools": "latest",
     "@nuxt/ui": "^2.18.4",
     "@pinia/nuxt": "^0.5.3",
+    "@types/leaflet": "^1.9.14",
     "@types/vue-tel-input": "^2.1.7",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "leaflet": "^1.9.4",

@@ -1,5 +1,5 @@
 <template>
-    <USlideover side="left" :ui="{base:'w-[200px]' ,width: 'w-[250px] max-w-[250px]',}">
+    <USlideover side="left" class="z-[100]" :ui="{base:'w-[200px] ' ,width: 'w-[250px] max-w-[250px]',}">
         <UVerticalNavigation :links="links" :ui="{size:'text-lg'}"/>
     </USlideover>
 
