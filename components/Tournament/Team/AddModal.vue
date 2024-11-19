@@ -122,8 +122,16 @@ const onSubmit = async() => {
     })
     teamForm.value?.setErrors([{path:'players' ,message:`برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب ${errorPlayer?.name} `}])
   }
-  else if (addTeamREQ.error.value.statusCode == 400 &&  addTeamREQ.error.value.data?.code == "CannotConnectSameUserToManyPlayers"){
-    teamForm.value?.setErrors([{path:'players' ,message:`لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب`}])
+  else if (addTeamREQ.error.value.statusCode == 400  ){
+    if (addTeamREQ.error.value.data?.code == "CannotConnectSameUserToManyPlayers"){
+
+      teamForm.value?.setErrors([{path:'players' ,message:`لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب`}])
+    }else if (addTeamREQ.error.value.data?.code == "UserAlreadyExistInTournamentAsPlayerError"){
+      teamForm.value?.setErrors([{path:'players' ,message:`احد الاعبين موجود بالفعل في البطولة`}])
+
+    }
+    
+
     
   }
  }
