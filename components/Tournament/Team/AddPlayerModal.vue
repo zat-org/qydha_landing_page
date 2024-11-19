@@ -33,7 +33,7 @@ const props = defineProps<{ team_id: string }>()
 const getAllPlayers = await useTournamentPlayer().getPlayer()
 await getAllPlayers.fetchREQ(tour_id, false)
 const players = computed(() => {
-  return getAllPlayers.data.value?.data
+  return getAllPlayers.data.value?.data.items
 })
 const state = reactive({ playerId: "" })
 const schema = object({ playerId: string().required() })

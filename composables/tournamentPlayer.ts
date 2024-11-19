@@ -27,14 +27,14 @@ export const useTournamentPlayer = () => {
 
     const tourId = ref()
     const hasTeam = ref<boolean|null>()
-    const page = ref<number|null>()
+    const page = ref<number>()
     const { data, pending, error, refresh, status, execute } = await useAsyncData
       <{data:{items:IPlayer[],totalCount:number,currentPage:number },message:string},
         { code: string, errors: { [key: string]: string[] }, message: string }>(
           'getPlayer',
-          () => $api(`/tournaments/${tourId.value}/players`, { query: { HasTeam: hasTeam.value,page:page.value } }), { immediate: false }
+          () => $api(`/tournaments/${tourId.value}/players`, { query: { HasTeam: hasTeam.value,PageNumber:page.value } }), { immediate: false }
         );
-    const fetchREQ = async (tour_id: string, has_team: boolean|null =null, _page: number | null = null ) => {
+    const fetchREQ = async (tour_id: string, has_team: boolean|null =null, _page: number = 1 ) => {
       tourId.value = tour_id
       hasTeam.value = has_team
       page.value  =_page

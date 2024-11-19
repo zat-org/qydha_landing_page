@@ -1,5 +1,10 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'flex flex-col  grow justify-between' } }">
+  <UCard
+    :ui="{
+      base: 'flex flex-col h-full ',
+      body: { base: 'flex flex-col  grow justify-between' },
+    }"
+  >
     <template #header> players </template>
     <UTable
       :rows="players"
@@ -21,11 +26,16 @@
       </template>
       <template #team-data="{ row }">
         <p v-if="row.teamName">{{ row.teamName }}</p>
-        <p v-else> no team</p>
-
+        <p v-else>no team</p>
       </template>
     </UTable>
-    <UPagination v-model="page" :total="total" :page-count="10"  class="mx-auto"/>
+
+    <UPagination
+      v-model="page"
+      :total="total"
+      :page-count="10"
+      class="mx-auto"
+    />
     <template #footer>
       <div class="flex justify-between items-center">
         <UButton label="add" @click="openCreateModal" />
@@ -49,13 +59,19 @@ const modal = useModal();
 const toast = useToast();
 const tour_id = route.params.id.toString();
 const getplayerREQ = await useTournamentPlayer().getPlayer();
-await getplayerREQ.fetchREQ(tour_id,null);
-const page =ref(getplayerREQ.data.value?.data.currentPage!)
-const total =ref(getplayerREQ.data.value?.data.totalCount!) 
-watch(page,async(newValue,oldValue)=>{
-    await getplayerREQ.fetchREQ(tour_id,null,page.value)
-    total.value =getplayerREQ.data.value?.data.totalCount! 
-})
+
+const page = ref();
+const total = ref();
+await getplayerREQ.fetchREQ(tour_id, null);
+if (getplayerREQ.status.value == "success") {
+  page.value = getplayerREQ.data.value?.data.currentPage;
+  total.value = getplayerREQ.data.value?.data.totalCount;
+}
+watch(page, async (newValue, oldValue) => {
+  await getplayerREQ.fetchREQ(tour_id, null, page.value);
+  total.value = getplayerREQ.data.value?.data.totalCount!;
+});
+
 const cols = [
   { key: "name", label: "الاسم" },
   { key: "phone", label: "الهاتف" },
@@ -66,15 +82,21 @@ const cols = [
   { key: "action", label: "#" },
 ];
 
-const players = computed(() => getplayerREQ.data.value?.data.items);
+const players = computed(() => {
+  console.log("hello ");
+  return getplayerREQ.data.value?.data.items;
+});
 const openCreateModal = () => {
   modal.open(CreatePlayerModal);
 };
 const deleteREQ = await useTournamentPlayer().deletePlayer();
 const onDeletePlayer = async (row: IPlayer) => {
-  await deleteREQ.fetchREQ(row.tournamentId, row.id);
-  if (deleteREQ.status.value == "success") {
-    toast.add({ title: "delete done successfuly" });
+  const selectedPlayer = players.value?.find((p) => p.id == row.id);
+  if (selectedPlayer) {
+    await deleteREQ.fetchREQ(selectedPlayer.tournamentId, selectedPlayer.id);
+    if (deleteREQ.status.value == "success") {
+      toast.add({ title: "delete done successfuly" });
+    }
   }
 };
 const openUpdateModal = (row: IPlayer) => {

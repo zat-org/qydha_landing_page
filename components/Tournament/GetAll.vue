@@ -78,10 +78,10 @@ const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
 const options = [
-  { label: "all tournament ", value: undefined },
-  { value: "Upcoming", label: "el QADEma" },
-  { value: "Running", label: "sh3ala" },
-  { label: "done", value: "Finished" },
+  { label: "كل البطولات المتاحة", value: undefined },
+  { value: "Upcoming", label: "القادمة" },
+  { value: "Running", label: "الجارية" },
+  { label: "المنتهية", value: "Finished" },
 ];
 const tourApi = useTournament();
 const getAllREQ = await tourApi.getAllTournament();

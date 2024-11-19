@@ -86,7 +86,10 @@ const columns = [
 
 const delteTeamREQ = await useTourrnamentTeam().deleteTourTeam()
 const deleteTeam = async (row: ITeam) => {
-  await delteTeamREQ.fetchREQ(tour_id, row.id.toString())
+  const selectedteam = teams.value?.find(t=>t.id == row.id)
+  if (selectedteam){
+    await delteTeamREQ.fetchREQ(tour_id, selectedteam.id.toString())
+  }
 }
 
 const openUpdateModal = (row: ITeam) => {
