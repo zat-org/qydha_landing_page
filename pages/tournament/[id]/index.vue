@@ -1,7 +1,7 @@
 <template>
-<ClientOnly>
+
   <TournamentGet :id="id"/>
-</ClientOnly>
+
 </template>
 
 <script lang="ts" setup>

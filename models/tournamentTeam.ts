@@ -49,4 +49,6 @@ name: string
 phone: string
 qydhaUserData: MinUser
 tournamentId: string
+teamId: number|null
+teamName: null|string
 }

@@ -5,11 +5,13 @@ export const useTourrnamentTeam = () => {
 
   const getAllTourTeams = async () => {
     const tourId = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: ITeam[], message: string }>(
+    const page = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: { items: ITeam[], totalCount: number, currentPage: number }, message: string }>(
       'getAllTourTeams',
-      () => $api(`/tournaments/${tourId.value}/teams`), { immediate: false }
+      () => $api(`/tournaments/${tourId.value}/teams`, { query: { page: page.value } }), { immediate: false }
     );
-    const fetchREQ = async (tour_id: string) => {
+    const fetchREQ = async (tour_id: string, _page: number | null = null) => {
+      page.value = _page
       tourId.value = tour_id
       await execute()
     }

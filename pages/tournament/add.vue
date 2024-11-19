@@ -1,15 +1,11 @@
 <template>
-  
-    <ClientOnly>
-    <TournamentAdd   />
+  <ClientOnly>
+    <TournamentAdd />
   </ClientOnly>
-  
 </template>
 
 <script lang="ts" setup>
-definePageMeta({middleware:'auth'})
+definePageMeta({ middleware: "auth" });
 </script>
 
-<style>
-
-</style>
+<style></style>

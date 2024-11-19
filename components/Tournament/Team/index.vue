@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow' } }">
+  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow flex flex-col  justify-between' } }">
     <template #header>
       <p>
         {{ getTourREQ.data.value?.data.name }}
@@ -32,11 +32,10 @@
         </UButtonGroup>
       </template>
     </UTable>
-
+    <UPagination v-model="page"  :page-count="10" :total="total" class="mx-auto" />
     <template #footer>
       <div class="flex justify-between items-center ">
         <UButton label="اضافة" @click="openAddModal" />
-
         <UButton label="عودة " color="red" @click="navigateTo('/tournament/' + tour_id)" />
       </div>
     </template>
@@ -67,16 +66,22 @@ if (getTourREQ.status.value == "error") {
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams()
 await getTeamsREQ.fetchREQ(tour_id)
 
+const page  = ref(getTeamsREQ.data.value?.data.currentPage!)
+const total = ref(getTeamsREQ.data.value?.data.totalCount!)
 
 const teams = computed(() => {
   if (getTeamsREQ.data.value)
-    return getTeamsREQ.data.value.data
+    return getTeamsREQ.data.value.data.items
 })
+
+watch (page ,async(newValue,oldvalue)=>{
+    await getTeamsREQ.fetchREQ(tour_id,page.value)
+    total.value = getTeamsREQ.data.value?.data.totalCount!
+  })
 const columns = [
   { label: 'الاسم', key: 'name' },
   { label: 'الاعبين', key: 'players' },
   { label: '#', key: 'actions' },
-
 ]
 
 const delteTeamREQ = await useTourrnamentTeam().deleteTourTeam()

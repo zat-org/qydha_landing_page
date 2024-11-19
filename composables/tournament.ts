@@ -7,6 +7,7 @@ export const useTournament = () => {
   const { $api } = useNuxtApp();
   const getAllTournament = async () => {
     const padg = ref<number>()
+    const state = ref<string | null>()
     const { data, pending, error, refresh, status, execute } = await useAsyncData<
       {
         mnessage: string,
@@ -21,9 +22,10 @@ export const useTournament = () => {
         }
       }>(
         'getAllTournament',
-        () => $api('/tournaments/dashboard', { query: { PageNumber: padg.value, PageSize: '10' } }), { immediate: false }
+        () => $api('/tournaments/dashboard', { query: { state: state.value, PageNumber: padg.value, PageSize: '10' } }), { immediate: false }
       );
-    const fetchREQ = async (padge: number = 1) => {
+    const fetchREQ = async (padge: number = 1, _state: string | null = null) => {
+      state.value = _state
       padg.value = padge
       await execute()
     }
@@ -82,15 +84,15 @@ export const useTournament = () => {
       'updateTour',
       () => $api(`/tournaments/${tour_id.value}`, {
         method: "PUT", body: newTour.value
-      }),{immediate:false}
+      }), { immediate: false }
     );
 
-    const fetchREQ = async (_tour_id: string,_new_tour:ITournamentUpdate) => {
+    const fetchREQ = async (_tour_id: string, _new_tour: ITournamentUpdate) => {
       tour_id.value = _tour_id
-      newTour.value=_new_tour
+      newTour.value = _new_tour
       newTour.value.endAt = new Date(_new_tour.endAt).toISOString().split('T')[0] as string
       newTour.value.startAt = new Date(_new_tour.startAt).toISOString().split('T')[0] as string
-      console.log(newTour.value.endAt,newTour.value.startAt )
+      console.log(newTour.value.endAt, newTour.value.startAt)
       await execute()
     }
     return { data, pending, error, refresh, status, fetchREQ }
@@ -127,5 +129,5 @@ export const useTournament = () => {
     }
     return { data, pending, error, refresh, fetchREQ, status }
   }
-  return { getAllTournament, createTournament, getTourById, updatTourQydhaAndOwner, updateTourLogo,updateTour  }
+  return { getAllTournament, createTournament, getTourById, updatTourQydhaAndOwner, updateTourLogo, updateTour }
 }

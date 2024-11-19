@@ -150,7 +150,7 @@ const onSubmit = async () => {
 
 
 const getLocation = () => {
-  modal.open(MapInputModal, {
+  modal.open(MapInputModal, {lat:state.location.latitude  , log:state.location.longitude,
     onSuccess(lat: number, log: number) {
       state.location.latitude = lat
       state.location.longitude = log
