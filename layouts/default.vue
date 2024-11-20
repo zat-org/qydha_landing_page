@@ -1,5 +1,5 @@
 <template>
-    <Header ></Header>
+    <DashboardHeader ></DashboardHeader>
     <main class="  flex grow    justify-between  " > 
       <!-- <SideBar  class=" w-[200px]" v-if="logedin"/> -->
       <div class="  my-[20px]  w-[80%]  mx-auto"  >
@@ -7,8 +7,8 @@
        <slot ></slot>
      </div>
     </main>
-    <Footer ></Footer>
- 
+    <!-- <Footer ></Footer>
+  -->
 </template>
 
 <script lang="ts" setup>

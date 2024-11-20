@@ -14,8 +14,9 @@
         />
       </div>
     </template>
-    <UTabs :items="items" v-model="tabIndex" @change="changeIndex">
+    <UTabs :items="items" :content="true" v-model="tabIndex" @change="changeIndex">
       <template #data>
+        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <!-- Users Statistics Card -->
           <UCard class="bg-gradient-to-br from-primary-50 to-primary-100">
@@ -34,8 +35,8 @@
           </UCard>
         </div>
       </template>
-      <template #map> 
-        <Map v-if="tabIndex ==1" ></Map>
+      <template #map="{item,index}">
+        <Map v-if="tabIndex ==index" ></Map>
       </template>
     </UTabs>
   </UCard>
