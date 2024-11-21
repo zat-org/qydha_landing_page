@@ -26,7 +26,11 @@
       :ui="{ td: { padding: 'py-1 sm:py-1' }, th: { padding: 'py-1 sm:py-1' } }"
       @select="select"
       :loading="usersREQ.status.value == 'pending'"
-    ></UTable>
+    >
+  <template #phone-data="{row}" dir="ltr">
+    <p>{{ (row.phone as string).replace('+','') }}</p>
+  </template>
+  </UTable>
     <UPagination
       v-model="page"
       :page-count="10"
@@ -39,10 +43,10 @@
 <script lang="ts" setup>
 import type { User } from "~/models/user";
 
-definePageMeta({
-  keepAlive: true,
-  scrollPos: 0,
-});
+// definePageMeta({
+//   keepAlive: true,
+//   scrollPos: 0,
+// });
 const usersREQ = await useUsers().getAllUsers();
 await usersREQ.fetchREQ("");
 const usersNumebr = usersREQ.data.value?.data.totalCount;
