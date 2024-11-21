@@ -22,7 +22,7 @@ const boardlink = computed(() => {
 })
 const rows = [
   {name:'ذات   ',link:`${boardlink.value}/?theme=zat&orienation=landscape&showPlayers=false`},
-  {name:'ثقيدها  ' ,link:`${boardlink.value}/?theme=qydha&orienation=landscape&showPlayers=false`},
+  {name:'قيدها  ' ,link:`${boardlink.value}/?theme=qydha&orienation=landscape&showPlayers=false`},
   {name:'قيدها للهاتف بدون صور الاعبين' ,link:`${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=false`},
   {name:'قيدها للهاتف بصور الاعبين',link:`${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=true`},
   {name:'صور الاعبين TOP ',link:`${boardlink.value}/cam/top`},

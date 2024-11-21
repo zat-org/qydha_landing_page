@@ -36,7 +36,7 @@
       </template>
     </UTabs>
 
-    <template #footer>
+    <template #header>
       <UButton @click="openModal()" color="green" label="add" />
     </template>
   </UCard>

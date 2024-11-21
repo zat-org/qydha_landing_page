@@ -52,7 +52,7 @@
 
   <template #footer>
       <div class="flex justify-between">
-        <UButton color="red" @click="navigateTo('/user')"> back</UButton>
+        <UButton color="red" @click="router.back()"> back</UButton>
       </div>
     </template>
 
@@ -62,7 +62,7 @@
 
 <script lang="ts" setup>
 import { useMyAuthStore } from '~/store/Auth';
-
+const router  = useRouter()
 const props = defineProps<{ id: string }>()
 const userApi = useUsers()
 const getREQ = await userApi.getSingleUser()

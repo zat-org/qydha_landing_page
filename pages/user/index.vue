@@ -1,6 +1,7 @@
 <template>
-  
-    <User />
+    <keep-alive>
+        <User />
+    </keep-alive>
  
 </template>
 
