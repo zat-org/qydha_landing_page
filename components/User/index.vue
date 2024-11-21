@@ -80,7 +80,7 @@ watch(
     await usersREQ.fetchREQ(query.value, page.value, exactSearch.value);
     items.value = usersREQ.data.value?.data.totalCount!;
   },
-  { immediate: true }
+ 
 );
 </script>
 
