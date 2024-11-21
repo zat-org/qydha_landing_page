@@ -20,7 +20,7 @@
       <UButton
         :color="target == 'User' ? 'green' : 'gray'"
         @click="target = 'User'"
-        label="المسجلين"
+        label="مستخدم"
       />
     </UButtonGroup>
     <UFormGroup label="المستخدم" name="user" v-if="target == 'User'">

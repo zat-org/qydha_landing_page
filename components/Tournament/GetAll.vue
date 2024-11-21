@@ -45,7 +45,10 @@
         >
           <template #label>
             <span v-if="stateQ.length" class="truncate">{{
-              options.filter(opt=>stateQ.includes(opt.value) ).map(opt =>opt.label).join(", ")
+              options
+                .filter((opt) => stateQ.includes(opt.value))
+                .map((opt) => opt.label)
+                .join(", ")
             }}</span>
             <span v-else>Select state</span>
           </template>
@@ -98,7 +101,7 @@ const options = [
 ];
 const tourApi = useTournament();
 const getAllREQ = await tourApi.getAllTournament();
-await getAllREQ.fetchREQ();
+await getAllREQ.fetchREQ(1, stateQ.value);
 const tournaments = computed(() => {
   if (getAllREQ.status.value == "success" && getAllREQ.data.value) {
     return getAllREQ.data.value?.data.items;
@@ -107,22 +110,6 @@ const tournaments = computed(() => {
 
 const rows = computed(() => {
   let results = tournaments.value ?? [];
-  // if (nameQ.value) {
-  //   results = results.filter((t) => {
-  //     return t.name
-  //       .toLowerCase()
-  //       .includes((nameQ.value as string).toLowerCase());
-  //   });
-  // }
-  // if (ownerQ.value){
-  //   results = results.filter((t)=>{
-  //     return t.owner.username?.toLowerCase().includes((ownerQ.value as string).toLowerCase())
-  //   })
-  // }
-  // filter with qydha
-  // results = results.filter((t) => {
-  //   return t.showInQydha == QydhaQ.value
-  // })
 
   return results;
 });
