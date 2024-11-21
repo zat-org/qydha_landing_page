@@ -72,6 +72,9 @@ const select = (row: User) => {
 watch(
   [page, query, exactSearch],
   async (newValue, oldValue) => {
+    if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]) {
+      page.value = 1;
+    }
     await router.replace({
       query: {
         search: query.value || undefined,
@@ -80,7 +83,6 @@ watch(
       },
     });
     await usersREQ.fetchREQ(query.value, page.value, exactSearch.value);
-    page.value =  1
     items.value = usersREQ.data.value?.data.totalCount!;
   },
  
