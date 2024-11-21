@@ -79,7 +79,8 @@ watch(
         exact: `${exactSearch.value}`,
       },
     });
-    await usersREQ.fetchREQ(query.value, 1, exactSearch.value);
+    await usersREQ.fetchREQ(query.value, page.value, exactSearch.value);
+    page.value =  1
     items.value = usersREQ.data.value?.data.totalCount!;
   },
  
