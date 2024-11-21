@@ -37,7 +37,10 @@
 
         <UInput dir="ltr" v-model="state.otp" type="text" icon="i-heroicons-key" placeholder="123456" />
       </UFormGroup>
-
+     
+      <UAlert icon="material-symbols:error-outline" color="red" variant="soft" v-if="confirmREQ.error.value"
+        :description="confirmREQ.error.value.statusCode==400 ?'الكود غير صحيح':' has erro '" />
+     
       <div class="flex justify-between items-center ">
 
         <UButton type="button" color="red" @click="onReset">

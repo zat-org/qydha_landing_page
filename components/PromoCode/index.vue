@@ -1,14 +1,12 @@
 <template>
 
-<div class="flex flex-col justify-center    h-full">
   <UTable :rows="rows" :columns="cols" :ui="{td:{padding:'py-1'}}">
     <template #user-data="{row}"> 
       <span>{{row.user.username}}</span>
     </template>
   </UTable> 
   
-  <UPagination class="mx-auto mt-auto " v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!" />
-</div>
+  <UPagination class="mx-auto mb-[50px]  " v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!" />
     <!-- <template #footer>
       <div class="flex justify-end"> 
         <UButton label="اضافة بروموكود" @click="openModal" />
@@ -42,8 +40,8 @@ const openModal = ()=>{
 
 const page = ref(getREQ.data.value?.data.currentPage!)
 
-watch(page,(newValue,oldValue)=>{
-  getREQ.fetchREQ(newValue.toString())
+watch(page,async(newValue,oldValue)=>{
+ await  getREQ.fetchREQ(newValue.toString())
 })
 
 </script>

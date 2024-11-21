@@ -5,21 +5,27 @@ export const useUsers = () => {
   const getAllUsers = async () => {
     const searchtoken = ref()
     const pageNumber = ref()
-
+    const exactSearch = ref(false)
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData<{
         data: { currentPage: number, hasNext: boolean, hasPrevious: boolean, items: User[], pageSize: number, totalCount: number, totalPages: number }, message: string
       }>(
         'getAllUsers',
-        () => $api('/users', { params: { SearchToken: searchtoken.value ,pageNumber:pageNumber.value
-        } }), { immediate: false }
+        () => $api('/users', {
+          params: {
+            SearchToken: searchtoken.value,
+            pageNumber: pageNumber.value,
+            Matching: exactSearch.value ? 'Exact' : 'Like'
+          }
+        }), { immediate: false }
       );
 
-    const fetchREQ = async (search_token: string,_pageNumber?:number) => {
+    const fetchREQ = async (search_token: string, _pageNumber?: number, _exactSearch: boolean = false) => {
       searchtoken.value = search_token
-      if (_pageNumber){
-        pageNumber.value =_pageNumber
+      if (_pageNumber) {
+        pageNumber.value = _pageNumber
       }
+      exactSearch.value = _exactSearch
       await execute()
 
     }
@@ -32,8 +38,8 @@ export const useUsers = () => {
       'updateUser',
       () => $api(`/users/${user_id.value}/roles`, { method: "patch", body: body.value }), { immediate: false }
     );
-    const fetchREQ = async (_user_id:string,roles: string[]) => {
-      user_id.value =_user_id
+    const fetchREQ = async (_user_id: string, roles: string[]) => {
+      user_id.value = _user_id
       body.value.roles = roles
       await execute()
     }
@@ -41,7 +47,7 @@ export const useUsers = () => {
   }
   const getSingleUser = async () => {
     const user_id = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<{data:ISingleUser,message:string}>(
+    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: ISingleUser, message: string }>(
       'getSingleUser',
       () => $api(`/users/${user_id.value}`), { immediate: false }
     );
@@ -51,5 +57,5 @@ export const useUsers = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
-  return { getAllUsers, updateUser,getSingleUser }
+  return { getAllUsers, updateUser, getSingleUser }
 }

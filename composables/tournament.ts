@@ -7,7 +7,7 @@ export const useTournament = () => {
   const { $api } = useNuxtApp();
   const getAllTournament = async () => {
     const padg = ref<number>()
-    const state = ref<string | null>()
+    const state = ref<string []>([])
     const { data, pending, error, refresh, status, execute } = await useAsyncData<
       {
         mnessage: string,
@@ -22,9 +22,9 @@ export const useTournament = () => {
         }
       }>(
         'getAllTournament',
-        () => $api('/tournaments/dashboard', { query: { state: state.value, PageNumber: padg.value, PageSize: '10' } }), { immediate: false }
+        () => $api('/tournaments/dashboard', { query: { states: state.value, PageNumber: padg.value, PageSize: '10' } }), { immediate: false }
       );
-    const fetchREQ = async (padge: number = 1, _state: string | null = null) => {
+    const fetchREQ = async (padge: number = 1, _state: string [] =[]) => {
       state.value = _state
       padg.value = padge
       await execute()

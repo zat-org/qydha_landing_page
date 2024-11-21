@@ -35,7 +35,21 @@
     <template #header>
       <div class="flex justify-between items-center">
         <h1 class="text-2xl">البطولات</h1>
-        <USelect :options="options" v-model="stateQ" />
+        <USelectMenu
+          :options="options"
+          value-attribute="value"
+          option-attribute="label"
+          class="w-[200px]"
+          multiple
+          v-model="stateQ"
+        >
+          <template #label>
+            <span v-if="stateQ.length" class="truncate">{{
+              options.filter(opt=>stateQ.includes(opt.value) ).map(opt =>opt.label).join(", ")
+            }}</span>
+            <span v-else>Select state</span>
+          </template>
+        </USelectMenu>
         <UButton
           v-if="
             user?.user.roles.includes('SuperAdmin') ||
@@ -68,7 +82,7 @@
 <script lang="ts" setup>
 import type { ITournament } from "~/models/tournament";
 
-const stateQ = ref();
+const stateQ = ref<string[]>(["Upcoming", "Running", "Finished"]);
 const ownerQ = ref();
 const nameQ = ref();
 const QydhaQ = ref(false);
@@ -78,7 +92,6 @@ const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
 const options = [
-  { label: "كل البطولات المتاحة", value: undefined },
   { value: "Upcoming", label: "القادمة" },
   { value: "Running", label: "الجارية" },
   { label: "المنتهية", value: "Finished" },

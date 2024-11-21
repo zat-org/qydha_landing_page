@@ -43,7 +43,7 @@ export const useAuth = () => {
 const confirmLoginWithQydha = async()=>{
   const requst_id = ref()
   const body =reactive<{code:string}>({code:""})
-  const { data, pending, error, refresh,status,execute } = await useAsyncData<{data:IUserData,message:string}>(
+  const { data, pending, error, refresh,status,execute } = await useAsyncData<{data:IUserData,message:string},{code:string}>(
       'confirmLoginWithQydha ',
       () => $api(`/auth/login-with-qydha/${requst_id.value}/confirm`,{method:"POST" ,body:body}),{immediate:false}
   );
