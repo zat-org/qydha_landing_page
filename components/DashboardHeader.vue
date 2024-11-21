@@ -14,7 +14,11 @@
       class="mr-2 block lg:hidden"
     ></UButton>
 
-    <UHorizontalNavigation :links="links" class="hidden lg:block" />
+    <UHorizontalNavigation :links="links" class="hidden lg:block" >
+      <template #icon="{link,isActive}" >
+         <component  :is="link.iconComponent" class="text-xl hover:text-black z-10" > </component>  
+      </template>
+    </UHorizontalNavigation>
 
     <UButton
       v-if="!authstore.logedin"
@@ -45,18 +49,31 @@
 <script setup lang="ts">
 import { useMyAuthStore } from "~/store/Auth";
 import SideBar from "./SideBar.vue";
+import iconUser from'~/components/Icon/User.vue'
+import iconTournament from'~/components/Icon/Tournament.vue'
+import iconCode from'~/components/Icon/Code.vue'
+import iconNotification from'~/components/Icon/Notification.vue'
+import iconFiles from'~/components/Icon/Files.vue'
+import iconChart from'~/components/Icon/Chart.vue'
+import iconProgramingCode from'~/components/Icon/ProgramingCode.vue'
+import iconLive from'~/components/Icon/Live.vue'
+
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 const authstore = useMyAuthStore();
 // const authApi = useAuth();
 import { type VerticalNavigationLink, type DropdownItem } from "#ui/types";
+import type { Component } from "vue";
+interface CustomNavigationLink extends VerticalNavigationLink {
+  iconComponent?: Component
+}
 const links = computed(() => {
-  const result: VerticalNavigationLink[] = [];
+  const result: CustomNavigationLink[] = [];
   if (user.value) {
     result.push({
       label: "البطولات",
       to: "/tournament",
-      icon: "mdi:tournament",
+      iconComponent:iconTournament
     });
   }
   if (
@@ -64,16 +81,15 @@ const links = computed(() => {
     userStore.roles?.includes("StaffAdmin")
   ) {
     result.push(
-      { label: "اكواد ", to: "/influncerCode", icon: "mdi:voucher" },
-      // {label:"اكواد ",to:"/promoCode",icon:"mdi:voucher" ,},
-      { label: "المستخدمين ", to: "/user", icon: "mdi:users" },
-      { label: "الاشعارات ", to: "/notification", icon: "mdi:bell" },
-      { label: "الملف الثابت", to: "/assets", icon: "mdi:files" },
-      { label: "الاحصائيات", to: "/statistics", icon: "mdi:chart-line" },
+      { label: "اكواد ", to: "/influncerCode", icon:'',iconComponent:iconCode },
+      { label: "المستخدمين ", to: "/user", iconComponent :iconUser },
+        { label: "الاشعارات ", to: "/notification",iconComponent:iconNotification },
+      { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
+      { label: "الاحصائيات", to: "/statistics", iconComponent:iconChart },
       {
         label: "الاكونتات البرمجية ",
         to: "/ServiceAccount",
-        icon: "pajamas:code",
+        iconComponent: iconProgramingCode,
       }
     );
   }
@@ -81,12 +97,11 @@ const links = computed(() => {
     result.push({
       label: "البث",
       to: "/stream",
-      icon: "material-symbols-light:live-tv-outline",
+      iconComponent:iconLive,
     });
   }
   return result;
 });
-
 const onLogOut = () => {
   user.value = null;
   return navigateTo("/");
