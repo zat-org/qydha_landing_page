@@ -49,10 +49,12 @@ const usersNumebr = usersREQ.data.value?.data.totalCount;
 const route = useRoute();
 const router = useRouter();
 const query = ref(route.query.search?.toString() || "");
+
 const exactSearch = ref<boolean>(route.query.exact === "true");
 const page = ref(
   Number(route.query.page) || usersREQ.data.value?.data.currentPage!
 );
+await usersREQ.fetchREQ(query.value,page.value,exactSearch.value);
 const items = ref(usersREQ.data.value?.data.totalCount!);
 
 const rows = computed(() => {
