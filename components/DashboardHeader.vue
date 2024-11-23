@@ -57,6 +57,8 @@ import iconFiles from'~/components/Icon/Files.vue'
 import iconChart from'~/components/Icon/Chart.vue'
 import iconProgramingCode from'~/components/Icon/ProgramingCode.vue'
 import iconLive from'~/components/Icon/Live.vue'
+import iconMarket from'~/components/Icon/Market.vue'
+
 
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
@@ -86,6 +88,8 @@ const links = computed(() => {
         { label: "الاشعارات ", to: "/notification",iconComponent:iconNotification },
       { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
       { label: "الاحصائيات", to: "/statistics", iconComponent:iconChart },
+      { label: "التسويق", to: "/marketing", iconComponent:iconMarket },
+
       {
         label: "الاكونتات البرمجية ",
         to: "/ServiceAccount",

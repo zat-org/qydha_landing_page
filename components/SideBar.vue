@@ -1,40 +1,85 @@
 <template>
-    <USlideover side="left" class="z-[100]" :ui="{base:'w-[200px] ' ,width: 'w-[250px] max-w-[250px]',}">
-        <UVerticalNavigation :links="links" :ui="{size:'text-lg'}"/>
-    </USlideover>
-
+  <USlideover
+    side="left"
+    class="z-[100]"
+    :ui="{ base: 'w-[200px] ', width: 'w-[250px] max-w-[250px]' }"
+  >
+    <UVerticalNavigation :links="links" :ui="{ size: 'text-lg' }">
+      <template #icon="{ link, isActive }">
+        <component
+          :is="link.iconComponent"
+          class="text-xl hover:text-black z-10"
+        >
+        </component>
+      </template>
+    </UVerticalNavigation>
+  </USlideover>
 </template>
 
 <script lang="ts" setup>
-import { useMyAuthStore } from '~/store/Auth';
+import { useMyAuthStore } from "~/store/Auth";
+import iconUser from "~/components/Icon/User.vue";
+import iconTournament from "~/components/Icon/Tournament.vue";
+import iconCode from "~/components/Icon/Code.vue";
+import iconNotification from "~/components/Icon/Notification.vue";
+import iconFiles from "~/components/Icon/Files.vue";
+import iconChart from "~/components/Icon/Chart.vue";
+import iconProgramingCode from "~/components/Icon/ProgramingCode.vue";
+import iconLive from "~/components/Icon/Live.vue";
+import iconMarket from "~/components/Icon/Market.vue";
 
-const slideover = useSlideover()
-const userStore =useMyAuthStore()
-import {type VerticalNavigationLink  }from'#ui/types'
-const links :VerticalNavigationLink[] =[
-    {label:"المستخدم",to:"/deleteuser",icon:"mdi:user",click(...args) { slideover.close() },},
-    {label:"البطولات",to:"/tournament",icon:"mdi:tournament",click(...args) { slideover.close() },},
-  
-    ]
-if(userStore.roles?.includes('SuperAdmin')||userStore.roles?.includes('StaffAdmin')){
-    links.push(
-    {label:"اكواد ",to:"/influncerCode",icon:"mdi:voucher",click(...args) { slideover.close() },},
-    // {label:"اكواد ",to:"/promoCode",icon:"mdi:voucher",click(...args) { slideover.close() },},
-    {label:"المستخدمين ",to:"/user",icon:"mdi:users",click(...args) { slideover.close() },},
-    {label:"الاشعارات ",to:"/notification",icon:"mdi:bell",click(...args) { slideover.close() },},
-    {label:"الاكونتات البرمجية ",to:"/ServiceAccount",icon:"pajamas:code",click(...args) { slideover.close() },},
-    {label:"الملف الثابت",to:"/assets",icon:"mdi:files",click(...args) { slideover.close() },},
-    {label:"الاحصائيات",to:"/statistics",icon:"mdi:chart-line",click(...args) { slideover.close() },},
-    
-    )
+const slideover = useSlideover();
+const userStore = useMyAuthStore();
+import { type VerticalNavigationLink } from "#ui/types";
+interface CustomNavigationLink extends VerticalNavigationLink {
+  iconComponent?: Component;
 }
- if (userStore.roles?.includes('Streamer')){
-    links.push(
-    {label:"البث",to:"/stream",icon:"material-symbols-light:live-tv-outline",click(...args) { slideover.close() },},
-    )
- }
+
+const links = computed(() => {
+  const result: CustomNavigationLink[] = [];
+  result.push({
+    label: "البطولات",
+    to: "/tournament",
+    iconComponent: iconTournament,
+  });
+
+  if (
+    userStore.roles?.includes("SuperAdmin") ||
+    userStore.roles?.includes("StaffAdmin")
+  ) {
+    result.push(
+      {
+        label: "اكواد ",
+        to: "/influncerCode",
+        icon: "",
+        iconComponent: iconCode,
+      },
+      { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
+      {
+        label: "الاشعارات ",
+        to: "/notification",
+        iconComponent: iconNotification,
+      },
+      { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
+      { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart },
+      { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
+
+      {
+        label: "الاكونتات البرمجية ",
+        to: "/ServiceAccount",
+        iconComponent: iconProgramingCode,
+      }
+    );
+  }
+  if (userStore.roles?.includes("Streamer")) {
+    result.push({
+      label: "البث",
+      to: "/stream",
+      iconComponent: iconLive,
+    });
+  }
+  return result;
+});
 </script>
 
-<style>
-
-</style>
+<style></style>

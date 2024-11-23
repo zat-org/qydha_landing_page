@@ -70,11 +70,11 @@ export default defineNuxtConfig({
 
     },
   },
-  icon: {
-    serverBundle: {
-      collections: ['uil', 'mdi', 'heroicons', 'material-symbols', 'mingcute', 'weui', 'fontisto', 'simple-line-icons']
-    }
-  },
+  // icon: {
+  //   serverBundle: {
+  //     collections: ['uil', 'mdi', 'heroicons', 'material-symbols', 'mingcute', 'weui', 'fontisto', 'simple-line-icons']
+  //   }
+  // },
 
   devtools: {
     enabled: false,

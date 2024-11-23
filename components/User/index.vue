@@ -30,6 +30,7 @@
   <template #phone-data="{row}" dir="ltr">
     <p>{{ (row.phone as string).replace('+','') }}</p>
   </template>
+  
   </UTable>
     <UPagination
       v-model="page"

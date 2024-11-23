@@ -45,7 +45,7 @@ export const useMatch = () => {
     const match_id = ref()
     const body = ref<IMatchUpdate>()
     const { data, pending, error, refresh, execute, status } = await useAsyncData(
-      'updateMatch',
+      'updateMatch',  
       () => $api(`tournaments/${tour_id.value}/matches/${match_id.value}`, { body: body.value, method: "PUT" }), { immediate: false }
     );
     const fetchREQ = async (_tour_id: string, _match_id: string, _data: IMatchUpdate) => {
