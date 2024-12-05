@@ -1,6 +1,6 @@
 <template>
     <section id="download-section" class="flex justify-center items-center">
-        <div class="w-full lg:w-1/2 space-y-5 mt-10 lg:mt-0  text-center lg:text-right">
+        <div class="w-full lg:w-1/2 space-y-5 mt-10 lg:mt-0  text-center lg:text-right" data-aos="fade-left" data-aos-delay="300" >
             <h2 class="text-4xl leading-[3rem] ">حمِّل تطبيق قيدها <br /> للهواتف الذكية مجانًا</h2>
             <p class="ps-2 text-lg text-gray-700">
                 يمكنك الآن عبر تطبيق "قيدها" إدارة جميع عمليات حساب نقاط البلوت وإدارة الجولات بشكل تلقائي تمامًا في
@@ -17,7 +17,7 @@
             <!-- <a href="mailto:customer-support@qydha.com"
                 class="underline underline-offset-2 ">customer-support@qydha.com</a> -->
         </div>
-        <div class="w-1/3 hidden lg:flex justify-center ">
+        <div class="w-1/3 hidden lg:flex justify-center " data-aos="fade-right" data-aos-delay="600">
             <img src="@/assets/images/home_page-portrait.png" class="h-96" alt="homePage">
         </div>
     </section>

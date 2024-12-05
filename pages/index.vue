@@ -1,5 +1,5 @@
 <template>
-    <div class="px-5 space-y-20 mb-10">
+    <div class="flex flex-col px-5 gap-[180px] mb-10">
         <HomeHero />
         <HomeCalculators />
         <HomeStatistics />

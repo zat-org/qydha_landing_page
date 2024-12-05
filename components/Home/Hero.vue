@@ -1,6 +1,6 @@
 <template>
     <section id="hero" class="flex justify-center items-center ">
-        <div class="w-full lg:w-1/2 space-y-5 mt-10 lg:mt-0  text-center lg:text-right">
+        <div class="w-full lg:w-1/2 space-y-5 mt-10 lg:mt-0  text-center lg:text-right " data-aos="fade-left">
             <h2 class="text-4xl ">ماتحلى الجلسه إلا بقيدها</h2>
             <p class="ps-2 text-xl ">
                 سهلناها عليكم … تطبيق حاسبة بلوت بإنعكاس شاشتين👏
@@ -9,7 +9,7 @@
             </p>
             <UButton color="amber" class="px-10 animate-bounce" to="#download-section" padded>حمل التطبيق الان</UButton>
         </div>
-        <div class="w-1/3 hidden lg:block">
+        <div class="w-1/3 hidden lg:block" data-aos="fade-right" >
             <div class="flex justify-center items-center h-full w-full ">
                 <div class="relative h-96 w-52 mb-20 mt-10">
                     <img src="@/assets/images/baloot_page-portrait.png"
