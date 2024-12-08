@@ -9,13 +9,13 @@
 
     <UButton
       v-if="authstore.logedin"
-      size="sm"
-      color="black"
+      color="blue"
       @click="openNav"
-      class="mr-2 block lg:hidden cursor-pointer"
+      class="mr-2 block lg:hidden relative bg-transparent"
     >
-      <IconTribleDash class="w-5" />
+    <IconTribleDash class="w-5 text-black"></IconTribleDash>
     </UButton>
+    
 
     <UHorizontalNavigation :links="links" class="hidden lg:block">
       <template #icon="{ link, isActive }">
@@ -128,7 +128,6 @@ const onLogOut = () => {
 
 const slidever = useSlideover();
 const openNav = () => {
-  console.log("Hello");
   slidever.open(SideBar);
 };
 const items: DropdownItem[] | DropdownItem[][] = [
