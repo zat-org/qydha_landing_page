@@ -1,6 +1,5 @@
 <template>
   <Login />
- 
 
 </template>
 

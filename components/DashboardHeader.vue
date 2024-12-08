@@ -6,17 +6,24 @@
       class="background absolute inset-0 bg-gradient-to-r blur-xl from-white to-[#929adf]"
     ></div>
     <!-- <UButton class="" color="black" icon="material-symbols:login" variant="outline" size="xs" to="/login"> تسجيل الدخول</UButton> -->
+
     <UButton
       v-if="authstore.logedin"
+      size="sm"
       color="black"
-      icon="fontisto:nav-icon-a"
       @click="openNav"
-      class="mr-2 block lg:hidden"
-    ></UButton>
+      class="mr-2 block lg:hidden cursor-pointer"
+    >
+      <IconTribleDash class="w-5" />
+    </UButton>
 
-    <UHorizontalNavigation :links="links" class="hidden lg:block" >
-      <template #icon="{link,isActive}" >
-         <component  :is="link.iconComponent" class="text-xl hover:text-black z-10" > </component>  
+    <UHorizontalNavigation :links="links" class="hidden lg:block">
+      <template #icon="{ link, isActive }">
+        <component
+          :is="link.iconComponent"
+          class="text-xl hover:text-black z-10"
+        >
+        </component>
       </template>
     </UHorizontalNavigation>
 
@@ -49,16 +56,15 @@
 <script setup lang="ts">
 import { useMyAuthStore } from "~/store/Auth";
 import SideBar from "./SideBar.vue";
-import iconUser from'~/components/Icon/User.vue'
-import iconTournament from'~/components/Icon/Tournament.vue'
-import iconCode from'~/components/Icon/Code.vue'
-import iconNotification from'~/components/Icon/Notification.vue'
-import iconFiles from'~/components/Icon/Files.vue'
-import iconChart from'~/components/Icon/Chart.vue'
-import iconProgramingCode from'~/components/Icon/ProgramingCode.vue'
-import iconLive from'~/components/Icon/Live.vue'
-import iconMarket from'~/components/Icon/Market.vue'
-
+import iconUser from "~/components/Icon/User.vue";
+import iconTournament from "~/components/Icon/Tournament.vue";
+import iconCode from "~/components/Icon/Code.vue";
+import iconNotification from "~/components/Icon/Notification.vue";
+import iconFiles from "~/components/Icon/Files.vue";
+import iconChart from "~/components/Icon/Chart.vue";
+import iconProgramingCode from "~/components/Icon/ProgramingCode.vue";
+import iconLive from "~/components/Icon/Live.vue";
+import iconMarket from "~/components/Icon/Market.vue";
 
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
@@ -67,7 +73,7 @@ const authstore = useMyAuthStore();
 import { type VerticalNavigationLink, type DropdownItem } from "#ui/types";
 import type { Component } from "vue";
 interface CustomNavigationLink extends VerticalNavigationLink {
-  iconComponent?: Component
+  iconComponent?: Component;
 }
 const links = computed(() => {
   const result: CustomNavigationLink[] = [];
@@ -75,7 +81,7 @@ const links = computed(() => {
     result.push({
       label: "البطولات",
       to: "/tournament",
-      iconComponent:iconTournament
+      iconComponent: iconTournament,
     });
   }
   if (
@@ -83,12 +89,21 @@ const links = computed(() => {
     userStore.roles?.includes("StaffAdmin")
   ) {
     result.push(
-      { label: "اكواد ", to: "/influncerCode", icon:'',iconComponent:iconCode },
-      { label: "المستخدمين ", to: "/user", iconComponent :iconUser },
-        { label: "الاشعارات ", to: "/notification",iconComponent:iconNotification },
+      {
+        label: "اكواد ",
+        to: "/influncerCode",
+        icon: "",
+        iconComponent: iconCode,
+      },
+      { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
+      {
+        label: "الاشعارات ",
+        to: "/notification",
+        iconComponent: iconNotification,
+      },
       { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
-      { label: "الاحصائيات", to: "/statistics", iconComponent:iconChart },
-      { label: "التسويق", to: "/marketing", iconComponent:iconMarket },
+      { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart },
+      { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
 
       {
         label: "الاكونتات البرمجية ",
@@ -101,7 +116,7 @@ const links = computed(() => {
     result.push({
       label: "البث",
       to: "/stream",
-      iconComponent:iconLive,
+      iconComponent: iconLive,
     });
   }
   return result;
@@ -113,6 +128,7 @@ const onLogOut = () => {
 
 const slidever = useSlideover();
 const openNav = () => {
+  console.log("Hello");
   slidever.open(SideBar);
 };
 const items: DropdownItem[] | DropdownItem[][] = [

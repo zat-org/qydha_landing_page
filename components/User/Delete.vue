@@ -1,10 +1,22 @@
 <template>
-  <UCard >
+  <UCard  :ui="{base:'h-full  flex flex-col  ',body:{base:'grow'} }">
     <template #header>
-      <p> اعدادات المستخدم </p>
+      <div class="flex justify-between ">
+
+        <h2 class="text-2xl  mx-auto ">  اعدادات المستخدم </h2>
+        <UButton color="red" class=""   icon="mdi:delete" @click="openDeleteModal">مسح المستخدم</UButton>
+      </div>
+
     </template>
-    <div>
-<UButton color="red"   icon="mdi:delete" @click="openDeleteModal">مسح المستخدم</UButton>
+    <div class="flex flex-col gap-3  text-2xl "> 
+      <p > الاسم {{  user?.user.username  }} </p>
+      <p> الهاتف {{  user?.user.phone  }} </p>
+      <p>  الفئة {{  user?.user.roles.join(',')  }} </p>
+
+
+
+     
+
     </div>
 
 
@@ -12,8 +24,10 @@
 </template>
 
 <script lang="ts" setup>
+import { useMyAuthStore } from '~/store/Auth';
 import  UserDeleteModal  from './DeleteModal.vue';
-
+const userStore =useMyAuthStore() 
+const {user} = storeToRefs(userStore)
 const modal  =useModal()
 const openDeleteModal=()=>{
   modal.open(UserDeleteModal)

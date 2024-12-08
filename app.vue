@@ -7,7 +7,7 @@
       <NuxtPage />
     </NuxtLayout>
     <UNotifications />
-    <UModals /> 
+    <UModals />
     <USlideovers />
 
 </div>
