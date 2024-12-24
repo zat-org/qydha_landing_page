@@ -1,18 +1,20 @@
 <template>
+<div class="h-full flex flex-col justify-between">
 
-  <UTable :rows="rows" :columns="cols" :ui="{td:{padding:'py-1'}}">
+  <UTable  :rows="rows" :columns="cols" :ui="{td:{padding:'py-1'}}">
     <template #user-data="{row}"> 
       <span>{{row.user.username}}</span>
     </template>
   </UTable> 
   
-  <UPagination class="mx-auto mb-[50px]  " v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!" />
-    <!-- <template #footer>
-      <div class="flex justify-end"> 
-        <UButton label="اضافة بروموكود" @click="openModal" />
-      </div>
-    </template> -->
-
+  <UPagination class="mx-auto   " v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!" />
+  <!-- <template #footer>
+    <div class="flex justify-end"> 
+      <UButton label="اضافة بروموكود" @click="openModal" />
+    </div>
+  </template> -->
+  
+</div>
 </template>
 
 <script lang="ts" setup>
