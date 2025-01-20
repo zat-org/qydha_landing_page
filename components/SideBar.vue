@@ -4,7 +4,7 @@
     class="z-[100]"
     :ui="{ base: 'w-[200px] ', width: 'w-[250px] max-w-[250px]' }"
   >
-    <UVerticalNavigation :links="links" :ui="{ size: 'text-lg' }">
+    <UVerticalNavigation :links="links" :ui="{ size: 'text-lg' }" @click="handleNavClick">
       <template #icon="{ link, isActive }">
         <component
           :is="link.iconComponent"
@@ -80,6 +80,10 @@ const links = computed(() => {
   }
   return result;
 });
+
+const handleNavClick =()=>{
+  slideover.close()
+}
 </script>
 
 <style></style>

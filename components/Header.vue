@@ -9,11 +9,10 @@
       size="sm"
       color="black"
       @click="openNav"
-      class="mr-2 block lg:hidden cursor-pointer"
+      class="mr-2 block  cursor-pointer"
     >
       <IconTribleDash class="w-5" />
     </UButton>
-
     <div class="flex justify-center items-center mx-auto">
       <NuxtLink to="/"
         ><img
@@ -36,6 +35,7 @@
       @click="onLogOut"
       class="ml-2"
     ></UButton>
+    
   </div>
 </template>
 
