@@ -33,35 +33,37 @@
     />
 
     <template #header>
-      <div class="flex justify-between items-center">
-        <h1 class="text-2xl">البطولات</h1>
-        <USelectMenu
-          :options="options"
-          value-attribute="value"
-          option-attribute="label"
-          class="w-[200px]"
-          multiple
-          v-model="stateQ"
-        >
-          <template #label>
-            <span v-if="stateQ.length" class="truncate">{{
-              options
-                .filter((opt) => stateQ.includes(opt.value))
-                .map((opt) => opt.label)
-                .join(", ")
-            }}</span>
-            <span v-else>Select state</span>
-          </template>
-        </USelectMenu>
-        <UButton
-          v-if="
-            user?.user.roles.includes('SuperAdmin') ||
-            user?.user.roles.includes('StaffAdmin')
-          "
-          label="بطولة"
-          icon="ic:baseline-plus"
-          to="/tournament/add"
-        />
+      <div class="flex flex-col  justify-between  gap-3 w-full ">
+       <div class="flex justify-between  ">
+         <h1 class="text-2xl">البطولات</h1>
+         <UButton
+         v-if="
+              user?.user.roles.includes('SuperAdmin') ||
+              user?.user.roles.includes('StaffAdmin')
+            "
+           variant="outline"
+            icon="ic:baseline-plus"
+            to="/tournament/add"
+            />
+       </div>
+          <USelectMenu
+            :options="options"
+            value-attribute="value"
+            option-attribute="label"
+            class="w-[200px] mx-auto"
+            multiple
+            v-model="stateQ"
+          >
+            <template #label>
+              <span v-if="stateQ.length" class="truncate">{{
+                options
+                  .filter((opt) => stateQ.includes(opt.value))
+                  .map((opt) => opt.label)
+                  .join(", ")
+              }}</span>
+              <span v-else>Select state</span>
+            </template>
+          </USelectMenu>
       </div>
     </template>
   </UCard>

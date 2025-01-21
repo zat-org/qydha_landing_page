@@ -14,7 +14,17 @@ export default defineNuxtConfig({
 
 
 
-  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos"],
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    'pinia-plugin-persistedstate/nuxt',
+    "nuxt-aos",
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/color-mode",
+    "@vueuse/nuxt",
+    "@nuxt/icon",
+    "@nuxt/fonts"
+  ],
 
   css: ["~/assets/css/main.css"],
 
@@ -58,7 +68,8 @@ export default defineNuxtConfig({
   },
 
   colorMode: {
-    preference: "light",
+    classSuffix: "",
+    preference: "light"
   },
 
   compatibilityDate: "2024-08-20",
@@ -70,6 +81,7 @@ export default defineNuxtConfig({
 
     },
   },
+
   // icon: {
   //   serverBundle: {
   //     collections: ['uil', 'mdi', 'heroicons', 'material-symbols', 'mingcute', 'weui', 'fontisto', 'simple-line-icons']
@@ -79,4 +91,20 @@ export default defineNuxtConfig({
   devtools: {
     enabled: false,
   },
+
+  tailwindcss: {
+    exposeConfig: true,
+    editorSupport: true
+  },
+
+  imports: {
+    imports: [{
+      from: "tailwind-variants",
+      name: "tv"
+    }, {
+      from: "tailwind-variants",
+      name: "VariantProps",
+      type: true
+    }]
+  }
 });
