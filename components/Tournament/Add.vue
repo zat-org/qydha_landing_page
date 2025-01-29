@@ -1,37 +1,45 @@
 <template>
   <UCard
     :ui="{
-      base: 'flex h-full flex-col ',
-      body: { base: 'grow flex items-center justify-center      ' },
+      base: '   ',
+      body: {
+        base: 'flex  h-[400px] md:h-[350  px] justify-center overflow-auto  ',
+      },
       header: {
-        base:'flex-col ',
+        base: 'flex-col  sticky top-0  z-10 bg-white rounded-xl ',
+        padding: 'p-2   sm:p-2 ',
+      },
+      footer: {
         padding: 'p-2   sm:p-2 ',
       },
     }"
   >
-    <template #header>
-      <div class="flex justify-between items-center">
-
+    <template #header class="reactive">
+      <UButton
+        color="red"
+        variant="outline"
+        sie="xl"
+        icon="mingcute:exit-fill"
+        @click="navigateTo('/tournament')"
+      />
+      <!-- <div class="flex justify-between items-center ">
         <h1
-        class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent "
+          class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary-600 to-primary-400 bg-clip-text text-transparent"
         >
-
-        نموذج متعدد الخطوات
-      </h1>
-      <UButton  color="red" variant="outline" sie="xl" icon="mingcute:exit-fill" @click="navigateTo('/tournament')" />
-    </div>
-      <!-- {{ completedSteps }} ---  {{ currentStep }} -->
+          {{ steps.find(s=>s.id==currentStep)?.title }}
+        </h1>
+      </div> -->
       <!-- خطوات النموذج -->
-      <div class="flex justify-center  items-center mt-4 mb-4 h-8 md:h-auto">
-        <div class=" md:hidden  h-8 w-full flex justify-center item-center   gap-2  relative" >
+      <div class="flex justify-center items-center">
+        <div class="md:hidden w-full flex justify-center item-center gap-2">
           <div
             v-for="step in steps"
             :key="step.id"
-            class="  h-8 w-[50%] p-2 rounded-lg text-center text-xs cursor-pointer scale-95 transition-all absolute  "
+            class="p-2 rounded-lg text-center text-xs scale-95 transition-all"
             :class="[
               currentStep === step.id
-                ? 'opacity-100 bg-primary-50 text-primary-600 border border-primary-200 scale-110 '
-                : 'bg-gray-50 opacity-0',
+                ? 'bg-primary-50 text-primary-600 border border-primary-200 scale-110 '
+                : 'bg-gray-50 ',
               isStepCompleted(step.id)
                 ? 'bg-primary-50 text-primary-600 border border-primary-200'
                 : '',
@@ -45,7 +53,7 @@
           <div
             v-for="step in steps"
             :key="step.id"
-            class=" step-button scale-95"
+            class="step-button scale-95"
             :class="[
               currentStep === step.id ? 'active scale-110' : ' ',
               isStepCompleted(step.id) ? 'completed' : '',
@@ -58,56 +66,53 @@
       </div>
     </template>
 
-    <!-- معلومات شخصية -->
     <div v-show="currentStep === 1" class="form-step">
       <UForm
-        ref="personalForm"
-        :schema="personalInfoSchema"
+        :schema="CompanySchema"
         :state="formData"
         @submit="nextStep"
+        class="inner-Form"
       >
-        <UFormGroup label="الاسم" name="name">
+        <TournamentAddCompanyForm v-model="formData" />
+        <!-- <UFormGroup
+          :ui="{ error: 'text-xs' }"
+          label="اسم الشركة المؤسسة "
+          name="CompanyName"
+        >
+          <UInput :ui="{ base: 'form-input' }" v-model="formData.CompanyName" />
+        </UFormGroup>
+        <UFormGroup
+          :ui="{ error: 'text-xs' }"
+          label="رقم السجل التجاري "
+          name="RegisterNumber"
+        >
           <UInput
             :ui="{ base: 'form-input' }"
-            v-model="formData.name"
-            placeholder="ادخل اسمك"
-            class=""
+            v-model.number="formData.RegisterNumber"
           />
         </UFormGroup>
-        <UFormGroup label="العمر" name="age">
+        <UFormGroup
+          :ui="{ error: 'text-xs' }"
+          label="رقم التواصل مع المؤسسة"
+          name="CompanyPhoneNumber"
+        >
           <UInput
             :ui="{ base: 'form-input' }"
-            v-model.number="formData.age"
-            type="number"
-            placeholder="ادخل عمرك"
+            v-model.number="formData.CompanyPhoneNumber"
           />
-        </UFormGroup>
+        </UFormGroup> -->
       </UForm>
     </div>
 
     <!-- معلومات الاتصال -->
     <div v-show="currentStep === 2" class="form-step">
       <UForm
-        ref="contactForm"
+        class="inner-Form"
         :schema="contactSchema"
         :state="formData"
         @submit="nextStep"
       >
-        <UFormGroup label="البريد الإلكتروني" name="email">
-          <UInput
-            :ui="{ base: 'form-input' }"
-            v-model="formData.email"
-            type="email"
-            placeholder="example@domain.com"
-          />
-        </UFormGroup>
-        <UFormGroup label="رقم الهاتف" name="phone">
-          <UInput
-            :ui="{ base: 'form-input' }"
-            v-model="formData.phone"
-            placeholder="05xxxxxxxx"
-          />
-        </UFormGroup>
+        <TournamentAddTourForm v-model="formData" />
       </UForm>
     </div>
 
@@ -116,22 +121,25 @@
       <UForm
         :schema="detailsSchema"
         :state="formData"
-        ref="detailsForm"
         @submit="submitForm"
+        class="flex flex-col gap-3"
       >
-        <UFormGroup label="ملاحظات" name="notes">
-          <UTextarea
-            :ui="{ base: 'form-input' }"
-            v-model="formData.notes"
-            placeholder="اكتب ملاحظاتك هنا"
-            :rows="4"
-          />
-        </UFormGroup>
+        <TournamentAddTourDetailForm v-model="formData" />
       </UForm>
     </div>
 
+    <div v-show="currentStep === 4" class="form-step">
+      <UForm
+        :schema="detailsSchema"
+        :state="formData"
+        @submit="submitForm"
+        class="flex flex-col gap-3"
+      >
+        <TournamentAddRolesForm v-model="formData" />
+      </UForm>
+    </div>
     <template #footer>
-      <div class="flex justify-between items-center px-6 py-4">
+      <div class="flex justify-between items-center px-6">
         <UButton
           v-if="currentStep > 1"
           variant="outline"
@@ -145,7 +153,6 @@
           @click="validateAndNext"
           label="التالي"
           size="xl"
-
         />
         <UButton
           v-if="currentStep === steps.length"
@@ -153,7 +160,6 @@
           :loading="isSubmitting"
           @click="submitForm"
           size="xl"
-
         >
           إرسال
         </UButton>
@@ -163,53 +169,88 @@
 </template>
 
 <script setup lang="ts">
-import { object, string, number, ValidationError } from "yup";
+import {
+  object,
+  string,
+  number,
+  ValidationError,
+  date,
+  boolean,
+  array,
+} from "yup";
 
 const currentStep = ref(1);
 const isSubmitting = ref(false);
 const completedSteps = ref(new Set<number>());
 
 const steps = [
-  { id: 1, title: "المعلومات الشخصية" },
-  { id: 2, title: "معلومات الاتصال" },
-  { id: 3, title: "التفاصيل الإضافية" },
+  { id: 1, title: "معلومات الشركة" },
+  { id: 2, title: "معلومات البطولة" },
+  { id: 3, title: "تفاصيل البطولة" },
+  { id: 4, title: "قوانين البطولة" },
 ];
 
 const formData = reactive({
-  name: "",
-  age: "",
-  email: "",
-  phone: "",
-  notes: "",
+  CompanyName: "",
+  RegisterNumber: "",
+  CompanyPhoneNumber: "",
+  TournamentName: "",
+  TournamentDescription: "",
+  TournamentLogo: "",
+  TournamentStartDate: new Date().toString(),
+  TournamentDays: 3,
+  TournamentLocation: { x: 0, y: 0 },
+  ConnectionPhoneNumberForPlayers: "",
+  Sponsered: false,
+  Sponsers: [],
+  TournametPrize: "",
+  TeamsCount: 10,
+  TablesCount: 10,
+  Stage32Option: "",
+  Stage16Option: "",
+  Stage8Option: "",
+  SemiFinalOption: "",
+  FinalOption: "",
+  RefreeCount: 10,
+  TeamSelectionMode: "",
+  Roles: [],
 });
-const personalForm = ref<HTMLFormElement>();
-const personalInfoSchema = object({
-  name: string()
+const CompanySchema = object({
+  CompanyName: string()
     .required("الاسم مطلوب")
     .min(3, "الاسم يجب أن يكون 3 أحرف على الأقل"),
-  age: number()
-    .required("العمر مطلوب")
-    .typeError("العمر يجب أن يكون رقماً")
-    .min(18, "يجب أن يكون العمر 18 سنة على الأقل")
-    .max(100, "العمر غير صحيح"),
+  RegisterNumber: string().required(" رقم السجل التجاري  مطلوب "),
+  CompanyPhoneNumber: string().required(" رقم التواصل مع المؤسسة مطلوب "),
 });
-
-const contactForm = ref<HTMLFormElement>();
-
+// شعار البطولة
 const contactSchema = object({
-  email: string()
-    .required("البريد الإلكتروني مطلوب")
-    .email("البريد الإلكتروني غير صحيح"),
-  phone: string()
-    .required("رقم الهاتف مطلوب")
-    .matches(/^05\d{8}$/, "رقم الهاتف غير صحيح"),
+  TournamentName: string().required(" اسم البطولة مطلوب"),
+  TournamentDescription: string().required("  وصف البطولة مطلوب"),
+  TournamentLogo: string().required("  شعار البطولة مطلوب"),
+  TournamentStartDate: date().required("شعار البطولة مطلوب"),
+  TournamentDays: number().required(),
+  TournamentLocation: object({
+    x: number().required(),
+    y: number().required(),
+  }),
+  ConnectionPhoneNumberForPlayers: string().required(
+    " رقم للتواصل للاعبين مطلوب "
+  ),
+  Sponsered: boolean(),
+  Sponsers: array().of(string()),
 });
-const detailsForm = ref<HTMLFormElement>();
 
 const detailsSchema = object({
-  notes: string()
-    .required("الملاحظات مطلوبة")
-    .min(10, "الملاحظات يجب أن تكون 10 أحرف على الأقل"),
+  TournametPrize: string().required("جائزة البطولة مطلوبة"),
+  TeamsCount: number().required("عدد الفرق مطلوب"),
+  TablesCount: number().required("عدد الطاولات مطلوب"),
+  Stage32Option: string().required("اختيارات الدور 32 مطلوبة"),
+  Stage16Option: string().required("اختيارات الدور 16 مطلوبة"),
+  Stage8Option: string().required("اختيارات الدور 8 مطلوبة"),
+  SemiFinalOption: string().required("اختيارات نص النهائي مطلوبة"),
+  FinalOption: string().required("اختيارات  النهائي مطلوبة"),
+  RefreeCount: number().required("عدد الحكام مطلوبة"),
+  TeamSelectionMode: string().required("طريقة الاختيار مطلوبة"),
 });
 
 const isStepCompleted = (stepId: number) => {
@@ -221,7 +262,7 @@ const validateCurrentStep = async () => {
     switch (currentStep.value) {
       case 1:
         // personalForm.value!.submit();
-        await personalInfoSchema.validate(formData);
+        await CompanySchema.validate(formData);
         break;
       case 2:
         // contactForm.value!.submit();
@@ -291,17 +332,18 @@ const submitForm = async () => {
 
 <style scoped>
 .form-step {
-  @apply space-y-6 animate-fadeIn  w-[80%];
+  @apply animate-fadeIn w-full;
+}
+.inner-Form {
+  @apply flex flex-col gap-5 w-full;
 }
 
 .step-button {
-  @apply flex items-center space-x-2 rtl:space-x-reverse p-4 rounded-lg cursor-pointer  transition-all duration-300;
-  
+  @apply flex items-center  gap-2 rtl:space-x-reverse p-2 rounded-lg cursor-pointer  transition-all duration-300;
 }
 
 .step-button.active {
-  @apply bg-primary-50 text-primary-600  ;
-  
+  @apply bg-primary-50 text-primary-600;
 }
 
 .step-button.completed {
@@ -309,7 +351,7 @@ const submitForm = async () => {
 }
 
 .step-number {
-  @apply w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium;
+  @apply w-5 h-5 rounded-full flex items-center justify-center text-sm font-medium;
 }
 
 .active .step-number {

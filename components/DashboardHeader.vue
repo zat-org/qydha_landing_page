@@ -1,6 +1,6 @@
 <template>
   <div
-    class="border-b border-[#F6BD68] p-1 overflow-hidden relative flex flex-row justify-between items-center text-white"
+    class="border-b border-[#F6BD68] p-1 h-[60px] relative flex flex-row justify-between items-center text-white"
   >
     <div
       class="background absolute inset-0 bg-gradient-to-r blur-xl from-white to-[#929adf]"
