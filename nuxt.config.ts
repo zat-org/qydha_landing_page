@@ -14,17 +14,7 @@ export default defineNuxtConfig({
 
 
 
-  modules: [
-    "@nuxt/ui",
-    "@pinia/nuxt",
-    'pinia-plugin-persistedstate/nuxt',
-    "nuxt-aos",
-    "@nuxtjs/tailwindcss",
-    "@nuxtjs/color-mode",
-    "@vueuse/nuxt",
-    "@nuxt/icon",
-    "@nuxt/fonts"
-  ],
+  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos", "@nuxtjs/tailwindcss", "@nuxtjs/color-mode", "@vueuse/nuxt", "@nuxt/icon", "@nuxt/fonts", "nuxt-vuefire"],
 
   css: ["~/assets/css/main.css"],
 
@@ -81,7 +71,14 @@ export default defineNuxtConfig({
 
     },
   },
-
+  vuefire: {
+    config: {
+      apiKey: process.env.apiKey,
+      authDomain:process.env.authDomain,
+      projectId: process.env.projectId,
+      appId: process.env.appId,
+    },
+  },
   // icon: {
   //   serverBundle: {
   //     collections: ['uil', 'mdi', 'heroicons', 'material-symbols', 'mingcute', 'weui', 'fontisto', 'simple-line-icons']
