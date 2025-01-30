@@ -48,6 +48,7 @@
         <UFormGroup label="اللاعب السفلي" name="BottomPlayer" class="space-y-2">
           <UInput
             v-model.number="state.BottomPlayer"
+            type="number"
             placeholder="المسافة من الأسفل"
           />
         </UFormGroup>
