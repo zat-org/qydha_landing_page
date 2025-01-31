@@ -19,7 +19,12 @@ export const useAuth = () => {
       await execute();
       if (status.value == "success" && data.value?.data) {
         user.value = data.value?.data;
-        navigateTo("/tournament");
+        if (user.value.user.roles.includes("Streamer")){
+          navigateTo("/stream");
+        }else{
+          navigateTo("/deleteuser")
+        }
+
       }
       if (status.value == "error") console.log(error.value);
     };

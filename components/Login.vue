@@ -70,7 +70,7 @@
       <div v-if="errormesage" class="p-2 w-[80%] mx-auto text-center bg-red-500/5 text-red-500 border border-red-500 mt-5 rounded-xl text-sm " >{{ errormesage }}</div>
       <template #footer>
         <UButton
-          label="تسيجل الدخول "
+          label="تسجيل الدخول "
           @click="loginForm?.submit()"
           block
           class="w-[40%] mx-auto"

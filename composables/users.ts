@@ -6,6 +6,8 @@ export const useUsers = () => {
     const searchtoken = ref()
     const pageNumber = ref()
     const exactSearch = ref(false)
+    const roleFilter = ref()
+
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData<{
         data: { currentPage: number, hasNext: boolean, hasPrevious: boolean, items: User[], pageSize: number, totalCount: number, totalPages: number }, message: string
@@ -15,17 +17,19 @@ export const useUsers = () => {
           params: {
             SearchToken: searchtoken.value,
             pageNumber: pageNumber.value,
-            Matching: exactSearch.value ? 'Exact' : 'Like'
+            Matching: exactSearch.value ? 'Exact' : 'Like',
+            Role:roleFilter.value
           }
         }), { immediate: false }
       );
 
-    const fetchREQ = async (search_token: string, _pageNumber?: number, _exactSearch: boolean = false) => {
+    const fetchREQ = async (search_token: string, _pageNumber?: number, _exactSearch: boolean = false, _roleFilter:string='User') => {
       searchtoken.value = search_token
       if (_pageNumber) {
         pageNumber.value = _pageNumber
       }
       exactSearch.value = _exactSearch
+      roleFilter.value=_roleFilter
       await execute()
 
     }

@@ -2,11 +2,19 @@
   <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow' } }">
     <UTable :rows="rows" :columns="cols" :ui="{ td: { padding: 'py-1' } }">
       <template #link-data="{ row }">
-        <UButton :to="row.link" target="_blank">
-          <IconOpen class="text-xl" />
-        </UButton>
+        <div class="flex gap-2">
+    <UButton :to="row.link" target="_blank" >
+      <IconOpen class="text-xl" />
+    </UButton>
+    <UButton @click="copyLink(row.link)">
+      <UIcon name="i-heroicons-clipboard" class="text-xl" />
+    </UButton>
+  </div>
       </template>
+<template #edit-data="{row}">
+  <UButton @click="openEditModal()" v-if="row.edit" color="yellow" icon="heroicons:adjustments-horizontal-16-solid" /> 
 
+</template>
       <template #notes-data="{ row }">
         <div
           class="flex items-center gap-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -48,9 +56,7 @@
         </div>
       </template>
     </UTable>
-    <template #footer>
-      <UButton @click="openEditModal()"> تعديل الابعاد الخاصة بالبث</UButton>
-    </template>
+    
   </UCard>
 </template>
 
@@ -66,7 +72,7 @@ const boardlink = computed(() => {
 
 const rows = [
   {
-    name: "ذات   ",
+    name: "زات",
     link: `${boardlink.value}/?theme=zat&orienation=landscape&showPlayers=false`,
     notes: "الطول = 1080 , العرض  = 1920",
   },
@@ -84,6 +90,7 @@ const rows = [
     name: "قيدها للهاتف بصور الاعبين",
     link: `${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=true`,
     notes: "الطول = 667 , العرض  = 375",
+    edit:true
   },
   {
     name: "صور الاعبين TOP ",
@@ -109,10 +116,18 @@ const rows = [
 
 const cols = [
   { key: "name", label: "الاسم" },
+  { key: "edit", label: "تعديل الابعاد" },
   { key: "notes", label: "لتجربة متميزة علي OBS" },
   { key: "link", label: "الرابط" },
-];
 
+];
+const copyLink = (link: string) => {
+  navigator.clipboard.writeText(link)
+  useToast().add({
+    title: 'تم النسخ بنجاح',
+    timeout: 2000
+  })
+}
 const modal =useModal()
 const openEditModal=()=>{
   modal.open(StreamEditModal)

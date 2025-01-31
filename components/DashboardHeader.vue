@@ -13,11 +13,10 @@
       @click="openNav"
       class="mr-2 block lg:hidden relative bg-transparent"
     >
-    <IconTribleDash class="w-5 text-black"></IconTribleDash>
+      <IconTribleDash class="w-5 text-black"></IconTribleDash>
     </UButton>
-    
 
-    <UHorizontalNavigation :links="links" class="hidden lg:block">
+    <UHorizontalNavigation :links="links" class="hidden lg:block w-auto">
       <template #icon="{ link, isActive }">
         <component
           :is="link.iconComponent"
@@ -27,6 +26,23 @@
       </template>
     </UHorizontalNavigation>
 
+    <UDropdown
+      v-if="
+        userStore.roles?.includes('SuperAdmin') ||
+        userStore.roles?.includes('StaffAdmin')
+      "
+      class="ml-auto mr-2"
+      :items="marketingItems"
+      :popper="{ placement: 'bottom-start' }"
+    >
+      <UButton
+        class="bg-transparent border-0 ring-0 shadow-none"
+        color="white"
+        label="التسويق"
+        trailing-icon="i-heroicons-chevron-down-20-solid"
+      />
+    </UDropdown>
+
     <UButton
       v-if="!authstore.logedin"
       color="black"
@@ -34,22 +50,9 @@
       to="/login"
       class="ml-2"
     ></UButton>
-
     <UDropdown v-else :items="items" :popper="{ placement: 'bottom-start' }">
       <IconUser class="text-blue-500 text-4xl" />
-      <!-- <UButton
-        color="white"
-        label="Options"
-        trailing-icon="i-heroicons-chevron-down-20-solid"
-      /> -->
     </UDropdown>
-
-    <!-- <UButton
-      color="black"
-      icon="simple-line-icons:logout"
-      @click="onLogOut"
-      class="ml-2"
-    ></UButton> -->
   </div>
 </template>
 
@@ -69,7 +72,6 @@ import iconMarket from "~/components/Icon/Market.vue";
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 const authstore = useMyAuthStore();
-// const authApi = useAuth();
 import { type VerticalNavigationLink, type DropdownItem } from "#ui/types";
 import type { Component } from "vue";
 interface CustomNavigationLink extends VerticalNavigationLink {
@@ -78,39 +80,11 @@ interface CustomNavigationLink extends VerticalNavigationLink {
 const links = computed(() => {
   const result: CustomNavigationLink[] = [];
   if (user.value) {
-    result.push({
-      label: "البطولات",
-      to: "/tournament",
-      iconComponent: iconTournament,
-    });
-  }
-  if (
-    userStore.roles?.includes("SuperAdmin") ||
-    userStore.roles?.includes("StaffAdmin")
-  ) {
-    result.push(
-      {
-        label: "اكواد ",
-        to: "/influncerCode",
-        icon: "",
-        iconComponent: iconCode,
-      },
-      { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
-      {
-        label: "الاشعارات ",
-        to: "/notification",
-        iconComponent: iconNotification,
-      },
-      { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
-      { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart },
-      { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
-
-      {
-        label: "الاكونتات البرمجية ",
-        to: "/ServiceAccount",
-        iconComponent: iconProgramingCode,
-      }
-    );
+    // result.push({
+    //   label: "البطولات",
+    //   to: "/tournament",
+    //   iconComponent: iconTournament,
+    // });
   }
   if (userStore.roles?.includes("Streamer")) {
     result.push({
@@ -119,6 +93,24 @@ const links = computed(() => {
       iconComponent: iconLive,
     });
   }
+
+  if (
+    userStore.roles?.includes("SuperAdmin") ||
+    userStore.roles?.includes("StaffAdmin")
+  ) {
+    result.push(
+      { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
+
+      { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart }
+
+      // {
+      //   label: "الاكونتات البرمجية ",
+      //   to: "/ServiceAccount",
+      //   iconComponent: iconProgramingCode,
+      // }
+    );
+  }
+
   return result;
 });
 const onLogOut = () => {
@@ -139,6 +131,38 @@ const items: DropdownItem[] | DropdownItem[][] = [
       click(...args) {
         onLogOut();
       },
+    },
+  ],
+];
+
+const marketingItems: DropdownItem[] | DropdownItem[][] = [
+  [
+    {
+      label: "اكواد ",
+      to: "/influncerCode",
+      icon: "",
+      // iconComponent: iconCode,
+    },
+  ],
+  [
+    {
+      label: "الاشعارات ",
+      to: "/notification",
+      // iconComponent: iconNotification,
+    },
+  ],
+  [
+    {
+      label: "الملف الثابت",
+      to: "/assets",
+      // iconComponent: iconFiles
+    },
+  ],
+  [
+    {
+      label: "التسويق",
+      to: "/marketing",
+      // iconComponent: iconMarket
     },
   ],
 ];

@@ -37,11 +37,11 @@ interface CustomNavigationLink extends VerticalNavigationLink {
 
 const links = computed(() => {
   const result: CustomNavigationLink[] = [];
-  result.push({
-    label: "البطولات",
-    to: "/tournament",
-    iconComponent: iconTournament,
-  });
+  // result.push({
+  //   label: "البطولات",
+  //   to: "/tournament",
+  //   iconComponent: iconTournament,
+  // });
 
   if (
     userStore.roles?.includes("SuperAdmin") ||
@@ -64,11 +64,11 @@ const links = computed(() => {
       { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart },
       { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
 
-      {
-        label: "الاكونتات البرمجية ",
-        to: "/ServiceAccount",
-        iconComponent: iconProgramingCode,
-      }
+      // {
+      //   label: "الاكونتات البرمجية ",
+      //   to: "/ServiceAccount",
+      //   iconComponent: iconProgramingCode,
+      // }
     );
   }
   if (userStore.roles?.includes("Streamer")) {

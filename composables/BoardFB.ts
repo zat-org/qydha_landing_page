@@ -7,6 +7,7 @@ interface TableData {
   RightPlayer: { top: string; right: string };
   BottomPlayer: { bottom: string; left: string };
   PlayerImageWidth: number;
+  DetailScoreColor: string;
 }
 interface TableUpdate {
   scoreMarginTop: number;
@@ -14,6 +15,7 @@ interface TableUpdate {
   RightPlayer: number;
   BottomPlayer: number;
   PlayerImageWidth: number;
+  DetailScoreColor: string;
 }
 export const useBoardFB = () => {
   const db = useFirestore();
@@ -36,6 +38,7 @@ export const useBoardFB = () => {
       LeftPlayer: { top: "calc(50% - 30px)", left: "0px" },
       RightPlayer: { top: "calc(50% - 30px)", right: "0px" },
       BottomPlayer: { bottom: "0px", left: "calc(50% - 30px)" },
+      DetailScoreColor: "#000000",
     });
     return {
       id: tableId,
@@ -44,6 +47,7 @@ export const useBoardFB = () => {
       LeftPlayer: { top: "calc(50% - 30px)", left: "0px" },
       RightPlayer: { top: "calc(50% - 30px)", right: "0px" },
       BottomPlayer: { bottom: "0px", left: "calc(50% - 30px)" },
+      DetailScoreColor: "#000000",
     };
   };
   const updateTable = async (
@@ -56,6 +60,7 @@ export const useBoardFB = () => {
     const newTable: TableData = {
       id: tableId,
       PlayerImageWidth: newData.PlayerImageWidth,
+      DetailScoreColor: newData.DetailScoreColor,
       scoreMarginTop: `${newData.scoreMarginTop}px`,
       LeftPlayer: {
         top: `calc(50% - ${newData.PlayerImageWidth / 2}px)`,

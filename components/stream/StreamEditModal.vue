@@ -22,13 +22,6 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- Left Player -->
-          <UFormGroup label="اللاعب الأيسر" name="LeftPlayer" class="space-y-2">
-            <UInput
-              type="number"
-              v-model.number="state.LeftPlayer"
-              placeholder="المسافة من اليسار"
-            />
-          </UFormGroup>
 
           <!-- Right Player -->
           <UFormGroup
@@ -40,6 +33,14 @@
               type="number"
               v-model.number="state.RightPlayer"
               placeholder="المسافة من اليمين"
+            />
+          </UFormGroup>
+
+          <UFormGroup label="اللاعب الأيسر" name="LeftPlayer" class="space-y-2">
+            <UInput
+              type="number"
+              v-model.number="state.LeftPlayer"
+              placeholder="المسافة من اليسار"
             />
           </UFormGroup>
         </div>
@@ -60,12 +61,21 @@
             placeholder="عرض الصورة بالبكسل"
           />
         </UFormGroup>
-
-
+        <UFormGroup label="لون خاص بالنشرة التفصيلية" name="DetailScoreColor">
+          <UInput
+            class="w-[50px]"
+            v-model="state.DetailScoreColor"
+            type="color"
+            placeholder="عرض الصورة بالبكسل"
+          />
+        </UFormGroup>
+        {{ color }}
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton @click="closeModal()" color="red"> غلق </UButton>
+          <UButton @click="resetBoard()">اعادة الضبط </UButton>
+
           <UButton @click="updateBoard()">حفظ </UButton>
         </div>
       </template>
@@ -76,7 +86,7 @@
 <script lang="ts" setup>
 import { object, string, number } from "yup";
 import { useMyAuthStore } from "~/store/Auth";
-
+const color = ref();
 const updateForm = ref<HTMLFormElement>();
 const authstore = useMyAuthStore();
 const boardID = computed(() => {
@@ -86,15 +96,14 @@ const boardID = computed(() => {
     ];
 });
 const schema = object({
-  scoreMarginTop: number()
-    .required("المسافة العلوية للنتيجة مطلوبة")
-    .min(0, "يجب أن تكون المسافة أكبر من 0"),
+  scoreMarginTop: number().required("المسافة العلوية للنتيجة مطلوبة"),
   LeftPlayer: string().required("المسافة من اليسار مطلوبة"),
   RightPlayer: string().required("المسافة من اليمين مطلوبة"),
   BottomPlayer: string().required("المسافة من الأسفل مطلوبة"),
   PlayerImageWidth: number()
     .required("عرض صورة اللاعب مطلوب")
     .min(1, "يجب أن يكون العرض أكبر من 0"),
+  DetailScoreColor: string(),
 });
 
 let data = await useBoardFB().getOrCreateTable(boardID.value!);
@@ -105,6 +114,7 @@ const state = ref({
   RightPlayer: Number.parseInt(data.RightPlayer.right.replace("px", "")),
   BottomPlayer: Number.parseInt(data.BottomPlayer.bottom.replace("px", "")),
   PlayerImageWidth: data.PlayerImageWidth,
+  DetailScoreColor:data.DetailScoreColor,
 });
 
 const updateBoard = () => {
@@ -120,8 +130,25 @@ const onSubmit = async (event: any) => {
   } catch (error: any) {
     console.log(error.message);
     useToast().add({ title: "update error", color: "red" });
+  }
+};
 
-    // Handle error
+const resetBoard = async () => {
+  const defaultValues = {
+    scoreMarginTop: 0,
+    LeftPlayer: 0,
+    RightPlayer: 0,
+    BottomPlayer: 0,
+    PlayerImageWidth: 60,
+    DetailScoreColor:"#000000"
+  };
+  try {
+    await useBoardFB().updateTable(boardID.value!, defaultValues);
+    state.value = defaultValues;
+    useToast().add({ title: "update Done" });
+  } catch (error: any) {
+    console.log(error.message);
+    useToast().add({ title: "update error", color: "red" });
   }
 };
 </script>
