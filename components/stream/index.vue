@@ -3,18 +3,22 @@
     <UTable :rows="rows" :columns="cols" :ui="{ td: { padding: 'py-1' } }">
       <template #link-data="{ row }">
         <div class="flex gap-2">
-    <UButton :to="row.link" target="_blank" >
-      <IconOpen class="text-xl" />
-    </UButton>
-    <UButton @click="copyLink(row.link)">
-      <UIcon name="i-heroicons-clipboard" class="text-xl" />
-    </UButton>
-  </div>
+          <UButton :to="row.link" target="_blank">
+            <IconOpen class="text-xl" />
+          </UButton>
+          <UButton @click="copyLink(row.link)">
+            <UIcon name="i-heroicons-clipboard" class="text-xl" />
+          </UButton>
+        </div>
       </template>
-<template #edit-data="{row}">
-  <UButton @click="openEditModal()" v-if="row.edit" color="yellow" icon="heroicons:adjustments-horizontal-16-solid" /> 
-
-</template>
+      <template #edit-data="{ row }">
+        <UButton
+          @click="openEditModal()"
+          v-if="row.edit"
+          color="yellow"
+          icon="heroicons:adjustments-horizontal-16-solid"
+        />
+      </template>
       <template #notes-data="{ row }">
         <div
           class="flex items-center gap-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
@@ -56,7 +60,6 @@
         </div>
       </template>
     </UTable>
-    
   </UCard>
 </template>
 
@@ -69,13 +72,9 @@ const boardlink = computed(() => {
   if (authstore.user) return authstore.user.boardLink;
 });
 
+console.log();
 
 const rows = [
-  {
-    name: "زات",
-    link: `${boardlink.value}/?theme=zat&orienation=landscape&showPlayers=false`,
-    notes: "الطول = 1080 , العرض  = 1920",
-  },
   {
     name: "قيدها  ",
     link: `${boardlink.value}/?theme=qydha&orienation=landscape&showPlayers=false`,
@@ -90,48 +89,58 @@ const rows = [
     name: "قيدها للهاتف بصور الاعبين",
     link: `${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=true`,
     notes: "الطول = 667 , العرض  = 375",
-    edit:true
-  },
-  {
-    name: "صور الاعبين TOP ",
-    link: `${boardlink.value}/cam/top`,
-    notes: "الطول = 1080 , العرض  = 1920",
-  },
-  {
-    name: "صور الاعبين BOTTOM",
-    link: `${boardlink.value}/cam/bottom`,
-    notes: "الطول = 1080 , العرض  = 1920",
-  },
-  {
-    name: "صور الاعبين RIGHT ",
-    link: `${boardlink.value}/cam/right`,
-    notes: "الطول = 1080 , العرض  = 1920",
-  },
-  {
-    name: "صور الاعبين LEFT",
-    link: `${boardlink.value}/cam/left`,
-    notes: "الطول = 1080 , العرض  = 1920",
+    edit: true,
   },
 ];
-
+if (
+  authstore.user?.user.username.toLowerCase() == "Admin".toLowerCase() ||
+  authstore.user?.user.username.toLowerCase() == "sam".toLowerCase()
+) {
+  rows.push(
+    {
+      name: "زات",
+      link: `${boardlink.value}/?theme=zat&orienation=landscape&showPlayers=false`,
+      notes: "الطول = 1080 , العرض  = 1920",
+    },
+    {
+      name: "صور الاعبين TOP ",
+      link: `${boardlink.value}/cam/top`,
+      notes: "الطول = 1080 , العرض  = 1920",
+    },
+    {
+      name: "صور الاعبين BOTTOM",
+      link: `${boardlink.value}/cam/bottom`,
+      notes: "الطول = 1080 , العرض  = 1920",
+    },
+    {
+      name: "صور الاعبين RIGHT ",
+      link: `${boardlink.value}/cam/right`,
+      notes: "الطول = 1080 , العرض  = 1920",
+    },
+    {
+      name: "صور الاعبين LEFT",
+      link: `${boardlink.value}/cam/left`,
+      notes: "الطول = 1080 , العرض  = 1920",
+    }
+  );
+}
 const cols = [
   { key: "name", label: "الاسم" },
   { key: "edit", label: "تعديل الابعاد" },
   { key: "notes", label: "لتجربة متميزة علي OBS" },
   { key: "link", label: "الرابط" },
-
 ];
 const copyLink = (link: string) => {
-  navigator.clipboard.writeText(link)
+  navigator.clipboard.writeText(link);
   useToast().add({
-    title: 'تم النسخ بنجاح',
-    timeout: 2000
-  })
-}
-const modal =useModal()
-const openEditModal=()=>{
-  modal.open(StreamEditModal)
-}
+    title: "تم النسخ بنجاح",
+    timeout: 2000,
+  });
+};
+const modal = useModal();
+const openEditModal = () => {
+  modal.open(StreamEditModal);
+};
 </script>
 
 <style></style>
