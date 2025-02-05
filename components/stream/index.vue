@@ -83,12 +83,12 @@ const rows = [
   {
     name: "قيدها للهاتف بدون صور الاعبين",
     link: `${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=false`,
-    notes: "الطول = 667 , العرض  = 375",
+    notes: "الطول = 1920 , العرض  = 1080",
   },
   {
     name: "قيدها للهاتف بصور الاعبين",
     link: `${boardlink.value}/?theme=qydha&orienation=portrait&showPlayers=true`,
-    notes: "الطول = 667 , العرض  = 375",
+    notes: "الطول = 1920 , العرض  = 1080",
     edit: true,
   },
 ];
