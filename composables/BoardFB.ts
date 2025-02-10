@@ -172,20 +172,20 @@ export const useBoardFB = () => {
           },
         },
       },
-      LeftPlayer: { top: "calc(50% - 30px)", left: "0px" },
-      RightPlayer: { top: "calc(50% - 30px)", right: "0px" },
-      BottomPlayer: { bottom: "0px", left: "calc(50% - 30px)" },
+      LeftPlayer: { top: "", left: "0px" },
+      RightPlayer: { top: "", right: "0px" },
+      BottomPlayer: { bottom: "0px", left: "" },
       DetailScoreColor: "#000000",
     };
-    defaultTableData.LeftPlayer.top = `calc(50% - ${
+    defaultTableData.LeftPlayer.top = ` ${
       defaultTableData.PlayerImageWidth / 2
-    }px)`;
-    defaultTableData.RightPlayer.top = `calc(50% - ${
+    }px`;
+    defaultTableData.RightPlayer.top = ` ${
       defaultTableData.PlayerImageWidth / 2
-    }px)`;
-    defaultTableData.BottomPlayer.left = `calc(50% - ${
+    }px`;
+    defaultTableData.BottomPlayer.left = ` ${
       defaultTableData.PlayerImageWidth / 2
-    }px)`;
+    }px`;
 
     // Create new document if it doesn't exist
     await setDoc(tableRef, defaultTableData);
@@ -249,16 +249,16 @@ export const useBoardFB = () => {
         }
       },
       LeftPlayer: {
-        top: `calc(50% - ${newData.PlayerImageWidth / 2} px)`,
+        top: `${(newData.PlayerImageWidth / 2 ) + newData.LeftPlayer.top }px`,
         left: `${newData.LeftPlayer.left}px`,
       },
       RightPlayer: {
-        top: `calc(50% - ${newData.PlayerImageWidth / 2}px)`,
+        top: `${(newData.PlayerImageWidth / 2 ) + newData.RightPlayer.top }px`,
         right: `${newData.RightPlayer.right}px`,
       },
       BottomPlayer: {
         bottom: `${newData.BottomPlayer.bottom}px`,
-        left: `calc(50% - ${newData.PlayerImageWidth / 2}px)`,
+        left: ` ${(newData.PlayerImageWidth/2) + newData.BottomPlayer.left}px`,
       },
       DetailScoreColor: newData.DetailScoreColor,
     };
