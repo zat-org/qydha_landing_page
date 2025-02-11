@@ -604,7 +604,6 @@ const boardID = computed(() => {
 });
 
 let data: TableData = await useBoardFB().getOrCreateTable(boardID.value!);
-console.log(data)
 const schema = object({
   dimension: object({
     width: number().required(),
@@ -780,7 +779,6 @@ watch(
   state,
   async (n, o) => {
     try {
-      console.log(state)
       await useBoardFB().updateTable(boardID.value!, n);
       // useToast().add({ title: "update Done" });
     } catch (error: any) {
