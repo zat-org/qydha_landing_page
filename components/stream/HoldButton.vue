@@ -1,5 +1,6 @@
 <template>
   <UButton 
+  type="button"
   variant="outline"
     :icon="icon"
     @mousedown="startAction"

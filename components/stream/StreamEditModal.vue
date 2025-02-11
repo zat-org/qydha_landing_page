@@ -404,164 +404,166 @@
           <template #playerImages>
             <div class="flex flex-col gap-3">
               <div class="flex justify-between gap-3">
-                <UFormGroup label=" اللاعب الايسر">
-                  <UButtonGroup
-                  size="xs"
-                  class="control-panel direction-controls"
-                >
-                  <StreamHoldButton
-                    icon="heroicons:arrow-right-16-solid"
-                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                    :step="1"
-                    :action="
-                      (step: number) =>
-                        (state.LeftPlayer.left += step)
-                    "
-                  ></StreamHoldButton>
-
-                  <UButtonGroup
-                    orientation="vertical"
-                    size="xs"
-                    class="vertical-controls"
-                  >
-                    <StreamHoldButton
-                      icon="heroicons:arrow-up-16-solid"
-                      class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                      :step="1"
-                      :action="
-                        (step: number) =>
-                          (state.LeftPlayer.top += step)
-                      "
-                    ></StreamHoldButton>
-                    <StreamHoldButton
-                      icon="heroicons:arrow-down-16-solid"
-                      class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                      :step="1"
-                      :action="
-                        (step: number) =>
-                          (state.LeftPlayer.top -= step)
-                       "
-                    ></StreamHoldButton>
-                  </UButtonGroup>
-
-                  <StreamHoldButton
-                    icon="heroicons:arrow-left-16-solid"
-                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                    :step="1"
-                    :action="
-                      (step: number) =>
-                        (state.LeftPlayer.left -= step)
-                    "
-                  ></StreamHoldButton>
-
-               
-                </UButtonGroup>
-                </UFormGroup>
                 <UFormGroup label=" اللاعب الايمن">
                   <UButtonGroup
-                  size="xs"
-                  class="control-panel direction-controls"
-                >
-                  <StreamHoldButton
-                    icon="heroicons:arrow-right-16-solid"
-                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                    :step="1"
-                    :action="
-                      (step: number) =>
-                        (state.RightPlayer.right -= step)
-                    "
-                  ></StreamHoldButton>
-
-                  <UButtonGroup
-                    orientation="vertical"
                     size="xs"
-                    class="vertical-controls"
+                    class="control-panel direction-controls"
                   >
                     <StreamHoldButton
-                      icon="heroicons:arrow-up-16-solid"
+                      icon="heroicons:arrow-right-16-solid"
                       class="control-btn hover:bg-blue-100 active:bg-blue-200"
                       :step="1"
                       :action="
-                        (step: number) =>
-                          (state.RightPlayer.top += step)
+                        (step: number) => (state.RightPlayer.right -= step)
                       "
                     ></StreamHoldButton>
+
+                    <UButtonGroup
+                      orientation="vertical"
+                      size="xs"
+                      class="vertical-controls"
+                    >
+                      <StreamHoldButton
+                        icon="heroicons:arrow-up-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.RightPlayer.top += step)
+                        "
+                      ></StreamHoldButton>
+                      <StreamHoldButton
+                        icon="heroicons:arrow-down-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.RightPlayer.top -= step)
+                        "
+                      ></StreamHoldButton>
+                    </UButtonGroup>
+
                     <StreamHoldButton
-                      icon="heroicons:arrow-down-16-solid"
+                      icon="heroicons:arrow-left-16-solid"
                       class="control-btn hover:bg-blue-100 active:bg-blue-200"
                       :step="1"
                       :action="
-                        (step: number) =>
-                          (state.RightPlayer.top -= step)
-                       "
+                        (step: number) => (state.RightPlayer.right += step)
+                      "
                     ></StreamHoldButton>
                   </UButtonGroup>
+                </UFormGroup>
 
+                <div class="flex flex-col gap-2 items-center justify-end">
                   <StreamHoldButton
-                    icon="heroicons:arrow-left-16-solid"
+                    icon="mdi:arrow-expand-horizontal"
                     class="control-btn hover:bg-blue-100 active:bg-blue-200"
                     :step="1"
                     :action="
-                      (step: number) =>
-                        (state.RightPlayer.right += step)
+                      (step: number) => { state.LeftPlayer.left -= step; state.RightPlayer.right -= step  }
                     "
-                  ></StreamHoldButton>
+                  />
+                  <StreamHoldButton
+                    icon="uil:arrow-compress-h"
+                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                    :step="1"
+                    :action="
+                      (step: number) => { state.LeftPlayer.left += step; state.RightPlayer.right += step  }
+                    "
+                  />
+                </div>
+                <UFormGroup label=" اللاعب الايسر">
+                  <UButtonGroup
+                    size="xs"
+                    class="control-panel direction-controls"
+                  >
+                    <StreamHoldButton
+                      icon="heroicons:arrow-right-16-solid"
+                      class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                      :step="1"
+                      :action="
+                        (step: number) => (state.LeftPlayer.left += step)
+                      "
+                    ></StreamHoldButton>
 
-               
-                </UButtonGroup>
+                    <UButtonGroup
+                      orientation="vertical"
+                      size="xs"
+                      class="vertical-controls"
+                    >
+                      <StreamHoldButton
+                        icon="heroicons:arrow-up-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.LeftPlayer.top += step)
+                        "
+                      ></StreamHoldButton>
+                      <StreamHoldButton
+                        icon="heroicons:arrow-down-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.LeftPlayer.top -= step)
+                        "
+                      ></StreamHoldButton>
+                    </UButtonGroup>
+
+                    <StreamHoldButton
+                      icon="heroicons:arrow-left-16-solid"
+                      class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                      :step="1"
+                      :action="
+                        (step: number) => (state.LeftPlayer.left -= step)
+                      "
+                    ></StreamHoldButton>
+                  </UButtonGroup>
                 </UFormGroup>
+
                 <UFormGroup label=" اللاعب المنتصف">
                   <UButtonGroup
-                  size="xs"
-                  class="control-panel direction-controls"
-                >
-                  <StreamHoldButton
-                    icon="heroicons:arrow-right-16-solid"
-                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                    :step="1"
-                    :action="
-                      (step: number) =>
-                        (state.BottomPlayer.left -= step)
-                    "
-                  ></StreamHoldButton>
-
-                  <UButtonGroup
-                    orientation="vertical"
                     size="xs"
-                    class="vertical-controls"
+                    class="control-panel direction-controls"
                   >
                     <StreamHoldButton
-                      icon="heroicons:arrow-up-16-solid"
+                      icon="heroicons:arrow-right-16-solid"
                       class="control-btn hover:bg-blue-100 active:bg-blue-200"
                       :step="1"
                       :action="
-                        (step: number) =>
-                          (state.BottomPlayer.bottom += step)
+                        (step: number) => (state.BottomPlayer.left -= step)
                       "
                     ></StreamHoldButton>
+
+                    <UButtonGroup
+                      orientation="vertical"
+                      size="xs"
+                      class="vertical-controls"
+                    >
+                      <StreamHoldButton
+                        icon="heroicons:arrow-up-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.BottomPlayer.bottom += step)
+                        "
+                      ></StreamHoldButton>
+                      <StreamHoldButton
+                        icon="heroicons:arrow-down-16-solid"
+                        class="control-btn hover:bg-blue-100 active:bg-blue-200"
+                        :step="1"
+                        :action="
+                          (step: number) => (state.BottomPlayer.bottom -= step)
+                        "
+                      ></StreamHoldButton>
+                    </UButtonGroup>
+
                     <StreamHoldButton
-                      icon="heroicons:arrow-down-16-solid"
+                      icon="heroicons:arrow-left-16-solid"
                       class="control-btn hover:bg-blue-100 active:bg-blue-200"
                       :step="1"
                       :action="
-                        (step: number) =>
-                          (state.BottomPlayer.bottom-= step)
-                       "
+                        (step: number) => (state.BottomPlayer.left += step)
+                      "
                     ></StreamHoldButton>
                   </UButtonGroup>
-
-                  <StreamHoldButton
-                    icon="heroicons:arrow-left-16-solid"
-                    class="control-btn hover:bg-blue-100 active:bg-blue-200"
-                    :step="1"
-                    :action="
-                      (step: number) =>
-                        (state.BottomPlayer.left += step)
-                    "
-                  ></StreamHoldButton>
-
-               
-                </UButtonGroup>
                 </UFormGroup>
               </div>
               <UFormGroup label="حجم صور الاعبين" name="PlayerImageWidth">
@@ -602,7 +604,7 @@ const boardID = computed(() => {
 });
 
 let data: TableData = await useBoardFB().getOrCreateTable(boardID.value!);
-
+console.log(data)
 const schema = object({
   dimension: object({
     width: number().required(),
@@ -758,9 +760,9 @@ const resetBoard = async () => {
         score: { size: 47, top: 66, left: 43, width: 20, height: 100 },
       },
     },
-    LeftPlayer: { top: 0, left: 0 },
-    RightPlayer: { top: 0, right: 0 },
-    BottomPlayer: { bottom: 0, left: 0 },
+    LeftPlayer: { top: 100, left: 0 },
+    RightPlayer: { top: 100, right: 0 },
+    BottomPlayer: { bottom: 0, left: 100 },
     DetailScoreColor: "#000000",
   };
 
@@ -778,7 +780,8 @@ watch(
   state,
   async (n, o) => {
     try {
-      await useBoardFB().updateTable(boardID.value!, state.value);
+      console.log(state)
+      await useBoardFB().updateTable(boardID.value!, n);
       // useToast().add({ title: "update Done" });
     } catch (error: any) {
       console.log(error.message);

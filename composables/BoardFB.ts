@@ -249,16 +249,16 @@ export const useBoardFB = () => {
         }
       },
       LeftPlayer: {
-        top: `${(newData.PlayerImageWidth / 2 ) + newData.LeftPlayer.top }px`,
+        top: `${ newData.LeftPlayer.top }px`,
         left: `${newData.LeftPlayer.left}px`,
       },
       RightPlayer: {
-        top: `${(newData.PlayerImageWidth / 2 ) + newData.RightPlayer.top }px`,
+        top: `${ newData.RightPlayer.top }px`,
         right: `${newData.RightPlayer.right}px`,
       },
       BottomPlayer: {
         bottom: `${newData.BottomPlayer.bottom}px`,
-        left: ` ${(newData.PlayerImageWidth/2) + newData.BottomPlayer.left}px`,
+        left: ` ${ newData.BottomPlayer.left}px`,
       },
       DetailScoreColor: newData.DetailScoreColor,
     };
