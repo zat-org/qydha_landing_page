@@ -1,7 +1,4 @@
-import { useFirestore } from "vuefire";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { initializeApp } from "firebase/app";
-import { bottom } from "@popperjs/core";
+import { doc, Firestore, getDoc, setDoc, updateDoc } from "firebase/firestore";
 export interface TableData {
   id: string;
   dimension: {
@@ -109,15 +106,11 @@ export interface TableUpdate {
   DetailScoreColor: string;
 }
 export const useBoardFB = () => {
-  // const balootApp = initializeApp({
-  //   // Your Firebase config
-  // }, 'baloot-boards')
-  //  useFirebaseApp('baloot-boards')
-
-  const db = useFirestore();
-
+  const { $firestore } = useNuxtApp()
+  $firestore.app
   const getOrCreateTable = async (tableId: string): Promise<TableData> => {
-    const tableRef = doc(db, "tables", tableId);
+    console.log($firestore.app)
+    const tableRef = doc($firestore as Firestore , "tables", tableId);
     const tableSnap = await getDoc(tableRef);
 
     if (tableSnap.exists()) {
@@ -198,7 +191,7 @@ export const useBoardFB = () => {
   ): Promise<
     { success: boolean; data: TableData } | { success: boolean; error: any }
   > => {
-    const tableRef = doc(db, "tables", tableId);
+    const tableRef = doc($firestore as Firestore, "tables", tableId);
     const newTable: TableData = {
       id: tableId,
       PlayerImageWidth: newData.PlayerImageWidth,
@@ -242,23 +235,23 @@ export const useBoardFB = () => {
             height: `${newData.scorePanel.rightTeam.score.height}px`,
           },
         },
-        position:{
-          scale: newData.scorePanel.position.scale, 
-          left:`${newData.scorePanel.position.left}px`,
-          top:`${newData.scorePanel.position.top}px`,
-        }
+        position: {
+          scale: newData.scorePanel.position.scale,
+          left: `${newData.scorePanel.position.left}px`,
+          top: `${newData.scorePanel.position.top}px`,
+        },
       },
       LeftPlayer: {
-        top: `${ newData.LeftPlayer.top }px`,
+        top: `${newData.LeftPlayer.top}px`,
         left: `${newData.LeftPlayer.left}px`,
       },
       RightPlayer: {
-        top: `${ newData.RightPlayer.top }px`,
+        top: `${newData.RightPlayer.top}px`,
         right: `${newData.RightPlayer.right}px`,
       },
       BottomPlayer: {
         bottom: `${newData.BottomPlayer.bottom}px`,
-        left: ` ${ newData.BottomPlayer.left}px`,
+        left: ` ${newData.BottomPlayer.left}px`,
       },
       DetailScoreColor: newData.DetailScoreColor,
     };
