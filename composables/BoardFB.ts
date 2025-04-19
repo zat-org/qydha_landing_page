@@ -258,7 +258,7 @@ export const useBoardFB = () => {
         left: ` ${newData.BottomPlayer.left}px`,
       },
       DetailScoreColor: newData.DetailScoreColor,
-      DetailScoreFontSize: `${newData.DetailScoreColor}px`,
+      DetailScoreFontSize: `${newData.DetailScoreFontSize}px`,
     };
 
     try {
