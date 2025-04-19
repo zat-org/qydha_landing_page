@@ -52,6 +52,8 @@ export interface TableData {
   BottomPlayer: { bottom: string; left: string };
   PlayerImageWidth: number;
   DetailScoreColor: string;
+  DetailScoreFontSize: string;
+
 }
 export interface TableUpdate {
   dimension: {
@@ -104,6 +106,7 @@ export interface TableUpdate {
   BottomPlayer: { bottom: number; left: number };
   PlayerImageWidth: number;
   DetailScoreColor: string;
+  DetailScoreFontSize: number;
 }
 export const useBoardFB = () => {
   const { $firestore } = useNuxtApp()
@@ -169,6 +172,7 @@ export const useBoardFB = () => {
       RightPlayer: { top: "", right: "0px" },
       BottomPlayer: { bottom: "0px", left: "" },
       DetailScoreColor: "#000000",
+      DetailScoreFontSize: "20px",
     };
     defaultTableData.LeftPlayer.top = ` ${
       defaultTableData.PlayerImageWidth / 2
@@ -254,6 +258,7 @@ export const useBoardFB = () => {
         left: ` ${newData.BottomPlayer.left}px`,
       },
       DetailScoreColor: newData.DetailScoreColor,
+      DetailScoreFontSize: `${newData.DetailScoreColor}px`,
     };
 
     try {

@@ -703,6 +703,9 @@
             <UFormGroup label="Detail Score Color" name="DetailScoreColor">
               <UInput v-model="state.DetailScoreColor" type="color" />
             </UFormGroup>
+            <UFormGroup label="Detail Font size" name="DetailScoreFontSize">
+              <UInput v-model="state.DetailScoreFontSize" type="number" />
+            </UFormGroup>
           </template>
         </UAccordion>
       </UForm>
@@ -784,6 +787,8 @@ const schema = object({
   }),
   PlayerImageWidth: number().required(),
   DetailScoreColor: string().required(),
+  DetailScoreFontSize: number().required(),
+
 });
 
 const state = ref<TableUpdate>({
@@ -848,6 +853,8 @@ const state = ref<TableUpdate>({
   },
   PlayerImageWidth: data.PlayerImageWidth,
   DetailScoreColor: data.DetailScoreColor,
+  DetailScoreFontSize: +data.DetailScoreFontSize.replace("px", ""),
+
 });
 const updateBoard = () => {
   updateForm.value?.submit();
@@ -891,6 +898,7 @@ const resetBoard = async () => {
     RightPlayer: { top: 100, right: 0 },
     BottomPlayer: { bottom: 0, left: 100 },
     DetailScoreColor: "#000000",
+    DetailScoreFontSize:20
   };
 
   try {
