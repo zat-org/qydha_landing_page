@@ -154,7 +154,7 @@ export const useBoardFB = () => {
       LeftPlayer: { top: "calc(50% - 30px)", left: "0px" },
       RightPlayer: { top: "calc(50% - 30px)", right: "0px" },
       BottomPlayer: { bottom: "0px", left: "calc(50% - 30px)" },
-      DetailScore:{Color:"#000000" , FontSize:"50px"},
+      DetailScore:{Color:"#000000" , FontSize:"70px"},
     };
     defaultTableData.LeftPlayer.top = ` ${
       defaultTableData.PlayerImageWidth / 2

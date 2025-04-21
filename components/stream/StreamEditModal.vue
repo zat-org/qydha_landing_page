@@ -895,7 +895,7 @@ const resetBoard = async () => {
     BottomPlayer: { bottom: 0, left: 100 },
     DetailScore:{
       Color: "#000000",
-      FontSize:50
+      FontSize:70
     }
   };
 
