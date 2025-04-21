@@ -700,11 +700,11 @@
             </div>
           </template>
           <template #detailView>
-            <UFormGroup label="Detail Score Color" name="DetailScoreColor">
-              <UInput v-model="state.DetailScoreColor" type="color" />
+            <UFormGroup label="Detail Score Color" name="DetailScore.Color">
+              <UInput v-model="state.DetailScore.Color" type="color" />
             </UFormGroup>
-            <UFormGroup label="Detail Font size" name="DetailScoreFontSize">
-              <UInput v-model="state.DetailScoreFontSize" type="number" />
+            <UFormGroup label="Detail Font size" name="DetailScore.FontSize">
+              <UInput v-model="state.DetailScore.FontSize" type="number" />
             </UFormGroup>
           </template>
         </UAccordion>
@@ -786,9 +786,11 @@ const schema = object({
     bottom: number().required(),
   }),
   PlayerImageWidth: number().required(),
-  DetailScoreColor: string().required(),
-  DetailScoreFontSize: number().required(),
-
+  DetailScore: object({
+    Color: string().required(),
+    FontSize: number().required(),
+  }),
+  
 });
 
 const state = ref<TableUpdate>({
@@ -809,16 +811,12 @@ const state = ref<TableUpdate>({
         size: +data.scorePanel.leftTeam.name.size.replace("px", ""),
         top: +data.scorePanel.leftTeam.name.top.replace("px", ""),
         left: +data.scorePanel.leftTeam.name.left.replace("px", ""),
-        width: +data.scorePanel.leftTeam.name.width.replace("px", ""),
-        height: +data.scorePanel.leftTeam.name.height.replace("px", ""),
       },
 
       score: {
         size: +data.scorePanel.leftTeam.score.size.replace("px", ""),
         top: +data.scorePanel.leftTeam.score.top.replace("px", ""),
         left: +data.scorePanel.leftTeam.score.left.replace("px", ""),
-        width: +data.scorePanel.leftTeam.score.width.replace("px", ""),
-        height: +data.scorePanel.leftTeam.score.height.replace("px", ""),
       },
     },
     rightTeam: {
@@ -826,16 +824,12 @@ const state = ref<TableUpdate>({
         size: +data.scorePanel.rightTeam.name.size.replace("px", ""),
         top: +data.scorePanel.rightTeam.name.top.replace("px", ""),
         left: +data.scorePanel.rightTeam.name.left.replace("px", ""),
-        width: +data.scorePanel.rightTeam.name.width.replace("px", ""),
-        height: +data.scorePanel.rightTeam.name.height.replace("px", ""),
       },
 
       score: {
         size: +data.scorePanel.rightTeam.score.size.replace("px", ""),
         top: +data.scorePanel.rightTeam.score.top.replace("px", ""),
         left: +data.scorePanel.rightTeam.score.left.replace("px", ""),
-        width: +data.scorePanel.rightTeam.score.width.replace("px", ""),
-        height: +data.scorePanel.rightTeam.score.height.replace("px", ""),
       },
     },
   },
@@ -852,8 +846,10 @@ const state = ref<TableUpdate>({
     left: +data.BottomPlayer.left.replace("px", ""),
   },
   PlayerImageWidth: data.PlayerImageWidth,
-  DetailScoreColor: data.DetailScoreColor,
-  DetailScoreFontSize: +data.DetailScoreFontSize.replace("px", ""),
+  DetailScore:{Color: data.DetailScore.Color,
+    FontSize: +data.DetailScore.FontSize.replace("px", ""),
+  }
+  
 
 });
 const updateBoard = () => {
@@ -886,19 +882,21 @@ const resetBoard = async () => {
       height: 300,
       // svgViewBox: { width: "1180", height: "400" },
       leftTeam: {
-        name: { size: 25, top: 73, left: 111, width: 50, height: 100 },
-        score: { size: 47, top: 66, left: 414, width: 20, height: 100 },
+        name: { size: 30, top: 0, left: 0,  },
+        score: { size: 50, top: 0, left: 0, },
       },
       rightTeam: {
-        name: { size: 25, top: 73, left: 188, width: 50, height: 100 },
-        score: { size: 47, top: 66, left: 43, width: 20, height: 100 },
+        name: { size: 30, top: 0, left: 0,  },
+        score: { size: 50, top: 0, left: 0, },
       },
     },
     LeftPlayer: { top: 100, left: 0 },
     RightPlayer: { top: 100, right: 0 },
     BottomPlayer: { bottom: 0, left: 100 },
-    DetailScoreColor: "#000000",
-    DetailScoreFontSize:20
+    DetailScore:{
+      Color: "#000000",
+      FontSize:50
+    }
   };
 
   try {

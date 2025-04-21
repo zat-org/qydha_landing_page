@@ -14,15 +14,11 @@ export interface TableData {
         size: string;
         top: string;
         left: string;
-        width: string;
-        height: string;
       };
       score: {
         size: string;
         top: string;
         left: string;
-        width: string;
-        height: string;
       };
     };
     rightTeam: {
@@ -30,15 +26,11 @@ export interface TableData {
         size: string;
         top: string;
         left: string;
-        width: string;
-        height: string;
       };
       score: {
         size: string;
         top: string;
         left: string;
-        width: string;
-        height: string;
       };
     };
     position: {
@@ -51,8 +43,10 @@ export interface TableData {
   RightPlayer: { top: string; right: string };
   BottomPlayer: { bottom: string; left: string };
   PlayerImageWidth: number;
-  DetailScoreColor: string;
-  DetailScoreFontSize: string;
+  DetailScore:{
+    Color: string;
+    FontSize: string;
+  }
 
 }
 export interface TableUpdate {
@@ -73,15 +67,11 @@ export interface TableUpdate {
         size: number;
         top: number;
         left: number;
-        width: number;
-        height: number;
       };
       score: {
         size: number;
         top: number;
         left: number;
-        width: number;
-        height: number;
       };
     };
     rightTeam: {
@@ -89,15 +79,11 @@ export interface TableUpdate {
         size: number;
         top: number;
         left: number;
-        width: number;
-        height: number;
       };
       score: {
         size: number;
         top: number;
         left: number;
-        width: number;
-        height: number;
       };
     };
   };
@@ -105,14 +91,14 @@ export interface TableUpdate {
   RightPlayer: { top: number; right: number };
   BottomPlayer: { bottom: number; left: number };
   PlayerImageWidth: number;
-  DetailScoreColor: string;
-  DetailScoreFontSize: number;
+  DetailScore:{Color: string; FontSize: number;}
+
 }
 export const useBoardFB = () => {
   const { $firestore } = useNuxtApp()
-  $firestore.app
+  // $firestore.app
   const getOrCreateTable = async (tableId: string): Promise<TableData> => {
-    console.log($firestore.app)
+    // console.log($firestore.app)
     const tableRef = doc($firestore as Firestore , "tables", tableId);
     const tableSnap = await getDoc(tableRef);
 
@@ -121,6 +107,7 @@ export const useBoardFB = () => {
         ...(tableSnap.data() as TableData),
       };
     }
+
 
     const defaultTableData: TableData = {
       id: "",
@@ -137,52 +124,49 @@ export const useBoardFB = () => {
         },
         leftTeam: {
           name: {
-            size: "25px",
-            top: "73px",
-            left: "111px",
-            width: "50%",
-            height: "100px",
+            size: "30px",
+            top: "0px",
+            left: "0px",
+  
           },
           score: {
-            size: "47px",
-            top: "66px",
-            left: "414px",
-            width: "20%",
-            height: "100px",
+            size: "50px",
+            top: "0px",
+            left: "0px",
+  
           },
         },
         rightTeam: {
           name: {
-            size: "25px",
-            top: "73px",
-            left: "188px",
-            width: "50%",
-            height: "100px",
+            size: "30px",
+            top: "0px",
+            left: "0px",
+  
           },
           score: {
-            size: "47px",
-            top: "66px",
-            left: "43px",
-            width: "20%",
-            height: "100px",
+            size: "50px",
+            top: "0px",
+            left: "0px",
+  
           },
         },
       },
-      LeftPlayer: { top: "", left: "0px" },
-      RightPlayer: { top: "", right: "0px" },
-      BottomPlayer: { bottom: "0px", left: "" },
-      DetailScoreColor: "#000000",
-      DetailScoreFontSize: "20px",
+      LeftPlayer: { top: "calc(50% - 30px)", left: "0px" },
+      RightPlayer: { top: "calc(50% - 30px)", right: "0px" },
+      BottomPlayer: { bottom: "0px", left: "calc(50% - 30px)" },
+      DetailScore:{Color:"#000000" , FontSize:"50px"},
     };
     defaultTableData.LeftPlayer.top = ` ${
       defaultTableData.PlayerImageWidth / 2
     }px`;
-    defaultTableData.RightPlayer.top = ` ${
+    defaultTableData.RightPlayer.top = `  ${
       defaultTableData.PlayerImageWidth / 2
     }px`;
-    defaultTableData.BottomPlayer.left = ` ${
+    defaultTableData.BottomPlayer.left = `  ${
       defaultTableData.PlayerImageWidth / 2
     }px`;
+  
+
 
     // Create new document if it doesn't exist
     await setDoc(tableRef, defaultTableData);
@@ -212,15 +196,13 @@ export const useBoardFB = () => {
             size: `${newData.scorePanel.leftTeam.name.size}px`,
             top: `${newData.scorePanel.leftTeam.name.top}px`,
             left: `${newData.scorePanel.leftTeam.name.left}px`,
-            width: `${newData.scorePanel.leftTeam.name.width}%`,
-            height: `${newData.scorePanel.leftTeam.name.height}px`,
+
           },
           score: {
             size: `${newData.scorePanel.leftTeam.score.size}px`,
             top: `${newData.scorePanel.leftTeam.score.top}px`,
             left: `${newData.scorePanel.leftTeam.score.left}px`,
-            width: `${newData.scorePanel.leftTeam.score.width}%`,
-            height: `${newData.scorePanel.leftTeam.score.height}px`,
+
           },
         },
         rightTeam: {
@@ -228,15 +210,12 @@ export const useBoardFB = () => {
             size: `${newData.scorePanel.rightTeam.name.size}px`,
             top: `${newData.scorePanel.rightTeam.name.top}px`,
             left: `${newData.scorePanel.rightTeam.name.left}px`,
-            width: `${newData.scorePanel.rightTeam.name.width}%`,
-            height: `${newData.scorePanel.rightTeam.name.height}px`,
-          },
+           },
           score: {
             size: `${newData.scorePanel.rightTeam.score.size}px`,
             top: `${newData.scorePanel.rightTeam.score.top}px`,
             left: `${newData.scorePanel.rightTeam.score.left}px`,
-            width: `${newData.scorePanel.rightTeam.score.width}%`,
-            height: `${newData.scorePanel.rightTeam.score.height}px`,
+ 
           },
         },
         position: {
@@ -257,8 +236,10 @@ export const useBoardFB = () => {
         bottom: `${newData.BottomPlayer.bottom}px`,
         left: ` ${newData.BottomPlayer.left}px`,
       },
-      DetailScoreColor: newData.DetailScoreColor,
-      DetailScoreFontSize: `${newData.DetailScoreFontSize}px`,
+      DetailScore:{
+        Color: newData.DetailScore.Color,
+        FontSize: `${newData.DetailScore.FontSize}px`,
+      }
     };
 
     try {
