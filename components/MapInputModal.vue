@@ -23,18 +23,19 @@
           />
         </div>
       </template>
-      <div
-        ref="mapContiner"
-        id="map"
-        class="w-[600px] h-[600px] p-5 mx-auto z-0"
-      ></div>
+      <ClientOnly>
+        <div
+          ref="mapContiner"
+          id="map"
+          class="w-[600px] h-[600px] p-5 mx-auto z-0"
+        ></div>
+      </ClientOnly>
     </UCard>
   </UModal>
 </template>
 
 <script lang="ts" setup>
 const modal = useModal();
-import L from "leaflet";
 const map = ref();
 const mapContiner = ref();
 const props = defineProps<{ lat?: number; log?: number }>();
@@ -46,15 +47,19 @@ function onSuccess() {
   emit("success", lat.value, log.value);
 }
 
-const getLocation = () => {
+const getLocation = async () => {
   if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
+    navigator.geolocation.getCurrentPosition(async (position) => {
       if (!(lat.value && log.value)) {
         lat.value = position.coords.latitude;
         log.value = position.coords.longitude;
       }
 
-      
+      // Lazy load Leaflet
+      const L = await import('leaflet');
+      // Import CSS only when needed
+      await import('leaflet/dist/leaflet.css');
+
       map.value = L.map("map", { attributionControl: false }).setView(
         [lat.value, log.value],
         9
@@ -72,12 +77,16 @@ const getLocation = () => {
     });
   }
 };
+
 onMounted(() => {
   getLocation();
 });
 
 onUnmounted(() => {
-  map.value = undefined;
+  if (map.value) {
+    map.value.remove();
+    map.value = undefined;
+  }
 });
 </script>
 

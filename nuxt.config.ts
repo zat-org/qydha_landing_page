@@ -12,11 +12,11 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   // ssr: false,
 
-
-
   modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos", "@nuxtjs/tailwindcss", "@nuxtjs/color-mode", "@vueuse/nuxt", "@nuxt/icon", "@nuxt/fonts",],
 
-  css: ["~/assets/css/main.css"],
+  css: [
+    '@/assets/css/variables.css',
+    "~/assets/css/main.css"],
 
   app: {
     head: {
@@ -24,16 +24,6 @@ export default defineNuxtConfig({
         lang: "ar",
         dir: "rtl",
       },
-      link: [
-        { rel: "stylesheet", href: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css", integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossorigin: "" }
-      ],
-      script: [
-        {
-          src: "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
-          integrity: "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=",
-          crossorigin: "anonymous",
-        },
-      ],
       title: Title,
       meta: [
         { name: "image", property: "og:image", content: LogoURL },
@@ -72,16 +62,8 @@ export default defineNuxtConfig({
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
       appId: process.env.appId,
-
-
     },
   },
-
-  // icon: {
-  //   serverBundle: {
-  //     collections: ['uil', 'mdi', 'heroicons', 'material-symbols', 'mingcute', 'weui', 'fontisto', 'simple-line-icons']
-  //   }
-  // },
 
   devtools: {
     enabled: false,

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white rounded-lg shadow-md p-4 rtl flex flex-col h-full">
+  <div class="bg-[var(--color-background)] dark:bg-[var(--color-background-dark)] rounded-lg shadow-md p-4 rtl flex flex-col h-full ">
     <div class="flex gap-5 justify-between items-center mb-4">
       <UInput
         class="grow"
@@ -7,47 +7,64 @@
         placeholder="البحث باسم المجموعة"
         icon="i-heroicons-magnifying-glass-20-solid"
         size="sm"
+        :ui="{
+          base: 'bg-[var(--color-input-bg)] dark:bg-[var(--color-input-bg-dark)] text-[var(--color-text)] dark:text-[var(--color-text-dark)]',
+          // icon: 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary-dark)]',
+          input: 'placeholder-[var(--color-text-secondary)] dark:placeholder-[var(--color-text-secondary-dark)]'
+        }"
       />
-      <!--     
-    <UToggle v-model="showUsedOnly" size="lg">
-      <template #label>
-        <span class="mr-2">إظهار المستخدمة فقط</span>
-      </template>
-    </UToggle> -->
     </div>
 
     <UTable
-    :key="tableKey"
+      :key="tableKey"
       :columns="columns"
       :rows="filteredItems"
       :loading="pending"
-      :ui="{ td: { padding: 'py-1' } }"
+      :ui="{
+        td: { padding: 'py-1' },
+        th: { 
+          base: 'bg-[var(--color-table-header)] dark:bg-[var(--color-table-header-dark)] text-[var(--color-text)] dark:text-[var(--color-text-dark)]',
+          padding: 'py-2 px-4'
+        },
+        tr: {
+          base: 'hover:bg-[var(--color-hover)] dark:hover:bg-[var(--color-hover-dark)]',
+          td: 'text-[var(--color-text)] dark:text-[var(--color-text-dark)]'
+        }
+      }"
     >
-    <template #action-data="{ row }">
-  <UButtonGroup size="sm">
-    <UButton
-      color="green"
-      icon="i-heroicons-plus"
-      variant="soft"
-      @click="handleAdd(row)"
-    />
-    <UButton
-      v-if="row.canUpdate"
-      color="yellow"
-      icon="i-heroicons-pencil"
-      variant="soft"
-      @click="handleUpdate(row)"
-    />
-    <UButton
-      v-if="row.canDelete"
-      color="red"
-      icon="i-heroicons-trash"
-      variant="soft"
-      @click="handleDelete(row)"
-    />
-  </UButtonGroup>
-</template>
-
+      <template #action-data="{ row }">
+        <UButtonGroup size="sm">
+          <UButton
+            color="green"
+            icon="i-heroicons-plus"
+            variant="soft"
+            @click="handleAdd(row)"
+            :ui="{
+              base: 'hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20'
+            }"
+          />
+          <UButton
+            v-if="row.canUpdate"
+            color="yellow"
+            icon="i-heroicons-pencil"
+            variant="soft"
+            @click="handleUpdate(row)"
+            :ui="{
+              base: 'hover:bg-[var(--color-warning-light)]/10 dark:hover:bg-[var(--color-warning)]/20'
+            }"
+          />
+          <UButton
+            v-if="row.canDelete"
+            color="red"
+            icon="i-heroicons-trash"
+            variant="soft"
+            @click="handleDelete(row)"
+            :ui="{
+              base: 'hover:bg-[var(--color-danger-light)]/10 dark:hover:bg-[var(--color-danger)]/20'
+            }"
+          />
+        </UButtonGroup>
+      </template>
     </UTable>
 
     <div class="mt-4 flex justify-center" v-if="data?.data.totalPages! > 1">
@@ -58,6 +75,13 @@
         :total-pages="data?.data.totalPages"
         :show-prev="data?.data.hasPrevious"
         :show-next="data?.data.hasNext"
+        :ui="{
+          // wrapper: 'bg-[var(--color-background)] dark:bg-[var(--color-background-dark)]',
+          button: {
+            base: 'text-[var(--color-text)] dark:text-[var(--color-text-dark)] hover:bg-[var(--color-hover)] dark:hover:bg-[var(--color-hover-dark)]',
+            active: 'bg-[var(--color-primary)] dark:bg-[var(--color-primary-dark)] text-white'
+          }
+        }"
       />
     </div>
   </div>
@@ -80,27 +104,21 @@ const columns = [
   { key: "groupCode", label: "اسم المجموعة" },
   { key: "totalCount", label: "العدد الكلي" },
   { key: "usedCount", label: "المستخدم" },
-
   { key: "notUsedCount", label: "المتبقي" },
   { key: "numberOfDays", label: "الايام" },
   { key: "action", label: "#" },
 ];
-// Add this before the columns definition
-const tableKey =  ref(`table-${Date.now()}`)
 
-// Replace the existing filteredItems computed property with this optimized version
+const tableKey = ref(`table-${Date.now()}`)
+
 const filteredItems = computed(() => {
   if (!data.value?.data.items) return [];
-
-  // Create a stable reference to the original items
   const items = data.value.data.items;
   
-  // Return original array if no filter
   if (!groupNameFilter.value.trim()) {
     return items;
   }
 
-  // Apply filter with memoization
   return items.filter((item) => {
     const searchTerm = groupNameFilter.value.toLowerCase().trim();
     const groupCode = item.groupCode.toLowerCase();
@@ -108,9 +126,7 @@ const filteredItems = computed(() => {
   });
 });
 
-
 const handleAdd = (row: CardGroupI) => {
-  // modal.open(CreateModal)
   let selectedGroup = filteredItems.value.find((g) => {
     return g.groupCode == row.groupCode;
   });
@@ -122,19 +138,16 @@ const handleUpdate = (row: CardGroupI) => {
     return g.groupCode == row.groupCode;
   });
   if (selectedGroup) modal.open(UpdateModal, { cardGroup: selectedGroup });
-  // Update logic
 };
+
 const deleteREQ = await deleteCardCodeGroup();
 const handleDelete = async (row: CardGroupI) => {
-  // console.log(row)
   await deleteREQ.fetchREQ(row.groupCode);
-  // Delete logic
 };
 
 watch(() => data.value?.data.items, () => {
   tableKey.value = `table-${Date.now()}`
 }, { deep: true })
-
 </script>
 
 <style scoped>

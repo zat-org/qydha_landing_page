@@ -1,27 +1,42 @@
 <template>
-  <div class="w-full  relative flex justify-center ">
-    <div
-      class="absolute z-0 inset-0 bg-no-repeat bg-cover bg-center bg-gradient-to-r from-blue-500 to-violet-500 blur-2xl opacity-35"
-    ></div>
-
+  <div class="w-full relative flex justify-center items-center px-[var(--spacing-md)] bg-[var(--color-background)] dark:bg-[var(--color-background-secondary)]">
     <UCard
-      class="z-10 bg-white/35 p-5"
+      class="z-10 w-full max-w-md mx-auto"
       :ui="{
-        base: 'w-[80%] mx-auto mt-20  ',
-        ring: '',
-        divide: 'divide-none',
-        shadow: '',
+        base: 'bg-[var(--color-background)]/[var(--opacity-background)] dark:bg-[var(--color-background-secondary)]/[var(--opacity-background)] backdrop-blur-sm border border-[var(--color-border)] dark:border-[var(--color-border)]',
+        ring: 'ring-1 ring-[var(--color-border)] dark:ring-[var(--color-border)]',
+        divide: 'divide-[var(--color-border)] dark:divide-[var(--color-border)]',
+        shadow: 'shadow-[var(--shadow-lg)]',
+        rounded: 'rounded-[var(--radius-xl)]',
+        header: {
+          base: 'p-[var(--spacing-lg)]',
+          padding: 'py-[var(--spacing-lg)] px-[var(--spacing-lg)]'
+        },
+        body: {
+          base: 'p-[var(--spacing-lg)]',
+          padding: 'py-[var(--spacing-lg)] px-[var(--spacing-lg)]'
+        },
+        footer: {
+          base: 'p-[var(--spacing-lg)]',
+          padding: 'py-[var(--spacing-lg)] px-[var(--spacing-lg)]'
+        }
       }"
     >
-    <template #header >
-      <div class="flex justify-center ">
-        <h2 class="text-3xl " >
-          تسجيل الدخول في قيدها
-        </h2>
-      </div>
-    </template>
+      <!-- Rest of the code remains unchanged -->
+      <template #header>
+        <div class="flex flex-col items-center space-y-[var(--spacing-md)]">
+          <img src="@/assets/images/qydha-logo.svg" alt="Qydha" class="w-24 mb-[var(--spacing-md)]" />
+          <h2 class="text-2xl font-bold text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
+            تسجيل الدخول في قيدها
+          </h2>
+          <p class="text-sm text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary)]">
+            مرحباً بعودتك! سجل دخولك للوصول إلى حسابك
+          </p>
+        </div>
+      </template>
+
       <UForm
-        class="w-[80%] mx-auto space-y-4"
+        class="space-y-[var(--spacing-lg)]"
         ref="loginForm"
         :state="state"
         :schema="schema"
@@ -32,50 +47,75 @@
           name="username"
           :ui="{
             label: {
-              wrapper: 'flex content-center items-center justify-center  ',
+              wrapper: 'flex items-center justify-center text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary)]',
+              base: 'text-sm font-medium mb-[var(--spacing-sm)]'
             },
           }"
         >
           <UInput
-          dir="ltr"
+            dir="ltr"
             v-model="state.username"
-            variant="none"
             :ui="{
-              base: 'border-b border-gray-500  text-center ',
-              rounded: '',
+              base: 'w-full bg-[var(--color-background)] dark:bg-[var(--color-background-secondary)] border border-[var(--color-border)] dark:border-[var(--color-border)] rounded-[var(--radius-md)] px-[var(--spacing-md)] py-[var(--spacing-sm)] text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-[var(--color-primary-light)] focus:border-transparent',
+              rounded: 'rounded-[var(--radius-md)]',
             }"
           />
         </UFormGroup>
+
         <UFormGroup
           label="كلمة المرور"
           name="password"
           :ui="{
             label: {
-              wrapper: 'flex content-center items-center justify-center  ',
+              wrapper: 'flex items-center justify-center text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary)]',
+              base: 'text-sm font-medium mb-[var(--spacing-sm)]'
             },
           }"
         >
           <UInput
-          dir="ltr"
+            dir="ltr"
             v-model="state.password"
             type="password"
-            variant="none"
             :ui="{
-              base: 'border-b border-gray-500  text-center ',
-              rounded: '',
+              base: 'w-full bg-[var(--color-background)] dark:bg-[var(--color-background-secondary)] border border-[var(--color-border)] dark:border-[var(--color-border)] rounded-[var(--radius-md)] px-[var(--spacing-md)] py-[var(--spacing-sm)] text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)] focus:ring-2 focus:ring-[var(--color-primary)] dark:focus:ring-[var(--color-primary-light)] focus:border-transparent',
+              rounded: 'rounded-[var(--radius-md)]',
             }"
           />
         </UFormGroup>
-      </UForm>
-      <div v-if="errormesage" class="p-2 w-[80%] mx-auto text-center bg-red-500/5 text-red-500 border border-red-500 mt-5 rounded-xl text-sm " >{{ errormesage }}</div>
-      <template #footer>
+
+        <div v-if="errormesage" 
+             class="p-[var(--spacing-md)] text-center bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-[var(--radius-md)] text-sm">
+          {{ errormesage }}
+        </div>
+
         <UButton
-          label="تسجيل الدخول "
+          label="تسجيل الدخول"
           @click="loginForm?.submit()"
           block
-          class="w-[40%] mx-auto"
+          color="amber"
           :loading="loginREQ.status.value=='pending'"
+          class="w-full py-[var(--spacing-sm)] text-base font-medium hover-transition"
         />
+      </UForm>
+
+      <template #footer>
+        <div class="text-center space-y-[var(--spacing-md)]">
+          <p class="text-sm text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary)]">
+            ليس لديك حساب؟
+            <NuxtLink 
+              to="/register" 
+              class="text-[var(--color-primary)] dark:text-[var(--color-primary-light)] hover:text-[var(--color-primary-dark)] dark:hover:text-[var(--color-primary)] font-medium hover-transition"
+            >
+              سجل الآن
+            </NuxtLink>
+          </p>
+          <NuxtLink 
+            to="/forgot-password" 
+            class="text-sm text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary)] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary-light)] hover-transition"
+          >
+            نسيت كلمة المرور؟
+          </NuxtLink>
+        </div>
       </template>
     </UCard>
   </div>
@@ -96,17 +136,20 @@ const schema = object({
 });
 const onSubmit = async () => {
    await loginREQ.fetchREQ(state);
-
 };
-const  errormesage  =computed(()=>{
-  if(loginREQ.error.value?.data){
-    if(loginREQ.error.value.data.code == "InvalidCredentials"){
-      return "اسم المستخدم او كلمة المرور غير صحيح "
+const errormesage = computed(() => {
+  if(loginREQ.error.value?.data) {
+    if(loginREQ.error.value.data.code == "InvalidCredentials") {
+      return "اسم المستخدم او كلمة المرور غير صحيح"
     }
-  }else{
-    return null
   }
-})
+  return null;
+});
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Component specific styles */
+.card {
+  --card-padding: var(--spacing-lg);
+}
+</style>

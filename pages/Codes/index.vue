@@ -1,5 +1,5 @@
 <template>
-  <InfluncerCode />
+  <Codes />
 </template>
 
 <script lang="ts" setup>

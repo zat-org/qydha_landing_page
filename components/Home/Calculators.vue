@@ -1,129 +1,148 @@
 <template>
-  <section id="calculators">
-    <h2 class="text-center text-4xl mb-1" data-aos="fade-down">حاسبات قيدها</h2>
-    <p class="text-center text-xl mb-5 text-gray-700" data-aos="fade-down">
-      اختر العبة اللى تريدها وحنا نقيدها
-    </p>
+  <section id="calculators" class="py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
+    <div class="container mx-auto px-4">
+      <div class="text-center space-y-4 mb-12" data-aos="fade-down" data-aos-once="true">
+        <h2 class="text-4xl font-bold bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
+          حاسبات قيدها
+        </h2>
+        <p class="text-xl text-gray-700 dark:text-gray-300">
+          اختر العبة اللى تريدها وحنا نقيدها
+        </p>
+      </div>
 
-    <div
-      class="grid justify-center items-center grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-5 px-5"
-    >
-      <UCard
-      data-aos="fade-up"
-       data-aos-delay="300"
-        class="text-white  "
-        :ui="{
-          base: 'inline shadow-lg h-[22rem]',
-          background: 'bg-white dark:bg-white',
-          ring: 'ring-0',
-        }"
-      >
-        <img src="@/assets/images/hand.svg" class="h-20 w-20 mx-auto" alt="hand" />
-        <h3 class="text-xl mb-3 text-[#1d2145] text-center ">حاسبة هاند</h3>
-        <div class="text-xs text-gray-400 leading-5">
-          <p>عدد الورق (52 ورقة)</p>
-          <p>عدد اللاعبين 2 إلى 5 لاعب</p>
-          <p>طريقة اللعبة:</p>
-          <ul class="list-decimal ms-5">
-            <li>
-              تكوين مجموعات من الأوراق (تسلسلات أو مجموعات من نفس القيمة) لإنهاء
-              يدك بأسرع وقت ممكن
-            </li>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Hand Calculator Card -->
+        <UCard
+          data-aos="fade-up"
+          data-aos-once="true"
+          class="transform transition-all duration-300 hover:scale-105"
+          :ui="{
+            base: 'h-full overflow-hidden',
+            background: 'bg-gradient-to-br from-[#1d2145] to-[#2a2f5c] dark:from-[#1d2145] dark:to-[#2a2f5c]',
+            ring: 'ring-1 ring-[#2a2f5c]/20 dark:ring-[#2a2f5c]/20',
+            shadow: 'shadow-lg dark:shadow-black/50',
+            rounded: 'rounded-2xl',
+            padding: 'p-6'
+          }"
+        >
+          <div class="flex flex-col items-center space-y-4">
+            <div class="p-4 rounded-full bg-white/10">
+              <img src="@/assets/images/hand.svg" class="h-16 w-16" alt="hand" />
+            </div>
+            <h3 class="text-2xl font-bold text-white">حاسبة هاند</h3>
+            <div class="text-sm text-gray-300 space-y-3">
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:playing-cards" class="text-amber-400" />
+                <span>عدد الورق (52 ورقة)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:group" class="text-amber-400" />
+                <span>عدد اللاعبين 2 إلى 5 لاعب</span>
+              </div>
+              <div class="pt-2">
+                <p class="font-semibold text-amber-400 mb-2">طريقة اللعبة:</p>
+                <ul class="list-decimal ms-5 space-y-2">
+                  <li>تكوين مجموعات من الأوراق (تسلسلات أو مجموعات من نفس القيمة) لإنهاء يدك بأسرع وقت ممكن</li>
+                  <li>تتم اللعبة على عدة جولات</li>
+                  <li>يسعى اللاعبون لتقليل مجموع نقاطهم، إذ أن الأوراق المتبقية في يد اللاعب تحتسب كنقاط سلبية عند الجولة انتهاء</li>
+                  <li>الفائز باللعبة الذي يجمع أقل عدد من النقاط بعد عدد محدد من الجولات.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </UCard>
 
-            <li>تتم اللعبة على عدة جولات</li>
+        <!-- Baloot Calculator Card -->
+        <UCard
+          data-aos="fade-up"
+          data-aos-delay="100"
+          data-aos-once="true"
+          class="transform transition-all duration-300 hover:scale-105"
+          :ui="{
+            base: 'h-full overflow-hidden',
+            background: 'bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-600 dark:to-amber-700',
+            ring: 'ring-1 ring-amber-500/20 dark:ring-amber-500/20',
+            shadow: 'shadow-lg dark:shadow-black/50',
+            rounded: 'rounded-2xl',
+            padding: 'p-6'
+          }"
+        >
+          <div class="flex flex-col items-center space-y-4">
+            <div class="p-4 rounded-full bg-white/10">
+              <img src="@/assets/images/baloot.svg" class="h-16 w-16" alt="baloot" />
+            </div>
+            <h3 class="text-2xl font-bold text-white">حاسبة بلوت</h3>
+            <div class="text-sm text-gray-100 space-y-3">
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:playing-cards" class="text-white" />
+                <span>عدد الورق: (32 ورقة)</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:group" class="text-white" />
+                <span>عدد اللاعبين: 4 لاعبين</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:groups" class="text-white" />
+                <span>عدد الفرق: فريقين (كل فريق لاعبين)</span>
+              </div>
+              <div class="pt-2">
+                <p class="font-semibold text-white mb-2">طريقة اللعبة:</p>
+                <ul class="list-decimal ms-5 space-y-2">
+                  <li>عدة جولات</li>
+                  <li>الفائز الذي جمع عدد نقاط من الجولات بناء على ورق اللعب</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </UCard>
 
-            <li>
-              يسعى اللاعبون لتقليل مجموع نقاطهم، إذ أن الأوراق المتبقية في يد
-              اللاعب تحتسب كنقاط سلبية عند الجولة انتهاء
-            </li>
-            <li>
-              الفائز باللعبة الذي يجمع أقل عدد من النقاط بعد عدد محدد من
-              الجولات.
-            </li>
-          </ul>
-
-          <!-- 
-                    الهاند هي لعبة ورقية تُلعب بشكل شائع في منطقة الشرق الأوسط، تتطلب مهارة واستراتيجية. تُلعب باستخدام
-                    مجموعة أوراق لعب كاملة (52 ورقة)، ويشارك فيها عادة من 2 إلى 5 لاعبين. تهدف اللعبة إلى تكوين مجموعات
-                    من الأوراق (تسلسلات أو مجموعات من نفس القيمة) لإنهاء يدك بأسرع وقت ممكن. تتم اللعبة على عدة جولات،
-                    حيث يسعى اللاعبون لتقليل مجموع نقاطهم، إذ أن الأوراق المتبقية في يد اللاعب تحتسب كنقاط سلبية عند
-                    انتهاء الجولة. يفوز باللعبة اللاعب الذي يجمع أقل عدد من النقاط بعد عدد محدد من الجولات. -->
-        </div>
-      </UCard>
-
-      <UCard
-      data-aos="fade-up"
-      data-aos-delay="600"
-
-        class="text-white"
-        :ui="{
-          base: 'inline shadow-lg h-[22rem]',
-          background: 'bg-[#1d2145] dark:bg-[#1d2145] ',
-          ring: 'ring-0',
-        }"
-      >
-        <img src="@/assets/images/baloot.svg" class="h-20 w-20 mx-auto" alt="baloot" />
-        <h3 class="text-xl mb-3 text-center ">حاسبة بلوت</h3>
-        <div class="text-xs text-gray-400">
-          <p>عدد الورق: (32 ورقة)</p>
-          <p>عدد اللاعبين: 4 لاعبين</p>
-          <p>عدد الفرق: فريقين (كل فريق لاعبين)</p>
-          <p>طريقة اللعبة:</p>
-          <ul class="ms-5 list-decimal">
-            <li>عدة جولات</li>
-            <li>الفائز الذي جمع عدد نقاط من الجولات بناء على ورق اللعب</li>
-          </ul>
-        </div>
-
-        <!-- <p class="text-xs text-gray-400 leading-5">
-                    البلوت هي لعبة ورقية شعبية تُلعب بشكل رئيسي في دول الخليج العربي، خاصة في السعودية. تُلعب البلوت
-                    باستخدام مجموعة من 32 ورقة لعب (تُستبعد الأوراق من 2 إلى 6). يُشترك فيها أربعة لاعبين في فريقين، كل
-                    فريق يتكون من شخصين يجلسان بشكل متقابل. تعتمد اللعبة على الاستراتيجية والتكتيك، وتتضمن معرفة قواعد
-                    خاصة بالترتيب والقيمة للأوراق، مثل الشراكة، والطلب (التعهد بلعب نوع معين من الورق)، واللعب في
-                    الطرنيب أو الصن. تهدف الفرق إلى جمع أكبر عدد من النقاط من خلال الفوز بالجولات، التي تُحسب بناءً على
-                    الأوراق التي يتم لعبها.
-                </p> -->
-      </UCard>
-      <UCard
-      data-aos="fade-up"
-      data-aos-delay="900"
-
-        class="text-white"
-        :ui="{
-          base: 'inline shadow-lg h-[22rem]',
-          background: 'bg-white dark:bg-white',
-          ring: 'ring-0',
-        }"
-      >
-        <img src="@/assets/images/trex.svg" class="h-20 w-32 mx-auto" alt="trex" />
-        <h3 class="text-xl mb-3 text-[#1d2145] text-center ">
-          حاسبة تريكس
-          <UBadge color="amber">قريبا</UBadge>
-        </h3>
-        <div class="text-xs text-gray-400 leading-5">
-          <p>عدد اللاعبين: 4 لاعبين</p>
-          <p>طريقة اللعبة:</p>
-          <ul class="ms-5 list-decimal">
-            <li>خمس ألعاب مختلفة تُلعب على مدار أربع جولات</li>
-            <li>
-              الألعاب الخمس بالترتيب هي: "التريكس"، "الملكة"، "اللطوش"،
-              "الديناري"، و"الكبوش" في كل جولة يتم تعيين "ملك" (اللاعب الذي
-              يختار ترتيب الألعاب)
-            </li>
-          </ul>
-
-          <!-- التريكس هي لعبة ورقية شهيرة في العالم العربي، تُلعب عادة بين أربعة
-                    لاعبين. تتألف اللعبة من خمس ألعاب مختلفة تُلعب على مدار أربع جولات، وفي كل جولة يتم تعيين "ملك"
-                    (اللاعب الذي يختار الترتيب) لتحديد ترتيب الألعاب. الألعاب الخمس هي: "التريكس"، "الملكة"، "اللطوش"،
-                    "الديناري"، و"الكبوش". تهدف كل لعبة إلى تجنب جمع بطاقات معينة أو تحقيق أهداف معينة لتحقيق أقل نقاط
-                    سلبية ممكنة. تعتبر التريكس لعبة تعتمد على الاستراتيجية والتخطيط، وتتطلب تفكيرًا دقيقًا وتعاونًا بين
-                    اللاعبين. -->
-        </div>
-      </UCard>
+        <!-- Trex Calculator Card -->
+        <UCard
+          data-aos="fade-up"
+          data-aos-delay="200"
+          data-aos-once="true"
+          class="transform transition-all duration-300 hover:scale-105"
+          :ui="{
+            base: 'h-full overflow-hidden',
+            background: 'bg-gradient-to-br from-[#1d2145] to-[#2a2f5c] dark:from-[#1d2145] dark:to-[#2a2f5c]',
+            ring: 'ring-1 ring-[#2a2f5c]/20 dark:ring-[#2a2f5c]/20',
+            shadow: 'shadow-lg dark:shadow-black/50',
+            rounded: 'rounded-2xl',
+            padding: 'p-6'
+          }"
+        >
+          <div class="flex flex-col items-center space-y-4">
+            <div class="p-4 rounded-full bg-white/10">
+              <img src="@/assets/images/trex.svg" class="h-16 w-16" alt="trex" />
+            </div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-2xl font-bold text-white">حاسبة تريكس</h3>
+              <UBadge color="amber" class="text-xs">قريبا</UBadge>
+            </div>
+            <div class="text-sm text-gray-300 space-y-3">
+              <div class="flex items-center gap-2">
+                <Icon name="material-symbols:group" class="text-amber-400" />
+                <span>عدد اللاعبين: 4 لاعبين</span>
+              </div>
+              <div class="pt-2">
+                <p class="font-semibold text-amber-400 mb-2">طريقة اللعبة:</p>
+                <ul class="list-decimal ms-5 space-y-2">
+                  <li>خمس ألعاب مختلفة تُلعب على مدار أربع جولات</li>
+                  <li>الألعاب الخمس بالترتيب هي: "التريكس"، "الملكة"، "اللطوش"، "الديناري"، و"الكبوش" في كل جولة يتم تعيين "ملك" (اللاعب الذي يختار ترتيب الألعاب)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </UCard>
+      </div>
     </div>
   </section>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+// Add any component logic here
+</script>
 
-<style></style>
+<style scoped>
+/* Add any component-specific styles here */
+</style>

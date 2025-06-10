@@ -1,11 +1,29 @@
 export default defineAppConfig({
     ui:{
-        formGroup:{
-            error:'mt-0'            
+        primary: 'amber',
+        gray: 'slate',
+        notifications: {
+            position: 'top-right'
         },
         card:{
-            body:{
-                padding:"py-2 sm:py-2"
+            base: 'flex flex-col h-full w-full',
+            body: {
+                base: 'grow flex flex-col w-full'
+            },
+            header: {
+                base: 'w-full'
+            },
+            footer: {
+                base: 'w-full'
+            }
+        },
+        table: {
+            base: 'w-full',
+            td: {
+                base: 'w-full'
+            },
+            th: {
+                base: 'w-full'
             }
         }
     }

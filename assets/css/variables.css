@@ -1,0 +1,117 @@
+:root {
+  /* Colors - Light Mode */
+  --color-primary: #f59e0b;
+  --color-primary-light: #fbbf24;
+  --color-primary-dark: #d97706;
+  
+  --color-background: #ffffff;
+  --color-background-secondary: #f3f4f6;
+  --color-background-tertiary: #e5e7eb;
+  
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #4b5563;
+  --color-text-tertiary: #6b7280;
+  
+  --color-border: #e5e7eb;
+  --color-border-focus: #f59e0b;
+  
+  /* Opacity */
+  --opacity-background: 0.8;
+  --opacity-border: 0.3;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(to right, #f59e0b, #fbbf24);
+  --gradient-background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+  
+  /* Transitions */
+  --transition-fast: 150ms;
+  --transition-normal: 200ms;
+  --transition-slow: 300ms;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+}
+
+/* Dark Mode Variables */
+.dark {
+  --color-primary: #f59e0b;
+  --color-primary-light: #fbbf24;
+  --color-primary-dark: #d97706;
+  
+  --color-background: #111827;
+  --color-background-secondary: #1f2937;
+  --color-background-tertiary: #374151;
+  
+  --color-text-primary: #f3f4f6;
+  --color-text-secondary: #d1d5db;
+  --color-text-tertiary: #9ca3af;
+  
+  --color-border: #374151;
+  --color-border-focus: #f59e0b;
+  
+  /* Gradients */
+  --gradient-background: linear-gradient(to right, #1d2145, #2a2f5c);
+}
+
+/* Common Utility Classes */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient {
+  background: var(--gradient-background);
+}
+
+.hover-transition {
+  transition: all var(--transition-normal) ease-in-out;
+}
+
+.focus-ring {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-border-focus);
+}
+
+/* Component Specific Variables */
+.header {
+  --header-height: 60px;
+  --header-padding: var(--spacing-sm);
+  --header-background: var(--color-background);
+  --header-border: var(--color-border);
+}
+
+.card {
+  --card-padding: var(--spacing-lg);
+  --card-background: var(--color-background);
+  --card-border: var(--color-border);
+  --card-shadow: var(--shadow-md);
+}
+
+.button {
+  --button-padding: var(--spacing-sm) var(--spacing-md);
+  --button-radius: var(--radius-md);
+  --button-transition: var(--transition-normal);
+}
+
+.input {
+  --input-padding: var(--spacing-sm) var(--spacing-md);
+  --input-radius: var(--radius-md);
+  --input-border: var(--color-border);
+  --input-focus-border: var(--color-border-focus);
+} 

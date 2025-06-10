@@ -2,7 +2,7 @@
   <div
     dir="rtl"
     lang="ar"
-    class="flex flex-col h-screen   bg-gray-100 text-[#222751] ">
+    class="flex flex-col h-screen bg-[var(--color-background)] dark:bg-[var(--color-background-secondary)] text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>

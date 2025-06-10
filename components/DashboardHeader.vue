@@ -1,58 +1,88 @@
 <template>
-  <div
-    class="border-b border-[#F6BD68] p-1 h-[60px] relative flex flex-row justify-between items-center text-white"
-  >
-    <div
-      class="background absolute inset-0 bg-gradient-to-r blur-xl from-white to-[#929adf]"
-    ></div>
-    <!-- <UButton class="" color="black" icon="material-symbols:login" variant="outline" size="xs" to="/login"> تسجيل الدخول</UButton> -->
+  <div class="header sticky top-0 z-50 border-b border-[var(--color-primary)]/[var(--opacity-border)] p-[var(--header-padding)] h-[var(--header-height)] flex flex-row justify-between items-center bg-[var(--color-background)]/[var(--opacity-background)] backdrop-blur-sm">
+    <!-- Background gradient -->
 
+    <!-- Mobile Menu Button -->
     <UButton
       v-if="authstore.logedin"
-      color="blue"
+      color="gray"
+      variant="ghost"
       @click="openNav"
-      class="mr-2 block lg:hidden relative bg-transparent"
+      class="mr-2 block lg:hidden relative hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20 hover-transition"
     >
-      <IconTribleDash class="w-5 text-black"></IconTribleDash>
+      <IconTribleDash class="w-5 text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)]"></IconTribleDash>
     </UButton>
 
-    <UHorizontalNavigation :links="links" class="hidden lg:block w-auto">
+    <!-- Desktop Navigation -->
+    <UHorizontalNavigation 
+      :links="links" 
+      class="hidden lg:block w-auto"
+      :ui="{
+        wrapper: 'flex items-center gap-1',
+        base: 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)] hover:text-[var(--color-primary)] dark:hover:text-[var(--color-primary-light)] hover-transition',
+        active: 'text-[var(--color-primary)] dark:text-[var(--color-primary-light)] font-medium'
+      }"
+    >
       <template #icon="{ link, isActive }">
         <component
           :is="link.iconComponent"
-          class="text-xl hover:text-black z-10"
+          class="text-xl"
+          :class="isActive ? 'text-[var(--color-primary)] dark:text-[var(--color-primary-light)]' : 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)]'"
         >
         </component>
       </template>
     </UHorizontalNavigation>
-
+    <!-- Marketing Dropdown -->
     <UDropdown
-      v-if="
-        userStore.roles?.includes('SuperAdmin') ||
-        userStore.roles?.includes('StaffAdmin')
-      "
-      class="ml-auto mr-2"
-      :items="marketingItems"
-      :popper="{ placement: 'bottom-start' }"
+    v-if="userStore.roles?.includes('SuperAdmin') || userStore.roles?.includes('StaffAdmin')"
+    class="ml-auto mr-2"
+    :items="marketingItems"
+    :popper="{ placement: 'bottom-start' }"
     >
-      <UButton
-        class="bg-transparent border-0 ring-0 shadow-none"
-        color="white"
-        label="التسويق"
-        trailing-icon="i-heroicons-chevron-down-20-solid"
+    <UButton
+    class="bg-transparent hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20 hover-transition"
+    color="gray"
+    variant="ghost"
+    label="التسويق"
+    trailing-icon="i-heroicons-chevron-down-20-solid"
       />
     </UDropdown>
 
-    <UButton
-      v-if="!authstore.logedin"
-      color="black"
-      icon="mdi:user"
-      to="/login"
-      class="ml-2"
-    ></UButton>
-    <UDropdown v-else :items="items" :popper="{ placement: 'bottom-start' }">
-      <IconUser class="text-blue-500 text-4xl" />
-    </UDropdown>
+    <NuxtLink to="/" class="flex items-center">
+      <img
+        src="@/assets/images/qydha-logo.svg"
+        class="w-16 h-auto"
+        alt="Qydha Logo"
+      />
+    </NuxtLink>
+    <!-- Auth Buttons -->
+    <div class="flex items-center gap-2">
+      
+      
+      <UDropdown
+        v-if="authstore.logedin"
+
+        :items="items" 
+        :popper="{ placement: 'bottom-start' }"
+      >
+        <UButton
+          color="gray"
+          variant="ghost"
+          class="hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20 hover-transition"
+        >
+          <IconUser class="text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)]" />
+        </UButton>
+      </UDropdown>
+
+      <!-- Color Mode Toggle -->
+      <UButton
+        :icon="colorMode.value === 'dark' ? 'i-heroicons-moon-20-solid' : 'i-heroicons-sun-20-solid'"
+        color="gray"
+        variant="ghost"
+        class="hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20 hover-transition"
+        @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+      />
+    </div>
   </div>
 </template>
 
@@ -74,9 +104,13 @@ const { user } = storeToRefs(userStore);
 const authstore = useMyAuthStore();
 import { type VerticalNavigationLink, type DropdownItem } from "#ui/types";
 import type { Component } from "vue";
+
+const colorMode = useColorMode();
+
 interface CustomNavigationLink extends VerticalNavigationLink {
   iconComponent?: Component;
 }
+
 const links = computed(() => {
   const result: CustomNavigationLink[] = [];
   if (user.value) {
@@ -100,19 +134,13 @@ const links = computed(() => {
   ) {
     result.push(
       { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
-
       { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart }
-
-      // {
-      //   label: "الاكونتات البرمجية ",
-      //   to: "/ServiceAccount",
-      //   iconComponent: iconProgramingCode,
-      // }
     );
   }
 
   return result;
 });
+
 const onLogOut = () => {
   user.value = null;
   return navigateTo("/");
@@ -122,6 +150,7 @@ const slidever = useSlideover();
 const openNav = () => {
   slidever.open(SideBar);
 };
+
 const items: DropdownItem[] | DropdownItem[][] = [
   [{ label: "المستخدم", to: "/deleteuser", icon: "mdi:user" }],
   [
@@ -139,45 +168,41 @@ const marketingItems: DropdownItem[] | DropdownItem[][] = [
   [
     {
       label: "اكواد ",
-      to: "/influncerCode",
+      to: "/Codes",
       icon: "",
-      // iconComponent: iconCode,
     },
   ],
   [
     {
       label: "الاشعارات ",
       to: "/notification",
-      // iconComponent: iconNotification,
     },
   ],
   [
     {
       label: "الملف الثابت",
       to: "/assets",
-      // iconComponent: iconFiles
     },
   ],
   [
     {
       label: "التسويق",
       to: "/marketing",
-      // iconComponent: iconMarket
     },
   ],
 ];
 </script>
 
 <style scoped>
-@keyframes move-background {
-  0% {
-    background-position: 0 0; /* Start */
-  }
-  100% {
-    background-position: 100% 0; /* End position (adjust as needed) */
-  }
+/* Import global variables */
+@import '@/assets/css/variables.css';
+
+/* Component specific styles */
+.header {
+  --header-height: 60px;
+  --header-padding: var(--spacing-sm);
 }
-.background {
-  animation: move-background 5s linear infinite;
-}
+
+/* Light mode specific styles */
+
 </style>

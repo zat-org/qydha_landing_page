@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow' } }">
+  <UCard :ui="{ base: 'flex flex-col h-full w-full  ', body: { base: 'grow' } }">
     <UTable :rows="rows" :columns="cols" :ui="{ td: { padding: 'py-1' } }">
       <template #link-data="{ row }">
         <div class="flex gap-2">
