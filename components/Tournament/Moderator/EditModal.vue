@@ -24,7 +24,6 @@
 <script lang="ts" setup>
 import type { IModerator, IModeratorCreate, IModeratorUpdate } from '~/models/tournamentModeratorr';
 import { array, object, string } from "yup"
-import { type Form } from '#ui/types'
 
 const props=defineProps <{moderator:IModerator}>()
 
@@ -39,7 +38,7 @@ const permission = computed(() => {
     return permissionGetREQ.data.value.data.permissions
 })
 
-const moderatorForm = ref<Form<IModeratorUpdate>>()
+const moderatorForm = ref()
 const state = reactive<IModeratorUpdate>({
 
   permissions: props.moderator.permissions

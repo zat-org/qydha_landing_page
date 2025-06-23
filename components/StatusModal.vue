@@ -166,20 +166,7 @@
               </div>
             </div>
 
-            <!-- <UBadge size="lg" v-if="game?.game.winner">
-              الفائز :{{
-                game.game.winner != null &&
-                  (game.game.winner as string).toLowerCase() == "us"
-                  ? m.usTeamName
-                  : m.themTeamName
-              }}
-            </UBadge> -->
-
-            <!-- <UAccordion :items="game?.game.sakkas.">
-              <template #default="{ item, index, open }">
-                {{ item }}
-              </template>
-            </UAccordion> -->
+         
              <div v-for="(sakka,index) in game?.game.sakkas"  class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
 
               <div class="w-full flex justify-center items-center  gap-[80px] ">

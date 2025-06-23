@@ -75,7 +75,7 @@ import SideBar from "./SideBar.vue";
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 const authstore = useMyAuthStore();
-const authApi = useAuth();
+// const authApi = useAuth();
 const colorMode = useColorMode();
 
 const links = [

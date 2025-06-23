@@ -12,9 +12,8 @@
 <script lang="ts" setup>
 
 import { string ,object } from 'yup';
-import {type Form} from '#ui/types'
 import type { ITeam } from '~/models/tournamentTeam';
-const updateTeamNameForm =ref<Form<{name:string}>>()
+const updateTeamNameForm =ref()
 const props = defineProps<{team:ITeam }>()
 const state = reactive({
   name:props.team.name

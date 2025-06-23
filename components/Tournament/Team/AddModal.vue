@@ -53,10 +53,9 @@
 <script lang="ts" setup>
 import { array, object, string } from 'yup';
 import type { ITeamCreate } from '~/models/tournamentTeam';
-import type{Form} from"#ui/types"
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
-const teamForm = ref<Form<ITeamCreate>>()
+const teamForm = ref<any>()
 const route =useRoute()
 const tour_id =route.params.id.toString()
 const modal= useModal()

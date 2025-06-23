@@ -77,19 +77,19 @@
                         
                         <!-- Main center image -->
                         <img 
-                            src="@/assets/images/home_page-portrait.png"
+                            src="@/assets/images/home_page-portrait.webp"
                             class="absolute h-[550px] rounded-[2.5rem] shadow-xl dark:shadow-gray-800/50 top-0 left-1/2 -translate-x-1/2 dark:brightness-90 z-20" 
                         />
                         
                         <!-- Right diagonal image -->
                         <img 
-                            src="@/assets/images/baloot_page-portrait.png"
+                            src="@/assets/images/baloot_page-portrait.webp"
                             class="absolute h-[500px] rounded-[2.5rem] shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 right-0 translate-x-1/4 rotate-[15deg] dark:brightness-90 z-10" 
                         />
                         
                         <!-- Left diagonal image -->
                         <img 
-                            src="@/assets/images/subscription_page-portrait.png"
+                            src="@/assets/images/subscription_page-portrait.webp"
                             class="absolute h-[500px] rounded-[2.5rem] shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 left-0 -translate-x-1/4 -rotate-[15deg] dark:brightness-90 z-10" 
                         />
                     </div>

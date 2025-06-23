@@ -1,5 +1,5 @@
 import { type FetchOptions } from 'ofetch';
-import jwtDecode from 'jwt-decode';
+import {jwtDecode} from 'jwt-decode';
 import { useMyAuthStore } from '~/store/Auth';
 import type { IUserData } from '~/models/user';
 import type { NuxtError } from '#app';

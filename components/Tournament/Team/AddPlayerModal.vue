@@ -22,9 +22,8 @@
 
 <script lang="ts" setup>
 import { object, string } from 'yup'
-import { type Form } from '#ui/types'
 
-const AddPlayerForm = ref<Form<{ playerId: string }>>()
+const AddPlayerForm = ref()
 const modal = useModal()
 const route = useRoute()
 const tour_id = route.params.id.toString()

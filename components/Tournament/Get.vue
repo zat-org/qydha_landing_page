@@ -27,7 +27,7 @@
           <p v-for="(prize, index) in tour.prizes">
             المركز{{ index + 1 }} : {{ prize }} {{ tour.prizesCurrency }}
           </p>
-          <div v-if="tour.prizes.length == 0">لا توجد جوائز</div>
+          <div v-if="tour.prizes?.length == 0">لا توجد جوائز</div>
 
           <!-- <p> {{ tour.ownerId }}</p>       -->
         </div>

@@ -1,20 +1,4 @@
 :root {
-  /* Colors - Light Mode */
-  --color-primary: #f59e0b;
-  --color-primary-light: #fbbf24;
-  --color-primary-dark: #d97706;
-  
-  --color-background: #ffffff;
-  --color-background-secondary: #f3f4f6;
-  --color-background-tertiary: #e5e7eb;
-  
-  --color-text-primary: #1f2937;
-  --color-text-secondary: #4b5563;
-  --color-text-tertiary: #6b7280;
-  
-  --color-border: #e5e7eb;
-  --color-border-focus: #f59e0b;
-  
   /* Opacity */
   --opacity-background: 0.8;
   --opacity-border: 0.3;
@@ -23,10 +7,6 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(to right, #f59e0b, #fbbf24);
-  --gradient-background: linear-gradient(to right, #f3f4f6, #e5e7eb);
   
   /* Transitions */
   --transition-fast: 150ms;
@@ -45,27 +25,6 @@
   --spacing-md: 1rem;
   --spacing-lg: 1.5rem;
   --spacing-xl: 2rem;
-}
-
-/* Dark Mode Variables */
-.dark {
-  --color-primary: #f59e0b;
-  --color-primary-light: #fbbf24;
-  --color-primary-dark: #d97706;
-  
-  --color-background: #111827;
-  --color-background-secondary: #1f2937;
-  --color-background-tertiary: #374151;
-  
-  --color-text-primary: #f3f4f6;
-  --color-text-secondary: #d1d5db;
-  --color-text-tertiary: #9ca3af;
-  
-  --color-border: #374151;
-  --color-border-focus: #f59e0b;
-  
-  /* Gradients */
-  --gradient-background: linear-gradient(to right, #1d2145, #2a2f5c);
 }
 
 /* Common Utility Classes */

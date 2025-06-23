@@ -77,8 +77,7 @@ import { senderPhone, type WhatsappMessageCreateI } from "~/models/marketing";
 
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
-import { type Form } from "#ui/types";
-const AddForm = ref<Form<WhatsappMessageCreateI>>();
+const AddForm = ref<any>();
 const phoneOptions = senderPhone;
 const modal = useModal();
 const toast =useToast()

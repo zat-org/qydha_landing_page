@@ -48,11 +48,9 @@
 <script lang="ts" setup>
 import { array, object, string } from "yup";
 import type { IPlayerCreate } from "~/models/tournamentTeam";
-import { type Form } from "#ui/types";
-// const props = defineProps<{ teamId: number }>()
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
-const PlayerForm = ref<Form<IPlayerCreate>>();
+const PlayerForm = ref<any>();
 const modal = useModal();
 const state = reactive<IPlayerCreate>({
   name: "",

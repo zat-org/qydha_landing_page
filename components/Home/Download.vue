@@ -50,7 +50,7 @@
                      data-aos-once="true">
                     <div class="relative">
                         <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-amber-600/20 dark:from-amber-400/10 dark:to-amber-600/10 rounded-full blur-3xl"></div>
-                        <img src="@/assets/images/home_page-portrait.png" 
+                        <img src="@/assets/images/home_page-portrait.webp" 
                              class="h-96 relative z-10 transform transition-all duration-300 hover:scale-105" 
                              alt="Qydha App Preview">
                     </div>

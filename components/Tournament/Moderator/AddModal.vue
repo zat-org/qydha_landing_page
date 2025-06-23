@@ -33,7 +33,6 @@
 <script lang="ts" setup>
 import type { IModeratorCreate } from '~/models/tournamentModeratorr';
 import { array, object, string } from "yup"
-import { type Form } from '#ui/types'
 import { useMyAuthStore } from '~/store/Auth';
 
 const route = useRoute()
@@ -64,7 +63,7 @@ const permission = computed(() => {
     return permissionGetREQ.data.value.data.permissions
 })
 
-const moderatorForm = ref<Form<IModeratorCreate>>()
+const moderatorForm = ref()
 const state = reactive<IModeratorCreate>({
   username: "",
   permissions: []

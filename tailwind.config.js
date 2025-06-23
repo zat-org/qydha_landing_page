@@ -95,7 +95,9 @@ module.exports = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#f59e0b",
+          light: "#fbbf24",
+          dark: "#d97706",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -133,9 +135,32 @@ module.exports = {
           ring: "hsl(var(--sidebar-ring))",
           input: "hsl(var(--sidebar-input))",
         },
+        dark: {
+          background: {
+            DEFAULT: '#111827',
+            secondary: '#1f2937',
+            tertiary: '#374151',
+          },
+          text: {
+            primary: '#f3f4f6',
+            secondary: '#d1d5db',
+            tertiary: '#9ca3af',
+          },
+          border: '#374151',
+        },
+        background: {
+          DEFAULT: "#ffffff",
+          secondary: "#f3f4f6",
+          tertiary: "#e5e7eb"
+        },
+        text: {
+          primary: "#1f2937",
+          secondary: "#4b5563",
+          tertiary: "#6b7280"
+        }
       },
     },
   },
-  plugins: [require("tailwindcss-animate"), require('@tailwindcss/forms')({ strategy: 'class' })],
+  plugins:[],
 };
 

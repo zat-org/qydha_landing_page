@@ -1,17 +1,11 @@
 <template>
-  <USlideover
-    side="left"
-    class="z-[100]"
-    :ui="{ base: 'w-[200px] ', width: 'w-[250px] max-w-[250px]' }"
-  >
+  <USlideover side="left" class="z-[100]" :ui="{ base: 'w-[200px] ', width: 'w-[250px] max-w-[250px]' }">
     <UVerticalNavigation :links="links" :ui="{ size: 'text-lg' }" @click="handleNavClick">
       <template #icon="{ link, isActive }">
-        <component
-          :is="link.iconComponent"
-          class="text-xl hover:text-black z-10"
-        >
+        <component :is="link.iconComponent" class="text-xl hover:text-black z-10">
         </component>
       </template>
+      
     </UVerticalNavigation>
   </USlideover>
 </template>
@@ -24,55 +18,33 @@ import iconCode from "~/components/Icon/Code.vue";
 import iconNotification from "~/components/Icon/Notification.vue";
 import iconFiles from "~/components/Icon/Files.vue";
 import iconChart from "~/components/Icon/Chart.vue";
-import iconProgramingCode from "~/components/Icon/ProgramingCode.vue";
 import iconLive from "~/components/Icon/Live.vue";
 import iconMarket from "~/components/Icon/Market.vue";
 
 const slideover = useSlideover();
 const userStore = useMyAuthStore();
-import { type VerticalNavigationLink } from "#ui/types";
-interface CustomNavigationLink extends VerticalNavigationLink {
-  iconComponent?: Component;
-}
 
 const links = computed(() => {
-  const result: CustomNavigationLink[] = [];
-  // result.push({
-  //   label: "البطولات",
-  //   to: "/tournament",
-  //   iconComponent: iconTournament,
-  // });
+  const result: any[][] = [[],[],[],[]];
+  result[3].push({ label: "البطولات", to: "/tournament", disabled: true, iconComponent: iconTournament, });
 
   if (
     userStore.roles?.includes("SuperAdmin") ||
     userStore.roles?.includes("StaffAdmin")
   ) {
-    result.push(
-      {
-        label: "اكواد ",
-        to: "/influncerCode",
-        icon: "",
-        iconComponent: iconCode,
-      },
+    result[0].push(
       { label: "المستخدمين ", to: "/user", iconComponent: iconUser },
-      {
-        label: "الاشعارات ",
-        to: "/notification",
-        iconComponent: iconNotification,
-      },
+  );
+  result[1].push(
+      { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
       { label: "الملف الثابت", to: "/assets", iconComponent: iconFiles },
       { label: "الاحصائيات", to: "/statistics", iconComponent: iconChart },
-      { label: "التسويق", to: "/marketing", iconComponent: iconMarket },
-
-      // {
-      //   label: "الاكونتات البرمجية ",
-      //   to: "/ServiceAccount",
-      //   iconComponent: iconProgramingCode,
-      // }
+      { label: "الاشعارات ", to: "/notification", iconComponent: iconNotification, },
+      { label: "اكواد ", to: "/Codes", iconComponent: iconCode, },
     );
   }
   if (userStore.roles?.includes("Streamer")) {
-    result.push({
+    result[2].push({
       label: "البث",
       to: "/stream",
       iconComponent: iconLive,
@@ -81,7 +53,7 @@ const links = computed(() => {
   return result;
 });
 
-const handleNavClick =()=>{
+const handleNavClick = () => {
   slideover.close()
 }
 </script>

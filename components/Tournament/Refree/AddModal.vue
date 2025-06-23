@@ -37,9 +37,8 @@ const modal = useModal()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const refreeAddREQ = await useTournamentRefree().addTourRefree()
-import { type Form } from '#ui/types'
 import { useMyAuthStore } from "~/store/Auth";
-const refreeForm = ref<Form<{ username: string }>>()
+const refreeForm = ref()
 const getusers = await useUsers().getAllUsers()
 const authStore = useMyAuthStore()
 

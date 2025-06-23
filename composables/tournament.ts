@@ -1,4 +1,3 @@
-import { extendNuxtSchema } from "nuxt/kit";
 import type { ITournament, ITournamentCreate, ITournamentDetailed, ITournamentUpdate } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 

@@ -2,7 +2,7 @@
   <DashboardHeader></DashboardHeader>
 <Suspense>
   <template #default>
-    <main class="flex flex-1 mx-auto w-full p-[var(--spacing-md)]">
+    <main class="flex flex-1 mx-auto w-full p-[var(--spacing-xs)]">
       <slot></slot>
     </main>
      </template>

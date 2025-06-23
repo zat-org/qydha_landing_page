@@ -12,7 +12,7 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   // ssr: false,
 
-  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos", "@nuxtjs/tailwindcss", "@nuxtjs/color-mode", "@vueuse/nuxt", "@nuxt/icon", "@nuxt/fonts",],
+  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos",],
 
   css: [
     '@/assets/css/variables.css',
@@ -32,18 +32,18 @@ export default defineNuxtConfig({
         { name: "og:image", content: LogoURL },
         { name: "og:url", content: WebsiteUrl },
         { name: "author", content: "Zat Compony" },
-        { hid: "description", name: "description", content: Description },
-        { hid: "keywords", name: "keywords", content: Keywords },
+        // { hid: "description", name: "description", content: Description },
+        // { hid: "keywords", name: "keywords", content: Keywords },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { charset: "utf-8" },
       ],
-      noscript: [
-        {
-          children: `
-          <p style='text-align: center;color:white ; background-color:rgb(218, 55, 55); margin:5px 10px; padding: 10px 5px ;  border-radius:10px '>Warning: Please Enable Js</p>
-        `,
-        },
-      ],
+      // noscript: [
+      //   {
+      //     children: `
+      //     <p style='text-align: center;color:white ; background-color:rgb(218, 55, 55); margin:5px 10px; padding: 10px 5px ;  border-radius:10px '>Warning: Please Enable Js</p>
+      //   `,
+      //   },
+      // ],
     },
   },
 
@@ -66,22 +66,10 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: false,
+    enabled: true,
   },
 
-  tailwindcss: {
-    exposeConfig: true,
-    editorSupport: true
-  },
 
-  imports: {
-    imports: [{
-      from: "tailwind-variants",
-      name: "tv"
-    }, {
-      from: "tailwind-variants",
-      name: "VariantProps",
-      type: true
-    }]
-  }
+
+
 });

@@ -19,13 +19,12 @@
 <script lang="ts" setup>
 import type { ITableCreate } from '~/models/Table';
 import { object, string } from 'yup'
-import { type Form } from "#ui/types"
 const modal = useModal()
 const toast = useToast()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 
-const AddTableForm = ref<Form<ITableCreate>>()
+const AddTableForm = ref<any>()
 
 const state = reactive<ITableCreate>({ name: "" })
 const schema = object({
