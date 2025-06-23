@@ -7,9 +7,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.5",
     "@microsoft/signalr": "^8.0.7",
     "@nuxt/ui": "^2.22.0",
     "@pinia/nuxt": "^0.11.1",
+    "@vue-flow/background": "^1.3.2",
     "@vue-flow/core": "^1.45.0",
     "@vuepic/vue-datepicker": "^11.0.2",
     "firebase": "^11.9.1",

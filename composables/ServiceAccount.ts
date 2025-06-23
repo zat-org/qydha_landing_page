@@ -1,4 +1,4 @@
-import { extendNuxtSchema } from "nuxt/kit";
+
 import type { IServiceAccount, IServiceAccountCreate } from "~/models/serviceAccount";
 
 export const useServiceAccount = () => {

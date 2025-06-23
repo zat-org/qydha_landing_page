@@ -1,5 +1,5 @@
 <template>
-    <UCard class="flex-1 relative bg-yellow-500">
+    <UCard class="flex-1 relative ">
 
         <UTabs :items="steps" v-model="currentStep" :ui="{
             wrapper: 'w-full',

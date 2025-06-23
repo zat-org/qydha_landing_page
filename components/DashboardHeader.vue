@@ -17,7 +17,7 @@
     }">
       <template #icon="{ link, isActive }">
         <component :is="link.iconComponent" class="text-xl"
-          :class="isActive ? 'text-[var(--color-primary)] dark:text-[var(--color-primary-light)]' : 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)]'">
+          :class="isActive ? 'text-[var(--color-primary)] dark:text-[var(--color-primary)]' : 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-primary)]'">
         </component>
       </template>
     </UHorizontalNavigation>
