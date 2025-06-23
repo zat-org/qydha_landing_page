@@ -91,17 +91,11 @@
   
   const { register } = useAuth()
   
+  const { fetchREQ, error, status,data } = await register()
   async function onSubmit() {
     generalError.value = ''
-    // Object.keys(errors).forEach(key => { errors[key] = '' })
     
-      await schema.validate(form, { abortEarly: false })
-      const { fetchREQ, error, status,data } = await register()
-      await fetchREQ({
-        username: form.username,
-        password: form.password,
-        phone: form.phone
-      })
+      await fetchREQ(form)
   
       if (status.value === 'error') {
         // Handle backend validation errors
