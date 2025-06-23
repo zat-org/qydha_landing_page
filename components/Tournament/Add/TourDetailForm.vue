@@ -1,7 +1,7 @@
 <template>
 
   <!-- Tournament Prize Section -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4" >
     <UFormGroup :ui="{
       label: {
         base: 'text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'
@@ -22,10 +22,9 @@
       <!-- Prize Header -->
       <div class="flex items-center justify-between mb-3">
         <div class="flex items-center gap-2">
-          <div class="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center">
-            <span class="text-white font-bold text-xs">{{ index + 1 }}</span>
+          <div class=" bg-primary-500 rounded-full flex items-center justify-center p-2">
+            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">المركز {{ index + 1 }}</span>
           </div>
-          <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">الجائزة {{ index + 1 }}</span>
         </div>
         <UIcon name="i-heroicons-trophy" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
       </div>
