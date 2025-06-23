@@ -1,7 +1,8 @@
 <template>
-
+<section  class="space-y-4">
+  
   <!-- Tournament Prize Section -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4" >
+  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
     <UFormGroup :ui="{
       label: {
         base: 'text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'
@@ -57,7 +58,8 @@
               <UInput :ui="{
                 base: 'form-input flex-1 px-3 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
               }" v-model="PrizenewItem[index]" placeholder="جائزة عينية" icon="i-heroicons-gift"
-                @keyup.enter="addItem(index, PrizenewItem[index])" class="hover:border-primary-300 dark:hover:border-primary-400" />
+                @keyup.enter="addItem(index, PrizenewItem[index])"
+                class="hover:border-primary-300 dark:hover:border-primary-400" />
               <UButton @click="addItem(index, PrizenewItem[index])" color="primary" variant="solid" size="sm"
                 icon="i-heroicons-plus"
                 class="px-3 py-2 rounded-lg font-medium hover:scale-105 transition-all duration-200"
@@ -90,19 +92,57 @@
       <UIcon name="i-heroicons-chart-bar" class="text-primary-500 dark:text-primary-400" />
       إحصائيات البطولة
     </h3>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <UFormGroup :ui="{
         label: {
           base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
         },
         error: 'text-xs text-red-500 mt-1'
       }" label=" عدد الفرق" name="TeamsCount">
-        <UInput :ui="{
+       
+       <UInput  
+        :ui="{
           base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" v-model="modelValue.TeamsCount" type="number" placeholder="0" icon="i-heroicons-users" />
-      </UFormGroup>
+        }" v-model="modelValue.TeamsCount" 
+        type="number" min="1" placeholder="0" icon="i-heroicons-users" @input="validatePositiveNumber" />
+    </UFormGroup>
 
       <UFormGroup :ui="{
+        wrapper: 'space-y-2',
+        label: {
+          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
+        },
+        error: 'text-xs text-red-500 mt-1'
+      }" label=" عدد الطاولات" name="TablesCount">
+        <UInput 
+        :ui="{
+          base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
+        }" 
+        v-model="modelValue.TablesCount" type="number" 
+         placeholder="0" 
+         icon="i-heroicons-rectangle-stack" />
+      </UFormGroup>
+
+
+      <UFormGroup :ui="{
+        wrapper: 'space-y-2',
+        label: {
+          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
+        },
+        error: 'text-xs text-red-500 mt-1'
+      }" label=" مين يسجل النشرة " name="TeamSelectionMode">
+        <USelect :ui="{
+          base: 'form-select w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
+        }" v-model="selectedRfreeOption" 
+        :options="refreeeOptions" 
+        placeholder="اختر مين يسجل النشرة" 
+        @update:model-value="onSelectionModeChange()" />
+
+
+      </UFormGroup>
+      <UFormGroup
+      v-if="selectedRfreeOption === 'refree'"
+      :ui="{
         wrapper: 'space-y-2',
         label: {
           base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
@@ -114,19 +154,10 @@
         }" v-model="modelValue.RefreeCount" type="number" placeholder="0" icon="i-heroicons-user-group" />
       </UFormGroup>
 
-      <UFormGroup :ui="{
-        wrapper: 'space-y-2',
-        label: {
-          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
-        },
-        error: 'text-xs text-red-500 mt-1'
-      }" label=" عدد الطاولات" name="TablesCount">
-        <UInput :ui="{
-          base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" v-model="modelValue.TablesCount" type="number" placeholder="0" icon="i-heroicons-rectangle-stack" />
-      </UFormGroup>
+
     </div>
   </div>
+</section>
 </template>
 
 <script lang="ts" setup>
@@ -136,8 +167,9 @@ const props = defineProps<{
     TournametPrize: { money: number, items: string[], position: number }[];
     TeamsCount: number;
     RefreeCount: number;
+    RefreeNeed: boolean;
     TablesCount: number;
-  
+
     // Stage32Option: string;
     // Stage16Option: string;
     // Stage8Option: string;
@@ -188,16 +220,32 @@ const removeItem = (index: number, itemIndex: number) => {
 }
 
 // refreee detail 
+const selectedRfreeOption = ref<string>("players");
 const refreeeOptions = [
   {
     label: "اللاعبين ",
-    value: 1,
+    value: "players",
   },
   {
     label: "الحكام",
-    value: 2,
+    value: "refree",
   }
 ]
+const onSelectionModeChange = () => {
+  if (selectedRfreeOption.value === 'players') {
+    props.modelValue.RefreeNeed = false;
+  } else if (selectedRfreeOption.value === 'refree') {
+    props.modelValue.RefreeNeed = true;
+  }
+}
+
+const validatePositiveNumber = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const value = parseInt(input.value);
+  if (value < 1) {
+    input.value = '1';
+  }
+}
 </script>
 
 <style></style>
