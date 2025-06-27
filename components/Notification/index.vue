@@ -1,11 +1,11 @@
 <template>
-  <UCard :ui="{base:'flex h-full flex-col ',body:{base:'grow'}}">
+  <UCard >
     <template #header>
       <div class="flex justify-between items-cenetr ">
         <p>
         notfictions    
         </p>
-        <UButton label="add" color="green" @click="openAddModal" />
+        <UButton label="اضافة" color="primary" @click="openAddModal" />
 
       </div>
     </template>
@@ -23,7 +23,7 @@ test
 <script lang="ts" setup>
 import AddNotificationModal from './AddNotificationModal.vue';
 
-const modal =useModal()
+const overlay = useOverlay()
 const toast = useToast()
 // const getAllNotREQ = await useNotification().getAllNotifications()
 // if (getAllNotREQ.status.value=="error"){
@@ -33,7 +33,7 @@ const toast = useToast()
 //     return getAllNotREQ.data.value
 // })
 const openAddModal =()=>{
-  modal.open(AddNotificationModal)
+  overlay.create(AddNotificationModal).open()
 }
 
 </script>

@@ -1,35 +1,32 @@
 <template>
-  <UModal prevent-close>
-    <UCard>
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold">إنشاء اكواد كروت جديدة</h3>
+  <UModal title="إنشاء اكواد كروت جديدة" description="إنشاء اكواد كروت جديدة" prevent-close>
+      <template #body>
+        <UForm :state="state" :schema="schema" @submit="handleSubmit" class="space-y-4">
+          <UFormField label="كود المجموعة" name="groupCode">
+            <UInput v-model="state.groupCode" :placeholder="cardGroup.groupCode" disabled />
+          </UFormField>
+  
+          <UFormField label="عدد الأيام" name="numberOfDays">
+            <UInput v-model="state.numberOfDays" type="number" placeholder="أدخل عدد الأيام" />
+          </UFormField>
+  
+          <UFormField label="تاريخ الانتهاء" name="expireAt">
+            <UInput v-model="state.expireAt" type="datetime-local" placeholder="حدد تاريخ الانتهاء" />
+          </UFormField>
+  
+          <UFormField label="عدد الأكواد" name="codesCount">
+            <UInput v-model="state.codesCount" type="number" placeholder="أدخل عدد الأكواد" />
+          </UFormField>
+  
+          
+        </UForm>
+      </template>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <UButton type="submit" color="primary">حفظ</UButton>
+          <UButton type="button" color="secondary" @click="emit('close')">إلغاء</UButton>
         </div>
       </template>
-
-      <UForm :state="state" :schema="schema" @submit="handleSubmit" class="space-y-4">
-        <UFormGroup label="كود المجموعة" name="groupCode">
-          <UInput v-model="state.groupCode" :placeholder="cardGroup.groupCode" disabled />
-        </UFormGroup>
-
-        <UFormGroup label="عدد الأيام" name="numberOfDays">
-          <UInput v-model="state.numberOfDays" type="number" placeholder="أدخل عدد الأيام" />
-        </UFormGroup>
-
-        <UFormGroup label="تاريخ الانتهاء" name="expireAt">
-          <UInput v-model="state.expireAt" type="datetime-local" placeholder="حدد تاريخ الانتهاء" />
-        </UFormGroup>
-
-        <UFormGroup label="عدد الأكواد" name="codesCount">
-          <UInput v-model="state.codesCount" type="number" placeholder="أدخل عدد الأكواد" />
-        </UFormGroup>
-
-        <div class="flex justify-end gap-2">
-          <UButton type="submit" color="green">حفظ</UButton>
-          <UButton type="button" color="gray" @click="modal.close()">إلغاء</UButton>
-        </div>
-      </UForm>
-    </UCard>
   </UModal>
 </template>
 
@@ -41,7 +38,7 @@ const props = defineProps<{
   cardGroup: CardGroupI
 }>()
 
-const modal = useModal();
+const emit = defineEmits(['close'])
 const toast = useToast();
 
 const schema = yup.object({
@@ -77,10 +74,10 @@ const createREQ = await useCardCode().createCardCodeGroup();
 const handleSubmit = async () => {
   await createREQ.fetchREQ(state);
   if (createREQ.status.value === "success") {
-    toast.add({ title: "تم إنشاء اكواد الكروت بنجاح", color: "green" });
-    modal.close();
+    toast.add({ title: "تم إنشاء اكواد الكروت بنجاح", color: "success" });
+    emit('close')
   } else if (createREQ.status.value === "error") {
-    toast.add({ title: "فشل في إنشاء اكواد الكروت", color: "red" });
+    toast.add({ title: "فشل في إنشاء اكواد الكروت", color: "error" });
   }
 };
 </script>

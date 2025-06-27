@@ -8,7 +8,7 @@
       </div>
       <template #footer >
         <div class="flex justify-between items-center">
-          <UButton color="red" label="cancel" @click="modal.close()" />
+          <UButton color="red" label="cancel" @click="emit('close')" />
           <UButton  color="green" label="ok" @click="onSuccess" />
 
         </div>
@@ -20,8 +20,7 @@
 <script lang="ts" setup>
 
 const props= defineProps<{message:string}>()
-const modal =useModal()
-const emit = defineEmits(['success'])
+const emit = defineEmits(['success','close'])
 
 function onSuccess() {
   emit('success')

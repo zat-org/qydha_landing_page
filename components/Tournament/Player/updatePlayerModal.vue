@@ -8,13 +8,13 @@
         ref="PlayerForm"
         @submit="onSubmit"
       >
-        <UFormGroup label="اسم الاعب" name="name">
+        <UFormField label="اسم الاعب" name="name">
           <UInput v-model="state.name"></UInput>
-        </UFormGroup>
-        <UFormGroup label="الايميل" name=" email'">
+        </UFormField>
+        <UFormField label="الايميل" name=" email'">
           <UInput v-model="state.email"></UInput>
-        </UFormGroup>
-        <UFormGroup label="رقم الهاتف" name="phone">
+        </UFormField>
+        <UFormField label="رقم الهاتف" name="phone">
           <vue-tel-input
             mode="auto"
             :autoFormat="true"
@@ -30,15 +30,15 @@
             }"
             v-model="state.phone"
           ></vue-tel-input>
-        </UFormGroup>
-        <UFormGroup label="اسم المستخدم علي قيدها" name="qydhaUsername">
+        </UFormField>
+        <UFormField label="اسم المستخدم علي قيدها" name="qydhaUsername">
           <UInput v-model="state.qydhaUsername"></UInput>
-        </UFormGroup>
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton label="update" @click="PlayerForm?.submit()" />
-          <UButton label="close" @click="modal.close()" color="red" />
+          <UButton label="close" @click="emit('close')" color="red" />
         </div>
       </template>
     </UCard>
@@ -52,7 +52,7 @@ const props = defineProps<{ player: IPlayer }>();
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
 const PlayerForm = ref<any>();
-const modal = useModal();
+const emit = defineEmits(['close'])
 const state = reactive<IPlayerCreate>({
   name: props.player.name,
   phone: props.player.phone,
@@ -77,7 +77,7 @@ const updatePlayerREQ = await useTournamentPlayer().updatePlayer();
 const onSubmit = async () => {
   await updatePlayerREQ.fetchREQ(tour_id, props.player.id, state);
   if (updatePlayerREQ.status.value == "success") {
-    modal.close();
+    emit('close')
   }
 
   if (updatePlayerREQ.status.value == "error" && updatePlayerREQ.error.value) {

@@ -6,15 +6,15 @@
     </template>
     <div>
       <UForm :state="state" :schema="schema" ref="form" @submit="onSubmit" >
-      <UFormGroup  name="password" label ="كلمة المرور"  help="سبتم مسح جميع البيانات الخاصة بك ">
+      <UFormField  name="password" label ="كلمة المرور"  help="سبتم مسح جميع البيانات الخاصة بك ">
         <UInput v-model="state.password"  type="password"/>
-      </UFormGroup>
+      </UFormField>
       </UForm>
     </div>
     <template #footer>
       <div>
         <UButton  color="red"   label="حذف"   @click="onDelete"/>
-        <UButton  color="green" label="عودة" @click="modal.close()"/> 
+        <UButton  color="green" label="عودة" @click="emit('close')"/> 
       </div>
     </template>
   </UCard>
@@ -23,7 +23,7 @@
 
 <script lang="ts" setup>
 import {object ,string} from "yup"
-const modal=useModal()
+const emit = defineEmits(['close'])
 const form =ref<HTMLFormElement>()
 const authApi = useAuth()
 const state = reactive({password:""})
@@ -35,7 +35,7 @@ const onDelete = ()=>{
 const logoutReq = await authApi.logout() 
 const onSubmit =async()=>{
   console.log("submited")
-  modal.close()
+  emit('close')
   await logoutReq.fetchREQ()
   if (logoutReq.status.value =="success"){
     return navigateTo('/')

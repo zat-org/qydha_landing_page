@@ -1,64 +1,45 @@
 <template>
-  <div class="bg-[var(--color-background)] dark:bg-[var(--color-background-dark)] rounded-lg shadow-md p-4 rtl flex flex-col h-full ">
-    <div class="flex gap-5 justify-between items-center mb-4">
       <UInput
         class="grow"
         v-model="groupNameFilter"
         placeholder="البحث باسم المجموعة"
         icon="i-heroicons-magnifying-glass-20-solid"
         size="sm"
-        :ui="{
-          base: 'bg-[var(--color-input-bg)] dark:bg-[var(--color-input-bg-dark)] text-[var(--color-text)] dark:text-[var(--color-text-dark)]',
-          // icon: 'text-[var(--color-text-secondary)] dark:text-[var(--color-text-secondary-dark)]',
-          input: 'placeholder-[var(--color-text-secondary)] dark:placeholder-[var(--color-text-secondary-dark)]'
-        }"
       />
-    </div>
 
     <UTable
       :key="tableKey"
-      :columns="columns"
-      :rows="filteredItems"
+      :data="filteredItems"
       :loading="pending"
-      :ui="{
-        td: { padding: 'py-1' },
-        th: { 
-          base: 'bg-[var(--color-table-header)] dark:bg-[var(--color-table-header-dark)] text-[var(--color-text)] dark:text-[var(--color-text-dark)]',
-          padding: 'py-2 px-4'
-        },
-        tr: {
-          base: 'hover:bg-[var(--color-hover)] dark:hover:bg-[var(--color-hover-dark)]',
-          td: 'text-[var(--color-text)] dark:text-[var(--color-text-dark)]'
-        }
-      }"
+      :columns="cols"
     >
-      <template #action-data="{ row }">
+      <template #action-cell="{ row }">
         <UButtonGroup size="sm">
           <UButton
-            color="green"
+            color="primary"
             icon="i-heroicons-plus"
             variant="soft"
-            @click="handleAdd(row)"
+            @click="handleAdd(row.original)"
             :ui="{
               base: 'hover:bg-[var(--color-primary-light)]/10 dark:hover:bg-[var(--color-primary)]/20'
             }"
           />
           <UButton
-            v-if="row.canUpdate"
-            color="yellow"
+            v-if="row.original.canUpdate"
+            color="primary"
             icon="i-heroicons-pencil"
             variant="soft"
-            @click="handleUpdate(row)"
+            @click="handleUpdate(row.original)"
             :ui="{
               base: 'hover:bg-[var(--color-warning-light)]/10 dark:hover:bg-[var(--color-warning)]/20'
             }"
           />
           <UButton
-            v-if="row.canDelete"
-            color="red"
+            v-if="row.original.canDelete"
+            color="error"
             icon="i-heroicons-trash"
             variant="soft"
-            @click="handleDelete(row)"
+            @click="handleDelete(row.original)"
             :ui="{
               base: 'hover:bg-[var(--color-danger-light)]/10 dark:hover:bg-[var(--color-danger)]/20'
             }"
@@ -69,44 +50,36 @@
 
     <div class="mt-4 flex justify-center" v-if="data?.data.totalPages! > 1">
       <UPagination
+      class="rtl"
         v-model="currentPage"
         :total="data?.data.totalCount!"
         :page-size="data?.data.pageSize"
         :total-pages="data?.data.totalPages"
         :show-prev="data?.data.hasPrevious"
         :show-next="data?.data.hasNext"
-        :ui="{
-          // wrapper: 'bg-[var(--color-background)] dark:bg-[var(--color-background-dark)]',
-          button: {
-            base: 'text-[var(--color-text)] dark:text-[var(--color-text-dark)] hover:bg-[var(--color-hover)] dark:hover:bg-[var(--color-hover-dark)]',
-            active: 'bg-[var(--color-primary)] dark:bg-[var(--color-primary-dark)] text-white'
-          }
-        }"
       />
     </div>
-  </div>
 </template>
 
 <script lang="ts" setup>
 import type { CardGroupI } from "~/models/CardCode";
 import UpdateModal from "./UpdateModal.vue";
-import CreateModal from "./CreateModal.vue";
 import AddModal from "./AddModal.vue";
 
 const groupNameFilter = ref("");
 const showUsedOnly = ref(false);
-const modal = useModal();
+const overlay = useOverlay();
 const { getCardCodeGroups, deleteCardCodeGroup } = useCardCode();
 const { data, pending, error, refresh, currentPage } =
   await getCardCodeGroups();
 
-const columns = [
-  { key: "groupCode", label: "اسم المجموعة" },
-  { key: "totalCount", label: "العدد الكلي" },
-  { key: "usedCount", label: "المستخدم" },
-  { key: "notUsedCount", label: "المتبقي" },
-  { key: "numberOfDays", label: "الايام" },
-  { key: "action", label: "#" },
+const cols = [
+  { accessorKey: "groupCode", header: "اسم المجموعة" },
+  { accessorKey: "totalCount", header: "العدد الكلي" },
+  { accessorKey: "usedCount", header: "المستخدم" },
+  { accessorKey: "notUsedCount", header: "المتبقي" },
+  { accessorKey: "numberOfDays", header: "الايام" },
+  { accessorKey: "action", header: "#" },
 ];
 
 const tableKey = ref(`table-${Date.now()}`)
@@ -130,14 +103,14 @@ const handleAdd = (row: CardGroupI) => {
   let selectedGroup = filteredItems.value.find((g) => {
     return g.groupCode == row.groupCode;
   });
-  if (selectedGroup) modal.open(AddModal, { cardGroup: selectedGroup });
+  if (selectedGroup) overlay.create(AddModal, { props: { cardGroup: selectedGroup } }).open();
 };
 
 const handleUpdate = (row: CardGroupI) => {
   let selectedGroup = filteredItems.value.find((g) => {
     return g.groupCode == row.groupCode;
   });
-  if (selectedGroup) modal.open(UpdateModal, { cardGroup: selectedGroup });
+  if (selectedGroup) overlay.create(UpdateModal, {props:{ cardGroup: selectedGroup }}).open();
 };
 
 const deleteREQ = await deleteCardCodeGroup();

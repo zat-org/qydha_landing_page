@@ -1,44 +1,42 @@
 <template>
-  <UModal :ui="{ width: 'w-[600px] sm:max-w-[600px]' }" prevent-close>
-    <UCard>
-
-      <UTabs :items="items" @change="onChange">
-        <!-- <template #logo>
-          
-        </template> -->
-        <template #Qydha_Owner>
+  <UModal  prevent-close>
+    
+    
+<UButtonGroup>
+  <UButton v-for="item in items" :key="item.slot" :label="item.label" @click="select=item.id"></UButton>
+</UButtonGroup>
+      
+        <template v-if="select==0">
           <UForm :state="QState" :schema="QSchema" ref="qForm" @submit="onSubmit">
-            <UFormGroup name="owner_id" label="المالك">
+            <UFormField name="owner_id" label="المالك">
               <UInputMenu :options="users" :search="search" :loading="allUsersREQ.status.value == 'pending'"
                 v-model="QState.owner_id" option-attribute="username" value-attribute="id" />
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup name="showInQydha" label="قيدها">
+            <UFormField name="showInQydha" label="قيدها">
               <UToggle v-model="QState.showInQydha" size="xl" />
-            </UFormGroup>
+            </UFormField>
           </UForm>
         </template>
-        <template #Logo>
+        <template v-if="select==1">
           <UForm :state="LState" :schema="LSchema" ref="logoForm" @submit="onLogoSubmit">
             <div class="flex flex-col gap-2  justify-center items-center ">
-              <UFormGroup label="image" name="image">
+              <UFormField label="image" name="image">
                 <UInput v-model="LState.image" accept=".jpeg , .jpg , .png" type="file" @change="changeFile"></UInput>
-              </UFormGroup>
+              </UFormField>
 
               <img v-if="imageUrl" :src="imageUrl" alt="new Logo image" class="w-[200px] h-[200px]" />
             </div>
 
           </UForm>
         </template>
-      </UTabs>
       <template #footer>
         <div class="flex justify-between items-center">
-          <UButton label="اغلاق" color="red" @click="modal.close" />
-          <UButton label="حفظ" colo="green" @click="onClickSave" />
+          <UButton label="اغلاق" color="error" @click="emit('close')" />
+          <UButton label="حفظ" color="primary" @click="onClickSave" />
 
         </div>
       </template>
-    </UCard>
   </UModal>
 </template>
 
@@ -48,7 +46,7 @@ import type { ITournament, ITournamentDetailed } from '~/models/tournament';
 import { Privilege } from '~/models/user';
 import { useMyAuthStore } from '~/store/Auth';
 const props = defineProps<{ tour: ITournament }>()
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const select = ref(0)
 const qForm = ref<HTMLFormElement>()
@@ -58,11 +56,11 @@ const ImageFile = ref<File>()
 const userStore = useMyAuthStore()
 const { permissions, privilege } = storeToRefs(userStore)
 const items = computed(() => {
-  let result: { slot: string, label: string }[] = []
+  let result: { slot: string, label: string, id: number }[] = []
   if (privilege.value == Privilege.Admin) {
-    result = [{ slot: "Qydha_Owner", label: "المالك والظهور في قيدها" }, { slot: "Logo", label: "لوجو" }]
+    result = [{ slot: "Qydha_Owner", label: "المالك والظهور في قيدها",id:0 }, { slot: "Logo", label: "لوجو",id:1 }]
   } else if (privilege.value == Privilege.Owner || (privilege.value == Privilege.Moderatore && permissions.value.includes("ModifyTournamentData"))) {
-    result = [{ slot: "Logo", label: "لوجو" }]
+    result = [{ slot: "Logo", label: "لوجو",id:1 }]
   }
   return result
 })
@@ -72,9 +70,7 @@ const QSchema = object({ owner_id: string().required(), showInQydha: boolean().r
 const LState = reactive<{ image: string }>({ image: "" })
 const LSchema = object({ image: string().nullable() })
 
-function onChange(index: number) {
-  select.value = index
-}
+
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const userApi = useUsers()
@@ -102,7 +98,7 @@ const onSubmit = async () => {
   await qydhaToggle.fetchREQ(QState.showInQydha, QState.owner_id, +tour_id)
   if (qydhaToggle.status.value == "success") {
     refreshNuxtData('getTourById')
-    modal.close()
+    emit('close')
   }
 
 }
@@ -115,8 +111,8 @@ const onLogoSubmit = async () => {
 
 }
 
-const changeFile = (files: FileList) => {
-  const file = files.item(0)
+const changeFile = (event: Event) => {
+  const file = (event.target as HTMLInputElement).files?.item(0)
   if (file) {
     ImageFile.value = file
     const reader = new FileReader()

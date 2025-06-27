@@ -29,42 +29,42 @@
 
     <UForm :state="state" :schema="schema" @submit="onSubmit" ref="UpdateForm">
       <div class="flex flex-col gap-2">
-        <UFormGroup name="name" label="الاسم">
+        <UFormField name="name" label="الاسم">
           <UInput v-model="state.name" />
-        </UFormGroup>
-        <UFormGroup name="description" label="الوصف">
+        </UFormField>
+        <UFormField name="description" label="الوصف">
           <UTextarea v-model="state.description" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- dates -->
         <div class="flex gap-2">
-          <UFormGroup name="startAt" label="تبداء" class="grow">
+          <UFormField name="startAt" label="تبداء" class="grow">
             <VueDatePicker
               v-model="state.startAt"
               :enable-time-picker="false"
               dir="ltr"
               position="right"
             />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup name="endAt" label="تنتهي" class="grow">
+          <UFormField name="endAt" label="تنتهي" class="grow">
             <VueDatePicker
               v-model="state.endAt"
               :enable-time-picker="false"
               dir="ltr"
               position="right"
             />
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <div class="flex gap-2">
           <!-- 
-          <UFormGroup class="grow" name="ownerId" label="المالك" v-if="roles?.includes('SuperAdmin')">
+          <UFormField class="grow" name="ownerId" label="المالك" v-if="roles?.includes('SuperAdmin')">
             <UInputMenu v-model="state.ownerId" :options="users" :search="search" option-attribute="username"
               value-attribute="id" :loading="allUsersREQ.status.value == 'pending'" />
-          </UFormGroup> -->
+          </UFormField> -->
 
-          <UFormGroup class="grow" name="city" label="المدينة">
+          <UFormField class="grow" name="city" label="المدينة">
             <UButtonGroup size="sm" orientation="horizontal" class="flex">
               <UInput v-model="state.city" class="grow" />
 
@@ -78,13 +78,13 @@
                 @click="getLocation"
               />
             </UButtonGroup>
-          </UFormGroup>
+          </UFormField>
         </div>
 
         <!-- prizes -->
         <div class="flex flex-col gap-5">
           <div class="flex items-end gap-2">
-            <UFormGroup
+            <UFormField
               name="prizesCurrency"
               label="عملة المكافئة"
               class="grow"
@@ -97,12 +97,12 @@
                   label="اضافة مركز"
                 />
               </UButtonGroup>
-            </UFormGroup>
+            </UFormField>
           </div>
           <div
             class="flex justify-start items-start flex-wrap flex-grow-0 basis-[100px] overflow-y-auto"
           >
-            <UFormGroup
+            <UFormField
               v-for="(p, index) in state.prizes"
               :name="'prizes[' + index + ']'"
               :label="'المركز' + (index + 1)"
@@ -116,7 +116,7 @@
                   @click="state.prizes.splice(index, 1)"
                 ></UButton>
               </UButtonGroup>
-            </UFormGroup>
+            </UFormField>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ import EditModal from "./EditModal.vue";
 const UpdateForm = ref<HTMLFormElement>();
 
 const props = defineProps<{ tournament: ITournament }>();
-const modal = useModal();
+const overlay = useOverlay();
 
 const state = reactive<ITournamentUpdate>({
   name: props.tournament.name,
@@ -198,19 +198,20 @@ const onSubmit = async () => {
 };
 
 const openUpdateModal = () => {
-  modal.open(EditModal, { tour: props.tournament });
+  overlay.create(EditModal, { props: { tour: props.tournament } }).open();
 };
 
 const getLocation = () => {
-  modal.open(MapInputModal, {
-    lat: state.location.latitude,
-    log: state.location.longitude,
+  overlay.create(MapInputModal, {
+    props: {
+      lat: state.location.latitude,
+      log: state.location.longitude,
     onSuccess(lat: number, log: number) {
       state.location.latitude = lat;
       state.location.longitude = log;
-      modal.close();
+      },
     },
-  });
+  }).open();
 };
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-    <section id="download-section" class="flex justify-center items-center py-8 lg:py-16 relative overflow-hidden">
+    <section id="download-section" class="flex justify-center items-center py-8 lg:py-16 relative overflow-hidden bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-900/80 dark:to-gray-900/40 sm:bg-gradient-to-br sm:from-white/90 sm:to-white/60 dark:sm:from-gray-900/90 dark:sm:to-gray-900/60">
         <!-- Background decoration -->
         <div class="absolute inset-0 bg-[url('/images/world.svg')] bg-center bg-cover opacity-20 dark:opacity-10" data-aos="fade" data-aos-duration="400" data-aos-once="true"></div>
         
@@ -10,9 +10,9 @@
                      data-aos-duration="400" 
                      data-aos-delay="100"
                      data-aos-once="true">
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold py-2 bg-gradient-to-r from-[#1d2145] to-[#2a2f5c] dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
-                        <span class="block mb-2">حمِّل تطبيق قيدها</span>
-                        <span class="block text-2xl sm:text-3xl lg:text-4xl">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold py-2">
+                        <span class="block mb-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent">حمِّل تطبيق قيدها</span>
+                        <span class="block text-2xl sm:text-3xl lg:text-4xl bg-gradient-to-r from-gray-800 to-gray-600 dark:from-amber-500 dark:to-amber-700 bg-clip-text text-transparent">
                             للهواتف الذكية مجانًا
                         </span>
                     </h2>
@@ -28,14 +28,14 @@
                          data-aos-once="true">
                         <a href="https://apps.apple.com/in/app/qydha/id6446068415" 
                            target="_blank" 
-                           class="transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                           class="hover-scale shadow-lg hover:shadow-xl">
                             <img src="/images/app_store_badge_ar.svg" 
                                  class="w-32 sm:w-36 lg:w-52" 
                                  alt="Download on App Store" />
                         </a>
                         <a href="https://play.google.com/store/apps/details?id=com.qydha&pli=1" 
                            target="_blank" 
-                           class="transform transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                           class="hover-scale shadow-lg hover:shadow-xl">
                             <img src="/images/google_store_badge_ar.svg" 
                                  class="w-32 sm:w-36 lg:w-52" 
                                  alt="Get it on Google Play" />
@@ -49,9 +49,9 @@
                      data-aos-delay="300"
                      data-aos-once="true">
                     <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-br from-amber-400/20 to-amber-600/20 dark:from-amber-400/10 dark:to-amber-600/10 rounded-full blur-3xl"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary-400/20 to-primary-600/20 dark:from-primary-400/10 dark:to-primary-600/10 rounded-full blur-3xl"></div>
                         <img src="@/assets/images/home_page-portrait.webp" 
-                             class="h-96 relative z-10 transform transition-all duration-300 hover:scale-105" 
+                             class="h-96 relative z-10 hover-scale" 
                              alt="Qydha App Preview">
                     </div>
                 </div>
@@ -61,25 +61,5 @@
 </template>
 
 <script setup lang="ts">
-// Add any component logic here
+// Pure Tailwind CSS - no custom styles needed!
 </script>
-
-<style scoped>
-#download-section {
-    background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.4));
-}
-
-.dark #download-section {
-    background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.4));
-}
-
-@media (max-width: 640px) {
-    #download-section {
-        background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
-    }
-    
-    .dark #download-section {
-        background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.6));
-    }
-}
-</style>

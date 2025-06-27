@@ -32,7 +32,6 @@ const model = defineModel<string>();
 </script>
 <style>
 .otp-input {
-  @apply w-7 md:w-16 h-7 md:h-16  text-[1.5rem] md:text-[3.5rem];
   padding: 5px;
   margin: 0 5px;
   border-radius: 4px;

@@ -1,6 +1,5 @@
 <template>
   <ClientOnly >
-    
     <AppStatistics />
   </ClientOnly>
 </template>

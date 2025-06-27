@@ -1,7 +1,7 @@
 <template>
   <DashboardHeader></DashboardHeader>
 
-    <main class="flex flex-1 mx-auto w-full p-[var(--spacing-xs)]">
+    <main class="flex flex-col flex-1 ">
       <slot></slot>
     </main>
 

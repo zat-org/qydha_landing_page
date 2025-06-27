@@ -1,21 +1,23 @@
 <template>
 
-  <UCard :ui="{ base: 'flex flex-col h-full', body: { base: 'grow' } }">
-    <UTabs :items="assetItems" @change="tabChange">
-      <template #book>
-        <AssetsBook />
-      </template>
+  <UCard>
+    <UButtonGroup>
+      <UButton v-for="item in assetItems" :key="item.id" :label="item.label" :value="item.id"
+        @click="tabChange(item.id)" :color="tabindex == item.id ? 'primary' : 'neutral'" />
+    </UButtonGroup>
+    <template v-if="tabindex == 0">
+      <AssetsBook />
+    </template>
 
-      <template #popup>
-        <AssetsPopup />
-      </template>
+    <template v-if="tabindex == 1">
+      <AssetsPopup />
+    </template>
 
-    </UTabs>
 
 
 
     <template #footer>
-      <UButton label="تعديل" color="yellow" @click="openModal" />
+      <UButton label="تعديل" color="warning" @click="openModal" />
     </template>
 
   </UCard>
@@ -29,15 +31,16 @@ import EditPopupModal from './EditPopupModal.vue';
 const tabindex = ref(0)
 const tabChange = (index: number) => { tabindex.value = index }
 const assetItems = [
-  { slot: 'book', label: 'الكتاب' },
-  { slot: 'popup', label: 'النافذة المنبثقة' }
+  { id: 0, slot: 'book', label: 'الكتاب' },
+  { id: 1, slot: 'popup', label: 'النافذة المنبثقة' }
 ]
-const modal = useModal()
+const overlay = useOverlay();
 const openModal = () => {
   if (tabindex.value == 0) {
-    modal.open(EditBookModal)
+    overlay.create(EditBookModal).open()
+
   } else if (tabindex.value == 1) {
-    modal.open(EditPopupModal)
+    overlay.create(EditPopupModal).open()
   }
 }
 </script>

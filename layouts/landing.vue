@@ -1,10 +1,9 @@
 <template>
-  <Header ></Header>
-  <main class="  flex grow   justify-center  " > 
-     <slot ></slot>   
-  </main>
-  <Footer ></Footer>
-
+    <Header />
+    <main  > 
+       <slot />   
+    </main>
+    <Footer />
 </template>
 
 <script lang="ts" setup>

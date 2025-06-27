@@ -1,48 +1,26 @@
 <template>
-  <UModal prevent-close>
-    <UCard>
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold">تعديل بيانات المجموعة</h3>
-          <p class="text-sm text-gray-500">{{ cardGroup.groupCode }}</p>
-        </div>
-      </template>
+  <UModal title="تعديل بيانات المجموعة" description="تعديل بيانات المجموعة " prevent-close>
+    <template #body>
 
-      <UForm
-        :state="state"
-        :schema="schema"
-        @submit="handleSubmit"
-        class="space-y-4"
-      >
-        <UFormGroup label="عدد الأيام" name="numberOfDays">
-          <UInput
-            v-model="state.numberOfDays"
-            type="number"
-            placeholder="أدخل عدد الأيام"
-          />
-        </UFormGroup>
+      <UForm :state="state" :schema="schema" @submit="handleSubmit" class="space-y-4">
+        <UFormField label="عدد الأيام" name="numberOfDays">
+          <UInput v-model="state.numberOfDays" type="number" placeholder="أدخل عدد الأيام" />
+        </UFormField>
 
-        <UFormGroup label="تاريخ الانتهاء" name="expireAt">
-          <UInput
-            v-model="state.expireAt"
-            type="datetime-local"
-            placeholder="حدد تاريخ الانتهاء"
-          />
-        </UFormGroup>
+        <UFormField label="تاريخ الانتهاء" name="expireAt">
+          <UInput v-model="state.expireAt" type="datetime-local" placeholder="حدد تاريخ الانتهاء" />
+        </UFormField>
 
-        <div class="flex justify-end gap-2">
-          <UButton
-            type="submit"
-            color="green"
-            :loading="updateREQ.status.value == 'pending'"
-            >حفظ</UButton
-          >
-          <UButton type="button" color="gray" @click="modal.close()"
-            >إلغاء</UButton
-          >
-        </div>
       </UForm>
-    </UCard>
+
+    </template>
+    <template #footer>
+
+      <div class="flex justify-end gap-2">
+        <UButton type="submit" color="primary" :loading="updateREQ.status.value == 'pending'">حفظ</UButton>
+        <UButton type="button" color="secondary" @click="emit('close')">إلغاء</UButton>
+      </div>
+    </template>
   </UModal>
 </template>
 
@@ -52,9 +30,8 @@ import * as yup from "yup";
 const props = defineProps<{
   cardGroup: CardGroupI;
 }>();
-const modal = useModal();
 const toast = useToast();
-const emit = defineEmits(["update"]);
+const emit = defineEmits(["update", 'close']);
 
 const schema = yup.object({
   numberOfDays: yup
@@ -84,14 +61,11 @@ const updateREQ = await useCardCode().updateCardCode();
 const handleSubmit = async () => {
   await updateREQ.fetchREQ(props.cardGroup.groupCode, state);
   if (updateREQ.status.value == "success") {
-    toast.add({ title: "تم تحديث الكود بنجاح", color: "green" });
-    modal.close();
+    toast.add({ title: "تم تحديث الكود بنجاح", color: "success" });
+    emit('close')
   } else if (updateREQ.status.value == "error") {
-    toast.add({ title: "فشل في تحديث الكود", color: "red" });
+    toast.add({ title: "فشل في تحديث الكود", color: "error" });
   }
 
-  // await updateREQ.fetchREQ(props.cardGroup.groupCode, state);
-
-  // modal.close();
 };
 </script>

@@ -7,8 +7,8 @@
       </template>
       <UForm :state="state" :schema="schema" ref="refreeForm" @submit="onSubmit">
 
-        <UFormGroup label="اسم الحكم " name="username">
-          <USelectMenu 
+        <UFormField label="اسم الحكم " name="username">
+          <USelect 
           clear-search-on-close
            v-model="state.username"
            :loading="getusers.status.value=='pending'"
@@ -17,11 +17,11 @@
 
           <UInput v-model="state.username" v-else />
 
-        </UFormGroup>
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between">
-          <UButton label="اغلاق" color="red" @click="modal.close()" />
+          <UButton label="اغلاق" color="red" @click="emit('close')" />
           <UButton label="اضافة" @click="refreeForm?.submit()" />
         </div>
 
@@ -33,7 +33,7 @@
 
 <script lang="ts" setup>
 import { object, string } from "yup"
-const modal = useModal()
+const emit = defineEmits(['close'])
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const refreeAddREQ = await useTournamentRefree().addTourRefree()
@@ -67,7 +67,7 @@ const onSubmit = async () => {
   await refreeAddREQ.fetchREQ(tour_id, state)
 
   if (refreeAddREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 
   else if (refreeAddREQ.status.value == "error" && refreeAddREQ.error.value?.statusCode == 404) {

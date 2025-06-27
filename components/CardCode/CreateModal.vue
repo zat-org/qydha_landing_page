@@ -1,41 +1,39 @@
 <template>
-  <UModal prevent-close>
-    <UCard>
-      <template #header>
-        <div class="flex justify-between items-center">
-          <h3 class="text-lg font-semibold">إنشاء اكواد كروت جديدة</h3>
-        </div>
-      </template>
-
-      <UForm :state="state" :schema="schema" @submit="handleSubmit" class="space-y-4">
-        <UFormGroup label="كود المجموعة" name="groupCode">
+  <UModal title="إنشاء اكواد كروت جديدة" description="إنشاء اكواد كروت جديدة" prevent-close>
+    <template #body>
+    <UForm :state="state" :schema="schema" @submit="handleSubmit" class="space-y-4">
+        <UFormField label="كود المجموعة" name="groupCode">
           <UInput v-model="state.groupCode" placeholder="أدخل كود المجموعة" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="عدد الأيام" name="numberOfDays">
+        <UFormField label="عدد الأيام" name="numberOfDays">
           <UInput v-model="state.numberOfDays" type="number" placeholder="أدخل عدد الأيام" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="تاريخ الانتهاء" name="expireAt">
+        <UFormField label="تاريخ الانتهاء" name="expireAt">
           <UInput v-model="state.expireAt" type="datetime-local" placeholder="حدد تاريخ الانتهاء" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="عدد الأكواد" name="codesCount">
+        <UFormField label="عدد الأكواد" name="codesCount">
           <UInput v-model="state.codesCount" type="number" placeholder="أدخل عدد الأكواد" />
-        </UFormGroup>
+        </UFormField>
 
-        <div class="flex justify-end gap-2">
-          <UButton type="submit" color="green">حفظ</UButton>
-          <UButton type="button" color="gray" @click="modal.close()">إلغاء</UButton>
-        </div>
+        
       </UForm>
-    </UCard>
-  </UModal>
+    </template>
+    <template #footer>
+          <div class="flex justify-end gap-2">
+
+            <UButton type="submit" color="primary">حفظ</UButton>
+            <UButton type="button" color="secondary" @click="emit('close')">إلغاء</UButton>
+        </div>
+        </template>
+</UModal>
 </template>
 
 <script setup lang="ts">
 import * as yup from 'yup'
-const modal = useModal();
+const emit = defineEmits(['close'])
 const toast = useToast();
 
 const schema = yup.object({
@@ -70,10 +68,10 @@ const createREQ = await useCardCode().createCardCodeGroup();
 const handleSubmit = async () => {
   await createREQ.fetchREQ(state);
   if (createREQ.status.value === "success") {
-    toast.add({ title: "تم إنشاء اكواد الكروت بنجاح", color: "green" });
-    modal.close();
+    toast.add({ title: "تم إنشاء اكواد الكروت بنجاح", color: "success" });
+    emit('close')
   } else if (createREQ.status.value === "error") {
-    toast.add({ title: "فشل في إنشاء اكواد الكروت", color: "red" });
+    toast.add({ title: "فشل في إنشاء اكواد الكروت", color: "error" });
   }
 };
 </script>

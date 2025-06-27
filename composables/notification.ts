@@ -1,6 +1,5 @@
 
 import type { INotificationCreate, INotificationPopupCreate } from '~/models/notification';
-import { Body } from './../.nuxt/components.d';
 export const useNotification = () => {
   const { $api } = useNuxtApp();
   const getAllNotifications = async () => {

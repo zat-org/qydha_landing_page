@@ -8,22 +8,22 @@
   >
     <UButtonGroup class="mx-auto">
       <UButton
-        :color="target == 'All' ? 'green' : 'gray'"
+        :color="target == 'All' ? 'primary' : 'neutral'"
         @click="target = 'All'"
         label="الكل"
       />
       <UButton
-        :color="target == 'Anonymos' ? 'green' : 'gray'"
+        :color="target == 'Anonymos' ? 'primary' : 'neutral'"
         @click="target = 'Anonymos'"
         label="غير مسجلين"
       />
       <UButton
-        :color="target == 'User' ? 'green' : 'gray'"
+        :color="target == 'User' ? 'primary' : 'neutral'"
         @click="target = 'User'"
         label="مستخدم"
       />
     </UButtonGroup>
-    <UFormGroup label="المستخدم" name="user" v-if="target == 'User'">
+    <UFormField label="المستخدم" name="user" v-if="target == 'User'">
       <UInputMenu
         v-model="state.user"
         :loading="usergetREQ.status.value == 'pending'"
@@ -32,17 +32,17 @@
         option-attribute="username"
         value-attribute="id"
       />
-    </UFormGroup>
-    <UFormGroup label="العنوان" name="title">
+    </UFormField>
+    <UFormField label="العنوان" name="title">
       <UInput v-model="state.title" />
-    </UFormGroup>
-    <UFormGroup label="الوصف" name="description">
+    </UFormField>
+    <UFormField label="الوصف" name="description">
       <UInput v-model="state.description" />
-    </UFormGroup>
-    <UFormGroup label="النوع" name="actionType">
-      <USelect v-model="state.actionType" :options="notificationActionsArray" />
-    </UFormGroup>
-    <UFormGroup
+    </UFormField>
+    <UFormField label="النوع" name="actionType">
+      <USelect v-model="state.actionType" :items="notificationActionsArray" class="w-full"  />
+    </UFormField>
+    <UFormField
       label="الهدف"
       name="actionPath"
       v-if="state.actionType != popUpActionType.PopUpWithNoAction"
@@ -52,8 +52,9 @@
         v-if="state.actionType == popUpActionType.PopUpWithGoToURL"
       />
       <USelect
+        class="w-full"
         v-model="state.actionPath"
-        :options="
+        :items="
           state.actionType == popUpActionType.PopUpWithGoToScreen
             ? screenOptions
             : tabOptions
@@ -63,11 +64,11 @@
           state.actionType == popUpActionType.PopUpWithGoToTab
         "
       />
-    </UFormGroup>
+    </UFormField>
     <div class="flex justify-between items-center">
-      <UFormGroup label="الصورة المرفقة" name="popUpImage">
+      <UFormField label="الصورة المرفقة" name="popUpImage">
         <UInput @change="filechange" type="file" />
-      </UFormGroup>
+      </UFormField>
       <img :src="imageUrl" class="w-[100px] h-[100]" />
     </div>
   </UForm>
@@ -81,7 +82,7 @@ import {
 } from "~/models/notification";
 const notificationForm = ref<HTMLFormElement>();
 const toast = useToast();
-const modal = useModal();
+const emit = defineEmits(['close'])
 const imageUrl = ref("");
 
 const AddNotificatoion = () => {
@@ -206,7 +207,7 @@ const onSubmit = async () => {
   await addREQ.fetchREQ(state, target.value, state.user);
   if (addREQ.status.value == "success")
     toast.add({ title: "add new notification doen " });
-  modal.close();
+  emit("close");
 };
 
 const addREQ = await useNotification().sendNotificationToAllUsers();

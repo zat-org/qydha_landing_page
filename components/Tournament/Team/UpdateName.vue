@@ -1,9 +1,9 @@
 <template>
   <div>
     <UForm :state="state" :schema="schema" @submit="onSubmit" ref="updateTeamNameForm">
-      <UFormGroup name="name" label="name">
+      <UFormField name="name" label="name">
           <UInput v-model="state.name" />
-      </UFormGroup>
+      </UFormField>
 
     </UForm>    
   </div>
@@ -18,7 +18,7 @@ const props = defineProps<{team:ITeam }>()
 const state = reactive({
   name:props.team.name
 })
-const modal=useModal()
+const emit = defineEmits(['close'])
 const schema = object({
   name:string()
 }) 

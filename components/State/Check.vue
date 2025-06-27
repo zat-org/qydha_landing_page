@@ -10,20 +10,20 @@
           <UButton :color="index == 2 ? 'green' : 'gray'" label="الرقم المرجعي" icon="mdi:key" @click="searchWith(2)" />
         </UButtonGroup>
       </div>
-      <UFormGroup v-show="index == 0" help="برجاء ادخال الرقم بدون الكود" class="duration-300 transition-all grow"
+      <UFormField v-show="index == 0" help="برجاء ادخال الرقم بدون الكود" class="duration-300 transition-all grow"
         label="ادخل رقم الهاتف المسجل في البطولة" name="phonenumber">
         <vue-tel-input mode="auto" @country-changed="onCountrychange" :autoFormat="true" :customValidate="/^.{0,12}$/"
           dir="ltr" :defaultCountry="+966" :validCharactersOnly="true"
           :inputOptions="{ showDialCode: true, maxlength: 13 }" invalidMsg=""
           :dropdownOptions="{ showDialCodeInSelection: true }" @validate="onValidate" :onlyCountries="countries"
           v-model="state.phonenumber"></vue-tel-input>
-      </UFormGroup>
-      <UFormGroup label="الايميل" name="email" v-show="index == 1" class="duration-300 transition-all grow">
+      </UFormField>
+      <UFormField label="الايميل" name="email" v-show="index == 1" class="duration-300 transition-all grow">
         <UInput v-model="state.email" />
-      </UFormGroup>
-      <UFormGroup label="الرقم المرجعي" name="id" class="duration-300 transition-all grow" v-show="index == 2">
+      </UFormField>
+      <UFormField label="الرقم المرجعي" name="id" class="duration-300 transition-all grow" v-show="index == 2">
         <UInput v-model="state.id" />
-      </UFormGroup>
+      </UFormField>
 
       <div class="flex justify-center items-center">
         <UButton type="submit" label="بحث" icon="material-symbols:search" color="emerald" variant="outline" />

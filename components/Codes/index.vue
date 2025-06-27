@@ -1,49 +1,42 @@
 <template>
-  <UCard :ui="{
-    base: 'flex-1 flex flex-col',
-    body: { base: 'flex-1 flex grow' },
-  }">
+  <UCard   >
   <template #header>
     <div
       class="flex justify-between items-center ">
-      <h2 class="text-lg font-medium text-[var(--color-text)] dark:text-[var(--color-text-dark)]">الاكواد</h2>
+      <h2 class="text-lg font-medium text-gray-600 dark:text-gray-300">الاكواد</h2>
       <UButton icon="i-heroicons-plus" color="primary" @click="openModal">
         إضافة
       </UButton>
     </div>
   </template>
-    <UTabs :items="items" @change="onChange">
-      <template #infCode>
-        <div class="h-full flex flex-col">
+
+  <UButtonGroup>
+    <UButton v-for="item in items" :key="item.id" :label="item.label" :value="item.id" @click="tabIndex = item.id" :color="tabIndex == item.id ? 'primary' : 'neutral'" />
+  </UButtonGroup>
+  <template v-if="tabIndex == 0">
           <KeepAlive>
-            <InfluncerCode v-if="activeTab === 'infCode'" />
+            <InfluncerCode v-if="tabIndex == 0" />
           </KeepAlive>
-        </div>
       </template>
-      <template #category>
-        <div class="h-full">
+      <template v-if="tabIndex == 1">
           <KeepAlive>
-            <InfluncerCodeCat v-if="activeTab === 'category'" />
+            <InfluncerCodeCat v-if="tabIndex == 1" />
           </KeepAlive>
-        </div>
       </template>
 
-      <template #code>
-        <div class="h-full">
+      <template v-if="tabIndex == 2">
           <KeepAlive>
-            <PromoCode v-if="activeTab === 'code'" />
+            <PromoCode v-if="tabIndex == 2" />
           </KeepAlive>
-        </div>
       </template>
 
-      <template #cardcode>
-        <div class="h-full">
+      <template v-if="tabIndex == 3">
           <KeepAlive>
-            <CardCode v-if="activeTab === 'cardcode'" />
+            <CardCode v-if="tabIndex == 3" />
           </KeepAlive>
-        </div>
       </template>
-    </UTabs>
+    
+    
   </UCard>
 </template>
 
@@ -54,44 +47,24 @@ import AddUserCodeModal from "../PromoCode/AddModal.vue";
 import CreateModal from "../CardCode/CreateModal.vue";
 
 const tabIndex = ref(0);
-const activeTab = ref('infCode');
+
 
 const items = [
-  { slot: "infCode", label: "أكواد المؤثرين" },
-  { slot: "category", label: "الفئات" },
-  { slot: "code", label: "أكواد المستخدمين" },
-  { slot: "cardcode", label: "أكواد البطاقات" },
+  {id:0, slot: "infCode" , label: "أكواد المؤثرين" },
+  {id:1, slot: "category", label: "الفئات" },
+  {id:2, slot: "code" , label: "أكواد المستخدمين" },
+  {id:3, slot: "cardcode", label: "أكواد البطاقات" },
 ];
+const overlay = useOverlay();
 
-const modal = useModal();
-const onChange = (index: number) => {
-  tabIndex.value = index; 
-  activeTab.value = items[index].slot;
-};
+
 
 const openModal = () => {
   const modals = [AddCodeModal, AddCatModal, AddUserCodeModal, CreateModal];
-  modal.open(modals[tabIndex.value]);
+  overlay.create(modals[tabIndex.value]).open();
 };
 
-const getcodesREQ = await useInfluncerCode().getinfluncerCodes();
-await getcodesREQ.fetchREQ();
 
-const codes = computed(() => getcodesREQ.data.value?.data.items);
-const page = ref(getcodesREQ.data.value?.data.currentPage!);
-const total = ref(getcodesREQ.data.value?.data.totalCount!);
-
-watch(page, async (newValue) => {
-  await getcodesREQ.fetchREQ(newValue);
-});
-
-const cols = [
-  { key: "code", label: "الكود" },
-  { key: "numberOfDays", label: "عدد الأيام" },
-  { key: "usedCount", label: "عدد مرات الاستخدام" },
-  { key: "status", label: "الحالة" },
-  { key: "categoryName", label: "الفئة" },
-];
 </script>
 
 <style>

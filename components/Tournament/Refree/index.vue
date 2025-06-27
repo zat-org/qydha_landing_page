@@ -11,7 +11,7 @@
       </p>
     </template>
 
-    <UTable :rows="refrees" :columns="cols">
+    <UTable :data="refrees" >
       <template #action-data="{row}">
         <UButton icon="material-symbols:delete" color="red" @click="deleteref(row)"/>
       </template>
@@ -32,7 +32,7 @@ import AddModal from './AddModal.vue';
 
 const route = useRoute()
 const tour_id = route.params.id.toString()
-const modal = useModal()
+const overlay = useOverlay()
 const tourREQ= await useTournament().getTourById()
 await tourREQ.fetchREQ(+tour_id)
 if (tourREQ.status.value =="error"){
@@ -59,14 +59,13 @@ const cols= [
 ]
 
 const openAddModal = () => {
-  modal.open(AddModal)
+  overlay.create(AddModal).open()
 }
 const refreDeleteREQ = await useTournamentRefree().deleteTourRefree()
 const deleteref=async (row:MinUser)=>{
   await refreDeleteREQ.fetchREQ(tour_id , row.id)
-  if (refreDeleteREQ.status.value=="success"){
-    modal.close()
-  }
+  // if (refreDeleteREQ.status.value=="success"){
+  // }
 }
 </script>
 

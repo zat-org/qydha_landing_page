@@ -8,22 +8,23 @@
   >
     <UButtonGroup class="mx-auto">
       <UButton
-        :color="target == 'All' ? 'green' : 'gray'"
+        :color="target == 'All' ? 'primary' : 'neutral'"
         @click="target = 'All'"
         label="الكل"
+
       />
       <UButton
-        :color="target == 'Anonymos' ? 'green' : 'gray'"
+        :color="target == 'Anonymos' ? 'primary' : 'neutral'"
         @click="target = 'Anonymos'"
         label="غير مسجلين"
       />
       <UButton
-        :color="target == 'User' ? 'green' : 'gray'"
+        :color="target == 'User' ? 'primary' : 'neutral'"
         @click="target = 'User'"
         label="مستخدم"
       />
     </UButtonGroup>
-    <UFormGroup label="المستخدم" name="user" v-if="target == 'User'">
+    <UFormField label="المستخدم" name="user" v-if="target == 'User'">
       <UInputMenu
         v-model="state.user"
         :loading="usergetREQ.status.value == 'pending'"
@@ -32,17 +33,17 @@
         option-attribute="username"
         value-attribute="id"
       />
-    </UFormGroup>
-    <UFormGroup label="العنوان" name="title">
+    </UFormField>
+    <UFormField label="العنوان" name="title">
       <UInput v-model="state.title" />
-    </UFormGroup>
-    <UFormGroup label="الوصف" name="description">
+    </UFormField>
+    <UFormField label="الوصف" name="description">
       <UInput v-model="state.description" />
-    </UFormGroup>
-    <UFormGroup label="النوع" name="actionType">
-      <USelect v-model="state.actionType" :options="notificationActionsArray" />
-    </UFormGroup>
-    <UFormGroup
+    </UFormField>
+    <UFormField label="النوع" name="actionType">
+      <USelect v-model="state.actionType" :items="notificationActionsArray" class="w-full"  />
+    </UFormField>
+    <UFormField
       label="الهدف"
       name="actionPath"
       v-if="state.actionType != NotificationActionType.NoAction"
@@ -52,8 +53,9 @@
         v-if="state.actionType == NotificationActionType.GoToURL"
       />
       <USelect
+        class="w-full"
         v-model="state.actionPath"
-        :options="
+        :items="
           state.actionType == NotificationActionType.GoToScreen
             ? screenOptions
             : tabOptions
@@ -63,7 +65,7 @@
           state.actionType == NotificationActionType.GoToTab
         "
       />
-    </UFormGroup>
+    </UFormField>
   </UForm>
 </template>
 
@@ -80,7 +82,7 @@ const AddNotificatoion = () => {
 
 defineExpose({ AddNotificatoion });
 const toast = useToast();
-const modal = useModal();
+const emit = defineEmits(['close'])
 const target = ref<"All" | "User" | "Anonymos">("All");
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
@@ -166,7 +168,7 @@ const notificationActionsArray = Object.values(NotificationActionType).map(
       };
     }
   }
-);
+).filter(Boolean)
 
 watch(
   () => state.actionType,
@@ -189,7 +191,7 @@ const onSubmit = async () => {
   await addREQ.fetchREQ(state, target.value, state.user);
   if (addREQ.status.value == "success")
     toast.add({ title: "add new notification doen " });
-  modal.close();
+  emit("close");
 };
 
 const addREQ = await useNotification().sendNotificationToAllUsers();

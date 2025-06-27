@@ -1,15 +1,15 @@
 <template>
     <UForm ref="RegisterForm" :schema="schema" :state="form" @submit="onSubmit"
-       class="w-full max-w-4xl sm:w-[90%] md:w-[70%] lg:w-[50%] mx-auto bg-[var(--color-background)] dark:bg-[var(--color-background-secondary)] p-4 sm:p-6  rounded-2xl shadow-md flex flex-col gap-4 border border-[var(--color-border)] dark:border-[var(--color-border)]">
+       class="w-full max-w-4xl sm:w-[90%] md:w-[70%] lg:w-[50%] mx-auto bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-md flex flex-col gap-4 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
       <legend
-        class="text-2xl font-bold mb-6 text-center text-[var(--color-text-primary)] dark:text-[var(--color-text-primary)]">
+        class="text-2xl font-bold mb-6 text-center text-gray-900 dark:text-white">
         تسجيل حساب جديد</legend>
-      <UFormGroup name="username" :label="'اسم المستخدم'">
+      <UFormField name="username" :label="'اسم المستخدم'">
         <UInput v-model="form.username"  placeholder="ادخل اسم المستخدم" autocomplete="username"
           size="lg" />
-      </UFormGroup>
+      </UFormField>
   
-      <UFormGroup name="phone" :label="'رقم الجوال'" description="مثال: 05xxxxxxxx">
+      <UFormField name="phone" :label="'رقم الجوال'" description="مثال: 05xxxxxxxx">
         <ClientOnly>
           <AsyncPhoneInput
             v-model="form.phone"          
@@ -18,9 +18,9 @@
             placeholder="ادخل رقم الجوال"
           />
         </ClientOnly>
-      </UFormGroup>
+      </UFormField>
   
-      <UFormGroup name="password" :label="'كلمة المرور'">
+      <UFormField name="password" :label="'كلمة المرور'">
         <div class="relative">
           <UInput 
             v-model="form.password" 
@@ -39,11 +39,11 @@
             <UIcon :name="showPassword ? 'i-heroicons-eye-slash' : 'i-heroicons-eye'" />
           </UButton>
         </div>
-      </UFormGroup>
-      <UFormGroup name="confirmPassword" :label="'تأكيد كلمة المرور'">
+      </UFormField>
+      <UFormField name="confirmPassword" :label="'تأكيد كلمة المرور'">
         <UInput v-model="form.confirmPassword" type="password"
           placeholder="اعد كتابة كلمة المرور" autocomplete="new-password" size="lg" />
-      </UFormGroup>
+      </UFormField>
       <UAlert v-if="generalError" color="red" variant="subtle" :title="generalError" class="mb-4" />
           <UButton type="submit" block size="lg" class="mt-2">تسجيل</UButton>
     </UForm>

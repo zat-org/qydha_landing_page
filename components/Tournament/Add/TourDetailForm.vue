@@ -1,163 +1,107 @@
 <template>
-<section  class="space-y-4">
-  
-  <!-- Tournament Prize Section -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 space-y-4">
-    <UFormGroup :ui="{
-      label: {
-        base: 'text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2'
-      },
-      error: 'text-xs text-red-500 mt-1'
-    }" label=" جائزة البطولة" name="TournametPrizeOption">
+  <section class="space-y-4">
 
-      <USelect :ui="{
-        base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-      }" v-model="modelValue.TournametPrizeOption" :options="prizeOptions" @change="onPrizeOptionChange()" />
-    </UFormGroup>
+    <!-- Tournament Prize Section -->
+      <UFormField label=" جائزة البطولة" name="TournametPrizeOption">
 
-    <h4 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">تفاصيل الجوائز</h4>
+        <USelect v-model="modelValue.TournametPrizeOption" :items="prizeOptions" @change="onPrizeOptionChange()" />
+      </UFormField>
 
-    <div v-for="(prize, index) in modelValue.TournametPrize" :key="index"
-      class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-400 transition-all duration-200 shadow-sm">
+      <h4 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">تفاصيل الجوائز</h4>
 
-      <!-- Prize Header -->
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <div class=" bg-primary-500 rounded-full flex items-center justify-center p-2">
-            <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">المركز {{ index + 1 }}</span>
+      <div v-for="(prize, index) in modelValue.TournametPrize" :key="index"
+        class=" p-5 bg-gray-50 dark:bg-gray-800  rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-400 transition-all duration-200 shadow-sm">
+
+        <!-- Prize Header -->
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <div class=" bg-primary-500 rounded-full flex items-center justify-center p-2">
+              <span class="text-sm font-semibold text-gray-800 dark:text-gray-200">المركز {{ index + 1 }}</span>
+            </div>
           </div>
         </div>
-        <UIcon name="i-heroicons-trophy" class="w-4 h-4 text-primary-600 dark:text-primary-400" />
+
+        <!-- Prize Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <!-- Money Prize Section -->
+          <UFormField :label="` قيمة الجائزة`" :name="`TournametPrize[${index}].money`">
+            <UInput v-model="prize.money" type="number" placeholder="قيمة الجائزة"
+              class="hover:border-primary-300 dark:hover:border-primary-400" />
+          </UFormField>
+
+          <!-- Items Prize Section -->
+          <UFormField :label="` الجوائز العينية`" :name="`TournametPrize[${index}].items`">
+            <div class="space-y-2">
+              <!-- Add Item Input -->
+              <div class="flex gap-2">
+                <UInput v-model="PrizenewItem[index]" placeholder="جائزة عينية"
+                  @keyup.enter="addItem(index, PrizenewItem[index])"
+                  class="hover:border-primary-300 dark:hover:border-primary-400" />
+                <UButton @click="addItem(index, PrizenewItem[index])" color="primary" variant="solid" size="sm"
+                  class="px-3 py-2 rounded-lg font-medium hover:scale-105 transition-all duration-200"
+                  :disabled="!PrizenewItem[index]?.trim()" icon="i-heroicons-plus" />
+              </div>
+
+              <!-- Items Tags -->
+              <div v-if="prize.items.length > 0" class="flex flex-wrap gap-1.5">
+                <span v-for="(item, itemIndex) in prize.items" :key="itemIndex"
+                  class="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-md text-xs font-medium border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-200">
+                  {{ item }}
+                  <button @click="removeItem(index, itemIndex)" icon="i-heroicons-x-mark"
+                    class="text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 hover:scale-110 transition-all duration-200">
+                  </button>
+                </span>
+              </div>
+            </div>
+          </UFormField>
+        </div>
       </div>
 
-      <!-- Prize Content -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        <!-- Money Prize Section -->
-        <UFormGroup :ui="{
-          label: {
-            base: 'text-xs font-medium text-gray-700 dark:text-gray-200 mb-1'
-          },
-          error: 'text-xs text-red-500 mt-1'
-        }" :label="` قيمة الجائزة`" :name="`TournametPrize[${index}].money`">
-          <UInput :ui="{
-            base: 'form-input w-full px-3 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-          }" v-model="prize.money" type="number" placeholder="قيمة الجائزة" icon="i-heroicons-currency-dollar"
-            class="hover:border-primary-300 dark:hover:border-primary-400" />
-        </UFormGroup>
 
-        <!-- Items Prize Section -->
-        <UFormGroup :ui="{
-          label: {
-            base: 'text-xs font-medium text-gray-700 dark:text-gray-200 mb-1'
-          },
-          error: 'text-xs text-red-500 mt-1'
-        }" :label="` الجوائز العينية`" :name="`TournametPrize[${index}].items`">
-          <div class="space-y-2">
-            <!-- Add Item Input -->
-            <div class="flex gap-2">
-              <UInput :ui="{
-                base: 'form-input flex-1 px-3 py-2 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-              }" v-model="PrizenewItem[index]" placeholder="جائزة عينية" icon="i-heroicons-gift"
-                @keyup.enter="addItem(index, PrizenewItem[index])"
-                class="hover:border-primary-300 dark:hover:border-primary-400" />
-              <UButton @click="addItem(index, PrizenewItem[index])" color="primary" variant="solid" size="sm"
-                icon="i-heroicons-plus"
-                class="px-3 py-2 rounded-lg font-medium hover:scale-105 transition-all duration-200"
-                :disabled="!PrizenewItem[index]?.trim()" />
-            </div>
 
-            <!-- Items Tags -->
-            <div v-if="prize.items.length > 0" class="flex flex-wrap gap-1.5">
-              <span v-for="(item, itemIndex) in prize.items" :key="itemIndex"
-                class="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-md text-xs font-medium border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-200">
-                <UIcon name="i-heroicons-gift" class="w-3 h-3" />
-                {{ item }}
-                <button @click="removeItem(index, itemIndex)"
-                  class="text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200 hover:scale-110 transition-all duration-200">
-                  <UIcon name="i-heroicons-x-mark" class="w-3 h-3" />
-                </button>
-              </span>
-            </div>
-          </div>
-        </UFormGroup>
-      </div>
+    <!-- Tournament Statistics Section -->
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+      <UFormField label=" عدد الفرق" name="TeamsCount">
+
+        <UInput v-model="modelValue.TeamsCount" type="number" min="1" placeholder="0" @input="validatePositiveNumber" />
+      </UFormField>
+
+      <UFormField label=" عدد الطاولات" name="TablesCount">
+        <UInput v-model="modelValue.TablesCount" type="number" placeholder="0" />
+      </UFormField>
+
+
+      <UFormField label=" مين يسجل النشرة " name="TeamSelectionMode">
+        <USelect v-model="selectedRfreeOption" :items="refreeeOptions" placeholder="اختر مين يسجل النشرة"
+          @update:model-value="onSelectionModeChange()" />
+
+
+      </UFormField>
+      <UFormField v-if="selectedRfreeOption === 'refree'" label=" عدد الحكام" name="RefreeCount">
+        <UInput v-model="modelValue.RefreeCount" type="number" placeholder="0" />
+      </UFormField>
+      <UFormField label="هل تحتاج البطولة الاحصائيات" name="StatisticsNeed">
+          <USwitch size="xl" v-model="modelValue.StatisticsNeed" color="primary" class="w-[200px]" />
+          <template #hint>
+            <UPopover>
+              <UButton icon="i-heroicons-question-mark-circle" variant="ghost" color="neutral" />
+              <template #content>
+                <img src="~assets/images/staticsExample.jpeg" alt="مثال على الاحصائيات"
+                  class="w-32 md:w-64 h-auto rounded-lg" />
+              </template>
+            </UPopover>
+          </template>
+      </UFormField>
+
+      <UFormField label="عدد الصكات في المباريات العادية " name="SakkaNormalOption">
+        <USelect v-model="modelValue.SakkaNormalOption" :items="SakkaOptions" placeholder="اختر عدد الصكات في المباريات العادية" />
+      </UFormField>
+      <UFormField label="عدد الصكات في المباريات النهائية" name="SakkaFinalMatchOption">
+        <USelect v-model="modelValue.SakkaFinalMatchOption" :items="SakkaOptions" placeholder="اختر عدد الصكات في المباريات النهائية" />
+      </UFormField>
     </div>
-
-  </div>
-
-
-  <!-- Tournament Statistics Section -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
-    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
-      <UIcon name="i-heroicons-chart-bar" class="text-primary-500 dark:text-primary-400" />
-      إحصائيات البطولة
-    </h3>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <UFormGroup :ui="{
-        label: {
-          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
-        },
-        error: 'text-xs text-red-500 mt-1'
-      }" label=" عدد الفرق" name="TeamsCount">
-       
-       <UInput  
-        :ui="{
-          base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" v-model="modelValue.TeamsCount" 
-        type="number" min="1" placeholder="0" icon="i-heroicons-users" @input="validatePositiveNumber" />
-    </UFormGroup>
-
-      <UFormGroup :ui="{
-        wrapper: 'space-y-2',
-        label: {
-          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
-        },
-        error: 'text-xs text-red-500 mt-1'
-      }" label=" عدد الطاولات" name="TablesCount">
-        <UInput 
-        :ui="{
-          base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" 
-        v-model="modelValue.TablesCount" type="number" 
-         placeholder="0" 
-         icon="i-heroicons-rectangle-stack" />
-      </UFormGroup>
-
-
-      <UFormGroup :ui="{
-        wrapper: 'space-y-2',
-        label: {
-          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
-        },
-        error: 'text-xs text-red-500 mt-1'
-      }" label=" مين يسجل النشرة " name="TeamSelectionMode">
-        <USelect :ui="{
-          base: 'form-select w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" v-model="selectedRfreeOption" 
-        :options="refreeeOptions" 
-        placeholder="اختر مين يسجل النشرة" 
-        @update:model-value="onSelectionModeChange()" />
-
-
-      </UFormGroup>
-      <UFormGroup
-      v-if="selectedRfreeOption === 'refree'"
-      :ui="{
-        wrapper: 'space-y-2',
-        label: {
-          base: 'text-sm font-medium text-gray-700 dark:text-gray-200'
-        },
-        error: 'text-xs text-red-500 mt-1'
-      }" label=" عدد الحكام" name="RefreeCount">
-        <UInput :ui="{
-          base: 'form-input w-full px-4 py-3 rounded-lg border-2 border-gray-200 dark:border-gray-600 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100',
-        }" v-model="modelValue.RefreeCount" type="number" placeholder="0" icon="i-heroicons-user-group" />
-      </UFormGroup>
-
-
-    </div>
-  </div>
-</section>
+  </section>
 </template>
 
 <script lang="ts" setup>
@@ -169,13 +113,10 @@ const props = defineProps<{
     RefreeCount: number;
     RefreeNeed: boolean;
     TablesCount: number;
-
-    // Stage32Option: string;
-    // Stage16Option: string;
-    // Stage8Option: string;
-    // SemiFinalOption: string;
-    // FinalOption: string;
-    TeamSelectionMode: string;
+    StatisticsNeed: boolean;
+    SakkaNormalOption:string,
+    SakkaFinalMatchOption:string,
+    // TeamSelectionMode: string;
   };
 }>();
 
@@ -246,6 +187,21 @@ const validatePositiveNumber = (event: Event) => {
     input.value = '1';
   }
 }
+
+const SakkaOptions = [
+  {
+    label: " صكة",
+    value: "1",
+  },
+  {
+    label: "3 صكات",
+    value: "3",
+  },
+  {
+    label: "5 صكات",
+    value: "5",
+  },
+]
 </script>
 
 <style></style>

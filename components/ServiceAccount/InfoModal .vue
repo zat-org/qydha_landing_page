@@ -16,7 +16,7 @@
       </div>
       <template #footer>
         <div class="flex justify-between items-center ">
-          <UButton label="close" color="red" @click="modal.close()" />
+          <UButton label="close" color="red" @click="emit('close')" />
           <UButton label="copy token " color="green" @click="copyToken" />
         </div>
 
@@ -27,7 +27,7 @@
 
 <script lang="ts" setup>
 import type { IServiceAccount } from '~/models/serviceAccount';
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const props = defineProps<{ serviceAccount: IServiceAccount }>()
 const getTokenREQ = await useServiceAccount().getAccountToken()

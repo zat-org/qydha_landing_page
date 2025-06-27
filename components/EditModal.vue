@@ -7,21 +7,21 @@
       </template>
       <div>
         <UForm :state="state" :scheam="schema" @submit="onSubmit" class="flex flex-col gap-5">
-          <UFormGroup label="الحكم" name="refereeId" :ui="{ error: 'm-0' }">
+          <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }">
             <UInputMenu v-model="state.refereeId" :options="Refres" value-attribute="id" option-attribute="username"
               :search-attributes="['username']" :popper="{placement:'left-end'}" />
-          </UFormGroup>
-          <UFormGroup label="الطاولة" name="tableId">
+          </UFormField>
+          <UFormField label="الطاولة" name="tableId">
             <UInputMenu v-model="state.tableId" :options="Tables" value-attribute="id" option-attribute="name"
               :search-attributes="['name']"  :popper="{placement:'left-end'}"/>
-          </UFormGroup>
-          <UFormGroup name="startAt" label="تبداء" class="grow">
+          </UFormField>
+          <UFormField name="startAt" label="تبداء" class="grow">
             <VueDatePicker v-model="state.startAt" :enable-time-picker="false" dir="ltr" position="right" />
-          </UFormGroup>
+          </UFormField>
 
-          <UFormGroup name="roundName" label="اسم الجولة">
+          <UFormField name="roundName" label="اسم الجولة">
             <UInput v-model="state.roundName" />
-          </UFormGroup>
+          </UFormField>
 
           <UButton label="حفظ" type="submit" class="w-1/2 mx-auto" block />
         </UForm>
@@ -61,7 +61,7 @@ const { getTables } = useTable()
 const { getRefres } = useRefre()
 const { updateMatch, updateMatchState } = useMatch()
 const route = useRoute()
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const tour_id = route.params.id.toString()
 const tableREQ = await getTables()
@@ -107,7 +107,7 @@ const onSubmit = async () => {
   await updateREQ.fetchREQ(tour_id, props.match.id.toString(), state)
   if (updateREQ.status.value == "success") {
     toast.add({ title: "update done" })
-    modal.close()
+    emit('close')
   }
 }
 
@@ -116,25 +116,25 @@ const MatchStateREQ = await updateMatchState()
 const withdrawUS = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "Us")
   if (MatchStateREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 const withdrawThem = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "Them")
   if (MatchStateREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 const withdrawBoth = async () => {
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "All")
   if (MatchStateREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 const onReset = async () => {
   await MatchStateREQ.fetchRestREQ(props.match.qydhaGameId)
   if (MatchStateREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 const withdrawItems = [[{ label: ` انسحاب  ${props.match.usTeamName}`, click: withdrawUS }, { label: ` انسحاب  ${props.match.themTeamName}`, click: withdrawThem }, { label: 'انسحاب كلا الفريقين', click: withdrawBoth }]]

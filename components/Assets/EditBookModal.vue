@@ -1,30 +1,28 @@
 <template>
-  <UModal prevent-close>
-        <UCard>
-      <template #header>
-          update book 
-      </template>
+  <UModal prevent-close title="تعديل الكتاب" description="تعديل الكتاب">
+
+ <template #body>
       <UForm :state="state" :scheam="schema" ref="BookForm" @submit="onSubmit">
-        <UFormGroup label="book" name="file">
+        <UFormField label="book" name="file">
           <UInput type="file" v-model="state.file" ref="fileInput" @change="fileChanged" accept="application/pdf" />
-        </UFormGroup>
+        </UFormField>
 
       </UForm>
+    </template>
       <template #footer>
         <div class="flex justify-between items-center ">
 
-          <UButton label="save" color="green" @click="BookForm?.submit()" :loading="updateREQ.status.value=='pending'"/>
-          <UButton label="back" color="red" @click="modal.close()" />
+          <UButton label="حفظ" color="primary" @click="BookForm?.submit()" :loading="updateREQ.status.value=='pending'"/>
+          <UButton label="اغلاق" color="error" @click="emit('close')" />
         </div>
 
       </template>
-    </UCard>
   </UModal>
 </template>
 
 <script lang="ts" setup>
 import { object, string } from 'yup'
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const updateREQ = await useAssets().updateBook()
 const BookForm = ref<HTMLFormElement>()
@@ -41,8 +39,8 @@ const schema = object({
   file: string()
 })
 
-const fileChanged = (event: FileList) => {
-  const _new_file = event.item(0)
+const fileChanged = (event: Event) => {
+  const _new_file = (event.target as HTMLInputElement).files?.item(0)
   if (_new_file) {
     new_file.value = _new_file
   }
@@ -53,14 +51,14 @@ const onSubmit = async () => {
     if (updateREQ.status.value == 'success') {
       toast.add({ title: 'update  done' })
       refreshNuxtData("getBook")
-      modal.close()
+      emit('close')
     } else if (updateREQ.status.value == 'error') {
       toast.add({ title: 'error happend ' })
 
     }
   }
   else {
-    modal.close()
+    emit('close')
   }
 
 

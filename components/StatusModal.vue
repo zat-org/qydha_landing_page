@@ -4,8 +4,9 @@
     <div class="flex flex-col">
 
       <div class="flex justify-end p-1">
-        <UButton color="red" icon="material-symbols:close" variant="soft" @click="modal.close()" />
+        <UButton color="error" icon="material-symbols:close" variant="soft" @click="emit('close')" />
       </div>
+      
       <UTabs :items="items" class="w-full p-5">
         <template #status="{ item }">
           <table class="w-full rounded-xl text-center table-fixed table-pin-rows my-3 shadow-lg">
@@ -171,9 +172,9 @@
 
               <div class="w-full flex justify-center items-center  gap-[80px] ">
                 
-                <UBadge :color="sakka.winner && sakka.winner =='Us'?'green':'red'">{{ sakka.usSakkaScore }}</UBadge>
+                <UBadge :color="sakka.winner && sakka.winner =='Us'?'success':'error'">{{ sakka.usSakkaScore }}</UBadge>
                   <p class="" > الصكة  {{index+1 }} </p>
-                <UBadge :color="sakka.winner && sakka.winner =='Them'?'green':'red'">{{ sakka.themSakkaScore }}</UBadge>
+                <UBadge :color="sakka.winner && sakka.winner =='Them'?'success':'error'">{{ sakka.themSakkaScore }}</UBadge>
               </div>
               <UDivider />
              <div class="flex flex-col">
@@ -202,7 +203,7 @@ import type { IMatchData, IMathStat } from "~/models/MatchStat";
 import { useMyTournamentStore } from "~/store/tournament";
 
 const props = defineProps<{ m: Match }>();
-const modal = useModal();
+const emit = defineEmits(['close'])
 const gameStore = useMyTournamentStore()
 // const game = ref<{id:string ,game:IMatchData, statistics:IMathStat}>();
 

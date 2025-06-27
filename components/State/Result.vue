@@ -13,10 +13,10 @@
           :tableNumber="playerState.tableNumber" />
       </div>
       <div class="text-center">
-        <UButton color="red" icon="simple-line-icons:close" class="mb-2" @click="sendMessage">
+        <UButton color="error" icon="mdi:close" class="mb-2" @click="sendMessage">
           للاعتذار عن الحضور
         </UButton>
-        <UAlert class="" icon="hugeicons:alert-02" color="red" variant="soft">
+        <UAlert class="" icon="hugeicons:alert-02" color="error"  variant="soft">
           <template #icon="{ icon }">
             <UIcon :name="icon" class="text-2xl" />
           </template>
@@ -26,13 +26,13 @@
                 لتتمكن من المشاركة يجب احضار فحص طبي ورقي موقع و مختوم.
               </p>
 
-              <UButton color="red" variant="solid" class="mt-2"
+              <UButton color="error" variant="solid" class="mt-2"
                 to="https://drive.google.com/file/d/1lb_k7GKeHcPNVdEKqRGjTm8-qcLucMgv/view" target="_blank">
                 لتحميل النموذج اضغط هنا</UButton>
             </div>
           </template>
         </UAlert>
-        <UAlert class="mt-2" icon="oi:book" color="green" variant="soft">
+        <UAlert class="mt-2" icon="oi:book" color="success" variant="soft">
           <template #icon="{ icon }">
             <UIcon :name="icon" class="text-2xl" />
           </template>
@@ -40,7 +40,7 @@
             <div class="text-green-600">
               <p class="text-right">للاطلاع على قوانين البطولة</p>
 
-              <UButton color="green" variant="solid" class="mt-2"
+              <UButton color="success" variant="solid" class="mt-2"
                 to="https://drive.google.com/file/d/1TzH4HmuMdITwekpGN3d4zA1KHHaUIVpy/view?usp=sharing" target="_blank">
                 تحميل الملف
               </UButton>
@@ -53,7 +53,7 @@
         </div>
 
         <div class="text-center mt-2">
-          <UButton color="amber" icon="mdi:bracket" class=""
+          <UButton color="warning" icon="mdi:bracket" class=""
             :to="`https://qydha.com/championship?group=${playerState.team.groupId}`" target="_blank">توجه الى جدول
             البطولة
           </UButton>
@@ -110,7 +110,5 @@ const sendMessage = () => {
 </script>
 
 <style>
-.Result-header {
-  @apply text-xl font-bold text-center;
-}
+
 </style>

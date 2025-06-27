@@ -3,7 +3,7 @@
     <template #header>
       tables
     </template>
-    <UTable :rows="tables" :columns="cols" :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }">
+    <UTable :data="tables"  :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }">
       <template #actions-data="{ row }">
         <UButtonGroup>
           <UButton color="yellow" @click="openUpdateModal(row)">
@@ -34,7 +34,7 @@ import UpdateModal from './UpdateModal .vue';
 
 const route = useRoute()
 const tour_id = route.params.id.toString()
-const modal = useModal()
+const overlay = useOverlay()
 const getTableREQ = await useTournamentTable().getTable()
 await getTableREQ.fetchREQ(tour_id)
 const tables = computed(() => {
@@ -54,7 +54,7 @@ const deleteTable = async (row: ITable) => {
 const openUpdateModal = (row: ITable) => {
   const data = tables.value?.find(t => t.id == row.id)
   if (data) {
-    modal.open(UpdateModal, { table: data })
+    overlay.create(UpdateModal, { props: { table: data } }).open()
   }
 }
 </script>

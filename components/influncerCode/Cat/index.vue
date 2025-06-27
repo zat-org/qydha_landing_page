@@ -1,9 +1,9 @@
 <template>
-  <UTable    :rows="catRow" :columns="cols">
-    <template #action-data="{row}">
+  <UTable    :data="catRow" :columns="cols">
+    <template #action-cell="{row}">
     <UButtonGroup>
-      <UButton icon="material-symbols:edit" color='yellow' @click="openupdateModal(row)" /> 
-      <UButton icon="material-symbols:delete" color="red" @click="deletecat(row) "/>
+      <UButton icon="material-symbols:edit" color='primary' @click="openupdateModal(row.original as ICategory)" /> 
+      <UButton icon="material-symbols:delete" color="error" @click="deletecat(row.original as ICategory) "/>
     </UButtonGroup>    
     </template>
   </UTable>
@@ -13,7 +13,7 @@
 import type { ICategory } from '~/models/influncerCode';
 import UpdateCatModal from './updateCatModal.vue';
 
-const modal =useModal()
+const overlay = useOverlay()
 const categoryApi = useCategory()
 const getCatREQ = await categoryApi.getAllcategory()
 const deleteCatREQ = await categoryApi.deleteCategry()
@@ -23,15 +23,16 @@ const catRow = computed(() => {
 })
 
 const cols =[
-  {label:'الاسم',key:'categoryName'},
-  {label:'عدد الاستخدامات المتاحة',key:'maxCodesPerUserInGroup'},
-  {label:'#',key:'action'}
+  {accessorKey:'categoryName',header:'الاسم'},
+  {accessorKey:'maxCodesPerUserInGroup',header:'عدد الاستخدامات المتاحة'},
+  {accessorKey:'action',header:'#'}
 ]
 const openupdateModal = (row:ICategory)=>{
-  console.log(row)
-modal.open(UpdateCatModal , {
-  cat:row
-})
+  overlay.create(UpdateCatModal, {
+    props: {
+      cat: row
+    }
+  }).open();
 }
 
 const deletecat =async  (row:ICategory)=>{

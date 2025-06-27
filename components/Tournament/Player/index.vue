@@ -7,8 +7,8 @@
   >
     <template #header> players </template>
     <UTable
-      :rows="players"
-      :columns="cols"
+      :data="players"
+      
       :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }"
     >
       <template #action-data="{ row }">
@@ -55,7 +55,7 @@ import CreatePlayerModal from "./CreatePlayerModal.vue";
 import UpdatePlayerModal from "./updatePlayerModal.vue";
 
 const route = useRoute();
-const modal = useModal();
+const overlay = useOverlay();
 const toast = useToast();
 const tour_id = route.params.id.toString();
 const getplayerREQ = await useTournamentPlayer().getPlayer();
@@ -87,7 +87,7 @@ const players = computed(() => {
   return getplayerREQ.data.value?.data.items;
 });
 const openCreateModal = () => {
-  modal.open(CreatePlayerModal);
+  overlay.create(CreatePlayerModal).open();
 };
 const deleteREQ = await useTournamentPlayer().deletePlayer();
 const onDeletePlayer = async (row: IPlayer) => {
@@ -100,7 +100,7 @@ const onDeletePlayer = async (row: IPlayer) => {
   }
 };
 const openUpdateModal = (row: IPlayer) => {
-  modal.open(UpdatePlayerModal, { player: row });
+  overlay.create(UpdatePlayerModal, { props: { player: row } }).open();
 };
 </script>
 

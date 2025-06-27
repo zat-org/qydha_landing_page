@@ -5,6 +5,7 @@ export const useCategory = () => {
   const getAllcategory = async () => {
     const { data, pending, error, refresh ,status} = 
     await useAsyncData <{ data: {
+          id:number,
           categoryName: string,
           maxCodesPerUserInGroup: number
         }[

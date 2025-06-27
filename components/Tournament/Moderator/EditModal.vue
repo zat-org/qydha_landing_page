@@ -6,15 +6,15 @@
       </template>
       <UForm :state="state" :schema="schema" ref="moderatorForm" @submit="onSubmit">
      
-        <UFormGroup name="permissions" label="الصلاحيات">
+        <UFormField name="permissions" label="الصلاحيات">
           <USelectMenu v-model="state.permissions" :options="permission" multiple />
-        </UFormGroup>
+        </UFormField>
       </UForm>
 
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton label="اضافة " @click="moderatorForm?.submit()" />
-          <UButton color="red" label="اغلاق" @click="modal.close()" />
+          <UButton color="red" label="اغلاق" @click="emit('close')" />
         </div>
       </template>
     </UCard>
@@ -30,7 +30,7 @@ const props=defineProps <{moderator:IModerator}>()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 
-const modal = useModal()
+const emit = defineEmits(['close'])
 const permissionGetREQ = await useTournamentModerator().getModeratorpermissions()
 
 const permission = computed(() => {
@@ -51,7 +51,7 @@ const addModeratorREQ = await useTournamentModerator().updateModerator()
 const onSubmit = async () => {
   await addModeratorREQ.fetchREQ(tour_id,props.moderator.user.id, state)
   if (addModeratorREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 </script>

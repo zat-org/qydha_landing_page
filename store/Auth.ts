@@ -13,7 +13,21 @@ export const useMyAuthStore = defineStore('myAuthStore', () => {
   const permissions = ref<string[]>([])
   const privilege = ref<Privilege>()
 
-  return { logedin, user, permissions, privilege, roles }
+  const isSuperAdmin = computed(() => {
+    return roles.value?.includes('SuperAdmin')
+  })
+
+  const isStaffAdmin = computed(() => {
+    return roles.value?.includes('StaffAdmin')
+  })
+
+  const isStreamer = computed(() => {
+    return roles.value?.includes('Streamer')
+  })
+
+  
+
+  return { logedin, user, permissions, privilege, roles, isSuperAdmin, isStaffAdmin, isStreamer }
 }, {
   persist: {
     storage: piniaPluginPersistedstate.cookies({

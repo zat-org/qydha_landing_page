@@ -1,44 +1,41 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full  ' }">
+  <UCard>
     <template #header>
       <div class="flex justify-start gap-4 items-center">
         <USelect :options="options" class="w-[50%]" v-model="time_options">
         </USelect>
-        <VueDatePicker
-          class="w-[40%]"
-          range
-          v-if="time_options == 'customRange'"
-          v-model="dateRange"
-          :enable-time-picker="false"
-          position="right"
-        />
+        <VueDatePicker class="w-[40%]" range v-if="time_options == 'customRange'" v-model="dateRange"
+          :enable-time-picker="false" position="right" />
       </div>
     </template>
-    <UTabs :items="items" :content="true" v-model="tabIndex" @change="changeIndex">
-      <template #data>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          <!-- Users Statistics Card -->
-          <UCard class="bg-gradient-to-br from-primary-50 to-primary-100">
-            <div class="flex flex-col items-center p-4">
-              <div class="text-sm text-gray-600">Total Users</div>
-              <div class="text-2xl font-bold text-primary-600">1,234</div>
-            </div>
-          </UCard>
+    <UButtonGroup>
+      <UButton v-for="item in items" :key="item.id" :label="item.label" :value="item.id" @click="changeIndex(item.id)"
+        :color="tabIndex == item.id ? 'primary' : 'neutral'" />
+    </UButtonGroup>
 
-          <!-- Sakkas Statistics Card -->
-          <UCard class="bg-gradient-to-br from-secondary-50 to-secondary-100">
-            <div class="flex flex-col items-center p-4">
-              <div class="text-sm text-gray-600">Total Sakkas</div>
-              <div class="text-2xl font-bold text-secondary-600">5,678</div>
-            </div>
-          </UCard>
-        </div>
-      </template>
-      <template #map="{item,index}">
-        <Map v-if="tabIndex ==index" ></Map>
-      </template>
-    </UTabs>
+    <template v-if="tabIndex == 0">
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <!-- Users Statistics Card -->
+        <UCard class="bg-gradient-to-br from-primary-50 to-primary-100">
+          <div class="flex flex-col items-center p-4">
+            <div class="text-sm text-gray-600">Total Users</div>
+            <div class="text-2xl font-bold text-primary-600">1,234</div>
+          </div>
+        </UCard>
+
+        <!-- Sakkas Statistics Card -->
+        <UCard class="bg-gradient-to-br from-secondary-50 to-secondary-100">
+          <div class="flex flex-col items-center p-4">
+            <div class="text-sm text-gray-600">Total Sakkas</div>
+            <div class="text-2xl font-bold text-secondary-600">5,678</div>
+          </div>
+        </UCard>
+      </div>
+    </template>
+    <template v-if="tabIndex == 1">
+      <Map></Map>
+    </template>
   </UCard>
 </template>
 
@@ -46,12 +43,12 @@
 import VueDatePicker from "@vuepic/vue-datepicker";
 import "@vuepic/vue-datepicker/dist/main.css";
 const items = [
-  { label: "بيانات", slot: "data" },
-  { label: "الخريطة", slot: "map" },
+  { id: 0, label: "بيانات", slot: "data" },
+  { id: 1, label: "الخريطة", slot: "map" },
 ];
 const tabIndex = ref(0)
-const changeIndex =(index:number)=>{
-  tabIndex.value  =index
+const changeIndex = (index: number) => {
+  tabIndex.value = index
 }
 
 // option for select date

@@ -1,9 +1,5 @@
 <template>
   <UCard
-    :ui="{
-      base: 'flex flex-col h-full grow mx-[20px]',
-      body: { base: 'flex-1' },
-    }"
   >
     <div class="flex flex-col">
       <div class="flex justify-between items-center px-5">
@@ -64,7 +60,7 @@
     </div>
     <template #footer>
       <div class="flex justify-between">
-        <UButton label="عودة" color="red" @click="navigateTo('/tournament')" />
+        <UButton label="عودة" color="error" @click="navigateTo('/tournament')" />
         <UButton
           label="خريطة البطولة"
           :to="'/tournament/' + id + '/bracket'"
@@ -76,7 +72,7 @@
            @click="openEdit" v-if="privilege?.toLowerCase() =='admin' || privilege?.toLowerCase() =='owner' || permissions.includes('')" /> -->
 
         <UButton
-          color="yellow"
+          color="warning"
           label="تعديل"
           icon="weui:setting-filled"
           :to="'/tournament/' + id + '/edit'"
@@ -92,14 +88,12 @@
 </template>
 
 <script lang="ts" setup>
-import TournamentEditModal from "./EditModal.vue";
 import { useMyAuthStore } from "~/store/Auth";
 
 const userStore = useMyAuthStore();
 const { permissions, privilege } = storeToRefs(userStore);
 
 const props = defineProps<{ id: number }>();
-const modal = useModal();
 const tourApi = useTournament();
 const qydhaToggle = await tourApi.updatTourQydhaAndOwner();
 const getREQ = await tourApi.getTourById();

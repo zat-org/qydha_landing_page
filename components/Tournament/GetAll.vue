@@ -1,26 +1,18 @@
 <template>
-  <UCard
-    :ui="{
-      base: 'flex flex-col  h-full  ',
-      body: { base: 'flex flex-col  grow', padding: 'sm:p-2 p-2' },
-    }"
-  >
+  <UCard>
     <UTable
-      :rows="rows"
+      :data="rows"
       :columns="cols"
       @select="select"
-      :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }"
     >
-      <!-- <template #owner-data="{ row }">
-  <p>{{ row.owner }}</p>
-      </template> -->
-      <template #showInQydha-data="{ row }">
+  
+      <template #showInQydha-cell="{ row }">
         <UIcon
           name="healthicons:yes"
           class="text-3xl"
           :class="{
-            'text-green-500': row.showInQydha,
-            'text-black': !row.showInQydha,
+            'text-green-500': row.original.showInQydha,
+            'text-black': !row.original.showInQydha,
           }"
         />
       </template>
@@ -47,41 +39,20 @@
             />
        </div>
           <USelectMenu
-            :options="options"
-            value-attribute="value"
-            option-attribute="label"
+            :items="options"
             class="w-[200px] mx-auto"
             multiple
+            value-key="value"
+            label-key="label"
             v-model="stateQ"
           >
-            <template #label>
-              <span v-if="stateQ.length" class="truncate">{{
-                options
-                  .filter((opt) => stateQ.includes(opt.value))
-                  .map((opt) => opt.label)
-                  .join(", ")
-              }}</span>
-              <span v-else>Select state</span>
-            </template>
+
           </USelectMenu>
       </div>
     </template>
   </UCard>
 
-  <div class="flex flex-col grow">
-    <!-- <div class="flex items-center gap-2 ">
- <UFormGroup label="الاسم" size="xs">
-
-        <UInput v-model="nameQ" />
-      </UFormGroup> -->
-    <!-- <UFormGroup label="المالك" size="xs">
-        <UInput v-model="ownerQ" />
-      </UFormGroup>
-      <UFormGroup label="قيدها" size="xs">
-        <UToggle v-model="QydhaQ" />
-      </UFormGroup>
-    </div> -->
-  </div>
+  
 </template>
 
 <script lang="ts" setup>
@@ -97,8 +68,8 @@ const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
 const options = [
-  { value: "Upcoming", label: "القادمة" },
-  { value: "Running", label: "الجارية" },
+  { label: "القادمة", value: "Upcoming" },
+  { label: "الجارية", value: "Running" },
   { label: "المنتهية", value: "Finished" },
 ];
 const tourApi = useTournament();
@@ -123,14 +94,15 @@ watch(stateQ, (oldval, newValue) => {
   getAllREQ.fetchREQ(page.value, stateQ.value);
 });
 const cols = [
-  { key: "name", label: "الاسم" },
-  { key: "city", label: "المدينة" },
+  { accessorKey: "name", header: "الاسم" },
+  { accessorKey: "city", header: "المدينة" },
   // {key:"owner",label:"المالك"},
-  { key: "showInQydha", label: "قيدها" },
+  { accessorKey: "showInQydha", header: "قيدها" },
 ];
+import type {  TableRow } from '@nuxt/ui'
 
-const select = (row: ITournament) => {
-  return navigateTo(`/tournament/${row.id}`);
+const select = (row: TableRow<ITournament>) => {
+  navigateTo(`/tournament/${row.original.id}`);
 };
 </script>
 

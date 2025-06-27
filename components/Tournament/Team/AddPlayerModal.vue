@@ -6,14 +6,14 @@
       </template>
       <UForm :schema="schema" :state="state" ref="AddPlayerForm" @submit="onSubmit">
 
-        <UFormGroup name="playerId">
-          <USelectMenu v-model="state.playerId" :options="players" value-attribute="id" option-attribute="name" />
-        </UFormGroup>
+        <UFormField name="playerId">
+          <USelect v-model="state.playerId" :options="players" value-attribute="id" option-attribute="name" />
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center ">
           <UButton label="add" @click="AddPlayerForm?.submit()"> </UButton>
-          <UButton label="close" color="red" @click="modal.close()"> </UButton>
+          <UButton label="close" color="red" @click="emit('close')"> </UButton>
         </div>
       </template>
     </UCard>
@@ -24,7 +24,7 @@
 import { object, string } from 'yup'
 
 const AddPlayerForm = ref()
-const modal = useModal()
+const emit = defineEmits(['close'])
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const props = defineProps<{ team_id: string }>()
@@ -41,7 +41,7 @@ const addREQ = await useTourrnamentTeam().addPlayerToTeam()
 const onSubmit = async () => {
   await addREQ.fetchREQ(tour_id, props.team_id, state.playerId)
   if (addREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
 }
 </script>

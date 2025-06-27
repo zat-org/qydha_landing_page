@@ -1,57 +1,28 @@
 <template>
-  <UCard
-  class="w-full"
-    :ui="{
-      base: 'flex flex-col h-full w-full  ',
-      body: { base: 'grow flex flex-col' },
-    }"
-  >
+  <UCard>
     <template #header>
       <div class="flex justify-between items-center gap-4">
-        <UInput
-          v-model="query"
-          placeholder="username or id  or phone "
-          class="grow"
-        />
-<div>
-  <p>البحث الدقيق</p>
-  <UToggle v-model="exactSearch" />
-</div>
-        <USelect
-          :options="roleOptions"
-          v-model="roleFilter"
-        />
+        <UInput v-model="query" placeholder="البحث بالاسم او الرقم او الهاتف " class="flex-1" />
+        <div>
+          <p>البحث الدقيق</p>
+          <USwitch v-model="exactSearch" />
+        </div>
+        <USelect :items="roleOptions" v-model="roleFilter" class="w-40" />
         <p>{{ usersNumebr?.toLocaleString() }} مستخدم</p>
       </div>
     </template>
 
-    <UTable
-      :rows="rows"
-      :columns="cols"
-      class="grow"
-      :ui="{ td: { padding: 'py-1 sm:py-1' }, th: { padding: 'py-1 sm:py-1' } }"
-      @select="select"
-      :loading="usersREQ.status.value == 'pending'"
-    >
-      <template #phone-data="{ row }" dir="ltr">
-        <p>{{ (row.phone as string).replace("+", "") }}</p>
+    <UTable :data="rows"  :columns="cols"  @select="select" :loading="usersREQ.status.value == 'pending'">
+      <template #phone-cell="{ row }" dir="ltr">
+        <p>{{ (row.original.phone as string).replace("+", "") }}</p>
       </template>
-      <template #roles-data="{ row }" dir="ltr">
-        <UBadge  
-          v-for="role in row.roles"
-          :class="{'hidden':role=='User'}"
-          class="mx-1"
-          variant="outline"
-          :label="role=='User'?'مستخدم':role=='Streamer'?'استريمر':(role as string).includes('Staff')?'استف':'ادمن'"
-          :color="role=='User'?'gray':role=='Streamer'?'red':(role as string).includes('Admin')?'blue':'green' "  />
+      <template #roles-cell="{ row }" dir="ltr">
+        <UBadge v-for="role in row.original.roles" :class="{ 'hidden': role == 'User' }" class="mx-1" variant="outline"
+          :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
+          :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'" />
       </template>
     </UTable>
-    <UPagination
-      v-model="page"
-      :page-count="10"
-      :total="items"
-      class="mx-auto"
-    />
+    <UPagination v-model="page" :page-count="10" :total="items" class="mx-auto" />
   </UCard>
 </template>
 
@@ -87,14 +58,14 @@ const rows = computed(() => {
   return usersREQ.data.value?.data.items;
 });
 const cols = [
-  { key: "id", label: "#" },
-  { key: "username", label: "الاسم" },
-  { key: "phone", label: "رقم الهاتف" },
-  { key: "roles", label: "الفئة" },
+  { accessorKey: "id", header: "#" },
+  { accessorKey: "username", header: "الاسم" },
+  { accessorKey: "phone", header: "رقم الهاتف" },
+  { accessorKey: "roles", header: "الفئة" },
 ];
 
-const select = (row: User) => {
-  return navigateTo(`/user/${row.id}`);
+const select = (row: any, e?: Event) => {
+  return navigateTo(`/user/${row.original.id}`);
 };
 watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
   if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]) {
@@ -122,8 +93,8 @@ const roleOptions = [
   { value: "StaffAdmin", label: "الاستف" },
   { value: "User", label: "مستخدمين" },
   { value: "Streamer", label: "الاستريمر" },
-  
-  
+
+
 ];
 </script>
 

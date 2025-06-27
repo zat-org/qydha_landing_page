@@ -13,9 +13,9 @@
 <script lang="ts" setup>
 import AddModal from './AddModal.vue';
 
-const modal=useModal()
+const overlay = useOverlay()
 const openAddModal=()=>{
-modal.open(AddModal)
+overlay.create(AddModal).open()
 }
 
 </script>

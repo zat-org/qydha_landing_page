@@ -28,9 +28,9 @@ import { useMyAuthStore } from '~/store/Auth';
 import  UserDeleteModal  from './DeleteModal.vue';
 const userStore =useMyAuthStore() 
 const {user} = storeToRefs(userStore)
-const modal  =useModal()
+const overlay = useOverlay()
 const openDeleteModal=()=>{
-  modal.open(UserDeleteModal)
+  overlay.create(UserDeleteModal).open()
 }
 </script>
 

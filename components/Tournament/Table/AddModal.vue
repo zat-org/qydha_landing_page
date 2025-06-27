@@ -2,14 +2,14 @@
   <UModal>
     <UCard>
       <UForm :state="state" :schema="schema" ref="AddTableForm" @submit="onSubmit">
-        <UFormGroup name="name" label="name">
+        <UFormField name="name" label="name">
           <UInput v-model="state.name" />
-        </UFormGroup>
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center ">
           <UButton label="add" @click="AddTableForm?.submit()" />
-          <UButton label="close" color="red" @click="modal.close()" />
+          <UButton label="close" color="red" @click="emit('close')" />
         </div>
       </template>
     </UCard>
@@ -19,7 +19,7 @@
 <script lang="ts" setup>
 import type { ITableCreate } from '~/models/Table';
 import { object, string } from 'yup'
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const route = useRoute()
 const tour_id = route.params.id.toString()
@@ -35,7 +35,7 @@ const onSubmit = async () => {
   await AddREQ.fetchREQ(tour_id, state)
   if (AddREQ.status.value == "success") {
     toast.add({ title: 'add table done successfully ' })
-    modal.close()
+    emit('close')
   }
 }
 </script>

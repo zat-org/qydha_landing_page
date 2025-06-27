@@ -5,7 +5,7 @@
        اضافة مدير جديد
       </template>
       <UForm :state="state" :schema="schema" ref="moderatorForm" @submit="onSubmit">
-        <UFormGroup name="username" label=" اسم المدير ">
+        <UFormField name="username" label=" اسم المدير ">
           <USelectMenu 
           clear-search-on-close
            v-model="state.username"
@@ -14,16 +14,16 @@
             :options="Users" :searchable="search" option-attribute="username" value-attribute="username" />
 
           <UInput v-model="state.username" v-else />
-        </UFormGroup>
-        <UFormGroup name="permissions" label="الصلاحيات">
+        </UFormField>
+        <UFormField name="permissions" label="الصلاحيات">
           <USelectMenu v-model="state.permissions" :options="permission" multiple />
-        </UFormGroup>
+        </UFormField>
       </UForm>
 
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton label="اضافة" @click="moderatorForm?.submit()" />
-          <UButton color="red" label="اغلاق" @click="modal.close()" />
+          <UButton color="red" label="اغلاق" @click="emit('close')" />
         </div>
       </template>
     </UCard>
@@ -55,7 +55,7 @@ const search = async (q: string) => {
 }
 
 
-const modal = useModal()
+const emit = defineEmits(['close'])
 const permissionGetREQ = await useTournamentModerator().getModeratorpermissions()
 
 const permission = computed(() => {
@@ -76,7 +76,7 @@ const addModeratorREQ = await useTournamentModerator().addModerator()
 const onSubmit = async () => {
   await addModeratorREQ.fetchREQ(tour_id, state)
   if (addModeratorREQ.status.value == "success") {
-    modal.close()
+    emit('close')
   }
   else if (addModeratorREQ.status.value == "error" && addModeratorREQ.error.value?.statusCode == 404  ){
     moderatorForm.value?.setErrors([{message:"هذا المستخدم غير موجود",path:'username'}])

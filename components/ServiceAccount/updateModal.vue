@@ -5,19 +5,19 @@
         <h1>Add new Account </h1>
       </template>
       <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit">
-        <UFormGroup label="name" name="name">
+        <UFormField label="name" name="name">
           <UInput v-model="state.name"></UInput>
-        </UFormGroup>
-        <UFormGroup label="description" name="description">
+        </UFormField>
+        <UFormField label="description" name="description">
           <UInput v-model="state.description"></UInput>
-        </UFormGroup>
-        <UFormGroup label="permissions">
+        </UFormField>
+        <UFormField label="permissions">
           <USelectMenu v-model="state.permissions" :options="permissions" multiple />
-        </UFormGroup>
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center">
-          <UButton label="close" color="red" @click="modal.close()" />
+          <UButton label="close" color="red" @click="emit('close')" />
           <UButton label='update' color="green" @click="AddForm?.submit()" />
 
         </div>
@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { array, object, string } from 'yup'
 import type { IServiceAccount, IServiceAccountCreate } from '~/models/serviceAccount';
-const modal = useModal()
+const emit = defineEmits(['close'])
 const toast = useToast()
 const props = defineProps<{ serviceAccount: IServiceAccount }>()
 
@@ -54,7 +54,7 @@ const onSubmit = async () => {
   if (updateREQ.status.value == 'success') {
     refreshNuxtData('getServiceAccounts')
     toast.add({ title: 'add ing done succefuly' })
-    modal.close()
+    emit('close')
   }
 }
 </script>

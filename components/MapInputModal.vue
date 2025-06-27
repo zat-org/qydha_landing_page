@@ -35,7 +35,7 @@
 </template>
 
 <script lang="ts" setup>
-const modal = useModal();
+const modal = useOverlay();
 const map = ref();
 const mapContiner = ref();
 const props = defineProps<{ lat?: number; log?: number }>();

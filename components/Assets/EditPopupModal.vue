@@ -1,90 +1,55 @@
 <template>
-  <UModal :ui="{ width: 'w-[800px] sm:max-w-[800px] ' }">
-    <UCard :ui="{ base: 'flex flex-col', body: { base: 'grow ' } }">
-      <UTabs :items="tabItems" @change="onChangeindex">
-        <template #data>
-          <UForm
-            :state="state"
-            :schema="schema"
-            ref="poupForm"
-            @submit="onSubmit"
-            class="flex flex-col gap-2"
-          >
-            <UFormGroup label="الظهور في قيدها" name=" show ">
-              <UToggle v-model="state.show"></UToggle>
-            </UFormGroup>
+  <UModal title="تعديل الاشعار" description="تعديل الاشعار">
+    <template #body>
+      <UButtonGroup>
+        <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" @click="onChangeindex(item.id)" :color="tabindex == item.id ? 'primary' : 'neutral'" />
+      </UButtonGroup>
+        <template v-if="tabindex == 0">
+          <UForm :state="state" :schema="schema" ref="poupForm" @submit="onSubmit" class="flex flex-col gap-2">
+            <UFormField label="الظهور في قيدها" name=" show ">
+              <USwitch v-model="state.show" color="primary"></USwitch>
+            </UFormField>
 
-            <UFormGroup label="النوع" name="actionType">
-              <USelect
-                v-model="state.actionType"
-                :options="notificationActionsArray"
-              />
-            </UFormGroup>
+            <UFormField label="النوع" name="actionType">
+              <USelect v-model="state.actionType" :items="notificationActionsArray as any" />
+            </UFormField>
 
-            <UFormGroup
-              label="التارجيت"
-              name="actionPath"
-              v-if="
-                state.actionType != AssetPopUpActionType.PopUpWithNoAction &&
-                state.actionType
-              "
-            >
-              <UInput
-                v-model="state.actionPath"
-                v-if="state.actionType == AssetPopUpActionType.PopUpWithGoToURL"
-              />
-              <USelect
-                v-model="state.actionPath"
-                :options="
-                  state.actionType == AssetPopUpActionType.PopUpWithGoToScreen
-                    ? screenOptions
-                    : tabOptions
-                "
-                v-if="
+            <UFormField label="التارجيت" name="actionPath" v-if="
+              state.actionType != AssetPopUpActionType.PopUpWithNoAction &&
+              state.actionType
+            ">
+              <UInput v-model="state.actionPath" v-if="state.actionType == AssetPopUpActionType.PopUpWithGoToURL" />
+              <USelect class="w-full" v-model="state.actionPath" :items="state.actionType == AssetPopUpActionType.PopUpWithGoToScreen
+                  ? screenOptions
+                  : tabOptions
+                " v-if="
                   state.actionType ==
-                    AssetPopUpActionType.PopUpWithGoToScreen ||
+                  AssetPopUpActionType.PopUpWithGoToScreen ||
                   state.actionType == AssetPopUpActionType.PopUpWithGoToTab
-                "
-              />
-            </UFormGroup>
+                " />
+            </UFormField>
           </UForm>
         </template>
-        <template #image>
-          <UForm
-            :state="imageState"
-            :schema="imageSchema"
-            ref="imageForm"
-            @submit="onSubmitImage"
-          >
+        <template v-if="tabindex == 1">
+          <UForm :state="imageState" :schema="imageSchema" ref="imageForm" @submit="onSubmitImage">
             <div class="flex justify-between items-center">
-              <UFormGroup label="الصورة" name="image">
-                <UInput
-                  type="file"
-                  @change="onChange"
-                  accept=".jpg , .png , .jpeg "
-                  v-model="imageState.image"
-                >
+              <UFormField label="الصورة" name="image">
+                <UInput type="file" @change="onChange($event)" accept=".jpg , .png , .jpeg " v-model="imageState.image">
                 </UInput>
-              </UFormGroup>
+              </UFormField>
 
-              <img
-                v-if="imageUrl"
-                :src="imageUrl"
-                class="w-[200px] h-[200px]"
-                alt="selected image for  new popup"
-              />
+              <img v-if="imageUrl" :src="imageUrl" class="w-[200px] h-[200px]" alt="selected image for  new popup" />
             </div>
           </UForm>
         </template>
-      </UTabs>
+    </template>
 
-      <template #footer>
-        <div class="flex justify-between">
-          <UButton label="عودة" color="red" @click="modal.close()" />
-          <UButton label=" حفظ" @click="onSubmitFoms" />
-        </div>
-      </template>
-    </UCard>
+    <template #footer>
+      <div class="flex justify-between">
+        <UButton label="اغلاق" color="error" @click="emit('close')" />
+        <UButton label=" حفظ" color="primary" @click="onSubmitFoms" />
+      </div>
+    </template>
   </UModal>
 </template>
 
@@ -99,12 +64,12 @@ const onChangeindex = (index: number) => {
   tabindex.value = index;
 };
 const tabItems = [
-  { label: "البيانات", slot: "data" },
-  { label: "الصورة", slot: "image" },
+  { id: 0, label: "البيانات", slot: "data" },
+  { id: 1, label: "الصورة", slot: "image" },
 ];
 const poupForm = ref<HTMLFormElement>();
 const toast = useToast();
-const modal = useModal();
+const emit = defineEmits(['close'])
 
 const updatePopUpREQ = await useAssets().updatePopupData();
 const getPopUp = await useAssets().getPopup();
@@ -133,16 +98,19 @@ const imageSchema = object({
 const imageState = reactive({
   image: "",
 });
-const onChange = (files: FileList) => {
-  const _file = files.item(0);
-  imageUrl.value = "";
-  if (_file) {
-    file.value = _file;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imageUrl.value = e.target?.result as string;
-    };
-    reader.readAsDataURL(_file);
+const onChange = (files: Event) => {
+  const _files = (files.target as HTMLInputElement).files;
+  if (_files) {
+    const _file = _files.item(0);
+    imageUrl.value = "";
+    if (_file) {
+      file.value = _file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        imageUrl.value = e.target?.result as string;
+      };
+      reader.readAsDataURL(_file);
+    }
   }
 };
 const updateImageREQ = await useAssets().updatePopUpImage();
@@ -222,7 +190,7 @@ const onSubmit = async () => {
   await updatePopUpREQ.fetchREQ(state);
   if (updatePopUpREQ.status.value == "success") {
     toast.add({ title: "update done" });
-    modal.close();
+    emit('close')
   } else if (updatePopUpREQ.status.value == "error") {
     toast.add({ title: "update failed" });
   }

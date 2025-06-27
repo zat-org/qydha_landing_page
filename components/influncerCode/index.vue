@@ -1,31 +1,17 @@
 <template>
 
-  <div class="h-full flex flex-col">
-    <div class="flex-1 overflow-auto">
-      <UTable :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }" :rows="codes" :columns="cols">
-        <template #status-data="{ row }">
-          <UBadge variant="outline" :color="new Date(row.expireAt) > new Date() ? 'green' : 'red'"
-            :label="new Date(row.expireAt) > new Date() ? 'فعال' : 'منتهي'" />
+
+      <UTable :data="codes" :columns="cols">
+        <template #status-cell="{ row }">
+          <UBadge variant="outline" :color="new Date(row.original.expireAt) > new Date() ? 'success' : 'error'"
+            :label="new Date(row.original.expireAt) > new Date() ? 'فعال' : 'منتهي'" />
         </template>
       </UTable>
-    </div>
-    <UPagination class="mt-auto mx-auto p-4" v-model="page" :page-count="10" :total="total" />
-  </div>
+    <UPagination class="mt-auto mx-auto p-4 rtl" v-model="page" :page-count="10" :total="total"  />
 
 </template>
 
 <script lang="ts" setup async>
-import AddCodeModal from "./addCodeModal.vue";
-import AddCatModal from "./Cat/addCatModal.vue";
-import AddUserCodeModal from "../PromoCode/AddModal.vue";
-import CreateModal from "../CardCode/CreateModal.vue";
-import type { _height } from "#tailwind-config/theme";
-
-
-
-
-
-
 
 const getcodesREQ = await useInfluncerCode().getinfluncerCodes();
 await getcodesREQ.fetchREQ();
@@ -39,16 +25,16 @@ watch(page, async (newValue) => {
 });
 
 const cols = [
-  { key: "code", label: "الكود" },
-  { key: "numberOfDays", label: "عدد الأيام" },
-  { key: "usedCount", label: "عدد مرات الاستخدام" },
-  { key: "status", label: "الحالة" },
-  { key: "categoryName", label: "الفئة" },
+  { accessorKey: "code", header: "الكود" },
+  { accessorKey: "numberOfDays", header: "عدد الأيام" },
+  { accessorKey: "usedCount", header: "عدد مرات الاستخدام" },
+  { accessorKey: "status", header: "الحالة" },
+  { accessorKey: "categoryName", header: "الفئة" },
 ];
 </script>
 
 <style>
-.rtl {
+.rtl{
   direction: rtl;
 }
 </style>

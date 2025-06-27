@@ -8,7 +8,7 @@
       </p>
     </template>
 
-    <UTable :rows="teams" :columns="columns" :ui="{ td: { padding: ' py-1 px-2' }, th: { padding: ' py-1 px-2' } }">
+    <UTable :data="teams"  :ui="{ td: { padding: ' py-1 px-2' }, th: { padding: ' py-1 px-2' } }">
       <template #players-data="{ row }">
         <div class="flex  justify-start items-start gap-2 ">
           <UBadge v-for="player of row.players" size="lg" color="gray">
@@ -50,11 +50,11 @@ import UpdateModal from './UpdateModal.vue';
 import AddPlayerModal from './AddPlayerModal.vue';
 
 const route = useRoute()
-const modal = useModal()
+const overlay = useOverlay()
 const tour_id = route.params.id.toString()
 
 const openAddModal = () => {
-  modal.open(AddModal)
+  overlay.create(AddModal).open()
 }
 
 const getTourREQ = await useTournament().getTourById()
@@ -93,13 +93,13 @@ const deleteTeam = async (row: ITeam) => {
 }
 
 const openUpdateModal = (row: ITeam) => {
-  modal.open(UpdateModal, { team: row })
+  overlay.create(UpdateModal, { props: { team: row } }).open()
 }
 
 
 
 const openAddPlayerModal = (team_id: number) => {
-  modal.open(AddPlayerModal, { team_id: team_id.toString() })
+  overlay.create(AddPlayerModal, { props: { team_id: team_id.toString() } }).open()
 }
 
 

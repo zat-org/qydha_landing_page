@@ -2,15 +2,15 @@
   <UModal prevent-close>
     <UCard :ui="{ base: 'px-5 py-2' }">
       <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit" class=" flex flex-col gap-5 ">
-        <UFormGroup label="النموذج" name="templateName">
+        <UFormField label="النموذج" name="templateName">
           <USelectMenu
             v-model="state.templateName"
             :options="templates"
           ></USelectMenu>
-        </UFormGroup>
+        </UFormField>
 <div class="flex gap-2 justify-between items-center" >
   
-  <UFormGroup label="رقم الهاتف" name="phonesNumbers">
+  <UFormField label="رقم الهاتف" name="phonesNumbers">
     <vue-tel-input
       mode="auto"
       :autoFormat="true"
@@ -28,7 +28,7 @@
       @keydown.enter.prevent="AddphoneNumber"
       v-model="phoneinput"
     ></vue-tel-input>
-  </UFormGroup>
+  </UFormField>
   <UButton type="button" label="add phone" @click="AddphoneNumber" class="h-full" />
 </div>
 
@@ -54,17 +54,17 @@
             </UBadge>
           </div>
         </div>
-        <UFormGroup label="الرقم المرسل " name="senderPhone">
+        <UFormField label="الرقم المرسل " name="senderPhone">
           <USelect
             :options="phoneOptions"
             v-model="state.senderPhone"
           ></USelect>
-        </UFormGroup>
+        </UFormField>
       </UForm>
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton label="اضافة" @click="AddForm?.submit()" />
-          <UButton label="اغلاق" color="red" @click="modal.close()" />
+          <UButton label="اغلاق" color="red" @click="emit('close')" />
         </div>
       </template>
     </UCard>
@@ -79,7 +79,7 @@ import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
 const AddForm = ref<any>();
 const phoneOptions = senderPhone;
-const modal = useModal();
+const emit = defineEmits(['close'])
 const toast =useToast()
 const phoneinput = ref();
 const lastCode = ref();
@@ -127,7 +127,7 @@ const onSubmit=async ()=>{
  await AddREQ.fetchREQ(state)
  if (AddREQ.status.value=="success" ){
    toast.add({title:"message send successfuly "})
-   modal.close()
+   emit('close')
  }
  if (AddREQ.status.value=="error" ){
    toast.add({title:"message send successfuly "})

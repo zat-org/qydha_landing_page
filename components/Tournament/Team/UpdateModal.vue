@@ -12,7 +12,7 @@
     <template #footer>
       <div class="flex justify-between items-center ">
         <UButton label="save"  @click="submitForm" />
-        <UButton label="close" color="red" @click="modal.close()" />
+        <UButton label="close" color="error" @click="emit('close')" />
 
       </div>
       </template>
@@ -24,7 +24,7 @@
 import { string ,object } from 'yup';
 import UpdateName from './UpdateName.vue'
 import type { ITeam } from '~/models/tournamentTeam';
-const modal =useModal()
+const emit = defineEmits(['close'])
 const updateNameComponent =ref()
 const tabIndex=ref(0)
 const indexChange= (index:number)=>{

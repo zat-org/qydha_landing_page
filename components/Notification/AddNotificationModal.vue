@@ -1,24 +1,24 @@
 <template>
-  <UModal prevent-close>
-    <UCard>
-
-      <UTabs :items="tabItems" @change="onChange">
-        <template #notification>
+  <UModal prevent-close title="اضافة اشعار" description="اضافة اشعار">
+    <template #body>
+      <UButtonGroup>
+        <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" @click="index = item.id" :color="index == item.id ? 'primary' : 'neutral'" />
+      </UButtonGroup>
+      <template v-if="index == 0">
           <NotificationForm ref="notForm" />
         </template>
 
-        <template #popup>
+        <template v-if="index == 1">
           <NotificationPopupForm ref="popForm" />
         </template>
-      </UTabs>
-      <template #footer>
-        <div class="flex justify-between items-center">
-          <UButton label="اغلاق" color="red" @click="modal.close()" />
-          <UButton label="اضافة" color="green" @click="onAdd" />
-        </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center">
+        <UButton label="اغلاق" color="error" @click="emit('close')" />
+        <UButton label="اضافة" color="primary" @click="onAdd" />
+      </div>
 
-      </template>
-    </UCard>
+    </template>
 
   </UModal>
 </template>
@@ -28,21 +28,19 @@
 const notForm = ref()
 const popForm = ref()
 const index = ref(0)
-const modal = useModal()
+const emit = defineEmits(['close'])
 
-const tabItems = [{ slot: 'notification', label: 'اشعار' }, { slot: 'popup', label: ' اشعار المنبثق' }]
+const tabItems = [{ id: 0, slot: 'notification', label: 'اشعار' }, { id: 1, slot: 'popup', label: ' اشعار المنبثق' }]
 
 const onAdd = () => {
-  if (index.value==0){
+  if (index.value == 0) {
     notForm.value?.AddNotificatoion()
-  }else if (index.value==1){
+  } else if (index.value == 1) {
     popForm.value.AddNotificatoion()
   }
 
 }
-const onChange = (_index: number) => {
-  index.value = _index
-}
+
 </script>
 
 <style></style>

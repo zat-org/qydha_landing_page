@@ -1,6 +1,6 @@
 <template>
 
-<UCard :ui="{base:'h-full flex flex-col',body:{base:'grow'}}">
+<UCard >
 
   <div class="grid grid-cols-2 grid-rows-2 h-full" style="grid-template-rows:150px 1fr;">
       <div class="  row-span-1 col-start-1 col-end-2 flex flex-col gap-3 ">
@@ -10,16 +10,9 @@
           الفئة
           :
         </p>
-          <USelectMenu :popper="{ placement: 'left-end' }" value-attribute="value" option-attribute="value"
+          <USelect :popper="{ placement: 'left-end' }" value-attribute="value" option-attribute="value"
             v-if="userStore.user?.user.roles.includes('SuperAdmin')||userStore.user?.user.roles.includes('StaffAdmin')"
-            v-model="roles" multiple :options="rolesOption">
-            <template #label>
-              <span>
-                {{ roles.join(' , ')}}
-              </span>
-            </template>
-
-          </USelectMenu>
+            v-model="roles" multiple :items="rolesOption"/>
           <span v-else>
             {{ userData?.user.roles.join(' , ')}}
           </span>
@@ -31,18 +24,18 @@
         <UIcon v-else name="mdi:user" class="text-[150px] bg-gradient-to-r from-amber-300" />
       </div>
       <div class="row-span-2  col-start-1 col-end-3">
-        <UTabs :items="tabsItems">
+        <UTabs :items="tabsItems" dir="rtl" >
           <template #promo>
-            <UTable :rows="userData?.promoCodes" :columns="promocols" />
+            <UTable :data="userData?.promoCodes"  :columns="promocols" />
           </template>
           <template #purchase>
-            <UTable :rows="userData?.purchases" :columns="purchaseCols" />
+            <UTable :data="userData?.purchases"  :columns="purchaseCols" />
 
           </template>
           <template #influncer>
-            <UTable :rows="userData?.influencerCodes" :columns="influncerCols" >
-            <template #category-name="{row}">
-              <p>{{ row.category.name }}</p>
+            <UTable :data="userData?.influencerCodes"  :columns="influncerCols" >
+            <template #category-cell="{row}">
+              <p>{{ row.original.categoryName }}</p>
             </template>
             </UTable>
           </template>
@@ -52,7 +45,7 @@
 
   <template #footer>
       <div class="flex justify-between">
-        <UButton color="red" @click="router.back()"> back</UButton>
+        <UButton color="error" @click="router.back()"> عودة</UButton>
       </div>
     </template>
 
@@ -96,19 +89,19 @@ const tabsItems = [
   { slot: 'influncer', label: 'اكواد المؤثريين' },
 ]
 const promocols = [
-  { key: 'code', label: 'الاسم ' },
-  { key: 'numberOfDays', label: 'عدد الايام' },
-  { key: 'usedAt', label: 'استخدم في ' },
+  { accessorKey: 'code', header: 'الاسم ' },
+  { accessorKey: 'numberOfDays', header: 'عدد الايام' },
+  { accessorKey: 'usedAt', header: 'استخدم في ' },
 ]
 const purchaseCols = [
-  { key: 'type', label: 'النوع' },
-  { key: 'numberOfDays', label: 'عدد الايام' },
-  { key: 'purchaseDate', label: 'تاريخ الشراء' },
+  { accessorKey: 'type', header: 'النوع' },
+  { accessorKey: 'numberOfDays', header: 'عدد الايام' },
+  { accessorKey: 'purchaseDate', header: 'تاريخ الشراء' },
 ]
 const influncerCols = [
-  { key: 'influencerCodeName', label: 'الكود' },
-  { key: 'numberOfDays', label: 'عدد الايام' },
-  { key: 'category', label: ' النوع' },
+  { accessorKey: 'influencerCodeName', header: 'الكود' },
+  { accessorKey: 'numberOfDays', header: 'عدد الايام' },
+  { accessorKey: 'category', header: ' النوع' },
 
 ]
 

@@ -7,7 +7,7 @@
         المديرين
       </p>
     </template>
-    <UTable :rows="moderators" :columns="cols">
+    <UTable :data="moderators" >
       <template #action-data="{row}">
         <UButtonGroup>
           <UButton icon="material-symbols:settings" color="yellow" @click="openUpdateModal(row)" />
@@ -32,7 +32,7 @@ import type { IModerator, IModeratorCreate } from '~/models/tournamentModeratorr
 import AddModal from './AddModal.vue';
 import EditModal from './EditModal.vue';
 const route = useRoute()
-const modal = useModal()
+const overlay = useOverlay()
 const tour_id = route.params.id.toString()
 const tourREQ = await useTournament().getTourById()
 await tourREQ.fetchREQ(+tour_id)
@@ -57,11 +57,11 @@ const cols = [
 
 
 const AddModerator = () => {
-  modal.open(AddModal)
+  overlay.create(AddModal).open()
 }
 
 const openUpdateModal = (row:IModerator) => {
-  modal.open(EditModal,{moderator:row})
+  overlay.create(EditModal,{props:{moderator:row}}).open()
 }
 const deletModeratorREQ = await useTournamentModerator().deleteModerator()
 const onDeleteModerator = async (row: IModerator) => {

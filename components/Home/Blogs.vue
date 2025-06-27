@@ -10,7 +10,7 @@
                     data-aos="fade-down" 
                     data-aos-duration="400"
                     data-aos-once="true">
-                    <span class="bg-gradient-to-r from-amber-600 to-amber-700 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
+                    <span class="bg-gradient-to-r from-gray-900 to-gray-700 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
                         دليل ألعاب قيدها
                     </span>
                     <UBadge color="amber" class="ms-2 text-sm">قريبا</UBadge>
@@ -63,17 +63,5 @@
     #blogs {
         border-radius: 1rem;
     }
-}
-
-/* Light mode specific styles */
-:root {
-    --card-bg: linear-gradient(to bottom right, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    --card-border: rgba(229, 231, 235, 0.5);
-}
-
-/* Dark mode specific styles */
-.dark {
-    --card-bg: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    --card-border: rgba(255, 255, 255, 0.1);
 }
 </style>

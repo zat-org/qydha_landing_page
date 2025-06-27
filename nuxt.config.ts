@@ -1,3 +1,5 @@
+import { defineNuxtConfig } from "nuxt/config";
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 const Title = "قيدها اكثر من مجرد حاسبة";
 const Description = `مكنك الآن عبر تطبيق "قيدها" إدارة جميع عمليات حساب نقاط البلوت وإدارة الجولات بشكل تلقائي تمامًا في
@@ -10,13 +12,20 @@ const LogoURL =
   "https://storage.googleapis.com/qydha_bucket/qydha_assets/qydha.com-assets/qydha-logo.svg";
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
-  // ssr: false,
+  ssr: false,
 
-  modules: ["@nuxt/ui", "@pinia/nuxt", 'pinia-plugin-persistedstate/nuxt', "nuxt-aos",],
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "nuxt-aos",
+  ],
+
+
 
   css: [
-    '@/assets/css/variables.css',
-    "~/assets/css/main.css"],
+    "~/assets/css/main.css"
+  ],
 
   app: {
     head: {
@@ -47,11 +56,6 @@ export default defineNuxtConfig({
     },
   },
 
-  colorMode: {
-    classSuffix: "",
-    preference: "light"
-  },
-
   compatibilityDate: "2024-08-20",
 
   runtimeConfig: {
@@ -68,8 +72,5 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-
-
-
 
 });

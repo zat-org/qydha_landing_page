@@ -1,20 +1,18 @@
 <template>
-<div class="h-full flex flex-col justify-between">
 
-  <UTable  :rows="rows" :columns="cols" :ui="{td:{padding:'py-1'}}">
-    <template #user-data="{row}"> 
-      <span>{{row.user.username}}</span>
+  <UTable 
+   :data="rows" 
+   :columns="cols"
+   :loading="getREQ.status.value === 'pending'"
+   >
+    <template #user-cell="{row}"> 
+      <span>{{row.original.user.username}}</span>
     </template>
   </UTable> 
   
-  <UPagination class="mx-auto   " v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!" />
-  <!-- <template #footer>
-    <div class="flex justify-end"> 
-      <UButton label="اضافة بروموكود" @click="openModal" />
-    </div>
-  </template> -->
+  <UPagination class="mx-auto rtl" v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!"  />
+
   
-</div>
 </template>
 
 <script lang="ts" setup>
@@ -24,20 +22,20 @@ import AddModal from './AddModal.vue';
 const promoCodeApi = usePromoCode()
 const getREQ = await promoCodeApi.getPromoCodes()
 await getREQ.fetchREQ()
-const modal = useModal()
+const overlay = useOverlay()
 const rows = computed(() => {
   return getREQ.data.value?.data.items
 })
 const cols = [
-  {label:'الكود',key:'code'},
-  {label:'عدد الايام',key:'numberOfDays'},
-  {label:'المستخدم',key:'user'},
+  {accessorKey:'code',header:'الكود'},
+  {accessorKey:'numberOfDays',header:'عدد الايام'},
+  {accessorKey:'user',header:'المستخدم'},
 
 
 ]
 
 const openModal = ()=>{
-  modal.open(AddModal)
+  overlay.create(AddModal).open()
 }
 
 const page = ref(getREQ.data.value?.data.currentPage!)
@@ -48,4 +46,8 @@ watch(page,async(newValue,oldValue)=>{
 
 </script>
 
-<style></style>
+<style>
+.rtl{
+  direction: rtl;
+}
+</style>
