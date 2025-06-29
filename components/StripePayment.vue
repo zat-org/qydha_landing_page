@@ -39,6 +39,18 @@
         </div>
       </div>
 
+      <!-- Fallback Payment Request (if Express Checkout doesn't show wallets) -->
+      <ClientOnly>
+        <PaymentRequestFallback
+          v-if="!showDigitalWallets && props.enableApplePay"
+          :amount="props.amount"
+          :currency="props.currency"
+          :metadata="props.metadata"
+          @payment-success="(paymentIntent) => emit('success', paymentIntent)"
+          @payment-error="(error) => emit('error', error)"
+        />
+      </ClientOnly>
+
       <!-- Card Element -->
       <div class="mb-6">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -105,7 +117,13 @@
           <p>المتصفح: {{ browserInfo.browser }}</p>
           <p>الجهاز: {{ isAppleDevice ? 'Apple Device' : 'Other Device' }}</p>
           <p>HTTPS: {{ isHTTPS ? 'Yes ✅' : 'No ❌' }}</p>
-          <p v-if="!showDigitalWallets">Apple Pay/Google Pay: غير متاح في هذا المتصفح</p>
+          <p>Express Checkout: جاري التحميل أو غير متاح</p>
+          <p class="mt-2 text-xs">
+            <strong>متطلبات Apple Pay:</strong><br/>
+            • HTTPS ({{ isHTTPS ? '✅' : '❌' }})<br/>
+            • Safari على Mac/iOS ({{ browserInfo.browser === 'safari' && isAppleDevice ? '✅' : '❌' }})<br/>
+            • بطاقة مضافة لـ Apple Wallet
+          </p>
         </div>
       </div>
 
@@ -321,23 +339,55 @@ const initializeExpressCheckout = async () => {
     }
 
     paymentIntentClientSecret.value = response.client_secret;
-    console.log('✅ Payment intent created for Express Checkout');
+    console.log('✅ Payment intent created for Express Checkout:', response.client_secret.substring(0, 20) + '...');
 
     // Log browser info for debugging
     console.log('🔍 Browser detection:', browserInfo.value);
+    console.log('🔍 Environment info:', {
+      isHTTPS: typeof window !== 'undefined' && window.location.protocol === 'https:',
+      hostname: typeof window !== 'undefined' ? window.location.hostname : 'unknown',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown'
+    });
     
+    // Wait for DOM element to be ready
     await nextTick();
     
+    // Wait a bit more to ensure DOM is fully rendered
+    let retries = 0;
+    while (!expressCheckoutElement.value && retries < 5) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      retries++;
+      console.log(`🔍 Waiting for expressCheckoutElement... attempt ${retries}`);
+    }
+    
     if (expressCheckoutElement.value) {
-      // Create Express Checkout Element with payment intent client secret
+      console.log('🔧 Creating Express Checkout Element...');
+      
+      // Create Express Checkout Element with minimal configuration
+      // This ensures maximum compatibility and availability detection
       stripeExpressCheckoutElement = createElement('expressCheckout', {
         clientSecret: paymentIntentClientSecret.value,
         theme: colorMode.value === 'dark' ? 'dark' : 'light',
         buttonHeight: 48,
+        // Force show available payment methods
+        layout: {
+          overflow: 'never',
+          maxColumns: 1,
+          maxRows: 1,
+        },
+        wallets: {
+          applePay: 'auto',
+          googlePay: 'auto',
+        },
+        paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
       });
+      
+      console.log('🔧 Express Checkout Element created, mounting...');
       
       // Mount the element
       stripeExpressCheckoutElement.mount(expressCheckoutElement.value);
+      
+      console.log('🔧 Express Checkout Element mounted, setting up event handlers...');
       
       // Set up event handlers for Express Checkout
       stripeExpressCheckoutElement.on('confirm', async (event: any) => {
@@ -348,53 +398,40 @@ const initializeExpressCheckout = async () => {
       // Check if the element is ready and show it
       stripeExpressCheckoutElement.on('ready', (event: any) => {
         console.log('✅ Express Checkout Element is ready', event);
+        console.log('🔍 Ready event details:', JSON.stringify(event, null, 2));
+        
+        // Always show the container - Stripe will handle showing/hiding payment methods
         showDigitalWallets.value = true;
-        console.log('🍎 Express Checkout ready - payment methods auto-detected');
-        
-        // Log available payment methods for debugging
-        console.log('🔍 Checking available payment methods...');
-        console.log('🔍 Browser info:', {
-          userAgent: navigator.userAgent,
-          platform: navigator.platform,
-          vendor: navigator.vendor,
-          isHTTPS: typeof window !== 'undefined' && window.location.protocol === 'https:'
-        });
-        
-        // Test Apple Pay availability specifically
-        if (typeof window !== 'undefined' && 'ApplePaySession' in window && (window as any).ApplePaySession) {
-          const ApplePaySession = (window as any).ApplePaySession;
-          if (ApplePaySession.canMakePayments) {
-            console.log('🍎 Apple Pay is supported by browser');
-            if (ApplePaySession.canMakePaymentsWithActiveCard) {
-              ApplePaySession.canMakePaymentsWithActiveCard('merchant.example').then((canPay: boolean) => {
-                console.log('🍎 Apple Pay with active card:', canPay);
-              }).catch(() => {
-                console.log('🍎 Apple Pay check failed');
-              });
-            }
-          }
-        } else {
-          console.log('🍎 Apple Pay not supported by browser');
-        }
-        
-        // Test Google Pay availability
-        if (typeof window !== 'undefined' && (window as any).google && (window as any).google.payments) {
-          console.log('🅶 Google Pay API is available');
-        } else {
-          console.log('🅶 Google Pay API not available');
-        }
+        console.log('🍎 Express Checkout container shown');
+      });
+      
+      // Handle loading state
+      stripeExpressCheckoutElement.on('loaderstart', () => {
+        console.log('🔄 Express Checkout loading started');
+      });
+      
+      stripeExpressCheckoutElement.on('loaderstop', () => {
+        console.log('✅ Express Checkout loading stopped');
+      });
+      
+      // Handle click events
+      stripeExpressCheckoutElement.on('click', (event: any) => {
+        console.log('🖱️ Express Checkout clicked', event);
       });
       
       // Handle errors
       stripeExpressCheckoutElement.on('error', (event: any) => {
         console.error('❌ Express Checkout Element error:', event.error);
         error.value = event.error.message;
+        showDigitalWallets.value = false; // Hide if there's an error
       });
       
-      console.log('✅ Express Checkout Element initialized');
+      console.log('✅ Express Checkout Element fully initialized');
+    } else {
+      console.error('❌ Express Checkout element container not found');
     }
   } catch (err) {
-    console.log('Express Checkout not available:', err);
+    console.error('❌ Express Checkout initialization error:', err);
     console.log('💡 Browser info on error:', browserInfo.value);
   }
 };

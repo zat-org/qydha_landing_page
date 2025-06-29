@@ -67,9 +67,13 @@ export const useStripe = () => {
       throw new Error('Stripe is not initialized');
     }
 
-    const elements = stripeInstance.value.elements({
-      clientSecret: options.clientSecret || undefined,
-    });
+    // For Express Checkout, we need to create elements with client secret
+    const elementsOptions: any = {};
+    if (type === 'expressCheckout' && options.clientSecret) {
+      elementsOptions.clientSecret = options.clientSecret;
+    }
+
+    const elements = stripeInstance.value.elements(elementsOptions);
     
     if (type === 'card') {
       // Get current color mode for styling
@@ -105,8 +109,8 @@ export const useStripe = () => {
     }
 
     if (type === 'expressCheckout') {
-      // Modern Express Checkout Element (replaces paymentRequestButton)
-      return elements.create('expressCheckout', {
+      // Modern Express Checkout Element configuration
+      const expressCheckoutOptions = {
         layout: {
           maxColumns: 1,
           maxRows: 1,
@@ -114,16 +118,23 @@ export const useStripe = () => {
         },
         buttonHeight: options.buttonHeight || 48,
         buttonTheme: {
-          applePay: options.theme || 'black',
-          googlePay: options.theme || 'black',
+          applePay: options.theme === 'dark' ? 'black' : 'black',
+          googlePay: options.theme === 'dark' ? 'black' : 'black',
         },
         paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
         wallets: {
           applePay: 'auto',
           googlePay: 'auto',
-        },
-        ...options
-      });
+        }
+      };
+
+      console.log('🔧 Creating Express Checkout with options:', expressCheckoutOptions);
+      const element = (elements as any).create('expressCheckout', expressCheckoutOptions);
+      
+      // Store the elements instance on the element for later use
+      (element as any).elements = elements;
+      
+      return element;
     }
 
     return elements.create('payment', options);

@@ -71,6 +71,7 @@
             <!-- Debug Info -->
             <ClientOnly>
               <StripeDebug />
+              <ExpressCheckoutDebug />
             </ClientOnly>
             
             <div v-if="selectedPlan">
