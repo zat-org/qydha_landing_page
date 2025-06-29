@@ -17,8 +17,9 @@
           <!-- Payment method info -->
           <div class="mb-2 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
             <Icon name="i-heroicons-information-circle" class="w-3 h-3" />
-            <span v-if="isAppleDevice">Apple Pay متاح في هذا المتصفح</span>
-            <span v-else>المحفظة الرقمية متاحة في هذا المتصفح</span>
+            <span v-if="isAppleDevice">المحفظة الرقمية متاحة على جهاز Apple</span>
+            <span v-else-if="browserInfo.browser === 'chrome'">Google Pay متاح (Chrome)</span>
+            <span v-else>المحفظة الرقمية متاحة ({{ browserInfo.browser }})</span>
           </div>
           
           <div 
@@ -166,12 +167,31 @@ const formatAmount = (amount: number) => {
   return (amount / 100).toFixed(2);
 };
 
-// Detect if user is on Apple device/Safari
-const isAppleDevice = computed(() => {
-  if (typeof navigator === 'undefined') return false;
-  return /iPad|iPhone|iPod|Mac/.test(navigator.userAgent) || 
-         /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+// Detect browser and device info (let Stripe decide what's available)
+const browserInfo = computed(() => {
+  if (typeof navigator === 'undefined') return { device: 'unknown', browser: 'unknown' };
+  
+  const userAgent = navigator.userAgent;
+  const isAppleDevice = /iPad|iPhone|iPod|Mac/.test(userAgent);
+  const isSafari = /Safari/.test(userAgent) && !/Chrome/.test(userAgent);
+  const isChrome = /Chrome/.test(userAgent);
+  const isEdge = /Edge/.test(userAgent);
+  const isFirefox = /Firefox/.test(userAgent);
+  
+  let browser = 'unknown';
+  if (isSafari) browser = 'safari';
+  else if (isChrome) browser = 'chrome';
+  else if (isEdge) browser = 'edge';
+  else if (isFirefox) browser = 'firefox';
+  
+  return {
+    device: isAppleDevice ? 'apple' : 'other',
+    browser,
+    userAgent
+  };
 });
+
+const isAppleDevice = computed(() => browserInfo.value.device === 'apple');
 
 const handleCardPayment = async () => {
   if (!stripeCardElement) {
@@ -256,6 +276,9 @@ const initializePaymentRequest = async () => {
   if (!props.enableApplePay) return;
 
   try {
+    // Log browser info for debugging
+    console.log('🔍 Browser detection:', browserInfo.value);
+    
     paymentRequest = createPaymentRequest({
       country: props.country,
       currency: props.currency,
@@ -273,8 +296,15 @@ const initializePaymentRequest = async () => {
     if (canMakePayment) {
       showDigitalWallets.value = true;
       
-      // Log what payment methods are available
-      console.log('🔍 Available payment methods:', canMakePayment);
+      // Detailed logging of what Stripe detected
+      console.log('🔍 Stripe detected payment methods:', canMakePayment);
+      console.log('🔍 Apple Pay available:', canMakePayment.applePay || false);
+      console.log('🔍 Google Pay available:', canMakePayment.googlePay || false);
+      console.log('🔍 Browser info:', {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        vendor: navigator.vendor
+      });
       
       await nextTick();
       
@@ -291,9 +321,11 @@ const initializePaymentRequest = async () => {
       }
     } else {
       console.log('💡 No digital wallet payment methods available in this browser');
+      console.log('💡 Browser detection results:', browserInfo.value);
     }
   } catch (err) {
     console.log('Digital wallet not available:', err);
+    console.log('💡 Browser info on error:', browserInfo.value);
   }
 };
 
