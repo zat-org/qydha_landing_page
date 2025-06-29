@@ -59,6 +59,10 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-08-20",
 
   runtimeConfig: {
+    // Private keys (only available on server-side)
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    
     public: {
       qydhaapiBase: process.env.QydhaApiBase,
       qydhaToken: process.env.QydhaToken,
@@ -66,11 +70,32 @@ export default defineNuxtConfig({
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
       appId: process.env.appId,
+      // Public keys (available on both client and server)
+      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
     },
   },
 
   devtools: {
     enabled: true,
+  },
+
+  vite: {
+    server: {
+      hmr: {
+        port: 24678,
+      },
+      allowedHosts: [
+        'hip-lies-create.loca.lt',
+        'three-tips-move.loca.lt',
+        '.loca.lt' // Allow all loca.lt subdomains
+      ],
+    },
+  },
+
+  nitro: {
+    devServer: {
+      watch: [],
+    },
   },
 
 });
