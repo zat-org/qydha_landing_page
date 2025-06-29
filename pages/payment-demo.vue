@@ -6,6 +6,9 @@
         <div class="flex justify-between items-center mb-8">
           <h1 class="text-3xl font-bold dark:text-white">تجربة الدفع المطور</h1>
           <div class="flex items-center gap-4">
+            <UButton to="/stripe-test" variant="outline" size="sm">
+              🧪 Test Suite
+            </UButton>
             <ColorModeToggle />
             <UBadge color="success" variant="subtle">
               <Icon name="i-heroicons-shield-check" class="w-4 h-4 ml-1" />

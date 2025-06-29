@@ -67,7 +67,9 @@ export const useStripe = () => {
       throw new Error('Stripe is not initialized');
     }
 
-    const elements = stripeInstance.value.elements();
+    const elements = stripeInstance.value.elements({
+      clientSecret: options.clientSecret || undefined,
+    });
     
     if (type === 'card') {
       // Get current color mode for styling
@@ -115,6 +117,11 @@ export const useStripe = () => {
           applePay: options.theme || 'black',
           googlePay: options.theme || 'black',
         },
+        paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
+        wallets: {
+          applePay: 'auto',
+          googlePay: 'auto',
+        },
         ...options
       });
     }
@@ -122,14 +129,14 @@ export const useStripe = () => {
     return elements.create('payment', options);
   };
 
-  const confirmPaymentWithExpressCheckout = async (clientSecret: string, expressCheckoutElement: any) => {
+  const confirmPaymentWithExpressCheckout = async (clientSecret: string, elements: any) => {
     if (!stripeInstance.value) {
       throw new Error('Stripe is not initialized');
     }
 
     try {
       const { error, paymentIntent } = await stripeInstance.value.confirmPayment({
-        elements: expressCheckoutElement.elements,
+        elements,
         clientSecret,
         confirmParams: {
           return_url: window.location.href,
