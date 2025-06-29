@@ -11,6 +11,14 @@
         </div>
       </div>
 
+      <!-- Express Checkout Container (Always available for mounting) -->
+      <div 
+        ref="expressCheckoutElement" 
+        class="mb-4 min-h-[48px]"
+        :style="{ display: showDigitalWallets ? 'block' : 'none' }"
+        id="express-checkout-container"
+      ></div>
+
       <!-- Digital Wallets (Apple Pay / Google Pay) -->
       <div v-if="!isLoading && showDigitalWallets" class="mb-6">
         <div class="text-center">
@@ -22,11 +30,6 @@
             <span v-else-if="browserInfo.browser === 'chrome'">Google Pay متاح (Chrome)</span>
             <span v-else>المحفظة الرقمية متاحة ({{ browserInfo.browser }})</span>
           </div>
-          
-          <div 
-            ref="expressCheckoutElement" 
-            class="mb-4"
-          ></div>
           
           <div class="relative">
             <div class="absolute inset-0 flex items-center">
@@ -354,13 +357,18 @@ const initializeExpressCheckout = async () => {
     
     // Wait a bit more to ensure DOM is fully rendered
     let retries = 0;
-    while (!expressCheckoutElement.value && retries < 5) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+    while (!expressCheckoutElement.value && retries < 10) {
+      await new Promise(resolve => setTimeout(resolve, 200));
       retries++;
       console.log(`🔍 Waiting for expressCheckoutElement... attempt ${retries}`);
     }
     
     if (expressCheckoutElement.value) {
+      console.log('✅ Express Checkout element found:', {
+        element: !!expressCheckoutElement.value,
+        id: expressCheckoutElement.value.id,
+        className: expressCheckoutElement.value.className
+      });
       console.log('🔧 Creating Express Checkout Element...');
       
       // Create Express Checkout Element with minimal configuration
@@ -400,8 +408,14 @@ const initializeExpressCheckout = async () => {
         console.log('✅ Express Checkout Element is ready', event);
         console.log('🔍 Ready event details:', JSON.stringify(event, null, 2));
         
-        // Always show the container - Stripe will handle showing/hiding payment methods
+        // Show the container and the payment section
         showDigitalWallets.value = true;
+        
+        // Also show the Express Checkout element itself
+        if (expressCheckoutElement.value) {
+          expressCheckoutElement.value.style.display = 'block';
+        }
+        
         console.log('🍎 Express Checkout container shown');
       });
       
@@ -428,7 +442,52 @@ const initializeExpressCheckout = async () => {
       
       console.log('✅ Express Checkout Element fully initialized');
     } else {
-      console.error('❌ Express Checkout element container not found');
+      console.error('❌ Express Checkout element container not found after', retries, 'attempts');
+      console.error('❌ Available elements:', {
+        cardElement: !!cardElement.value,
+        expressCheckoutElement: !!expressCheckoutElement.value,
+        availableRefs: Object.keys({ cardElement, expressCheckoutElement })
+      });
+      
+      // Try to find the element by ID as fallback
+      const fallbackElement = document.getElementById('express-checkout-container');
+      if (fallbackElement) {
+        console.log('🔧 Found element by ID fallback, retrying...');
+        expressCheckoutElement.value = fallbackElement as HTMLElement;
+        
+        // Retry initialization with fallback element
+        try {
+          stripeExpressCheckoutElement = createElement('expressCheckout', {
+            clientSecret: paymentIntentClientSecret.value,
+            theme: colorMode.value === 'dark' ? 'dark' : 'light',
+            buttonHeight: 48,
+            layout: { overflow: 'never', maxColumns: 1, maxRows: 1 },
+            wallets: { applePay: 'auto', googlePay: 'auto' },
+            paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
+          });
+          
+          stripeExpressCheckoutElement.mount(expressCheckoutElement.value);
+          console.log('✅ Express Checkout mounted with fallback element');
+          
+          // Set up event handlers
+          stripeExpressCheckoutElement.on('ready', (event: any) => {
+            console.log('✅ Express Checkout ready (fallback)');
+            showDigitalWallets.value = true;
+            if (expressCheckoutElement.value) {
+              expressCheckoutElement.value.style.display = 'block';
+            }
+          });
+          
+          stripeExpressCheckoutElement.on('confirm', async (event: any) => {
+            await handleExpressCheckoutConfirm(event);
+          });
+          
+        } catch (fallbackError) {
+          console.error('❌ Fallback initialization also failed:', fallbackError);
+        }
+      } else {
+        console.error('❌ Could not find element even with ID fallback');
+      }
     }
   } catch (err) {
     console.error('❌ Express Checkout initialization error:', err);
