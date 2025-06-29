@@ -11,9 +11,16 @@
         </div>
       </div>
 
-      <!-- Apple Pay / Digital Wallets -->
+      <!-- Digital Wallets (Apple Pay / Google Pay) -->
       <div v-if="!isLoading && showDigitalWallets" class="mb-6">
         <div class="text-center">
+          <!-- Payment method info -->
+          <div class="mb-2 text-xs text-gray-500 dark:text-gray-400 flex items-center justify-center gap-1">
+            <Icon name="i-heroicons-information-circle" class="w-3 h-3" />
+            <span v-if="isAppleDevice">Apple Pay متاح في هذا المتصفح</span>
+            <span v-else>المحفظة الرقمية متاحة في هذا المتصفح</span>
+          </div>
+          
           <div 
             ref="paymentRequestElement" 
             class="mb-4"
@@ -159,6 +166,13 @@ const formatAmount = (amount: number) => {
   return (amount / 100).toFixed(2);
 };
 
+// Detect if user is on Apple device/Safari
+const isAppleDevice = computed(() => {
+  if (typeof navigator === 'undefined') return false;
+  return /iPad|iPhone|iPod|Mac/.test(navigator.userAgent) || 
+         /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+});
+
 const handleCardPayment = async () => {
   if (!stripeCardElement) {
     error.value = 'معلومات البطاقة غير صحيحة';
@@ -253,18 +267,21 @@ const initializePaymentRequest = async () => {
       requestPayerEmail: true,
     });
 
-    // Check if Apple Pay is available
+    // Check if digital wallet payments are available
     const canMakePayment = await paymentRequest.canMakePayment();
     
     if (canMakePayment) {
       showDigitalWallets.value = true;
+      
+      // Log what payment methods are available
+      console.log('🔍 Available payment methods:', canMakePayment);
       
       await nextTick();
       
       if (paymentRequestElement.value) {
         paymentRequestButton = createElement('paymentRequestButton', {
           paymentRequest,
-          buttonType: 'default',
+          buttonType: 'buy', // Can be 'default', 'buy', 'donate', 'book'
           theme: colorMode.value === 'dark' ? 'dark' : 'light'
         });
         
@@ -272,9 +289,11 @@ const initializePaymentRequest = async () => {
         
         paymentRequest.on('paymentmethod', handleApplePayPayment);
       }
+    } else {
+      console.log('💡 No digital wallet payment methods available in this browser');
     }
   } catch (err) {
-    console.log('Apple Pay not available:', err);
+    console.log('Digital wallet not available:', err);
   }
 };
 
