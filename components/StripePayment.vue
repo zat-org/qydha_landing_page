@@ -23,7 +23,7 @@
           </div>
           
           <div 
-            ref="paymentRequestElement" 
+            ref="expressCheckoutElement" 
             class="mb-4"
           ></div>
           
@@ -124,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import type { StripeCardElement, PaymentRequest, PaymentRequestPaymentMethodEvent } from '@stripe/stripe-js';
+import type { StripeCardElement } from '@stripe/stripe-js';
 
 interface Props {
   amount: number;
@@ -146,15 +146,14 @@ const emit = defineEmits<{
   error: [error: string];
 }>();
 
-const { createPaymentIntent, confirmPayment, createElement, createPaymentRequest, waitForStripe } = useStripe();
+const { createPaymentIntent, confirmPayment, confirmPaymentWithExpressCheckout, createElement, waitForStripe } = useStripe();
 const colorMode = useColorMode();
 
 const cardElement = ref<HTMLElement>();
-const paymentRequestElement = ref<HTMLElement>();
+const expressCheckoutElement = ref<HTMLElement>();
 let stripeCardElement: StripeCardElement | null = null;
 console.log(stripeCardElement);
-let paymentRequestButton: any = null;
-let paymentRequest: PaymentRequest | null = null;
+let stripeExpressCheckoutElement: any = null;
 
 const processing = ref(false);
 const cardError = ref('');
@@ -237,94 +236,82 @@ const handleCardPayment = async () => {
   }
 };
 
-const handleApplePayPayment = async (ev: PaymentRequestPaymentMethodEvent) => {
+const handleExpressCheckoutPayment = async (event: any) => {
   processing.value = true;
   error.value = '';
   success.value = false;
 
   try {
     // Create payment intent
-    console.log('🍎 Creating Apple Pay payment intent...');
+    console.log('💳 Creating Express Checkout payment intent...');
     const response = await createPaymentIntent(
       props.amount,
       props.currency,
-      { ...props.metadata, payment_method: 'apple_pay' }
+      { ...props.metadata, payment_method: 'express_checkout' }
     );
 
-    console.log('🍎 Apple Pay payment intent response:', response);
+    console.log('💳 Express Checkout payment intent response:', response);
     
     if (!response || !response.client_secret) {
       throw new Error('Invalid payment intent response - missing client_secret');
     }
 
-    // Complete the Apple Pay payment
-    ev.complete('success');
+    // Confirm payment with Express Checkout
+    const paymentIntent = await confirmPaymentWithExpressCheckout(
+      response.client_secret,
+      stripeExpressCheckoutElement
+    );
 
+    console.log('💳 Express Checkout payment confirmed:', paymentIntent);
     success.value = true;
-    emit('success', { id: 'apple_pay_success', client_secret: response.client_secret });
+    emit('success', paymentIntent);
   } catch (err: any) {
-    console.error('🍎 Apple Pay error:', err);
+    console.error('💳 Express Checkout error:', err);
     error.value = err.message || 'حدث خطأ أثناء المعالجة';
     emit('error', error.value);
-    ev.complete('fail');
   } finally {
     processing.value = false;
   }
 };
 
-const initializePaymentRequest = async () => {
+const initializeExpressCheckout = async () => {
   if (!props.enableApplePay) return;
 
   try {
     // Log browser info for debugging
     console.log('🔍 Browser detection:', browserInfo.value);
     
-    paymentRequest = createPaymentRequest({
-      country: props.country,
-      currency: props.currency,
-      total: {
-        label: 'إجمالي الطلب',
-        amount: props.amount,
-      },
-      requestPayerName: true,
-      requestPayerEmail: true,
-    });
-
-    // Check if digital wallet payments are available
-    const canMakePayment = await paymentRequest.canMakePayment();
+    await nextTick();
     
-    if (canMakePayment) {
-      showDigitalWallets.value = true;
-      
-      // Detailed logging of what Stripe detected
-      console.log('🔍 Stripe detected payment methods:', canMakePayment);
-      console.log('🔍 Apple Pay available:', canMakePayment.applePay || false);
-      console.log('🔍 Google Pay available:', canMakePayment.googlePay || false);
-      console.log('🔍 Browser info:', {
-        userAgent: navigator.userAgent,
-        platform: navigator.platform,
-        vendor: navigator.vendor
+    if (expressCheckoutElement.value) {
+      // Create Express Checkout Element
+      stripeExpressCheckoutElement = createElement('expressCheckout', {
+        theme: colorMode.value === 'dark' ? 'dark' : 'light',
+        buttonHeight: 48,
       });
       
-      await nextTick();
+      // Mount the element
+      stripeExpressCheckoutElement.mount(expressCheckoutElement.value);
       
-      if (paymentRequestElement.value) {
-        paymentRequestButton = createElement('paymentRequestButton', {
-          paymentRequest,
-          buttonType: 'buy', // Can be 'default', 'buy', 'donate', 'book'
-          theme: colorMode.value === 'dark' ? 'dark' : 'light'
-        });
-        
-        paymentRequestButton.mount(paymentRequestElement.value);
-        
-        paymentRequest.on('paymentmethod', handleApplePayPayment);
-      }
-    } else {
-      console.log('💡 No digital wallet payment methods available in this browser');
-      console.log('💡 Browser detection results:', browserInfo.value);
+      // Set up event handlers
+      stripeExpressCheckoutElement.on('click', handleExpressCheckoutPayment);
+      
+      // Check if the element is ready and show it
+      stripeExpressCheckoutElement.on('ready', () => {
+        showDigitalWallets.value = true;
+        console.log('✅ Express Checkout Element is ready');
+      });
+      
+      // Handle errors
+      stripeExpressCheckoutElement.on('error', (event: any) => {
+        console.error('❌ Express Checkout Element error:', event.error);
+        error.value = event.error.message;
+      });
+      
+      console.log('✅ Express Checkout Element initialized');
     }
   } catch (err) {
-    console.log('Digital wallet not available:', err);
+    console.log('Express Checkout not available:', err);
     console.log('💡 Browser info on error:', browserInfo.value);
   }
 };
@@ -353,9 +340,9 @@ const initializeStripeElements = async () => {
       console.log(`🔍 Waiting for cardElement... attempt ${retries}`);
     }
     
-    // Initialize Apple Pay / Payment Request
-    await initializePaymentRequest();
-    console.log('✅ Payment request initialized');
+    // Initialize Express Checkout
+    await initializeExpressCheckout();
+    console.log('✅ Express Checkout initialized');
     
     // Initialize card element
     console.log('🔍 Checking cardElement.value:', !!cardElement.value);
@@ -400,14 +387,14 @@ watch(() => colorMode.value, async () => {
     });
   }
   
-  if (paymentRequestButton && paymentRequestElement.value && paymentRequest) {
-    paymentRequestButton.destroy();
-    paymentRequestButton = createElement('paymentRequestButton', {
-      paymentRequest,
-      buttonType: 'default',
-      theme: colorMode.value === 'dark' ? 'dark' : 'light'
+  if (stripeExpressCheckoutElement && expressCheckoutElement.value) {
+    stripeExpressCheckoutElement.destroy();
+    stripeExpressCheckoutElement = createElement('expressCheckout', {
+      theme: colorMode.value === 'dark' ? 'dark' : 'light',
+      buttonHeight: 48,
     });
-    paymentRequestButton.mount(paymentRequestElement.value);
+    stripeExpressCheckoutElement.mount(expressCheckoutElement.value);
+    stripeExpressCheckoutElement.on('click', handleExpressCheckoutPayment);
   }
 });
 
@@ -419,8 +406,8 @@ onUnmounted(() => {
   if (stripeCardElement) {
     stripeCardElement.destroy();
   }
-  if (paymentRequestButton) {
-    paymentRequestButton.destroy();
+  if (stripeExpressCheckoutElement) {
+    stripeExpressCheckoutElement.destroy();
   }
 });
 </script>

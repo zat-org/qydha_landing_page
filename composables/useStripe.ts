@@ -62,7 +62,7 @@ export const useStripe = () => {
     }
   };
 
-  const createElement = (type: 'card' | 'payment' | 'paymentRequestButton', options: any = {}) => {
+  const createElement = (type: 'card' | 'expressCheckout', options: any = {}) => {
     if (!stripeInstance.value) {
       throw new Error('Stripe is not initialized');
     }
@@ -102,43 +102,49 @@ export const useStripe = () => {
       });
     }
 
-    if (type === 'paymentRequestButton') {
-      return elements.create('paymentRequestButton', {
-        paymentRequest: options.paymentRequest,
-        style: {
-          paymentRequestButton: {
-            type: options.buttonType || 'default',
-            theme: options.theme || 'dark',
-            height: '48px',
-          },
+    if (type === 'expressCheckout') {
+      // Modern Express Checkout Element (replaces paymentRequestButton)
+      return elements.create('expressCheckout', {
+        layout: {
+          maxColumns: 1,
+          maxRows: 1,
+          overflow: 'never',
         },
+        buttonHeight: options.buttonHeight || 48,
+        buttonTheme: {
+          applePay: options.theme || 'black',
+          googlePay: options.theme || 'black',
+        },
+        ...options
       });
     }
 
     return elements.create('payment', options);
   };
 
-  const createPaymentRequest = (options: {
-    country: string;
-    currency: string;
-    total: {
-      label: string;
-      amount: number;
-    };
-    requestPayerName?: boolean;
-    requestPayerEmail?: boolean;
-  }) => {
+  const confirmPaymentWithExpressCheckout = async (clientSecret: string, expressCheckoutElement: any) => {
     if (!stripeInstance.value) {
       throw new Error('Stripe is not initialized');
     }
 
-    return stripeInstance.value.paymentRequest({
-      country: options.country,
-      currency: options.currency,
-      total: options.total,
-      requestPayerName: options.requestPayerName || false,
-      requestPayerEmail: options.requestPayerEmail || false,
-    });
+    try {
+      const { error, paymentIntent } = await stripeInstance.value.confirmPayment({
+        elements: expressCheckoutElement.elements,
+        clientSecret,
+        confirmParams: {
+          return_url: window.location.href,
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return paymentIntent;
+    } catch (error: any) {
+      throw new Error(error.message || 'Express checkout payment confirmation failed');
+    }
   };
 
   const waitForStripe = async (): Promise<Stripe> => {
@@ -166,8 +172,8 @@ export const useStripe = () => {
     isReady: readonly(isReady),
     createPaymentIntent,
     confirmPayment,
+    confirmPaymentWithExpressCheckout,
     createElement,
-    createPaymentRequest,
     waitForStripe,
   };
 }; 
