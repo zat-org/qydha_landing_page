@@ -42,8 +42,8 @@
         </div>
       </div>
 
-      <!-- Fallback Payment Request (if Express Checkout doesn't show wallets) -->
-      <ClientOnly>
+      <!-- Fallback Payment Request (temporarily disabled) -->
+      <!-- <ClientOnly>
         <PaymentRequestFallback
           v-if="!showDigitalWallets && props.enableApplePay"
           :amount="props.amount"
@@ -52,7 +52,7 @@
           @payment-success="(paymentIntent) => emit('success', paymentIntent)"
           @payment-error="(error) => emit('error', error)"
         />
-      </ClientOnly>
+      </ClientOnly> -->
 
       <!-- Card Element -->
       <div class="mb-6">
@@ -371,24 +371,12 @@ const initializeExpressCheckout = async () => {
       });
       console.log('🔧 Creating Express Checkout Element...');
       
-      // Create Express Checkout Element with minimal configuration
-      // This ensures maximum compatibility and availability detection
-      stripeExpressCheckoutElement = createElement('expressCheckout', {
-        clientSecret: paymentIntentClientSecret.value,
-        theme: colorMode.value === 'dark' ? 'dark' : 'light',
-        buttonHeight: 48,
-        // Force show available payment methods
-        layout: {
-          overflow: 'never',
-          maxColumns: 1,
-          maxRows: 1,
-        },
-        wallets: {
-          applePay: 'auto',
-          googlePay: 'auto',
-        },
-        paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
-      });
+              // Create Express Checkout Element with modern configuration
+        stripeExpressCheckoutElement = createElement('expressCheckout', {
+          clientSecret: paymentIntentClientSecret.value,
+          theme: colorMode.value === 'dark' ? 'dark' : 'light',
+          buttonHeight: 48,
+        });
       
       console.log('🔧 Express Checkout Element created, mounting...');
       
@@ -455,16 +443,13 @@ const initializeExpressCheckout = async () => {
         console.log('🔧 Found element by ID fallback, retrying...');
         expressCheckoutElement.value = fallbackElement as HTMLElement;
         
-        // Retry initialization with fallback element
-        try {
-          stripeExpressCheckoutElement = createElement('expressCheckout', {
-            clientSecret: paymentIntentClientSecret.value,
-            theme: colorMode.value === 'dark' ? 'dark' : 'light',
-            buttonHeight: 48,
-            layout: { overflow: 'never', maxColumns: 1, maxRows: 1 },
-            wallets: { applePay: 'auto', googlePay: 'auto' },
-            paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
-          });
+                 // Retry initialization with fallback element
+         try {
+           stripeExpressCheckoutElement = createElement('expressCheckout', {
+             clientSecret: paymentIntentClientSecret.value,
+             theme: colorMode.value === 'dark' ? 'dark' : 'light',
+             buttonHeight: 48,
+           });
           
           stripeExpressCheckoutElement.mount(expressCheckoutElement.value);
           console.log('✅ Express Checkout mounted with fallback element');
@@ -577,6 +562,13 @@ watch(() => colorMode.value, async () => {
     stripeExpressCheckoutElement.on('confirm', async (event: any) => {
       console.log('💳 Express Checkout confirm event triggered', event);
       await handleExpressCheckoutConfirm(event);
+    });
+    stripeExpressCheckoutElement.on('ready', (event: any) => {
+      console.log('✅ Express Checkout ready after theme change');
+      showDigitalWallets.value = true;
+      if (expressCheckoutElement.value) {
+        expressCheckoutElement.value.style.display = 'block';
+      }
     });
   }
 });

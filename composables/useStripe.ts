@@ -109,26 +109,27 @@ export const useStripe = () => {
     }
 
     if (type === 'expressCheckout') {
-      // Modern Express Checkout Element configuration
+      // Modern Express Checkout Element configuration with updated API
       const expressCheckoutOptions = {
         layout: {
           maxColumns: 1,
           maxRows: 1,
-          overflow: 'never',
+          overflow: 'auto', // Fixed: 'never' only works with maxRows: 0
         },
         buttonHeight: options.buttonHeight || 48,
         buttonTheme: {
           applePay: options.theme === 'dark' ? 'black' : 'black',
           googlePay: options.theme === 'dark' ? 'black' : 'black',
         },
-        paymentMethodOrder: ['apple_pay', 'google_pay', 'link'],
-        wallets: {
+        // Updated: Use modern paymentMethods instead of legacy wallets
+        paymentMethods: {
           applePay: 'auto',
           googlePay: 'auto',
+          link: 'auto',
         }
       };
 
-      console.log('🔧 Creating Express Checkout with options:', expressCheckoutOptions);
+      console.log('🔧 Creating Express Checkout with modern options:', expressCheckoutOptions);
       const element = (elements as any).create('expressCheckout', expressCheckoutOptions);
       
       // Store the elements instance on the element for later use
