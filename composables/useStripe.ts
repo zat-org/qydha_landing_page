@@ -1,19 +1,8 @@
-import type { Stripe, StripeCardElement } from '@stripe/stripe-js';
+import type { StripeCardElement } from '@stripe/stripe-js';
 
 export const useStripe = () => {
-  const { $stripe } = useNuxtApp();
-
-  // Create a reactive ref that will update when Stripe is ready
-  const stripeInstance = ref<Stripe | null>($stripe);
-  const isReady = computed(() => !!stripeInstance.value);
-
-  // Watch for Stripe to become available
-  watchEffect(() => {
-    if ($stripe && !stripeInstance.value) {
-      stripeInstance.value = $stripe;
-      console.log('Stripe initialized successfully');
-    }
-  });
+  // Use the module's client-side composable
+  const { stripe, isLoading } =  useClientStripe();
 
   const createPaymentIntent = async (amount: number, currency: string = 'usd', metadata: Record<string, string> = {}) => {
     try {
@@ -30,6 +19,7 @@ export const useStripe = () => {
       
       // Handle the response properly
       if (response && typeof response === 'object') {
+        console.log('💰 Payment Intent Response:', response);
         return response;
       }
       
@@ -41,12 +31,14 @@ export const useStripe = () => {
   };
 
   const confirmPayment = async (clientSecret: string, cardElement: StripeCardElement) => {
-    if (!stripeInstance.value) {
+    await waitForStripe();
+    
+    if (!stripe.value) {
       throw new Error('Stripe is not initialized');
     }
 
     try {
-      const { error, paymentIntent } = await stripeInstance.value.confirmCardPayment(clientSecret, {
+      const { error, paymentIntent } = await stripe.value.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
         }
@@ -63,17 +55,18 @@ export const useStripe = () => {
   };
 
   const createElement = (type: 'card' | 'expressCheckout', options: any = {}) => {
-    if (!stripeInstance.value) {
+    if (!stripe.value) {
       throw new Error('Stripe is not initialized');
     }
 
     // For Express Checkout, we need to create elements with client secret
     const elementsOptions: any = {};
+    console.log('🔧 Creating Element:', options.clientSecret);
     if (type === 'expressCheckout' && options.clientSecret) {
       elementsOptions.clientSecret = options.clientSecret;
     }
 
-    const elements = stripeInstance.value.elements(elementsOptions);
+    const elements = stripe.value.elements(elementsOptions);
     
     if (type === 'card') {
       // Get current color mode for styling
@@ -118,8 +111,8 @@ export const useStripe = () => {
         },
         buttonHeight: options.buttonHeight || 48,
         buttonTheme: {
-          applePay: options.theme === 'dark' ? 'black' : 'black',
-          googlePay: options.theme === 'dark' ? 'black' : 'black',
+          applePay: 'black',
+          googlePay: 'black',
         },
         // Updated: Use modern paymentMethods instead of legacy wallets
         paymentMethods: {
@@ -133,21 +126,23 @@ export const useStripe = () => {
       const element = (elements as any).create('expressCheckout', expressCheckoutOptions);
       
       // Store the elements instance on the element for later use
-      (element as any).elements = elements;
+      // (element as any).elements = elements;
       
       return element;
     }
 
-    return elements.create('payment', options);
+    // return elements.create('payment', options);
   };
 
   const confirmPaymentWithExpressCheckout = async (clientSecret: string, elements: any) => {
-    if (!stripeInstance.value) {
+    await waitForStripe();
+    
+    if (!stripe.value) {
       throw new Error('Stripe is not initialized');
     }
 
     try {
-      const { error, paymentIntent } = await stripeInstance.value.confirmPayment({
+      const { error, paymentIntent } = await stripe.value.confirmPayment({
         elements,
         clientSecret,
         confirmParams: {
@@ -166,29 +161,30 @@ export const useStripe = () => {
     }
   };
 
-  const waitForStripe = async (): Promise<Stripe> => {
-    if (stripeInstance.value) {
-      return stripeInstance.value;
-    }
-
+  const waitForStripe = async () => {
     return new Promise((resolve, reject) => {
+      if (stripe.value) {
+        resolve(stripe.value);
+        return;
+      }
+
       const timeout = setTimeout(() => {
         reject(new Error('Stripe failed to initialize within 10 seconds'));
       }, 10000);
 
-      const unwatch = watch(stripeInstance, (stripe) => {
-        if (stripe) {
+      const unwatch = watch(stripe, (stripeInstance) => {
+        if (stripeInstance) {
           clearTimeout(timeout);
           unwatch();
-          resolve(stripe);
+          resolve(stripeInstance);
         }
       }, { immediate: true });
     });
   };
 
   return {
-    stripe: readonly(stripeInstance),
-    isReady: readonly(isReady),
+    stripe: readonly(stripe),
+    isReady: computed(() => !isLoading.value && !!stripe.value),
     createPaymentIntent,
     confirmPayment,
     confirmPaymentWithExpressCheckout,

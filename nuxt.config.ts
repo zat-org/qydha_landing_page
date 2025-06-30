@@ -19,9 +19,22 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
     "nuxt-aos",
+    "@unlok-co/nuxt-stripe",
   ],
 
-
+  // Stripe Configuration
+  stripe: {
+    server: {
+      key: process.env.STRIPE_SECRET_KEY,
+      options: {
+        apiVersion: '2025-05-28.basil',
+      },
+    },
+    client: {
+      key: process.env.STRIPE_PUBLISHABLE_KEY,
+      options: {},
+    },
+  },
 
   css: [
     "~/assets/css/main.css"
@@ -60,7 +73,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Private keys (only available on server-side)
-    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     
     public: {
@@ -70,8 +82,6 @@ export default defineNuxtConfig({
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
       appId: process.env.appId,
-      // Public keys (available on both client and server)
-      stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
     },
   },
 

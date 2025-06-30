@@ -1,17 +1,19 @@
 import Stripe from 'stripe';
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig();
   const body = await readBody(event);
 
-  if (!config.stripeSecretKey) {
+  // Get Stripe secret key from environment
+  const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+  
+  if (!stripeSecretKey) {
     throw createError({
       statusCode: 500,
       statusMessage: 'Stripe secret key is not configured'
     });
   }
 
-  const stripe = new Stripe(config.stripeSecretKey, {
+  const stripe = new Stripe(stripeSecretKey, {
     apiVersion: '2025-05-28.basil',
   });
 

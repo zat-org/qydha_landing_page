@@ -71,12 +71,11 @@
             <!-- Debug Info -->
             <ClientOnly>
               <StripeDebug />
-              <ExpressCheckoutDebug />
             </ClientOnly>
             
             <div v-if="selectedPlan">
               <ClientOnly>
-                <StripePayment
+                <StripePaymentNew
                   :amount="selectedPlan.price"
                   :metadata="{ 
                     plan_id: selectedPlan.id, 
