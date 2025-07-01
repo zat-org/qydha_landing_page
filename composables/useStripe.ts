@@ -105,8 +105,8 @@ export const useStripe = () => {
       // Modern Express Checkout Element configuration with updated API
       const expressCheckoutOptions = {
         layout: {
-          maxColumns: 1,
-          maxRows: 1,
+          maxColumns: 3,
+          maxRows: 2,
           overflow: 'auto', // Fixed: 'never' only works with maxRows: 0
         },
         buttonHeight: options.buttonHeight || 48,

@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen w-full flex justify-center items-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="h-[calc(100vh-4rem)] w-full flex justify-center items-center px-4 bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <div class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg dark:shadow-gray-900/50 border border-gray-200 dark:border-gray-700 transition-colors duration-300">
       <!-- Header -->
       <div class="p-6 text-center border-b border-gray-200 dark:border-gray-700">
@@ -79,12 +79,7 @@
             سجل الآن
           </NuxtLink>
         </p>
-        <NuxtLink 
-          to="/forgot-password" 
-          class="block text-sm text-gray-600 dark:text-gray-400 hover:text-amber-600 dark:hover:text-amber-400 transition-colors duration-200"
-        >
-          نسيت كلمة المرور؟
-        </NuxtLink>
+        
       </div>
     </div>
   </div>

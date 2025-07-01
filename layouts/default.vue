@@ -1,7 +1,7 @@
 <template>
   <DashboardHeader></DashboardHeader>
 
-    <main class="flex flex-col flex-1 ">
+    <main class="flex flex-col flex-1  ">
       <slot></slot>
     </main>
 

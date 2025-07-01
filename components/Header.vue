@@ -6,61 +6,32 @@
   shadow-sm 
   flex justify-between items-center
   px-5">
-          <UButton
-            v-if="logedin"
-            size="lg"
-            variant="ghost"
-            icon="mdi:menu"
-            color="neutral"
-            @click="openNav"
-            class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200 "
-          >
-          </UButton>
-          <div v-else></div>
+    <UButton v-if="logedin" size="lg" variant="ghost" icon="mdi:menu" color="neutral" @click="openNav"
+      class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200 ">
+    </UButton>
+    <div v-else></div>
 
 
 
-          <NuxtLink to="/" class="
+    <NuxtLink to="/" class="
           absolute left-1/2 -translate-x-1/2
           transform hover:scale-105 transition-all duration-300">
-            <img
-              src="@/assets/images/qydha-logo.svg"
-              class="w-20"
-              alt="Qydha Logo"
-            />
-          </NuxtLink>
+      <img src="@/assets/images/qydha-logo.svg" class="w-20" alt="Qydha Logo" />
+    </NuxtLink>
 
-        <div class="flex items-center gap-2">
-          <ColorModeToggle class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200" />
+    <div class="flex items-center gap-2">
+      <ColorModeToggle class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200" />
 
-          <UButton
-            v-if="!logedin"
-            variant="ghost"
-            color="neutral"
-            icon="mdi:user"
-            to="/login"
-            size="lg"
-            class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200"
-          />            
-          <UButton
-            v-if="!logedin"
-            color="neutral"
-            to="/register"
-            size="lg"
-            class="hover:bg-amber-100 dark:hover:bg-amber-600 transition-colors duration-200"
-          >
-            تسجيل
-          </UButton>
-          <UButton
-            v-else
-            variant="ghost"
-            color="neutral"  
-            icon="mdi:logout" 
-            @click="onLogOut()"
-            class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200"
-          />
-        </div>
-    
+      <UButton v-if="!logedin" variant="ghost" color="neutral" icon="mdi:user" to="/login" size="lg"
+        class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200" />
+      <UButton v-if="!logedin" color="neutral" to="/register" size="lg"
+        class="hover:bg-amber-100 dark:hover:bg-amber-600 transition-colors duration-200">
+        تسجيل
+      </UButton>
+      <UButton v-else variant="ghost" color="neutral" icon="mdi:logout" @click="onLogOut()"
+        class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200" />
+    </div>
+
   </header>
 </template>
 
@@ -81,9 +52,8 @@ const onLogOut = () => {
 
 const overlay = useOverlay();
 const openNav = () => {
- overlay.create(SideBar).open();
+  overlay.create(SideBar).open();
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

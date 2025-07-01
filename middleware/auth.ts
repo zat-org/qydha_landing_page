@@ -7,7 +7,7 @@ if (!AuthStore.logedin && to.path != "/login"){
     return navigateTo("/login")
 }
 if (AuthStore.logedin && to.path == "login"){
-    return navigateTo("/tournament")
+    return navigateTo("/stream")
 }
 
 })

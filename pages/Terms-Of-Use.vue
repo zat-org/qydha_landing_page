@@ -1,26 +1,84 @@
 <template>
-    <div class=" py-5 px-1 md:px-10">
-        <div v-for="d in data" class="mt-5">
-            <h2 class="text-4xl">{{ d.title }}</h2>
-            <p class="mt-5">{{ d.description }}</p>
+  <div class="min-h-screen w-full py-8 px-4 md:px-8 lg:px-16 dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto">
+      <div class="space-y-8">
+        <div v-for="d in data" :key="d.title" 
+          class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+          <h1 class="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            {{ d.title }}
+          </h1>
+          <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base md:text-lg">
+            {{ d.description }}
+          </p>
         </div>
-        <div class="mt-5">
-            <h2 class="text-2xl">{{ terms.title }}</h2>
-            <ul class="mt-2 px-5 list-disc">
-                <li v-for="term in terms.terms" class="text-md my-2">
-                    {{ term }}
-                </li>
-            </ul>
+
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+          <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-800 dark:text-white">
+            {{ terms.title }}
+          </h2>
+          <ul class="space-y-4">
+            <li v-for="(term, index) in terms.terms" :key="index"
+              class="flex items-start gap-3 text-gray-600 dark:text-gray-300">
+              <span class="mt-1 flex-shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+              </span>
+              <span class="text-sm md:text-base leading-relaxed">{{ term }}</span>
+            </li>
+          </ul>
         </div>
+      </div>
+
+      <!-- Back to top button -->
+      <button 
+        @click="scrollToTop"
+        class="fixed bottom-8 right-8 bg-blue-600 dark:bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-300"
+        :class="{'opacity-0': !showScrollButton, 'opacity-100': showScrollButton}"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </button>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const showScrollButton = ref(false)
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
+}
+
+// Show button when page is scrolled up to given distance
+const toggleVisibility = () => {
+  if (window.pageYOffset > 500) {
+    showScrollButton.value = true
+  } else {
+    showScrollButton.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', toggleVisibility)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', toggleVisibility)
+})
+
 let data = [
     {
         title: "الشروط والأحكام", description: "تطبق الشروط والأحكام على تطبيق قيدها ومتجرها، ومواقعها، والخدمات ذات الصلة، والتي نطلق عليها هنا إجمالاً «الخدمة». قد نُحدث الشروط والأحكام هذه دوريًا لتلبية المعايير والمتطلبات المعمول بها. لذا، نحن نحث دائما مستخدمي قيدها على زيارة هذا المخصص بشكل مستمر علما بأن التحديثات ستصبح فاعلة بشكل .مباشر في نفس اليوم التي تُنشر به"
     }
 ]
+
 let terms = {
     title: "يعد استخدامك لقيدها و إنشاء حساب عليه موافقة على الشروط و النقاط التالية",
     terms: [" لا يجوز للعملاء الذين تقل أعمارهم عن 18 عامًا التسجيل كمستخدم للموقع ولا يجوز لهم التعامل أو استخدام الموقع",
@@ -68,4 +126,14 @@ let terms = {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

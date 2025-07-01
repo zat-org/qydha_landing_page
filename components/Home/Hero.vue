@@ -12,12 +12,12 @@
             <div class="w-full lg:w-1/2 space-y-8 text-center lg:text-right">
                 <div class="space-y-5">
                     <h2 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white leading-loose dark:drop-shadow-lg">
-                        <span class="py-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent">
+                        <span class="py-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-primary-400 dark:to-primary-600 bg-clip-text text-transparent">
                             ماتحلى الجلسه
                         </span>
                         <br />
                         
-                        <span class="text-gray-900 dark:text-gray-100 inline-block mt-0 md:mt-5">إلا بقيدها</span>
+                        <span class="text-gray-900 dark:text-gray-100 inline-block ">إلا بقيدها</span>
                     </h2>
                     <p class="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                         سهلناها عليكم … تطبيق حاسبة بلوت بإنعكاس شاشتين👏
@@ -28,7 +28,7 @@
                 
                 <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center lg:justify-start">
                     <UButton 
-                        color="amber" 
+                        color="primary" 
                         class="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold shadow-lg hover-lift" 
                         to="#download-section"
                         padded
@@ -39,7 +39,7 @@
                         </span>
                     </UButton>
                     <UButton 
-                        color="gray" 
+                        color="secondary" 
                         variant="outline"
                         class="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold hover-lift" 
                         to="#features"
@@ -74,23 +74,23 @@
                 <div class="flex justify-center items-center h-full w-full">
                     <div class="relative h-[600px] w-[360px]">
                         <!-- Phone frame -->
-                        <div class="absolute inset-0 bg-gray-100 dark:bg-gray-800 rounded-5xl shadow-2xl"></div>
+                        <div class="absolute inset-0  rounded-5xl "></div>
                         
                         <!-- Main center image -->
                         <img 
-                            src="@/assets/images/home_page-portrait.webp"
+                            src="@/assets/images/home_page-portrait.jpeg"
                             class="absolute h-[550px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-0 left-1/2 -translate-x-1/2 dark:brightness-90 z-20 hover-scale" 
                         />
                         
                         <!-- Right diagonal image -->
                         <img 
-                            src="@/assets/images/baloot_page-portrait.webp"
+                            src="@/assets/images/baloot_page-portrait.jpeg"
                             class="absolute h-[500px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 right-0 translate-x-1/4 rotate-[15deg] dark:brightness-90 z-10 hover-scale" 
                         />
                         
                         <!-- Left diagonal image -->
                         <img 
-                            src="@/assets/images/subscription_page-portrait.webp"
+                            src="@/assets/images/subscription_page-portrait.jpeg"
                             class="absolute h-[500px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 left-0 -translate-x-1/4 -rotate-[15deg] dark:brightness-90 z-10 hover-scale" 
                         />
                     </div>

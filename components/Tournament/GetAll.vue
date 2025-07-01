@@ -1,58 +1,35 @@
 <template>
   <UCard>
-    <UTable
-      :data="rows"
-      :columns="cols"
-      @select="select"
-    >
-  
+    <UTable :data="rows" :columns="cols" @select="select">
+
       <template #showInQydha-cell="{ row }">
-        <UIcon
-          name="healthicons:yes"
-          class="text-3xl"
-          :class="{
-            'text-green-500': row.original.showInQydha,
-            'text-black': !row.original.showInQydha,
-          }"
-        />
+        <UIcon name="healthicons:yes" class="text-3xl" :class="{
+          'text-green-500': row.original.showInQydha,
+          'text-black': !row.original.showInQydha,
+        }" />
       </template>
     </UTable>
-    <UPagination
-      v-model="page"
-      :page-count="10"
-      :total="getAllREQ.data.value?.data.totalCount!"
-      class="mx-auto mt-auto"
-    />
+    <UPagination v-model="page" :page-count="10" :total="getAllREQ.data.value?.data.totalCount!"
+      class="mx-auto mt-auto" />
 
     <template #header>
       <div class="flex flex-col  justify-between  gap-3 w-full ">
-       <div class="flex justify-between  ">
-         <h1 class="text-2xl">البطولات</h1>
-         <UButton
-         v-if="
-              user?.user.roles.includes('SuperAdmin') ||
-              user?.user.roles.includes('StaffAdmin')
-            "
-           variant="outline"
-            icon="ic:baseline-plus"
-            to="/tournament/add"
-            />
-       </div>
-          <USelectMenu
-            :items="options"
-            class="w-[200px] mx-auto"
-            multiple
-            value-key="value"
-            label-key="label"
-            v-model="stateQ"
-          >
+        <div class="flex justify-between  ">
+          <h1 class="text-2xl">البطولات</h1>
+          <UButton v-if="
+            user?.user.roles.includes('SuperAdmin') ||
+            user?.user.roles.includes('StaffAdmin')
+          " variant="outline" icon="ic:baseline-plus" to="/tournament/add" label="اضافة بطولة" />
+        </div>
+        <USelectMenu :items="options" class="w-[200px] mx-auto" multiple value-key="value" label-key="label"
+          v-model="stateQ">
 
-          </USelectMenu>
+        </USelectMenu>
       </div>
     </template>
   </UCard>
 
-  
+
 </template>
 
 <script lang="ts" setup>
@@ -99,7 +76,7 @@ const cols = [
   // {key:"owner",label:"المالك"},
   { accessorKey: "showInQydha", header: "قيدها" },
 ];
-import type {  TableRow } from '@nuxt/ui'
+import type { TableRow } from '@nuxt/ui'
 
 const select = (row: TableRow<ITournament>) => {
   navigateTo(`/tournament/${row.original.id}`);

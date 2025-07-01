@@ -11,7 +11,7 @@
       <!-- Left Column -->
       <div class="space-y-6">
         <UFormField label="اسم البطولة" name="TournamentName" required>
-          <UInput v-model="modelValue.TournamentName" placeholder="أدخل اسم البطولة" icon="i-heroicons-trophy" />
+          <UInput v-model="modelValue.TournamentName" placeholder="أدخل اسم البطولة" />
         </UFormField>
 
         <UFormField label="وصف البطولة" name="TournamentDescription" required>

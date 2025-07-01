@@ -4,7 +4,8 @@
 
 <script lang="ts" setup>
 definePageMeta({
-    middleware: 'auth'
+    middleware: ['auth','role'],
+    requiredRoles: ['StaffAdmin', 'SuperAdmin'],
 })
 
 </script>

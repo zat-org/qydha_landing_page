@@ -1,13 +1,14 @@
 <template>
-    <div class="flex flex-col items-center justify-center  w-full">
-        <div v-if="currentStep === 1" class="w-full max-w-screen-md  ">
+ <UCard class="w-ful h-[calc(100vh-4rem)] flex flex-col justify-center items-center">
+
+        <div v-if="currentStep === 1" class="w-full h-full mx-auto max-w-screen-lg  ">
             <UserRegisterForm @register-success="handleRegisterSuccess" />
  
         </div>
-        <div v-else-if="currentStep === 2" class="w-full max-w-lg">
+        <div v-else-if="currentStep === 2" class="w-full h-full mx-auto max-w-screen-lg  ">
             <UserRegisterOtp :id="requestId" />
         </div>
-    </div>
+    </UCard>
 </template>
 
 <script setup lang="ts">

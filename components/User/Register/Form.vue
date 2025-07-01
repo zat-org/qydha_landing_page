@@ -31,7 +31,7 @@
           />
           <UButton
             class="absolute left-2 top-1/2 -translate-y-1/2"
-            color="gray"
+            color="secondary"
             variant="ghost"
             size="xs"
             @click="showPassword = !showPassword"
@@ -44,7 +44,7 @@
         <UInput v-model="form.confirmPassword" type="password"
           placeholder="اعد كتابة كلمة المرور" autocomplete="new-password" size="lg" />
       </UFormField>
-      <UAlert v-if="generalError" color="red" variant="subtle" :title="generalError" class="mb-4" />
+      <UAlert v-if="generalError" color="error" variant="subtle" :title="generalError" class="mb-4" />
           <UButton type="submit" block size="lg" class="mt-2">تسجيل</UButton>
     </UForm>
   </template>
@@ -72,16 +72,19 @@
   const showPassword = ref(false)
   
   
+  
+
   const schema = object({
-    username: string().required('اسم المستخدم مطلوب'),
+    username: string()
+      .required('اسم المستخدم مطلوب')
+      .matches(/^\S+$/, 'اسم المستخدم لا يجب أن يحتوي على مسافات')
+      .matches(/^[a-zA-Z0-9_.-]{3,100}$/, 'اسم المستخدم يجب أن يحتوي على أحرف وأرقام ورموز _ . - فقط'),
     phone: string()
       .required('رقم الجوال مطلوب')
       .min(6, 'رقم الجوال يجب أن يكون 6 أرقام على الأقل'),
     // .matches(/^05\d{8,13}$/, 'رقم الجوال غير صالح'),
     password: string()
-      .min(6, 'كلمة المرور يجب أن تكون 6 أحرف على الأقل')
-      .matches(/[0-9]/, 'كلمة المرور يجب أن تحتوي على رقم واحد على الأقل')
-      .matches(/[!@#$%^&*(),.?":{}|<>]/, 'كلمة المرور يجب أن تحتوي على رمز خاص واحد على الأقل')
+      .matches(/^(?=.*[a-zA-Z])(?=.*\d).{6,}$/, 'كلمة المرور يجب أن تحتوي على حرف واحد ورقم واحد على الأقل وأن تكون 6 أحرف على الأقل')
       .required('كلمة المرور مطلوبة'),
     confirmPassword: string()
       .oneOf([yupRef('password')], 'كلمتا المرور غير متطابقتين')
@@ -123,7 +126,7 @@
         toast.add({
           title: 'تم التسجيل بنجاح',
           description: 'تم إرسال رمز التحقق إلى رقم جوالك',
-          color: 'green',
+          color: 'success',
           icon: 'i-heroicons-check-circle',
         })
         emit('register-success',data.value?.data.requestId)

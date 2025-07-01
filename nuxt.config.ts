@@ -106,6 +106,13 @@ export default defineNuxtConfig({
     devServer: {
       watch: [],
     },
+    prerender: {
+      ignore: [
+        '/draft',
+        '/test',
+        '/admin/**',
+      ],
+    },
   },
 
 });

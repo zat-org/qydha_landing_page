@@ -12,7 +12,7 @@
       </div>
     </template>
 
-    <UTable :data="rows"  :columns="cols"  @select="select" :loading="usersREQ.status.value == 'pending'">
+    <UTable :data="rows" :columns="cols" @select="select" :loading="usersREQ.status.value == 'pending'">
       <template #phone-cell="{ row }" dir="ltr">
         <p>{{ (row.original.phone as string).replace("+", "") }}</p>
       </template>
@@ -21,8 +21,16 @@
           :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
           :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'" />
       </template>
+      <template #action-cell="{ row }" dir="ltr">
+        <UButtonGroup>
+        <UButton color="primary"  variant="outline" size="md" icon="i-heroicons-eye"
+          :to="`/user/${row.original.id}`" />
+          <UButton color="secondary" variant="outline" size="md" icon="i-heroicons-clipboard"
+          @click="copyToClipboard(row.original.id)" />
+        </UButtonGroup>
+      </template>
     </UTable>
-    <UPagination v-model="page" :page-count="10" :total="items" class="mx-auto" />
+    <UPagination v-model:page="page" :page-count="10" :total="items" class="mx-auto" />
   </UCard>
 </template>
 
@@ -39,7 +47,7 @@ const usersNumebr = usersREQ.data.value?.data.totalCount;
 const route = useRoute();
 const router = useRouter();
 const query = ref(route.query.search?.toString() || "");
-
+const toast = useToast();
 const exactSearch = ref<boolean>(route.query.exact === "true" || true);
 const roleFilter = ref<string>((route.query.role as string) || "User");
 
@@ -54,23 +62,36 @@ await usersREQ.fetchREQ(
 );
 const items = ref(usersREQ.data.value?.data.totalCount!);
 
+const copyToClipboard = (text: string) => {
+  navigator.clipboard.writeText(text);
+  toast.add({
+    title: 'تم النسخ',
+    description: 'تم النسخ بنجاح',
+    color: 'success',
+  });
+};
+
 const rows = computed(() => {
   return usersREQ.data.value?.data.items;
 });
 const cols = [
-  { accessorKey: "id", header: "#" },
+  // { accessorKey: "id", header: "#" },
   { accessorKey: "username", header: "الاسم" },
   { accessorKey: "phone", header: "رقم الهاتف" },
   { accessorKey: "roles", header: "الفئة" },
+  { id: "action", header: "الاجراءات" }
+
 ];
 
 const select = (row: any, e?: Event) => {
   return navigateTo(`/user/${row.original.id}`);
 };
 watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
+  console.log(page.value)
   if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]) {
     page.value = 1;
   }
+
   await router.replace({
     query: {
       search: query.value || undefined,

@@ -1,13 +1,60 @@
 <template>
-    <div class="md:text-center py-5">
-        <div v-for="d in data" class="mt-5">
-            <h2 class="text-2xl px-1">{{ d.title }}</h2>
-            <p class="mt-2 px-2 md:px-10">{{ d.description }}</p>
+    <div class="min-h-screen w-full py-8 px-4 md:px-8 lg:px-16 dark:bg-gray-900">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-3xl md:text-4xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+                سياسة الخصوصية
+            </h1>
+
+            <div class="space-y-8">
+                <div v-for="(d, index) in data" :key="index"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-all duration-300 hover:shadow-lg">
+                    <h2 class="text-xl md:text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+                        {{ d.title }}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-base md:text-lg">
+                        {{ d.description }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Back to top button -->
+            <button @click="scrollToTop"
+                class="fixed bottom-8 right-8 bg-blue-600 dark:bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-300"
+                :class="{ 'opacity-0': !showScrollButton, 'opacity-100': showScrollButton }">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+            </button>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const showScrollButton = ref(false)
+
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    })
+}
+
+const handleScroll = () => {
+    showScrollButton.value = window.scrollY > 300
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+})
+
 let data = [
     {
         title: "سياسة الخصوصية لتطبيق قيدها", description: "نؤكد لك أن خصوصيتك على رأس أولوياتنا، ونحن ملتزمون بحمايتها بكل الوسائل الممكنة من خلال الدخول إلى تطبيق أو موقع قيدها، فإنك توافق على الالتزام بهذه الشروط والسياسات وجميع القوانين واللوائح المعمول بها في المملكة العربية السعودية. وتُقر أيضا بأنك تتحمل المسؤولية عن الامتثال لأي قوانين محلية معمول بها، ولا يحق لك استخدام أو الوصول إلى التطبيق أو الموقع الالكتروني في حالة عدم موافقتك على أي من هذه الشروط والسياسات."
@@ -36,7 +83,16 @@ let data = [
     },
     { title: "تواصل معنا", description: "إذا كانت لديك أية استفسارات حول سياسة الخصوصية هذه. فيرجى التواصل معنا" },
 ]
-
 </script>
 
-<style scoped></style>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>

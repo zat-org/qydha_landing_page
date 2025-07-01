@@ -3,20 +3,19 @@
     <UCard>
         <template #header>
             <div class="flex justify-center items-center w-full">
+                <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost" class="absolute right-4">
+                    العودة
+                </UButton>
                 <!-- Desktop View -->
                 <UButtonGroup class="hidden md:block mx-auto">
-                    <UButton v-for="step in steps" :key="step.id" 
-                        :label="step.label"
-                        :class="step.class.value"
+                    <UButton v-for="step in steps" :key="step.id" :label="step.label" :class="step.class.value"
                         @click="currentStep = step.id" />
                 </UButtonGroup>
 
                 <!-- Mobile View -->
                 <UButtonGroup class="block md:hidden mx-auto">
-                    <UButton v-for="step in steps" :key="step.id"
-                        :icon="step.icon"
-                        :class="step.class.value"
-                            @click="currentStep = step.id">
+                    <UButton v-for="step in steps" :key="step.id" :icon="step.icon" :class="step.class.value"
+                        @click="currentStep = step.id">
                     </UButton>
                 </UButtonGroup>
             </div>
@@ -33,9 +32,9 @@
                     <KeepAlive>
                         <TournamentAddTourDetailForm v-if="currentStep === 2" v-model="formData" />
                     </KeepAlive>
-                        <KeepAlive>
-                            <TournamentAddRulesForm v-if="currentStep === 3" v-model="formData" />
-                        </KeepAlive>
+                    <KeepAlive>
+                        <TournamentAddRulesForm v-if="currentStep === 3" v-model="formData" />
+                    </KeepAlive>
                     <!-- <KeepAlive>
                         <TournamentAddPayment v-if="currentStep === 4" v-model="formData" :amount="100" />
                     </KeepAlive> -->
@@ -45,10 +44,10 @@
         <template #footer>
             <div class="flex justify-between items-center px-6">
                 <UButton v-if="currentStep >= 1" variant="outline" @click="previousStep" label="السابق" size="xl" />
-                <UButton v-if="currentStep < steps.length-1" color="primary" @click="validateAndNext" label="التالي"
+                <UButton v-if="currentStep < steps.length - 1" color="primary" @click="validateAndNext" label="التالي"
                     size="xl" />
-                <UButton v-else-if="currentStep == steps.length-1" color="primary" :loading="isSubmitting" @click="submitForm"
-                    size="xl">
+                <UButton v-else-if="currentStep == steps.length - 1" color="primary" :loading="isSubmitting"
+                    @click="submitForm" size="xl">
                     إرسال
                 </UButton>
             </div>
@@ -86,7 +85,7 @@ const steps = [
     {
         id: 1,
         label: "معلومات البطولة",
-        slot: "TourInfo", 
+        slot: "TourInfo",
         icon: "i-heroicons-trophy",
         class: computed(() => completedSteps.value.has(1)
             ? 'bg-green-600 dark:bg-green-400'
@@ -152,8 +151,8 @@ const formData = reactive({
     RefreeCount: 0,
     RefreeNeed: false,
     StatisticsNeed: false,
-    SakkaNormalOption:"",
-    SakkaFinalMatchOption:"",
+    SakkaNormalOption: "",
+    SakkaFinalMatchOption: "",
     // TeamSelectionMode: "",
     Roles: [],
 });
@@ -187,14 +186,24 @@ const TournamentSchema = object({
 });
 
 const detailsSchema = object({
-    TournametPrize: array().of(object({ money: number().required("قيمة الجائزة مطلوبة"), items: array().of(string()) }) ),
+
+    TournametPrize: array()
+        .min(1, "يجب إضافة جائزة واحدة على الأقل")
+        .of(
+            object({
+                money: number().nullable().required("قيمة الجائزة مطلوبة"),
+                items: array().of(string()),
+            }).test('money-or-items', 'يجب تحديد قيمة الجائزة أو إضافة جوائز عينية', function(value) {
+                return (value.money && value.money > 0) || (value.items && value.items.length > 0);
+            })
+        ),
     TeamsCount: number().required("عدد الفرق مطلوب"),
     TablesCount: number().required("عدد الطاولات مطلوب"),
     RefreeNeed: boolean().required("احصائيات البطولة مطلوبة"),
     RefreeCount: number().when('RefreeNeed', {
-      is: true,
-      then: (schema) => schema.required("عدد الحكام مطلوبة"),
-      otherwise: (schema) => schema.optional()
+        is: true,
+        then: (schema) => schema.required("عدد الحكام مطلوبة"),
+        otherwise: (schema) => schema.optional()
     }),
     StatisticsNeed: boolean().required("احصائيات البطولة مطلوبة"),
     SakkaNormalOption: string().required("اختيارات  النهائي مطلوبة"),
@@ -218,9 +227,12 @@ const validateCurrentStep = async () => {
                 await CompanySchema.validate(formData);
                 break;
             case 1:
+                await CompanySchema.validate(formData);
                 await TournamentSchema.validate(formData);
                 break;
             case 2:
+                await CompanySchema.validate(formData);
+                await TournamentSchema.validate(formData);
                 await detailsSchema.validate(formData);
                 break;
         }
@@ -247,7 +259,7 @@ const goToStep = async (stepId: number) => {
 
     // Find first incomplete step
     const incompleteStep = findFirstIncompleteStep();
-    
+
     // If trying to skip ahead, redirect to first incomplete step
     if (stepId > incompleteStep) {
         currentStep.value = incompleteStep;
@@ -266,7 +278,7 @@ const validateAndNext = async () => {
     if (incompleteStep < currentStep.value) {
         currentStep.value = incompleteStep;
         useToast().add({
-            title: "تنبيه", 
+            title: "تنبيه",
             description: "يجب إكمال الخطوات السابقة أولاً",
             color: "warning",
         });
