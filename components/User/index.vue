@@ -13,8 +13,8 @@
     </template>
 
     <UTable :data="rows" :columns="cols" @select="select" :loading="usersREQ.status.value == 'pending'">
-      <template #phone-cell="{ row }" dir="ltr">
-        <p>{{ (row.original.phone as string).replace("+", "") }}</p>
+      <template #phone-cell="{ row }"  >
+        <p>{{  `${(row.original.phone as string).replace('+', '')}+`  }}</p>
       </template>
       <template #roles-cell="{ row }" dir="ltr">
         <UBadge v-for="role in row.original.roles" :class="{ 'hidden': role == 'User' }" class="mx-1" variant="outline"
