@@ -6,7 +6,7 @@
  
         </div>
         <div v-else-if="currentStep === 2" class="w-full h-full mx-auto max-w-screen-lg  ">
-            <UserRegisterOtp :id="requestId" />
+            <UserRegisterOtp :id="requestId"  />
         </div>
     </UCard>
 </template>

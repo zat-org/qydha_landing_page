@@ -26,7 +26,7 @@ export const useAuth = () => {
         if (user.value.user.roles.includes("Streamer")) {
           navigateTo("/stream");
         } else {
-          navigateTo("/deleteuser")
+          navigateTo("/me")
         }
 
       }

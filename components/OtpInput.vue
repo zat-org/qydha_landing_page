@@ -50,4 +50,8 @@ input::placeholder {
   text-align: center;
   font-weight: 600;
 }
+.otp-input {
+  width: 100%;
+  height: 100px;
+}
 </style>

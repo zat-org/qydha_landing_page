@@ -1,5 +1,5 @@
 <template>
-    <UCard class="w-full max-w-screen-sm mx-auto p-4">
+    <UCard class="w-full mx-auto p-4 h-full">
         <!-- Header -->
         <template #header>
             <div class="text-center">
@@ -11,7 +11,7 @@
 
         <!-- Content -->
         <div class="flex flex-col gap-4 items-center justify-center">
-            <OtpInput v-model="otp" />
+            <OtpInput v-model="otp" :length="6" />
         </div>
 
         <!-- Footer -->
@@ -49,7 +49,7 @@ const verifyOtp = async () => {
         toast.add({
             title: 'تم التحقق بنجاح',
             description: 'تم التحقق من رقم الجوال بنجاح',
-            color: 'green',
+            color: 'success',
             icon: 'i-heroicons-check-circle',
         })
 
@@ -60,7 +60,7 @@ const verifyOtp = async () => {
         toast.add({
             title: 'خطأ في التحقق',
             description: 'رمز التحقق غير صحيح',
-            color: 'red',
+            color: 'error',
             icon: 'i-heroicons-x-circle',
         })
     }
