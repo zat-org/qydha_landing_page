@@ -9,7 +9,12 @@
     <UButton v-if="logedin" size="lg" variant="ghost" icon="mdi:menu" color="neutral" @click="openNav"
       class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200 ">
     </UButton>
-    <div v-else></div>
+    <div v-else>
+      <UButton color="neutral" to="/tournament" size="lg" class=" dark:hover:bg-amber-600 transition-colors duration-200">
+        البطولات
+      </UButton>
+
+    </div>
 
 
 
@@ -25,7 +30,7 @@
       <UButton v-if="!logedin" variant="ghost" color="neutral" icon="mdi:user" to="/login" size="lg"
         class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200" />
       <UButton v-if="!logedin" color="neutral" to="/register" size="lg"
-        class="hover:bg-amber-100 dark:hover:bg-amber-600 transition-colors duration-200">
+        class=" dark:hover:bg-amber-600 transition-colors duration-200">
         تسجيل
       </UButton>
       <UButton v-else variant="ghost" color="neutral" icon="mdi:logout" @click="onLogOut()"

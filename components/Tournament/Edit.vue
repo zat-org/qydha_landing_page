@@ -1,27 +1,27 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full', body: { base: 'grow' } }">
+  <UCard  >
     <template #footer>
       <div class="flex justify-between items-center">
         <UButton
           type="submit"
           label="تعديل"
-          color="yellow"
+          color="primary"
           @click="UpdateForm?.submit()"
         />
 
         <UButton
           type="button"
           class="ml-auto mr-[10px]"
-          v-if="roles?.includes('SuperAdmin') || roles?.includes('StaffAdmin')"
+          v-if="isAdmin"
           label=" تعديل الصور والمالك "
-          color="yellow"
+          color="primary"
           @click="openUpdateModal"
         />
 
         <UButton
           type="button"
           label="عودة"
-          color="red"
+          color="error"
           @click="navigateTo('/tournament')"
         />
       </div>
@@ -72,8 +72,8 @@
                 label="اختر الموقع"
                 :color="
                   state.location.latitude && state.location.longitude
-                    ? 'green'
-                    : 'red'
+                    ? 'success'
+                    : 'error'
                 "
                 @click="getLocation"
               />
@@ -108,10 +108,10 @@
               :label="'المركز' + (index + 1)"
             >
               <UButtonGroup orientation="horizontal" class="flex w-[150px]">
-                <UBadge :label="index + 1" color="blue" />
+                <UBadge :label="index + 1" color="primary" />
                 <UInput v-model="state.prizes[index]" class="grow" />
                 <UButton
-                  color="red"
+                  color="error"
                   icon="material-symbols:close"
                   @click="state.prizes.splice(index, 1)"
                 ></UButton>
@@ -147,8 +147,8 @@ const state = reactive<ITournamentUpdate>({
   location: { longitude: 0, latitude: 0 },
   prizes: props.tournament.prizes,
   prizesCurrency: props.tournament.prizesCurrency,
-  startAt: new Date(props.tournament.startAt),
-  endAt: new Date(props.tournament.endAt),
+  startAt: props.tournament.startAt,
+  endAt: props.tournament.endAt,
   // ownerId: props.tournament.owner.id
 });
 const schema = object({
@@ -177,6 +177,11 @@ const roles = computed(() => {
   if (userStore.user) {
     return userStore.user.user.roles;
   }
+});
+
+const isAdmin = computed(() => {
+  return userStore.user?.user.roles.includes("SuperAdmin") ||
+    userStore.user?.user.roles.includes("StaffAdmin")
 });
 
 const tournamentApi = useTournament();
