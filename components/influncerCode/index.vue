@@ -7,7 +7,7 @@
             :label="new Date(row.original.expireAt) > new Date() ? 'فعال' : 'منتهي'" />
         </template>
       </UTable>
-    <UPagination class="mt-auto mx-auto p-4 rtl" v-model="page" :page-count="10" :total="total"  />
+    <UPagination class="mt-auto mx-auto p-4 rtl" v-model:page="page" :page-count="10" :total="total"  />
 
 </template>
 
