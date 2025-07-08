@@ -3,21 +3,17 @@
 </template>
 
 <script lang="ts" setup>
-
 import { useMyAuthStore } from '~/store/Auth';
+
 const userStore = useMyAuthStore();
-const { user } = storeToRefs(userStore);
-definePageMeta({
-  layout: computed(() => userStore.logedin ? 'default' : 'landing')
-})
+
+// Set layout dynamically based on auth state
+onMounted(() => {
+  const layout = userStore.logedin ? 'default' : 'tournament';
+  setPageLayout(layout);
+});
 
 
-
-
-
-// definePageMeta({ middleware: ['auth','role'],
-//   requiredRoles: ['StaffAdmin', 'SuperAdmin'],
-//  });
 </script>
 
 <style></style>

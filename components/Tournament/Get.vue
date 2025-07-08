@@ -74,7 +74,7 @@
         
         <div class="flex gap-3">
           <UButton 
-            v-if="canEdit"
+            v-if="isAdmin && canEdit"
             color="warning" 
             label="تعديل" 
             icon="i-mdi-pencil"
