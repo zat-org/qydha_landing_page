@@ -70,6 +70,24 @@
             :label="getStateLabel(row.original.state)"
           />
         </template>
+        <template #actions-cell="{ row }">
+          <UButton
+            v-if="row.original.state === 'Upcoming'"
+            color="primary"
+            variant="solid"
+            label="انضمام"
+            size="sm"
+            icon="i-mdi-plus"
+          />
+          <UButton
+            v-if="row.original.state === 'Running'"
+            color="error"
+            variant="solid"
+            label="انسحاب"
+            size="sm"
+            icon="i-mdi-minus"
+          />
+        </template>
       </UTable>
 
       <UPagination
@@ -177,6 +195,9 @@ const cols = computed(() => {
     { 
       accessorKey: "city", 
       header: "المدينة"
+    },
+    { 
+      id: 'actions',     
     },
   ]
   

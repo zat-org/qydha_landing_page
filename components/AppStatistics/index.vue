@@ -1,97 +1,114 @@
 <template>
   <UCard>
     <template #header>
-      <div class="flex justify-start gap-4 items-center">
-        <USelect :options="options" class="w-[50%]" v-model="time_options">
-        </USelect>
-        <VueDatePicker class="w-[40%]" range v-if="time_options == 'customRange'" v-model="dateRange"
-          :enable-time-picker="false" position="right" />
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">إحصائيات التطبيق</h2>
+        <USelect v-model="timeRange" :items="[
+          { label: 'آخر 7 أيام', value: '7d' },
+          { label: 'آخر 30 يوم', value: '30d' },
+          { label: 'آخر 90 يوم', value: '90d' }
+        ]" />
       </div>
     </template>
-    <UButtonGroup>
-      <UButton v-for="item in items" :key="item.id" :label="item.label" :value="item.id" @click="changeIndex(item.id)"
-        :color="tabIndex == item.id ? 'primary' : 'neutral'" />
-    </UButtonGroup>
 
-    <template v-if="tabIndex == 0">
+    <!-- Overview Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <UCard class="bg-emerald-50 dark:bg-emerald-900/20">
+        <div class="text-center">
+          <div class="text-emerald-600 dark:text-emerald-400 text-3xl font-bold">125K</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">التنزيلات الكلية</div>
+          <div class="text-emerald-600 dark:text-emerald-400 text-sm mt-2">↑ 12% من الشهر الماضي</div>
+        </div>
+      </UCard>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <!-- Users Statistics Card -->
-        <UCard class="bg-gradient-to-br from-primary-50 to-primary-100">
-          <div class="flex flex-col items-center p-4">
-            <div class="text-sm text-gray-600">Total Users</div>
-            <div class="text-2xl font-bold text-primary-600">1,234</div>
+      <UCard class="bg-blue-50 dark:bg-blue-900/20">
+        <div class="text-center">
+          <div class="text-blue-600 dark:text-blue-400 text-3xl font-bold">45K</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">المستخدمين النشطين</div>
+          <div class="text-blue-600 dark:text-blue-400 text-sm mt-2">↑ 8% من الشهر الماضي</div>
+        </div>
+      </UCard>
+
+      <UCard class="bg-amber-50 dark:bg-amber-900/20">
+        <div class="text-center">
+          <div class="text-amber-600 dark:text-amber-400 text-3xl font-bold">4.8</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">متوسط التقييم</div>
+          <div class="text-amber-600 dark:text-amber-400 text-sm mt-2">↑ 0.2 من الشهر الماضي</div>
+        </div>
+      </UCard>
+
+      <UCard class="bg-purple-50 dark:bg-purple-900/20">
+        <div class="text-center">
+          <div class="text-purple-600 dark:text-purple-400 text-3xl font-bold">89%</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">معدل الاحتفاظ</div>
+          <div class="text-purple-600 dark:text-purple-400 text-sm mt-2">↑ 5% من الشهر الماضي</div>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Downloads Chart -->
+      <UCard>
+        <template #header>
+          <h3 class="font-semibold">التنزيلات اليومية</h3>
+        </template>
+        <div class="h-80">
+          <!-- Chart placeholder -->
+          <div class="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+            رسم بياني للتنزيلات
           </div>
-        </UCard>
+        </div>
+      </UCard>
 
-        <!-- Sakkas Statistics Card -->
-        <UCard class="bg-gradient-to-br from-secondary-50 to-secondary-100">
-          <div class="flex flex-col items-center p-4">
-            <div class="text-sm text-gray-600">Total Sakkas</div>
-            <div class="text-2xl font-bold text-secondary-600">5,678</div>
+      <!-- Active Users Chart -->
+      <UCard>
+        <template #header>
+          <h3 class="font-semibold">المستخدمين النشطين</h3>
+        </template>
+        <div class="h-80">
+          <!-- Chart placeholder -->
+          <div class="w-full h-full bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center">
+            رسم بياني للمستخدمين النشطين
           </div>
-        </UCard>
-      </div>
-    </template>
-    <template v-if="tabIndex == 1">
-      <Map></Map>
-    </template>
+        </div>
+      </UCard>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-8">
+      <UCard>
+        <template #header>
+          <h3 class="font-semibold">آخر التقييمات</h3>
+        </template>
+        <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+          <li v-for="i in 3" :key="i" class="py-4">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <UAvatar :src="`https://i.pravatar.cc/150?img=${i}`" />
+              </div>
+              <div class="ml-4 flex-1">
+                <div class="flex items-center">
+                  <h4 class="text-sm font-medium">مستخدم {{ i }}</h4>
+                  <div class="ml-2 flex">
+                    <UIcon v-for="star in 5" :key="star" name="i-heroicons-star-solid" 
+                          class="w-4 h-4 text-amber-400" />
+                  </div>
+                </div>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                  تطبيق رائع! سهل الاستخدام وواجهة مستخدم جميلة
+                </p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </UCard>
+    </div>
   </UCard>
 </template>
 
 <script lang="ts" setup>
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
-const items = [
-  { id: 0, label: "بيانات", slot: "data" },
-  { id: 1, label: "الخريطة", slot: "map" },
-];
-const tabIndex = ref(0)
-const changeIndex = (index: number) => {
-  tabIndex.value = index
-}
-
-// option for select date
-const options = [
-  { label: "اليوم", value: "today" },
-  { label: "امس", value: "yesterday" },
-  { label: "هذا الاسبوع", value: "thisWeek" },
-  { label: "هذا الشهر", value: "thisMonth" },
-  { label: "هذة السنه", value: "thisYear" },
-  { label: "تاريخ محدد", value: "customRange" },
-];
-const time_options = ref();
-const dateRange = ref<Date[]>([]);
-
-const today = new Date();
-let yersterday = new Date();
-yersterday.setDate(today.getDate() - 1);
-const thisWeak = new Date();
-// console.log(today.getDate())  number of day in month
-// console.log(today.getDay())  get number of day regard to week
-// console.log(today.getDate() - today.getDay())  get the start of  active week
-thisWeak.setDate(today.getDate() - today.getDay());
-const thisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-const thisYear = new Date(today.getFullYear(), 0, 1);
-watch(time_options, (new_value, old_value) => {
-  if (time_options.value == "today") {
-    // change daterange
-    dateRange.value[0] = dateRange.value[1] = today;
-  } else if (time_options.value == "yesterday") {
-    dateRange.value[0] = yersterday;
-    dateRange.value[1] = today;
-  } else if (time_options.value == "thisWeek") {
-    dateRange.value[0] = thisWeak;
-    dateRange.value[1] = today;
-  } else if (time_options.value == "thisMonth") {
-    dateRange.value[0] = thisMonth;
-    dateRange.value[1] = today;
-  } else if (time_options.value == "thisYear") {
-    dateRange.value[0] = thisYear;
-    dateRange.value[1] = today;
-  }
-});
-time_options.value = "today";
+const timeRange = ref('7d')
 </script>
 
 <style></style>

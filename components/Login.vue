@@ -30,6 +30,7 @@
               dir="ltr"
               v-model="state.username"
               type="text"
+              @keyup.enter="loginForm?.submit()"
               class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-all duration-200"
               placeholder="ادخل اسم المستخدم"
             />
@@ -44,6 +45,7 @@
               dir="ltr"
               v-model="state.password"
               type="password"
+              @keyup.enter="loginForm?.submit()"
               class="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-amber-500 dark:focus:ring-amber-400 focus:border-transparent transition-all duration-200"
               placeholder="ادخل كلمة المرور"
             />

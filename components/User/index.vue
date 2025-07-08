@@ -12,21 +12,22 @@
       </div>
     </template>
 
-    <UTable :data="rows" :columns="cols" @select="select" :loading="usersREQ.status.value == 'pending'">
-      <template #phone-cell="{ row }"  >
-        <p>{{  `${(row.original.phone as string).replace('+', '')}+`  }}</p>
+    <UTable v-model:sorting="sorting" :data="rows" :columns="cols" :loading="usersREQ.status.value == 'pending'">
+      <template #phone-cell="{ row }">
+        <p>{{ `${(row.original.phone as string).replace('+', '')}+` }}</p>
       </template>
       <template #roles-cell="{ row }" dir="ltr">
-        <UBadge v-for="role in row.original.roles" :class="{ 'hidden': role == 'User' }" class="mx-1" variant="outline"
+        <UBadge v-for="role in row.original.roles" class="mx-1" variant="outline"
           :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
-          :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'" />
+          :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'">
+        </UBadge>
       </template>
       <template #action-cell="{ row }" dir="ltr">
         <UButtonGroup>
-        <UButton color="primary"  variant="outline" size="md" icon="i-heroicons-eye"
-          :to="`/user/${row.original.id}`" />
+          <UButton color="primary" variant="outline" size="md" icon="i-heroicons-eye"
+            :to="`/user/${row.original.id}`" />
           <UButton color="secondary" variant="outline" size="md" icon="i-heroicons-clipboard"
-          @click="copyToClipboard(row.original.id)" />
+            @click="copyToClipboard(row.original.id)" />
         </UButtonGroup>
       </template>
     </UTable>
@@ -36,6 +37,8 @@
 
 <script lang="ts" setup>
 import type { User } from "~/models/user";
+const UButton = resolveComponent('UButton')
+const UBadge = resolveComponent('UBadge')
 
 // definePageMeta({
 //   keepAlive: true,
@@ -76,12 +79,51 @@ const rows = computed(() => {
 });
 const cols = [
   // { accessorKey: "id", header: "#" },
-  { accessorKey: "username", header: "الاسم" },
+  {
+    accessorKey: "username",
+    header: ({ column }: { column: any }) => {
+      const isSorted = column.getIsSorted()
+      return h(UButton, {
+        color: 'neutral',
+        variant: 'ghost',
+        label: 'الاسم',
+        icon: isSorted
+          ? isSorted === 'asc'
+            ? 'i-lucide-arrow-up-narrow-wide'
+            : 'i-lucide-arrow-down-wide-narrow'
+          : 'i-lucide-arrow-up-down',
+        class: '-mx-2.5',
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc', false)
+      })
+    },
+    sortingFn: (rowA: any, rowB: any) => {
+      return rowA.original.username.toLowerCase().localeCompare(rowB.original.username.toLowerCase())
+    }
+  },
   { accessorKey: "phone", header: "رقم الهاتف" },
   { accessorKey: "roles", header: "الفئة" },
-  { id: "action", header: "الاجراءات" }
+  { id: "action", header: "الاجراءات" },
+  {
+    accessorKey: "expireDate", header: "الاشتركات",
+    cell: ({ row }: { row: any }) => {
+      return h(UBadge, {
+        color: 'neutral',
+        variant: 'outline',
+        label: row.original.expireDate ? (new Date(row.original.expireDate).getTime() > new Date().getTime() ? `${Math.ceil((new Date(row.original.expireDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} يوم` : 'منتهي') : 'لا يوجد',
+        icon: 'i-heroicons-calendar',
+        class: 'mx-1',
+      })
+  }
+  }
 
 ];
+
+const sorting = ref([
+  {
+    id: 'username',
+    desc: false
+  }
+])
 
 const select = (row: any, e?: Event) => {
   return navigateTo(`/user/${row.original.id}`);
@@ -114,8 +156,6 @@ const roleOptions = [
   { value: "StaffAdmin", label: "الاستف" },
   { value: "User", label: "مستخدمين" },
   { value: "Streamer", label: "الاستريمر" },
-
-
 ];
 </script>
 
