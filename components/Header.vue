@@ -10,9 +10,9 @@
       class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200 ">
     </UButton>
     <div v-else>
-      <UButton color="neutral" to="/tournament" size="lg" class=" dark:hover:bg-amber-600 transition-colors duration-200">
+      <!-- <UButton color="neutral" to="/tournament" size="lg" class=" dark:hover:bg-amber-600 transition-colors duration-200">
         البطولات
-      </UButton>
+      </UButton> -->
 
     </div>
 

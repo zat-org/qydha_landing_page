@@ -1,21 +1,21 @@
 <template>
-  <UModal title="اضافة كود جديد" description="اضافة كود جديد" prevent-close>
+  <UModal title="اضافة كود جديد" description="اضافة كود جديد" prevent-close class="max-w-2xl h-[80vh]">
     <template #body>
-      <UForm :state="state" :schema="schema" ref="Form" class="flex gap-2" @submit="onsubmit">
-        <div class="flex flex-col gap-5   ">
+      <UForm :state="state" :schema="schema" ref="Form" class="flex gap-2 h-full w-full justify-between " @submit="onsubmit">
+        <div class="flex flex-col flex-1 gap-5    ">
 
           <UFormField label="الكود" name="code">
             <UInput v-model="state.code" />
           </UFormField>
           <UFormField label="المستخدم" name="userId">
-            <USelectMenu v-model="state.userId" :options="users" :searchable="search" option-attribute="username"
-              :search-attributes="['username']" value-attribute="id" :loading="getUsersREQ.status.value == 'pending'" />
+            <USelectMenu v-model="state.userId" :items="users"class="w-full" :searchable="search" option-attribute="username"
+              :search-attributes="['username']" value-key="id"  label-key="username" :loading="getUsersREQ.status.value == 'pending'" />
           </UFormField>
           <UFormField label="عدد الايام" name="numberOfDays">
             <UInput v-model="state.numberOfDays" />
           </UFormField>
-        </div>
-        <UFormField label="تاريخ الانتهاء" name="expireAt">
+        </div >
+        <UFormField label="تاريخ الانتهاء" name="expireAt" class="flex-1">
           <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right" />
 
 
@@ -70,10 +70,10 @@ const state = reactive<IPromoCodeCreate>({
 
 // Create a new date for tomorrow by adding one day (24 hours in milliseconds)
 const schema = object({
-  code: string().required(),
-  userId: string().required(),
-  numberOfDays: number().required(),
-  expireAt: date().required().min(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)), 'برجاء ادخال اليوم او تاريخ بعده')
+  code: string().required("برجاء ادخال الكود"),
+  userId: string().required("برجاء ادخال المستخدم"),
+  numberOfDays: number().required("برجاء ادخال عدد الايام"),
+  expireAt: date().required("برجاء ادخال تاريخ الانتهاء").min(new Date(new Date().getTime() + (24 * 60 * 60 * 1000)), 'برجاء ادخال اليوم او تاريخ بعده')
 })
 
 const onsubmit = async () => {

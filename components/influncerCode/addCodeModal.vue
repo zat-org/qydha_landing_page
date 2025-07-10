@@ -1,9 +1,9 @@
 <template>
-  <UModal title="اضافة كود" description="اضافة كود" prevent-close >
+  <UModal title="اضافة كود" description="اضافة كود" prevent-close class="max-w-2xl h-[80vh]" >
       <template #body>
-        <UForm :state="state" :schema="schema" ref="CodeForm" @submit="onSubmit" class="grid grid-cols-2  gap-2">
-         
-         <div class="">
+        <UForm :state="state" :schema="schema" ref="CodeForm" @submit="onSubmit" class="grid grid-cols-2  h-full  gap-4" >
+          
+         <div class="flex flex-col gap-4 justify-around ">
            <UFormField label="الكود" name="code">
              <UInput v-model="state.code" />
            </UFormField>
@@ -19,8 +19,8 @@
              <UInput v-model="state.maxInfluencedUsersCount" type="number" />
            </UFormField>
          </div>
-         <UFormField label="تاريخ الانتهاء" name="expireAt" class="grid place-content-center">
-          <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right" />
+         <UFormField label="تاريخ الانتهاء" name="expireAt" class="">
+          <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right"/>
           </UFormField>
   
         </UForm>
