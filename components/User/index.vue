@@ -8,7 +8,7 @@
           <USwitch v-model="exactSearch" />
         </div>
         <USelect :items="roleOptions" v-model="roleFilter" class="w-40" />
-        <p>{{ usersNumebr?.toLocaleString() }} مستخدم</p>
+        <p>{{ items?.toLocaleString() }} مستخدم</p>
       </div>
     </template>
 
@@ -20,8 +20,8 @@
       <template #roles-cell="{ row }" dir="ltr">
         <div class="flex  gap-2 items-center">
 
-          <UIcon v-if="new Date(row.original.expireDate).getTime() > new Date().getTime()"name="heroicons:star-16-solid"  class="text-amber-500 w-4 h-4" />
             <UBadge v-for="role in row.original.roles"  variant="outline"
+            :icon="new Date(row.original.expireDate).getTime() > new Date().getTime() && role=='User'?'i-heroicons-star-16-solid':''"
             :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
             :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'"
             >
@@ -51,25 +51,27 @@ const UBadge = resolveComponent('UBadge')
 //   scrollPos: 0,
 // });
 const usersREQ = await useUsers().getAllUsers();
-await usersREQ.fetchREQ("");
-const usersNumebr = usersREQ.data.value?.data.totalCount;
+// await usersREQ.fetchREQ("",);
 const route = useRoute();
 const router = useRouter();
 const query = ref(route.query.search?.toString() || "");
+
 const toast = useToast();
 const exactSearch = ref<boolean>(route.query.exact === "true" || true);
 const roleFilter = ref<string>((route.query.role as string) || "User");
-
 const page = ref(
-  Number(route.query.page) || usersREQ.data.value?.data.currentPage!
+  (route.query.page ? +route.query.page : 1) || usersREQ.data.value?.data.currentPage!
 );
+
 await usersREQ.fetchREQ(
-  query.value,
+ query.value,
   page.value,
   exactSearch.value,
-  roleFilter.value
+  roleFilter.value,
+  
 );
 const items = ref(usersREQ.data.value?.data.totalCount!);
+
 
 const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
@@ -130,12 +132,7 @@ const sorting = ref([
     desc: false
   }
 ])
-
-const select = (row: any, e?: Event) => {
-  return navigateTo(`/user/${row.original.id}`);
-};
 watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
-  console.log(page.value)
   if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]) {
     page.value = 1;
   }
@@ -155,7 +152,7 @@ watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
     roleFilter.value
   );
   items.value = usersREQ.data.value?.data.totalCount!;
-});
+}, );
 
 const roleOptions = [
   { value: "SuperAdmin", label: "الادمن" },
