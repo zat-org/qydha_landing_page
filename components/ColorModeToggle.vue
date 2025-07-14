@@ -2,7 +2,7 @@
   <ClientOnly v-if="!colorMode?.forced">
     <UButton
       :icon="isDark ? 'i-heroicons-moon-20-solid' : 'i-heroicons-sun-20-solid'"
-      color="gray"
+      color="neutral"  
       variant="ghost"
       size="lg"
       :class="[

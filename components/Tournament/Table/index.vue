@@ -1,25 +1,23 @@
 <template>
-  <UCard :ui="{ base: 'h-full flex flex-col ', body: { base: 'grow ' } }">
+  <UCard>
     <template #header>
-      tables
+      <h1 class="text-2xl font-bold">الطاولات</h1>
     </template>
-    <UTable :data="tables"  :ui="{ td: { padding: 'p-1' }, th: { padding: 'p-1' } }">
-      <template #actions-data="{ row }">
+    <UTable :data="tables" :columns="cols">
+      <template #actions-cell="{ row }">
         <UButtonGroup>
-          <UButton color="yellow" @click="openUpdateModal(row)">
+          <UButton color="warning" @click="openUpdateModal(row.original)">
             <IconSetting class="text-lg" />
           </UButton>
-          <UButton color="red" @click="deleteTable(row)">
-            <IconDelete class="text-lg" />
-          </UButton>
+
 
         </UButtonGroup>
       </template>
     </UTable>
     <template #footer>
       <div class="flex justify-between ">
-        <UButton label="add" @click="openAddModal" />
-        <UButton label="back" color="red" @click="navigateTo('/tournament/' + tour_id)" />
+        <!-- <UButton label="add" @click="openAddModal" /> -->
+        <UButton label="عودة" color="error" @click="navigateTo('/tournament/' + tour_id)" />
 
       </div>
     </template>
@@ -28,24 +26,53 @@
 
 <script lang="ts" setup>
 import type { ITable } from '~/models/Table';
-import AddModal from './AddModal.vue';
 import UpdateModal from './UpdateModal .vue';
-
-
+const overlay = useOverlay()
 const route = useRoute()
 const tour_id = route.params.id.toString()
-const overlay = useOverlay()
 const getTableREQ = await useTournamentTable().getTable()
 await getTableREQ.fetchREQ(tour_id)
 const tables = computed(() => {
+  return [
+    {
+      id: '1',
+      name: 'طاولة 1',
+      state: 'active',
+      team1: "A|B",
+      team2: "C|D",
+      refree: "Refree1",
+      tournamentId: tour_id
+    },
+    {
+      id: '2',
+      name: 'طاولة 2',
+      state: 'active',
+      team1: "E|F",
+      team2: "G|H",
+      refree: "Refree2",
+      tournamentId: tour_id
+    },
+    {
+      id: '3',
+      name: 'طاولة 3',
+      state: 'active',
+      team1: "I|J",
+      team2: "K|L",
+      refree: "Refree3",
+      tournamentId: tour_id
+    },
+
+  ]
   return getTableREQ.data.value?.data
 })
-const openAddModal = () => {
-  modal.open(AddModal)
-}
+
 const cols = [
-  { key: 'name', label: 'الاسم ' }
-  , { key: 'actions', label: '# ' }
+  { accessorKey: 'name', header: 'الاسم ' },
+  { accessorKey: 'state', header: 'الحالة' },
+  { accessorKey: 'team1', header: 'الفريق الاول' },
+  { accessorKey: 'team2', header: 'الفريق الثاني' },
+  { accessorKey: 'refree', header: 'الحكم' },
+  { accessorKey: 'actions', header: '# ' }
 ]
 const deleteREQ = await useTournamentTable().deleteTable()
 const deleteTable = async (row: ITable) => {

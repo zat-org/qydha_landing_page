@@ -151,7 +151,11 @@ const tabsItems = [
 const promocols = [
   { accessorKey: 'code', header: 'الاسم ' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
-  { accessorKey: 'usedAt', header: 'استخدم في ' },
+  { accessorKey: 'usedAt', header: 'استخدم في ' ,
+  cell: ({row}:{row:any}) => {
+    return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
+  }
+  },
 ]
 
 const purchaseCols = [
@@ -163,7 +167,13 @@ const purchaseCols = [
 const influncerCols = [
   { accessorKey: 'influencerCodeName', header: 'الكود' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
-  { accessorKey: 'category', header: ' النوع' },
+  { accessorKey: 'category.name', header: ' النوع' },
+  { accessorKey: 'usedAt', header: 'استخدم في' ,
+  cell: ({row}:{row:any}) => {
+    return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
+  }
+  },
+
 ]
 </script>
 

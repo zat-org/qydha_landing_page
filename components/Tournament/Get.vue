@@ -27,8 +27,8 @@
             <div class="flex items-center gap-2">
               <UIcon name="i-mdi-calendar" class="text-gray-500"/>
               <p>
-                {{ new Date(tour.startAt).toLocaleDateString('ar-SA') }} - 
-                {{ new Date(tour.endAt).toLocaleDateString('ar-SA') }}
+                {{ new Date(tour.startAt).toLocaleDateString() }} - 
+                {{ new Date(tour.endAt).toLocaleDateString() }}
               </p>
             </div>
           </div>
@@ -112,11 +112,11 @@ const canEdit = computed(() => {
 });
 
 const adminButtons = computed(() => [
-  { label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' },
+  // { label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' },
   { label: 'ادارة المديرين', to: `/tournament/${props.id}/moderator`, icon: 'i-mdi-account-cog' },
   { label: 'ادارة الفرق', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' },
   { label: 'ادارة اللاعبين', to: `/tournament/${props.id}/player`, icon: 'i-mdi-account' },
-  { label: 'ادارة الجداول', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' },
+  { label: 'ادارة الطاولات ', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' },
   { label: 'ادارة المجموعات', to: '', icon: 'i-mdi-group' }
 ]);
 

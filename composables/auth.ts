@@ -74,7 +74,7 @@ export const useAuth = () => {
       if (status.value == "success" && data.value) {
         userStore.user = data.value.data;
         return navigateTo("/tournament");
-      }
+      } 
     };
     return { data, pending, error, refresh, status, fetchREQ };
   };
@@ -110,7 +110,7 @@ export const useAuth = () => {
       body.code = _code;
       await execute();
       if (status.value == "success") {
-        return navigateTo("/login");
+        // return navigateTo("/login");
       }
     };
     return { data, pending, error, refresh, status, fetchREQ };
