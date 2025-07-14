@@ -14,13 +14,19 @@
 
     <UTable v-model:sorting="sorting" :data="rows" :columns="cols" :loading="usersREQ.status.value == 'pending'">
       <template #phone-cell="{ row }">
+        
         <p>{{ `${(row.original.phone as string).replace('+', '')}+` }}</p>
       </template>
       <template #roles-cell="{ row }" dir="ltr">
-        <UBadge v-for="role in row.original.roles" class="mx-1" variant="outline"
-          :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
-          :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'">
-        </UBadge>
+        <div class="flex  gap-2 items-center">
+
+          <UIcon v-if="new Date(row.original.expireDate).getTime() > new Date().getTime()"name="heroicons:star-16-solid"  class="text-amber-500 w-4 h-4" />
+            <UBadge v-for="role in row.original.roles"  variant="outline"
+            :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
+            :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'"
+            >
+          </UBadge>
+        </div>
       </template>
       <template #action-cell="{ row }" dir="ltr">
         <UButtonGroup>
@@ -101,7 +107,7 @@ const cols = [
     }
   },
   { accessorKey: "phone", header: "رقم الهاتف" },
-  { accessorKey: "roles", header: "الفئة" },
+  { accessorKey: "roles", header: "الفئة"},
   { id: "action", header: "الاجراءات" },
   {
     accessorKey: "expireDate", header: "الاشتركات",
