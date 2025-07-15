@@ -161,7 +161,11 @@ const promocols = [
 const purchaseCols = [
   { accessorKey: 'type', header: 'النوع' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
-  { accessorKey: 'purchaseDate', header: 'تاريخ الشراء' },
+  { accessorKey: 'purchaseDate', header: 'تاريخ الشراء',
+    cell: ({row}:{row:any}) => {
+    return row.original!.purchaseDate ? new Date(row.original.purchaseDate).toLocaleDateString() : 'لم يشتري'
+  }
+   },
 ]
 
 const influncerCols = [
