@@ -23,9 +23,9 @@
         <template #default>
             <div class="overflow-y-auto max-h-[calc(100vh-300px)] min-h-[400px]">
                 <div class="h-full">
-                    <KeepAlive>
+                    <!-- <KeepAlive>
                         <TournamentAddCompanyForm v-if="currentStep === 0" v-model="formData" />
-                    </KeepAlive>
+                    </KeepAlive> -->
                     <KeepAlive>
                         <TournamentAddTourForm v-if="currentStep === 1" v-model="formData" />
                     </KeepAlive>
@@ -71,17 +71,17 @@ const isSubmitting = ref(false);
 const completedSteps = ref(new Set<number>());
 
 const steps = [
-    {
-        id: 0,
-        label: "معلومات الشركة",
-        slot: "CompInfo",
-        icon: "i-heroicons-building-office",
-        class: computed(() => completedSteps.value.has(0)
-            ? 'bg-green-600 dark:bg-green-400'
-            : currentStep.value === 0
-                ? 'bg-primary-600 dark:bg-primary-400'
-                : 'bg-gray-500 dark:bg-gray-400')
-    },
+    // {
+    //     id: 0,
+    //     label: "معلومات الشركة",
+    //     slot: "CompInfo",
+    //     icon: "i-heroicons-building-office",
+    //     class: computed(() => completedSteps.value.has(0)
+    //         ? 'bg-green-600 dark:bg-green-400'
+    //         : currentStep.value === 0
+    //             ? 'bg-primary-600 dark:bg-primary-400'
+    //             : 'bg-gray-500 dark:bg-gray-400')
+    // },
     {
         id: 1,
         label: "معلومات البطولة",
