@@ -10,7 +10,7 @@
     </template>
   </UTable> 
   
-  <UPagination class="mx-auto rtl" v-model="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!"  />
+  <UPagination class="mx-auto rtl" v-model:page="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!"  />
 
   
 </template>
