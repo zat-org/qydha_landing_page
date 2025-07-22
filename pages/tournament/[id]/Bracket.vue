@@ -7,7 +7,7 @@
           @click="handleGroupSelection(item.data.id)" />
       </UButtonGroup>
       <ClientOnly>
-        <TourBracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
+        <Bracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
       </ClientOnly>
 
     </div>

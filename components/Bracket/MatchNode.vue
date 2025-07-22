@@ -90,8 +90,8 @@ import { Position } from "@vue-flow/core";
 import { Handle } from "@vue-flow/core";
 import type { Match } from "@/models/group";
 import { useMyAuthStore } from "@/store/Auth";
-import StatusModal from "./StatusModal.vue";
-import EditModal from "./EditModal.vue";
+import StatusModal from "../Bracket/StatusModal.vue";
+import EditModal from "../Bracket/EditModal.vue";
 
 const props = defineProps<{ data: { match: Match } }>();
 const useStore = useMyAuthStore()

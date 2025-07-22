@@ -1,13 +1,13 @@
 <template>
   <UModal prevent-close>
-    <UCard :ui="{ base: 'flex flex-col ', body: { base: 'grow ' } }">
-      <template #header>
-        <h1>Add new Account </h1>
-      </template>
+    <template #header>
+      <h1>Add new Account </h1>
+    </template>
+    <template #body>
       <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit">
         <UFormField label="name" name="name">
           <UInput v-model="state.name"></UInput>
-        </UFormField> 
+        </UFormField>
         <UFormField label="description" name="description">
           <UInput v-model="state.description"></UInput>
         </UFormField>
@@ -15,14 +15,14 @@
           <USelectMenu v-model="state.permissions" :options="permissions" multiple />
         </UFormField>
       </UForm>
-      <template #footer>
-        <div class="flex justify-between items-center">
-          <UButton label="close" color="red" @click="emit('close')" />
-          <UButton label='add' color="green" @click="AddForm?.submit()" />
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center">
+        <UButton label="close" color="error" @click="emit('close')" />
+        <UButton label='add' color="success" @click="AddForm?.submit()" />
 
-        </div>
-      </template>
-    </UCard>
+      </div>
+    </template>
   </UModal>
 </template>
 
@@ -39,18 +39,18 @@ const state = reactive<IServiceAccountCreate>({
 const schema = object({
   name: string().required(),
   description: string(),
-  permissions: array().of(string()).min(1,"select permission")
+  permissions: array().of(string()).min(1, "select permission")
 })
 const permissionREQ = await useServiceAccount().getPermissions()
 const permissions = computed(() => {
   return permissionREQ.data.value?.data.permissions
 })
 const addREQ = await useServiceAccount().addServiceAccount()
-const onSubmit =async()=>{
+const onSubmit = async () => {
   await addREQ.fetchREQ(state)
-  if ( addREQ.status.value=='success'){
+  if (addREQ.status.value == 'success') {
     refreshNuxtData('getServiceAccounts')
-    toast.add({title:'add ing done succefuly'})
+    toast.add({ title: 'add ing done succefuly' })
     emit('close')
   }
 }

@@ -11,76 +11,71 @@
           قم بإضافة وتعديل قوانين البطولة الخاصة بك
         </p>
       </div>
-      
-    <UModal v-model="showRulesGuide" title="دليل القوانين المقترحة" description="دليل القوانين المقترحة">
-      <UButton size="lg" color="primary" variant="soft" icon="i-heroicons-book-open" @click="showRulesGuide = true">
-        دليل القوانين
-      </UButton>
-      <template #body>
-        <div class="space-y-4 p-4 overflow-y-auto max-h-[calc(100vh-300px)] min-h-[400px]">
-          <div v-for="(rule, index) in predefinedRules" :key="index" 
-            class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-200 group">
-            <span class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full font-medium">
+
+      <UButton color="primary" variant="ghost" icon="i-heroicons-book-open"  target="_blank" :href="book?.data.url"/>
+    </div>
+
+    <!-- UForm wrapper for validation -->
+    <UForm :schema="localSchema" :state="modelValue" ref="formRef" class="space-y-6">
+      <!-- Add Rule Section -->
+      <div class="flex flex-col md:flex-row gap-3 px-2">
+       <UFormField name="Rules" label="قوانين البطولة" class="grow"  >
+        <UInput v-model="newRule" class="grow" placeholder="أدخل قانون جديد..." :error="ruleError" @keyup.enter="addRule">
+        </UInput>
+       </UFormField>
+       
+        <UButton color="primary" :loading="isAdding" :disabled="!newRule?.trim()" @click="addRule" class="shrink-0">
+          <UIcon name="i-heroicons-plus" class="mr-1" />
+          إضافة قانون
+        </UButton>
+      </div>
+
+      <!-- Hidden field for validation purposes -->
+      <UFormField name="Roles"  class="hidden">
+        <UInput :model-value="modelValue.Roles.join(',')" class="hidden" />
+      </UFormField>
+
+      <!-- Rules List -->
+      <div v-if="modelValue.Roles.length > 0" class="space-y-3">
+        <TransitionGroup name="list">
+          <div v-for="(rule, index) in modelValue.Roles" :key="index"
+            class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors group">
+            <span
+              class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full font-medium">
               {{ index + 1 }}
             </span>
-            <p class="flex-grow text-gray-700 dark:text-gray-200">{{ rule }}</p>
-           
+
+            <div v-if="editingIndex === index" class="flex-grow flex gap-2">
+              <UInput v-model="editingRule" class="flex-grow" @keyup.enter="updateRule(index)" />
+              <UButton color="primary" @click="updateRule(index)">حفظ</UButton>
+              <UButton color="neutral" @click="cancelEdit">إلغاء</UButton>
+            </div>
+
+            <p v-else class="flex-grow text-gray-700 dark:text-gray-200">
+              {{ rule }}
+            </p>
+
+            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <UButton color="primary" variant="ghost" icon="i-heroicons-pencil" @click="startEdit(index, rule)" />
+              <UButton color="error" variant="ghost" icon="i-heroicons-trash" @click="deleteRule(index)" />
+            </div>
           </div>
-        </div>
-      </template>
-    </UModal>
-      
-    </div>
+        </TransitionGroup>
+      </div>
 
-
-    <!-- Add Rule Section -->
-    <div class="flex flex-col md:flex-row gap-3 px-2">
-      <UInput v-model="newRule" class="grow" placeholder="أدخل قانون جديد..." :error="ruleError" @keyup.enter="addRule">
-      </UInput>
-      <UButton color="primary" :loading="isAdding" :disabled="!newRule?.trim()" @click="addRule" class="shrink-0">
-        <UIcon name="i-heroicons-plus" class="mr-1" />
-        إضافة قانون
-      </UButton>
-    </div>
-
-    <!-- Rules List -->
-    <div v-if="modelValue.Roles.length > 0" class="space-y-3">
-      <TransitionGroup name="list">
-        <div v-for="(rule, index) in modelValue.Roles" :key="index"
-          class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors group">
-          <span
-            class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full font-medium">
-            {{ index + 1 }}
-          </span>
-
-          <div v-if="editingIndex === index" class="flex-grow flex gap-2">
-            <UInput v-model="editingRule" class="flex-grow" @keyup.enter="updateRule(index)" />
-            <UButton color="primary" @click="updateRule(index)">حفظ</UButton>
-            <UButton color="neutral" @click="cancelEdit">إلغاء</UButton>
-          </div>
-
-          <p v-else class="flex-grow text-gray-700 dark:text-gray-200">
-            {{ rule }}
-          </p>
-
-          <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-            <UButton color="primary" variant="ghost" icon="i-heroicons-pencil" @click="startEdit(index, rule)" />
-            <UButton color="error" variant="ghost" icon="i-heroicons-trash" @click="deleteRule(index)" />
-          </div>
-        </div>
-      </TransitionGroup>
-    </div>
-
-    <!-- Empty State -->
-    <div v-else class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
-      <UIcon name="i-heroicons-document-text" class="mx-auto h-12 w-12 text-gray-400" />
-      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">لا توجد قوانين</h3>
-      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">ابدأ بإضافة قوانين البطولة الخاصة بك</p>
-    </div>
+      <!-- Empty State -->
+      <div v-else class="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-xl">
+        <UIcon name="i-heroicons-document-text" class="mx-auto h-12 w-12 text-gray-400" />
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">لا توجد قوانين</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">ابدأ بإضافة قوانين البطولة الخاصة بك</p>
+      </div>
+    </UForm>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { object, array, string } from "yup";
+
 const props = defineProps<{
   modelValue: {
     Roles: string[];
@@ -88,25 +83,60 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(["update:modelValue"]);
+
+// Enhanced validation state management
+const isValid = ref(false);
+const errors = ref<Record<string, string>>({});
+const isValidating = ref(false);
+
+// Add form ref for Nuxt UI validation
+const formRef = ref<HTMLFormElement | null>(null);
+
+// Move schema to component level for better encapsulation
+const localSchema = object({
+  Roles: array()
+    .of(string())
+});
+
+// Validation methods to expose to parent
+const validate = async (): Promise<boolean> => {
+  isValidating.value = true;
+  errors.value = {};
+  
+  try {
+    // Use Nuxt UI form validation
+    await formRef.value?.validate();
+    
+    // If validation passes, update state
+    isValid.value = true;
+    return true;
+  } catch (error: any) {
+    isValid.value = false;    
+  
+    return false;
+  } finally {
+    isValidating.value = false;
+  }
+};
+
+
+
+// Expose methods to parent component
+defineExpose({
+  validate,
+  isValid: readonly(isValid),
+  errors: readonly(errors),
+  isValidating: readonly(isValidating)
+});
+
+const {data:book} = await useAssets().getBook()
+
 const newRule = ref("");
 const ruleError = ref("");
 const isAdding = ref(false);
 const editingIndex = ref(-1);
 const editingRule = ref("");
-const showRulesGuide = ref(false);
 
-const predefinedRules = [
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-  "يجب أن يكون لديك قوانين للبطولة",
-]
 const addRule = async () => {
   if (!newRule.value?.trim()) {
     ruleError.value = "الرجاء إدخال قانون";

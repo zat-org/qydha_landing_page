@@ -1,11 +1,11 @@
 <template>
 
   <UModal>
-    <UCard>
+    
       <template #header>
 
       </template>
-      <div>
+      <template #body >
         <UForm :state="state" :scheam="schema" @submit="onSubmit" class="flex flex-col gap-5">
           <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }">
             <UInputMenu v-model="state.refereeId" :options="Refres" value-attribute="id" option-attribute="username"
@@ -25,20 +25,20 @@
 
           <UButton label="حفظ" type="submit" class="w-1/2 mx-auto" block />
         </UForm>
-      </div>
+      </template>
       <template #footer>
         <div v-if="match.themTeamId && match.usTeamId">
 
           <UDropdown :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
             v-if="match.state.toLowerCase() == 'created'" :ui="{ width: 'w-[300px]' }">
-            <UButton color="red" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
+            <UButton color="error" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
           </UDropdown>
-          <UButton v-else-if="privilege == Privilege.Admin || privilege == Privilege.Owner" color="red"
+          <UButton v-else-if="privilege == Privilege.Admin || privilege == Privilege.Owner" color="error"
             label="اعادة الضبط" @click="onReset" />
         </div>
 
       </template>
-    </UCard>
+   
   </UModal>
 
 </template>

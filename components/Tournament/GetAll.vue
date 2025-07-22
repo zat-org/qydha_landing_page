@@ -7,97 +7,49 @@
             <h1 class="text-3xl font-bold">البطولات</h1>
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
-          <UButton 
-            v-if="isAdmin" 
-            variant="solid" 
-            color="primary"
-            icon="ic:baseline-plus" 
-            to="/tournament/add" 
-            label="إضافة بطولة جديدة"
-            class="px-6"
-          />
+          <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/add"
+            label="إضافة بطولة جديدة" class="px-6" />
         </div>
 
         <div class="flex flex-col md:flex-row gap-4 items-center">
-          <UInput
-            v-model="searchQuery"
-            icon="i-heroicons-magnifying-glass"
-            placeholder="البحث عن بطولة..."
-            class="md:w-64"
-          />
+          <UInput v-model="searchQuery" icon="i-heroicons-magnifying-glass" placeholder="البحث عن بطولة..."
+            class="md:w-64" />
 
-          <USelectMenu 
-            :items="options" 
-            class="w-full md:w-auto" 
-            multiple 
-            value-key="value" 
-            label-key="label"
-            placeholder="تصفية حسب الحالة"
-            v-model="stateQ"
-          />
+          <USelectMenu :items="options" class="w-full md:w-auto" multiple value-key="value" label-key="label"
+            placeholder="تصفية حسب الحالة" v-model="stateQ" />
         </div>
       </div>
     </template>
 
     <div class="  flex flex-col flex-1  ">
-      <UTable 
-        :data="filteredRows" 
-        :columns="cols" 
-        @select="select"
-        :loading="loading"
-        hover
-        class="flex-1"
-      >
+      <UTable :data="filteredRows" :columns="cols" @select="select" :loading="loading" hover class="flex-1">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-12 px-4">
-            <UIcon name="i-heroicons-inbox" class="text-4xl text-gray-400 mb-2"/>
+            <UIcon name="i-heroicons-inbox" class="text-4xl text-gray-400 mb-2" />
             <p class="text-gray-500">لا توجد بطولات متاحة</p>
           </div>
         </template>
 
         <template #showInQydha-cell="{ row }">
-          <UBadge
-            :color="row.original.showInQydha ? 'success' : 'neutral'"
-            variant="subtle"
-            :label="row.original.showInQydha ? 'معروض' : 'مخفي'"
-          />
+          <UBadge :color="row.original.showInQydha ? 'success' : 'neutral'" variant="subtle"
+            :label="row.original.showInQydha ? 'معروض' : 'مخفي'" />
         </template>
 
-        <template #state-cell="{ row }">
-          <!-- :color="getStateColor(row.original.state)" -->
-          <UBadge
-            variant="subtle"
-            :label="getStateLabel(row.original.state)"
-          />
-        </template>
-        <template #actions-cell="{ row }">
-          <UButton
-            v-if="row.original.state === 'Upcoming'"
-            color="primary"
-            variant="solid"
-            label="انضمام"
-            size="sm"
-            icon="i-mdi-plus"
-          />
-          <UButton
-            v-if="row.original.state === 'Running'"
-            color="error"
-            variant="solid"
-            label="انسحاب"
-            size="sm"
-            icon="i-mdi-minus"
-          />
+        <template #links-cell="{ row }">
+         <UButtonGroup>
+          <UButton color="primary" variant="solid" label="الخريطة " :to="`/tournament/${row.original.id}/bracket`" />
+          <UButton color="primary" variant="solid" label="المسؤولين"  :to="`/tournament/${row.original.id}/moderator`" />
+          <!-- <UButton color="primary" variant="solid" label="الفرق"  :to="`/tournament/${row.original.id}/team`" /> -->
+          <UButton color="primary" variant="solid" label="اللاعبين"  :to="`/tournament/${row.original.id}/player`" />
+          <UButton color="primary" variant="solid" label="الطاولات"  :to="`/tournament/${row.original.id}/table`" />
+          <!-- <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" /> -->
+         </UButtonGroup>
+      
         </template>
       </UTable>
 
-      <UPagination
-      class="mx-auto"
-        v-if="totalPages > 1"
-        v-model="currentPage"
-        :page-count="totalPages"
-        :total="totalItems"
-        
-      />
+      <UPagination class="mx-auto" v-if="totalPages > 1" v-model="currentPage" :page-count="totalPages"
+        :total="totalItems" />
     </div>
   </UCard>
 </template>
@@ -105,7 +57,7 @@
 <script lang="ts" setup>
 import type { ITournament } from "~/models/tournament";
 
-const stateQ = ref<string[]>(["Upcoming", "Running", "Finished"]);
+const stateQ = ref<string[]>(["Upcoming", "Running", "Finished", "Review"]);
 const searchQuery = ref('');
 const loading = ref(false);
 const currentPage = ref(1);
@@ -129,6 +81,8 @@ const options = [
   { label: "القادمة", value: "Upcoming" },
   { label: "الجارية", value: "Running" },
   { label: "المنتهية", value: "Finished" },
+  { label: "قيد المراجعة", value: "Review" },
+
 ];
 
 const tourApi = useTournament();
@@ -140,44 +94,48 @@ const tournaments = computed(() => {
       name: 'بطولة الرياض للهجن',
       city: 'الرياض',
       showInQydha: true,
-      state: 'Upcoming'
+      state: 'Review',
+      numberOfTeamRegistered: 10,
     },
     {
       id: '2',
       name: 'سباق الهجن الكبير',
       city: 'جدة',
       showInQydha: false,
-      state: 'Running'
+      state: 'Running',
+      numberOfTeamRegistered: 10,
     },
     {
       id: '3',
       name: 'بطولة المدينة السنوية',
       city: 'المدينة المنورة',
       showInQydha: true,
-      state: 'Finished'
+      state: 'Finished',
+      numberOfTeamRegistered: 10,
     },
     {
       id: '4',
       name: 'سباق الطائف للهجن',
       city: 'الطائف',
       showInQydha: true,
-      state: 'Upcoming'
+      state: 'Upcoming',
+      numberOfTeamRegistered: 10,
     }
   ];
 });
 
 const filteredRows = computed(() => {
   let results = tournaments.value ?? [];
-  
+
   if (searchQuery.value) {
-    results = results.filter(tournament => 
+    results = results.filter(tournament =>
       tournament.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
       tournament.city.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
 
   if (stateQ.value.length) {
-    results = results.filter(tournament => 
+    results = results.filter(tournament =>
       stateQ.value.includes(tournament.state)
     );
   }
@@ -186,38 +144,40 @@ const filteredRows = computed(() => {
 });
 
 const cols = computed(() => {
-  const result = [
-    { 
-      accessorKey: "name", 
+  const result: any[] = [
+    {
+      accessorKey: "name",
       header: "الاسم",
-      class: "font-medium"
     },
-    { 
-      accessorKey: "city", 
-      header: "المدينة"
-    },
-    { 
-      id: 'actions',     
-    },
+    {
+      accessorKey: "numberOfTeamRegistered",
+      header: "عدد الفرق المسجلة"
+    }
+
+
   ]
-  
+
   if (isAdmin.value) {
     result.push(
-      { 
-        accessorKey: "state", 
+
+      {
+        accessorKey: "state",
         header: "الحالة"
       },
-      { 
-        accessorKey: "showInQydha", 
+      {
+        accessorKey: "showInQydha",
         header: "قيدها"
       },
+      { id: "links", header: "الروابط" }
+
+
     )
   }
   return result;
 });
 
 const getStateColor = (state: string) => {
-  switch(state) {
+  switch (state) {
     case 'Upcoming': return 'blue';
     case 'Running': return 'green';
     case 'Finished': return 'gray';
@@ -226,10 +186,11 @@ const getStateColor = (state: string) => {
 }
 
 const getStateLabel = (state: string) => {
-  switch(state) {
+  switch (state) {
     case 'Upcoming': return 'قادمة';
     case 'Running': return 'جارية';
     case 'Finished': return 'منتهية';
+    case 'Review': return 'قيد المراجعة';
     default: return state;
   }
 }

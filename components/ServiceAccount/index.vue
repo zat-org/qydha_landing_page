@@ -1,12 +1,12 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow  flex flex-col ' } }">
+  <UCard >
 
-    <UTable :data="serviceAccounts"  :ui="{ td: { padding: 'py-1' } }">
-      <template #actions-data="{ row }">
+    <UTable :data="serviceAccounts" :columns="cols" >
+      <template #actions-cell="{ row }">
         <UButtonGroup>
-          <UButton icon="material-symbols:info" color="green" @click="openInfo(row)" />
-          <UButton icon="material-symbols:edit" color="yellow" @click="updateAccout(row)" />
-          <UButton icon="material-symbols:delete" color="red" @click="delteAccount(row)" />
+          <UButton icon="material-symbols:info" color="success" @click="openInfo(row.original)" />
+          <UButton icon="material-symbols:edit" color="warning" @click="updateAccout(row.original)" />
+          <UButton icon="material-symbols:delete" color="error" @click="delteAccount(row.original)" />
 
         </UButtonGroup>
       </template>
@@ -15,7 +15,7 @@
     <!-- add pagination  -->
     <template #footer>
       <div class="flex items-center">
-        <UButton label="add" color="green" @click="onAdd" />
+        <UButton label="add" color="success" @click="onAdd" />
       </div>
     </template>
 
@@ -51,9 +51,9 @@ watch(page, async (newValue, oldValue) => {
   await serviceAccountGetREQ.fetchREQ(newValue)
 })
 const cols = [
-  { label: 'الاسم', key: 'name' },
-  { label: 'الوصف', key: 'description' },
-  { label: '#', key: 'actions' },
+  { header: 'الاسم', accessorKey: 'name' },
+  { header: 'الوصف', accessorKey: 'description' },
+  { header: '#', accessorKey: 'actions' },
 
   // {label:'الاذونات',key:'permissions'},
 ]

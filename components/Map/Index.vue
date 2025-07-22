@@ -1,5 +1,6 @@
 <template>
-  <div  id="map" class="h-[50vh] w-full z-[0] "></div>
+  
+  <div id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0"></div>
 </template>
 
 <script lang="ts" setup>

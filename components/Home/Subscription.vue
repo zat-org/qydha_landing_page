@@ -2,10 +2,6 @@
   <section id="subscriptions"
     class="py-12 lg:py-16 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg sm:rounded-2xl relative overflow-hidden">
     <!-- Background decoration -->
-    <div class="absolute inset-0 bg-[url('/images/circle.svg')] bg-no-repeat bg-left opacity-10 dark:opacity-10"
-      data-aos="fade-right" data-aos-duration="400" data-aos-once="true"></div>
-    <div class="absolute inset-0 bg-[url('/images/circle.svg')] bg-no-repeat bg-right opacity-10 dark:opacity-10"
-      data-aos="fade-left" data-aos-duration="400" data-aos-once="true"></div>
 
     <div class="container mx-auto px-4 relative z-10">
       <h2 class="text-2xl sm:text-3xl font-bold mb-3" data-aos="fade-down" data-aos-duration="400" data-aos-once="true">

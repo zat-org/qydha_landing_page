@@ -1,12 +1,9 @@
 <template>
-  <UModal class="w-[500px] ">
+  <UModal class="w-[500px]" title="الاحصائيات" description="الاحصائيات للمباراة">
 
-    <div class="flex flex-col">
 
-      <div class="flex justify-end p-1">
-        <UButton color="error" icon="material-symbols:close" variant="soft" @click="emit('close')" />
-      </div>
-      
+
+    <template #body>
       <UTabs :items="items" class="w-full p-5">
         <template #status="{ item }">
           <table class="w-full rounded-xl text-center table-fixed table-pin-rows my-3 shadow-lg">
@@ -140,60 +137,60 @@
 
         <template #news="{ item }">
           <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px] ">
-            <div class="flex  gap-2 items-center    " >
-              <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " 
-              :class="{'bg-green-400/20 text-green-500 border-green-300 ':game?.game.winner=='Us',
-                'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Them'
+            <div class="flex  gap-2 items-center    ">
+              <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " :class="{
+                'bg-green-400/20 text-green-500 border-green-300 ': game?.game.winner == 'Us',
+                'bg-red-400/20 text-red-500 border-red-300 ': game?.game.winner == 'Them'
               }">
                 <p class="text-xs  text-center">{{ m.usTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.usTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.game.usGameScore }}   صكة</p>
+                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.game.usGameScore }}
+                  صكة</p>
               </div>
               <div class="flex flex-col gap-1 justify-center items-center">
                 <UIcon name="fxemoji:squaredvs" class="text-lg md:text-2xl" />
-              
+
               </div>
 
-              <div class="flex flex-col gap-1 justify-center items-center w-[200px] p-2  rounded-lg border "
-              :class="{'bg-green-400/20 text-green-500 border-green-300 ':game?.game.winner=='Them',
-                'bg-red-400/20 text-red-500 border-red-300 ':game?.game.winner=='Us'
-              }"
-              >
+              <div class="flex flex-col gap-1 justify-center items-center w-[200px] p-2  rounded-lg border " :class="{
+                'bg-green-400/20 text-green-500 border-green-300 ': game?.game.winner == 'Them',
+                'bg-red-400/20 text-red-500 border-red-300 ': game?.game.winner == 'Us'
+              }">
                 <p class="text-xs  text-center">{{ m.themTeamName.split("|")[0] }}</p>
                 <p class="text-xs  text-center">{{ m.themTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> 
-                  {{ game?.game.themGameScore }} 
+                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg">
+                  {{ game?.game.themGameScore }}
                 </p>
               </div>
             </div>
 
-         
-             <div v-for="(sakka,index) in game?.game.sakkas"  class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
+
+            <div v-for="(sakka, index) in game?.game.sakkas"
+              class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
 
               <div class="w-full flex justify-center items-center  gap-[80px] ">
-                
-                <UBadge :color="sakka.winner && sakka.winner =='Us'?'success':'error'">{{ sakka.usSakkaScore }}</UBadge>
-                  <p class="" > الصكة  {{index+1 }} </p>
-                <UBadge :color="sakka.winner && sakka.winner =='Them'?'success':'error'">{{ sakka.themSakkaScore }}</UBadge>
+
+                <UBadge :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'">{{ sakka.usSakkaScore }}
+                </UBadge>
+                <p class=""> الصكة {{ index + 1 }} </p>
+                <UBadge :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'">{{ sakka.themSakkaScore }}
+                </UBadge>
               </div>
               <UDivider />
-             <div class="flex flex-col">
-               <div v-for="mos in sakka.moshtaras" >
-                 <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-[230px] items-center">
-                   <p>{{ mos.usAbnat }}</p>
-                   <p>{{ mos.themAbnat }}</p>
-                 </div>
-               </div>
-             </div>
+              <div class="flex flex-col">
+                <div v-for="mos in sakka.moshtaras">
+                  <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-[230px] items-center">
+                    <p>{{ mos.usAbnat }}</p>
+                    <p>{{ mos.themAbnat }}</p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </template>
       </UTabs>
+    </template>
 
-    </div>
-    <!-- <UTooltip :text="game.state">
-      <UButton color="gray" label="" />
-    </UTooltip> -->
   </UModal>
 </template>
 
@@ -210,7 +207,7 @@ const gameStore = useMyTournamentStore()
 const start = async () => {
   const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
   if (selectedGame) {
-  //   game.value = selectedGame;
+    //   game.value = selectedGame;
   } else {
     console.log("before fetch ")
     await gameStore.fetchGame(props.m.qydhaGameId);
@@ -218,7 +215,7 @@ const start = async () => {
   }
 }
 await start()
-const game =computed(()=>{
+const game = computed(() => {
   const selectedGame = gameStore.games.find(g => g.id === props.m.qydhaGameId);
   return selectedGame
 })

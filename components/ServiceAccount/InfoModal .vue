@@ -1,27 +1,27 @@
 <template>
   <UModal prevent-close>
-    <UCard :ui="{ base: 'flex flex-col ', body: { base: 'grow' } }">
-      <template #header>
-        <h2 class="text-3xl">{{ serviceAccount.name }} </h2>
-      </template>
+    <template #header>
+      <h2 class="text-3xl">{{ serviceAccount.name }} </h2>
+    </template>
+    <template #body>
       <div class="flex flex-col gap-2">
         <h3 class="text-xl ">
           {{ serviceAccount.description }}
         </h3>
         <div class="flex flex-wrap ">
-          <UBadge color="gray" v-for=" permission of serviceAccount.permissions" class="m-1">
+          <UBadge color="neutral" v-for="permission of serviceAccount.permissions" class="m-1">
             {{ permission }}
           </UBadge>
         </div>
       </div>
-      <template #footer>
-        <div class="flex justify-between items-center ">
-          <UButton label="close" color="red" @click="emit('close')" />
-          <UButton label="copy token " color="green" @click="copyToken" />
-        </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center ">
+        <UButton label="close" color="error" @click="emit('close')" />
+        <UButton label="copy token " color="success" @click="copyToken" />
+      </div>
 
-      </template>
-    </UCard>
+    </template>
   </UModal>
 </template>
 
