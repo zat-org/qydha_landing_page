@@ -42,6 +42,8 @@
           <!-- <UButton color="primary" variant="solid" label="الفرق"  :to="`/tournament/${row.original.id}/team`" /> -->
           <UButton color="primary" variant="solid" label="اللاعبين"  :to="`/tournament/${row.original.id}/player`" />
           <UButton color="primary" variant="solid" label="الطاولات"  :to="`/tournament/${row.original.id}/table`" />
+          <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" />
+
           <!-- <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" /> -->
          </UButtonGroup>
       
