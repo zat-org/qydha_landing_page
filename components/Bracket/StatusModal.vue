@@ -136,52 +136,80 @@
         </template>
 
         <template #news="{ item }">
-          <div class="flex flex-col items-center gap-2 w-full overflow-y-scroll h-[500px] ">
-            <div class="flex  gap-2 items-center    ">
-              <div class="flex flex-col gap-1  items-center w-[200px] p-2  rounded-lg border " :class="{
-                'bg-green-400/20 text-green-500 border-green-300 ': game?.game.winner == 'Us',
-                'bg-red-400/20 text-red-500 border-red-300 ': game?.game.winner == 'Them'
-              }">
-                <p class="text-xs  text-center">{{ m.usTeamName.split("|")[0] }}</p>
-                <p class="text-xs  text-center">{{ m.usTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg"> {{ game?.game.usGameScore }}
-                  صكة</p>
+          <div class="flex flex-col items-center gap-4 w-full overflow-y-auto h-[500px] p-4">
+            <!-- Match Header -->
+            <div class="flex gap-4 items-center w-full max-w-2xl">
+              <!-- Team 1 -->
+              <div class="flex-1 flex flex-col gap-2 items-center p-4 rounded-xl border transition-colors duration-200" 
+                :class="{
+                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Us',
+                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Them',
+                  'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
+                }">
+                <div class="text-sm font-medium dark:text-gray-200">
+                  <p>{{ m.usTeamName.split("|")[0] }}</p>
+                  <p>{{ m.usTeamName.split("|")[1] }}</p>
+                </div>
+                <span class="px-3 py-1 text-sm rounded-full bg-gray-200/80 dark:bg-gray-700">
+                  {{ game?.game.usGameScore }} صكة
+                </span>
               </div>
-              <div class="flex flex-col gap-1 justify-center items-center">
-                <UIcon name="fxemoji:squaredvs" class="text-lg md:text-2xl" />
 
+              <!-- VS Icon -->
+              <div class="flex items-center">
+                <UIcon name="fxemoji:squaredvs" class="text-2xl md:text-3xl text-gray-600 dark:text-gray-400" />
               </div>
 
-              <div class="flex flex-col gap-1 justify-center items-center w-[200px] p-2  rounded-lg border " :class="{
-                'bg-green-400/20 text-green-500 border-green-300 ': game?.game.winner == 'Them',
-                'bg-red-400/20 text-red-500 border-red-300 ': game?.game.winner == 'Us'
-              }">
-                <p class="text-xs  text-center">{{ m.themTeamName.split("|")[0] }}</p>
-                <p class="text-xs  text-center">{{ m.themTeamName.split("|")[1] }}</p>
-                <p class="text-xs  text-center bg-slate-300/60 w-1/2 px-2 py-1 rounded-lg">
-                  {{ game?.game.themGameScore }}
-                </p>
+              <!-- Team 2 -->
+              <div class="flex-1 flex flex-col gap-2 items-center p-4 rounded-xl border transition-colors duration-200"
+                :class="{
+                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Them',
+                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Us',
+                  'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
+                }">
+                <div class="text-sm font-medium dark:text-gray-200">
+                  <p>{{ m.themTeamName.split("|")[0] }}</p>
+                  <p>{{ m.themTeamName.split("|")[1] }}</p>
+                </div>
+                <span class="px-3 py-1 text-sm rounded-full bg-gray-200/80 dark:bg-gray-700">
+                  {{ game?.game.themGameScore }} صكة
+                </span>
               </div>
             </div>
 
+            <!-- Sakkas List -->
+            <div class="w-full max-w-2xl space-y-4">
+              <div v-for="(sakka, index) in game?.game.sakkas" 
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <!-- Sakka Header -->
+                <div class="bg-gray-50 dark:bg-gray-900 p-3 border-b border-gray-200 dark:border-gray-700">
+                  <div class="flex justify-between items-center">
+                    <UBadge 
+                      :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'"
+                      class="text-sm"
+                    >
+                      {{ sakka.usSakkaScore }}
+                    </UBadge>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">
+                      الصكة {{ index + 1 }}
+                    </span>
+                    <UBadge 
+                      :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'"
+                      class="text-sm"
+                    >
+                      {{ sakka.themSakkaScore }}
+                    </UBadge>
+                  </div>
+                </div>
 
-            <div v-for="(sakka, index) in game?.game.sakkas"
-              class="flex flex-col gap-2 w-full bg-gradient-to-b from-slate-200 to-slate-300  py-1  px-2 rounded-lg ">
-
-              <div class="w-full flex justify-center items-center  gap-[80px] ">
-
-                <UBadge :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'">{{ sakka.usSakkaScore }}
-                </UBadge>
-                <p class=""> الصكة {{ index + 1 }} </p>
-                <UBadge :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'">{{ sakka.themSakkaScore }}
-                </UBadge>
-              </div>
-              <UDivider />
-              <div class="flex flex-col">
-                <div v-for="mos in sakka.moshtaras">
-                  <div v-if="mos.state != 'Running'" class="w-full flex justify-center gap-[230px] items-center">
-                    <p>{{ mos.usAbnat }}</p>
-                    <p>{{ mos.themAbnat }}</p>
+                <!-- Moshtaras -->
+                <div class="p-3">
+                  <div v-for="mos in sakka.moshtaras" class="py-1">
+                    <div v-if="mos.state != 'Running'" 
+                      class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
+                      <span>{{ mos.usAbnat }}</span>
+                      <span>{{ mos.themAbnat }}</span>
+                    </div>
                   </div>
                 </div>
               </div>

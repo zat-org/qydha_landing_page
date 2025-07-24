@@ -4,7 +4,7 @@
     
     <UFormField label="بداية تسجيل اللاعبين في البطولة" name="TournamentStartEnrolmmentDate">
       <UInput 
-        v-model="modelValue.TournamentStartEnrolmmentDate" 
+        v-model="model.TournamentStartEnrolmmentDate" 
         placeholder="بداية تسجيل اللاعبين في البطولة"
         type="date" 
       />
@@ -12,7 +12,7 @@
 
     <UFormField label="نهاية تسجيل اللاعبين في البطولة" name="TournamentEndEnrolmmentDate">
       <UInput 
-        v-model="modelValue.TournamentEndEnrolmmentDate" 
+        v-model="model.TournamentEndEnrolmmentDate" 
         placeholder="نهاية تسجيل اللاعبين في البطولة"
         type="date" 
       />
@@ -26,11 +26,6 @@ interface EnrollmentDates {
   TournamentEndEnrolmmentDate: string;
 }
 
-const props = defineProps<{
-  modelValue: EnrollmentDates;
-}>();
+const model = defineModel<EnrollmentDates>({required:true})
 
-const emit = defineEmits<{
-  'update:modelValue': [value: EnrollmentDates];
-}>();
 </script> 

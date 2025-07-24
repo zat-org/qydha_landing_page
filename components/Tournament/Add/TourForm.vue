@@ -66,6 +66,11 @@
           </div>
         </div>
       </UFormField>
+
+      <UFormField label="عنوان البطولة" name="TournamentAddress" required>
+        <UInput v-model="modelValue.TournamentAddress" placeholder="أدخل عنوان البطولة" />
+      </UFormField>
+
       <UFormField label="مكان البطولة" name="TournamentLocation" required
         :help="modelValue.TournamentLocation.lat != 0 && modelValue.TournamentLocation.lng != 0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'">
         <MapInputModal v-model="modelValue.TournamentLocation" name="TournamentLocation" label="مكان البطولة"
@@ -74,9 +79,9 @@
       <UFormField label="نوع البطولة" name="TournamentType" required>
         <USelect v-model="modelValue.TournamentType" :items="TournamentTypeOptions" placeholder="اختر نوع البطولة" />
       </UFormField>
-      <UFormField label="رمز البطولة الخاصة" name="PrivateTournamentCode" v-if="modelValue.TournamentType == 'private'"
+      <UFormField label="رمز السري البطولة " name="PrivateTournamentCode" v-if="modelValue.TournamentType == 'private'"
         required>
-        <UInput v-model="modelValue.PrivateTournamentCode" placeholder="أدخل رمز البطولة الخاصة" />
+        <UInput v-model="modelValue.PrivateTournamentCode" placeholder="أدخل  الرمز السري للبطولة " />
       </UFormField>
 
       <div class="flex items-center justify-between">
@@ -131,6 +136,7 @@ const props = defineProps<{
     Sponsers: string[];
     TournamentType: string;
     PrivateTournamentCode: string;
+    TournamentAddress: string;
   }
 }>();
 
@@ -152,6 +158,7 @@ const localSchema = object({
     then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"),
     otherwise: (schema) => schema.notRequired(),
   }),
+  TournamentAddress: string().required("عنوان البطولة مطلوب"),
   TournamentLocation: object({
     lat: number(),
     lng: number(),

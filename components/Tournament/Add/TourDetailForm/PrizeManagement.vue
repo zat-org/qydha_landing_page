@@ -4,7 +4,7 @@
     
     <UFormField label="جائزة البطولة" name="TournametPrize">
       <USelect 
-        v-model="modelValue.TournametPrizeOption" 
+        v-model="model.TournametPrizeOption" 
         :items="prizeOptions" 
         @change="onPrizeOptionChange" 
       />
@@ -13,7 +13,7 @@
     <h4 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">تفاصيل الجوائز</h4>
 
     <div 
-      v-for="(prize, index) in modelValue.TournametPrize" 
+      v-for="(prize, index) in model.TournametPrize" 
       :key="index"
       class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-400 transition-all duration-200 shadow-sm"
     >
@@ -42,7 +42,9 @@
             @update:model-value="updatePrizeMoney(index, $event)"
           />
         </UFormField>
-
+        <UFormField>
+          <UInput v-model="prize.currency"  placeholder="العملة" />
+        </UFormField>
         <!-- Items Prize Section -->
         <UFormField 
           v-show="prize.isItem"
@@ -97,6 +99,7 @@
 interface Prize {
   money: number;
   items: string[];
+  currency: string;
   position: number;
   isMoney: boolean;
   isItem: boolean;
@@ -107,13 +110,8 @@ interface PrizeData {
   TournametPrize: Prize[];
 }
 
-const props = defineProps<{
-  modelValue: PrizeData;
-}>();
+const model = defineModel<PrizeData>({required:true})
 
-const emit = defineEmits<{
-  'update:modelValue': [value: PrizeData];
-}>();
 
 // Local state for new items input
 const newItems = ref<string[]>([]);
@@ -126,58 +124,29 @@ const prizeOptions = [
 ];
 
 const onPrizeOptionChange = () => {
-  const selectedValue = props.modelValue.TournametPrizeOption;
-  const updatedValue = {
-    ...props.modelValue,
-    TournametPrize: Array.from({ length: selectedValue }, (_, index) => ({
+  model.value.TournametPrize = Array.from({ length: model.value.TournametPrizeOption }, (_, index) => ({
       money: 0,
       items: [] as string[],
+      currency: "",
       position: index + 1,
       isMoney: true,
       isItem: false,
-    }))
-  };
-  
-  emit('update:modelValue', updatedValue);
-  newItems.value = Array.from({ length: selectedValue }, () => "");
+    }));
 };
 
 const updatePrizeMoney = (index: number, value: number) => {
-  const updatedPrizes = [...props.modelValue.TournametPrize];
-  updatedPrizes[index].money = value || 0;
+  model.value.TournametPrize[index].money = value || 0;
   
-  emit('update:modelValue', {
-    ...props.modelValue,
-    TournametPrize: updatedPrizes
-  });
 };
 
 const addItem = (index: number, value: string) => {
-  if (!value?.trim()) return;
-  
-  const updatedPrizes = [...props.modelValue.TournametPrize];
-  updatedPrizes[index].items.push(value.trim());
-  
-  emit('update:modelValue', {
-    ...props.modelValue,
-    TournametPrize: updatedPrizes
-  });
-  
+  if (!value?.trim()) return;  
+  model.value.TournametPrize[index].items.push(value.trim());  
   newItems.value[index] = "";
 };
 
 const removeItem = (index: number, itemIndex: number) => {
-  const updatedPrizes = [...props.modelValue.TournametPrize];
-  updatedPrizes[index].items.splice(itemIndex, 1);
-  
-  emit('update:modelValue', {
-    ...props.modelValue,
-    TournametPrize: updatedPrizes
-  });
+  model.value.TournametPrize[index].items.splice(itemIndex, 1);
 };
 
-// Initialize newItems array
-watch(() => props.modelValue.TournametPrize.length, (newLength) => {
-  newItems.value = Array.from({ length: newLength }, () => "");
-}, { immediate: true });
 </script> 

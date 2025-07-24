@@ -25,6 +25,14 @@
 const L = await import('leaflet');
 await import('leaflet/dist/leaflet.css');
 
+
+const MyIcon = L.icon({
+  iconUrl: '/images/location.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
 const show = ref(false);
 const map = ref();
 
@@ -63,7 +71,7 @@ const getLocation = async () => {
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
       }).addTo(map.value);
-      L.marker([model.value.lat, model.value.lng],  )
+      L.marker([model.value.lat, model.value.lng], {icon: MyIcon})
         .addTo(map.value)
        
     });
@@ -85,8 +93,6 @@ watch(show, (newVal) => {
   }
 });
 const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
-  console.log(latlng);
-  // Remove existing marker if it exists
   map.value.eachLayer((layer: any) => {
     if (layer instanceof L.Marker) {
       map.value.removeLayer(layer);
@@ -94,7 +100,7 @@ const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
   });
 
   // Add new marker at clicked location
-  L.marker([latlng.lat, latlng.lng], { draggable: true })
+  L.marker([latlng.lat, latlng.lng], {  icon: MyIcon })
     .addTo(map.value)
 
   model.value.lat = latlng.lat;

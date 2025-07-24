@@ -8,6 +8,13 @@ import L from "leaflet";
 
 const map = ref();
 
+const MyIcon = L.icon({
+  iconUrl: '/images/location.png',
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32]
+});
+
 const initmap = () => {
   map.value = L.map("map", { attributionControl: false }).setView([0, 0], 4);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {

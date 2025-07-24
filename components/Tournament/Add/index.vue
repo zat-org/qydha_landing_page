@@ -45,15 +45,9 @@
                         :icon="step.icon" 
                         :class="step.class"
                         @click="validation.goToStep(step.id)"
-                    >
-                        
+                    >        
                     </UButton>
                 </UButtonGroup>
-
-                <!-- Validation Summary -->
-                <div class="absolute left-4 text-xs text-gray-500 dark:text-gray-400 hidden lg:block">
-                    {{ validation.validStepsCount.value }} / {{ validation.enhancedSteps.value.length }} مكتمل
-                </div>
             </div>
         </template>
         
@@ -137,6 +131,7 @@ const formData = reactive({
     TournamentLocation: { lat: 0, lng: 0 },
     TournamentType: "public",
     PrivateTournamentCode: "",
+    TournamentAddress: "",
     ConnectionPhoneNumberForPlayers: "",
     isWhatsappAvailable: false,
     isCallAvailable: false,
@@ -146,7 +141,7 @@ const formData = reactive({
     TournamentEndEnrolmmentDate: "",
     TournametPrizeOption: 1,
     TeamSelectionMode: "auto",
-    TournametPrize: [{ money: 1000, items: [], position: 1, isMoney: true, isItem: false }],
+    TournametPrize: [{ money: 1000, items: [], position: 1, isMoney: true, isItem: false, currency: "" }],
     TournamentDates: [{date:"",startTime:"",endTime:""}],
     TournamentDaysNumber: 1,
     TeamsCount: 16,
