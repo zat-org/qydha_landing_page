@@ -163,9 +163,10 @@ const purchaseCols = [
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
   { accessorKey: 'purchaseDate', header: 'تاريخ الشراء',
     cell: ({row}:{row:any}) => {
-    return row.original!.purchaseDate ? new Date(row.original.purchaseDate).toLocaleDateString() : 'لم يشتري'
+    return row.original!.purchaseDate ? new Date(row.original.purchaseDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'numeric', year: 'numeric' }) : 'لم يشتري'
   }
    },
+
 ]
 
 const influncerCols = [

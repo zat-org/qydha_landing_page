@@ -28,6 +28,7 @@ const VueTelInput = defineAsyncComponent(() =>
   })
 );
 
+// const
 defineProps<{
   modelValue: string
 }>();
@@ -39,16 +40,38 @@ const emit = defineEmits<{
 // Track the selected country
 const selectedCountry = ref<{ dialCode: string } | null>(null);
 
+// Convert Arabic-Indic and Persian numerals to Latin numerals
+function convertArabicToLatinNumerals(input: string): string {
+  const arabicToLatin: { [key: string]: string } = {
+    // Arabic-Indic numerals
+    '٠': '0', '١': '1', '٢': '2', '٣': '3', '٤': '4',
+    '٥': '5', '٦': '6', '٧': '7', '٨': '8', '٩': '9',
+    // Persian numerals
+    '۰': '0', '۱': '1', '۲': '2', '۳': '3', '۴': '4',
+    '۵': '5', '۶': '6', '۷': '7', '۸': '8', '۹': '9'
+  };
+  
+  const converted = input.replace(/[٠-٩۰-۹]/g, (char) => arabicToLatin[char] || char);
+  
+  // Log when conversion happens for debugging
+  if (converted !== input) {
+    console.log('AsyncPhoneInput: Converted Arabic/Persian numerals to Latin:', input, '->', converted);
+  }
+  
+  return converted;
+}
+
 function onInput(val: string) {
+  // Convert Arabic numerals to Latin numerals first
+  const convertedVal = convertArabicToLatinNumerals(val);
 
-  if (!val.startsWith('+') && selectedCountry.value) {
+  if (!convertedVal.startsWith('+') && selectedCountry.value) {
     console.log("not start with +");
-
-    console.log(`+${selectedCountry.value.dialCode}${val}`)
-    emit('update:modelValue', `+${selectedCountry.value.dialCode}${val}`);
+    console.log(`+${selectedCountry.value.dialCode}${convertedVal}`)
+    emit('update:modelValue', `+${selectedCountry.value.dialCode}${convertedVal}`);
   } else {
     console.log("start with +");
-    emit('update:modelValue', val);
+    emit('update:modelValue', convertedVal);
   }
 }
 
