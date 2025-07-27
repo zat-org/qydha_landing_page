@@ -21,7 +21,7 @@
       <div class="flex items-center gap-2 mb-3">
         <span class="text-sm font-semibold text-gray-800 dark:text-gray-200 bg-primary-500 rounded-full flex items-center justify-center p-2 w-fit">
           المركز {{ index + 1 }}
-        </span>
+        </span> 
         <UCheckbox size="xl" v-model="prize.isMoney" label="جائزة مالية" />
         <UCheckbox size="xl" v-model="prize.isItem" label="جائزة عينية" />
       </div>
@@ -42,7 +42,7 @@
             @update:model-value="updatePrizeMoney(index, $event)"
           />
         </UFormField>
-        <UFormField>
+        <UFormField v-show="prize.isMoney" :label="`العملة`" :name="`TournametPrize[${index}].currency`">
           <UInput v-model="prize.currency"  placeholder="العملة" />
         </UFormField>
         <!-- Items Prize Section -->

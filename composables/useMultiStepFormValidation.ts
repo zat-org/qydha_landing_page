@@ -7,7 +7,7 @@ interface FormStepRef {
 
 interface FormStep {
     id: number;
-    label: string;
+    title: string;
     icon: string;
     slot: string;
 }
@@ -46,15 +46,15 @@ export const useMultiStepFormValidation = (
     };
 
     // Get step class for styling
-    const getStepClass = (stepIndex: number): string => {
+    const getStepColor = (stepIndex: number): string => {
         if (currentStep.value === stepIndex) {
-            return 'bg-primary-600 dark:bg-primary-400 ring-2 ring-primary-300 ring-offset-2';
+            return 'primary';
         } else if (completedSteps.value.has(stepIndex)) {
-            return 'bg-green-600 dark:bg-green-400';
+            return 'success';
         } else if (isStepValid(stepIndex)) {
-            return 'bg-blue-500 dark:bg-blue-400';
+            return 'info';
         } else {
-            return 'bg-gray-500 dark:bg-gray-400';
+            return 'neutral';
         }
     };
 
@@ -62,7 +62,7 @@ export const useMultiStepFormValidation = (
   const enhancedSteps = computed(() => {
       return steps.map(step => ({
           ...step,
-          class: computed(() => getStepClass(step.id))
+          color: computed(() => getStepColor(step.id))
       }));
   });
 
@@ -303,7 +303,7 @@ export const useMultiStepFormValidation = (
 
         // Methods
         isStepValid,
-        getStepClass,
+        getStepColor,
         validateStep,
         validateCurrentStep,
         findFirstIncompleteStep,

@@ -1,4 +1,5 @@
 import type { ITeam, ITeamCreate } from "~/models/tournamentTeam";
+import { PlayerState } from "~/models/Player";
 
 export const useTourrnamentTeam = () => {
   const { $api } = useNuxtApp();
@@ -17,6 +18,7 @@ export const useTourrnamentTeam = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
+
   const addTourTeam = async () => {
     const tourId = ref()
     const body = ref<ITeamCreate[]>([])
@@ -37,6 +39,7 @@ export const useTourrnamentTeam = () => {
 
     return { data, pending, error, refresh, status, fetchREQ }
   }
+
   const deleteTourTeam = async () => {
     const tourId = ref()
     const teamId = ref()
@@ -57,6 +60,7 @@ export const useTourrnamentTeam = () => {
     return { data, pending, error, refresh, status, fetchREQ }
 
   }
+
   const updateTourTeamName = async () => {
     const tourId = ref()
     const teamId = ref()
@@ -69,6 +73,62 @@ export const useTourrnamentTeam = () => {
       tourId.value = tour_id
       teamId.value = team_id
       body.value = { name }
+      await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  const updateTourTeamStatus = async () => {
+    const tourId = ref()
+    const teamId = ref()
+    const body = ref<{ status: PlayerState }>()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'updateTourTeamStatus',
+      () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}/status`, { method: 'patch', body: body.value }), { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, team_id: string, teamStatus: PlayerState) => {
+      tourId.value = tour_id
+      teamId.value = team_id
+      body.value = { status: teamStatus }
+      await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  const acceptTourTeam = async () => {
+    const tourId = ref()
+    const teamId = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'acceptTourTeam',
+      () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}/accept`, { method: 'post' }), { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, team_id: string) => {
+      tourId.value = tour_id
+      teamId.value = team_id
+      await execute()
+      if (status.value == "success") {
+        refreshNuxtData("getAllTourTeams")
+      }
+    }
+    return { data, pending, error, refresh, status, fetchREQ }
+  }
+
+  const refuseTourTeam = async () => {
+    const tourId = ref()
+    const teamId = ref()
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'refuseTourTeam',
+      () => $api(`/tournaments/${tourId.value}/teams/${teamId.value}/refuse`, { method: 'post' }), { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, team_id: string) => {
+      tourId.value = tour_id
+      teamId.value = team_id
       await execute()
       if (status.value == "success") {
         refreshNuxtData("getAllTourTeams")
@@ -119,5 +179,15 @@ export const useTourrnamentTeam = () => {
     return { data, pending, error, refresh, status, fetchREQ }
   }
 
-  return { getAllTourTeams, addTourTeam, deleteTourTeam, updateTourTeamName, addPlayerToTeam, removePlayerFromTeam }
+  return { 
+    getAllTourTeams, 
+    addTourTeam, 
+    deleteTourTeam, 
+    updateTourTeamName, 
+    updateTourTeamStatus,
+    acceptTourTeam,
+    refuseTourTeam,
+    addPlayerToTeam, 
+    removePlayerFromTeam 
+  }
 }

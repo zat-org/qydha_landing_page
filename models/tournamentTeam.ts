@@ -1,4 +1,5 @@
 import type { MinUser } from "./user"
+import { PlayerState } from "./Player"
 
 export interface ITeamCreate {
     name: string,
@@ -30,6 +31,8 @@ id: number
 name: string
 players: IPlayer[]
 tournamentId: number
+status?: PlayerState | string // Add status property for request management
+additionalData?: any // Add optional additional data
 
 }
 
@@ -51,4 +54,5 @@ qydhaUserData: MinUser
 tournamentId: string
 teamId: number|null
 teamName: null|string
+state?: PlayerState | string // Add optional state property
 }

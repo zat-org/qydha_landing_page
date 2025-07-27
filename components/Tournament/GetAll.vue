@@ -7,8 +7,12 @@
             <h1 class="text-3xl font-bold">البطولات</h1>
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
-          <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/add"
-            label="إضافة بطولة جديدة" class="px-6" />
+          <div class="flex gap-3">
+            <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/add/info"
+              label="معلومات البطولات" class="px-6" />
+            <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/add"
+              label="إضافة بطولة جديدة" class="px-6" />
+          </div>
         </div>
 
         <div class="flex flex-col md:flex-row gap-4 items-center">
@@ -22,7 +26,7 @@
     </template>
 
     <div class="  flex flex-col flex-1  ">
-      <UTable :data="filteredRows" :columns="cols" @select="select" :loading="loading" hover class="flex-1">
+      <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-12 px-4">
             <UIcon name="i-heroicons-inbox" class="text-4xl text-gray-400 mb-2" />
@@ -37,12 +41,43 @@
 
         <template #links-cell="{ row }">
          <UButtonGroup>
-          <UButton color="primary" variant="solid" label="الخريطة " :to="`/tournament/${row.original.id}/bracket`" />
-          <UButton color="primary" variant="solid" label="المسؤولين"  :to="`/tournament/${row.original.id}/moderator`" />
-          <!-- <UButton color="primary" variant="solid" label="الفرق"  :to="`/tournament/${row.original.id}/team`" /> -->
-          <UButton color="primary" variant="solid" label="اللاعبين"  :to="`/tournament/${row.original.id}/player`" />
-          <UButton color="primary" variant="solid" label="الطاولات"  :to="`/tournament/${row.original.id}/table`" />
-          <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" />
+          <UDropdownMenu :items="[
+            {
+              label: 'الخريطة',
+              icon: 'i-heroicons-chart-bar',
+              to: `/tournament/${row.original.id}/bracket`
+            },
+            {
+              label: 'المسؤولين',
+              icon: 'i-heroicons-user-group', 
+              to: `/tournament/${row.original.id}/moderator`
+            },
+            {
+              label: 'الطلبات',
+              icon: 'i-heroicons-inbox-stack',
+              to: `/tournament/${row.original.id}/request`
+            },
+            {
+              label: 'اللاعبين',
+              icon: 'i-heroicons-users',
+              to: `/tournament/${row.original.id}/player`
+            },
+            {
+              label: 'الطاولات', 
+              icon: 'i-heroicons-table-cells',
+              to: `/tournament/${row.original.id}/table`
+            },
+            {
+              label: 'المجموعات',
+              icon: 'i-heroicons-user-circle',
+              to: `/tournament/${row.original.id}/group`
+            }
+          ]">
+            <UButton color="primary" variant="ghost">
+              <UIcon name="i-heroicons-ellipsis-vertical" />
+              إدارة البطولة
+            </UButton>
+          </UDropdownMenu>
 
           <!-- <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" /> -->
          </UButtonGroup>

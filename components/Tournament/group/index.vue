@@ -2,12 +2,15 @@
     <UCard>
         <template #header>
             <div class="flex flex-col gap-6 w-full">
-                <div>
-                    <h1 class="text-3xl font-bold">مجموعات البطولة</h1>
-                    <p class="text-gray-500 mt-1">عرض وإدارة مجموعات البطولة</p>
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold">مجموعات البطولة</h1>
+                        <p class="text-gray-500 mt-1">عرض وإدارة مجموعات البطولة</p>
+                    </div>
+                    <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost">
+                        قائمة البطولات
+                    </UButton>
                 </div>
-
-
                 <div class="flex flex-col md:flex-row gap-4 items-center">
                     <UInput v-model="searchQuery" icon="i-heroicons-magnifying-glass" placeholder="البحث عن مجموعة..."
                         class="md:w-64" />

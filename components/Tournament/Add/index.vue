@@ -1,107 +1,55 @@
 <template>
     <UCard>
         <template #header>
-            <div class="flex justify-center items-center w-full relative">
-                <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost" class="absolute right-4">
-                    العودة
-                </UButton>
+            <div class="flex justify-center items-center w-full ">
+                <div class="flex gap-2">
+                    <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost" >
+                        العودة
+                    </UButton>
+                    <UButton to="/tournament/add/info" icon="i-heroicons-information-circle" variant="ghost" >
+                        معلومات البطولات
+                    </UButton>
+                </div>
 
-                <!-- Desktop View -->
-                <UButtonGroup class="hidden md:block mx-auto">
-                    <UButton 
-                        v-for="step in validation.enhancedSteps.value" 
-                        :key="step.id" 
-                        :label="step.label" 
-                        :class="step.class"
-                        @click="validation.goToStep(step.id)"
-                    >
-                    
-                        <!-- Validation Status Icons -->
-                        <!-- <template #trailing>
-                            <UIcon 
-                                v-if="isStepCompleted(step.id)" 
-                                name="i-heroicons-check-circle"
-                                class="w-4 h-4 text-green-200" 
-                            />
-                            <UIcon 
-                                v-else-if="validation.isStepValid(step.id)" 
-                                name="i-heroicons-exclamation-circle"
-                                class="w-4 h-4 text-blue-200" 
-                            />
-                            <UIcon 
-                                v-else-if="isCurrentStep(step.id)" 
-                                name="i-heroicons-clock"
-                                class="w-4 h-4 text-primary-200 animate-pulse" 
-                            />
-                        </template> -->
+                <UStepper size="sm":items="[...validation.enhancedSteps.value].map(step => ({...step, color: step.color.value}))" class="w-full " v-model="currentStepValue" />
+                <!-- <UButtonGroup class="hidden md:block mx-auto">
+                    <UButton v-for="step in validation.enhancedSteps.value" :key="step.id" :label="step.label"
+                        :class="step.class" @click="validation.goToStep(step.id)">
                     </UButton>
                 </UButtonGroup>
 
-                <!-- Mobile View -->
                 <UButtonGroup class="block md:hidden mx-auto">
-                    <UButton 
-                        v-for="step in validation.enhancedSteps.value" 
-                        :key="step.id" 
-                        :icon="step.icon" 
-                        :class="step.class"
-                        @click="validation.goToStep(step.id)"
-                    >        
+                    <UButton v-for="step in validation.enhancedSteps.value" :key="step.id" :icon="step.icon"
+                        :class="step.class" @click="validation.goToStep(step.id)">
                     </UButton>
-                </UButtonGroup>
+                </UButtonGroup> -->
             </div>
         </template>
-        
+
         <template #default>
             <div class="overflow-y-auto max-h-[calc(100vh-300px)] min-h-[400px] p-5">
                 <div class="h-full">
                     <KeepAlive>
-                        <TournamentAddTourForm 
-                            ref="tourForm" 
-                            v-show="currentStepValue === 0" 
-                            v-model="formData" 
-                        />
+                        <TournamentAddTourForm ref="tourForm" v-show="currentStepValue === 0" v-model="formData" />
                     </KeepAlive>
                     <KeepAlive>
-                        <TournamentAddTourDetailForm 
-                            ref="detailForm" 
-                            v-show="currentStepValue === 1" 
-                            v-model="formData" 
-                        />
+                        <TournamentAddTourDetailForm ref="detailForm" v-show="currentStepValue === 1"
+                            v-model="formData" />
                     </KeepAlive>
                     <KeepAlive>
-                        <TournamentAddRulesForm 
-                            ref="rulesForm" 
-                            v-show="currentStepValue === 2" 
-                            v-model="formData" 
-                        />
+                        <TournamentAddRulesForm ref="rulesForm" v-show="currentStepValue === 2" v-model="formData" />
                     </KeepAlive>
                 </div>
             </div>
         </template>
-        
+
         <template #footer>
             <div class="flex justify-between items-center px-6">
-                <UButton 
-                    v-if="canGoBack" 
-                    variant="outline" 
-                    @click="validation.previousStep" 
-                    label="السابق" 
-                    size="xl" 
-                />
-                <UButton 
-                    v-if="canGoNext" 
-                    color="primary" 
-                    @click="validation.validateAndNext()" 
-                    label="التالي"
-                    size="xl" 
-                />
-                <UButton 
-                    v-else-if="isLastStep" 
-                    color="primary" 
-                    :loading="isSubmittingValue"
-                    @click="validation.submitForm()" 
-                    size="xl"
-                >
+                <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
+                <UButton v-if="canGoNext" color="primary" @click="validation.validateAndNext()" label="التالي"
+                    size="xl" />
+                <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue"
+                    @click="validation.submitForm()" size="xl">
                     إرسال
                 </UButton>
             </div>
@@ -142,7 +90,7 @@ const formData = reactive({
     TournametPrizeOption: 1,
     TeamSelectionMode: "auto",
     TournametPrize: [{ money: 1000, items: [], position: 1, isMoney: true, isItem: false, currency: "" }],
-    TournamentDates: [{date:"",startTime:"",endTime:""}],
+    TournamentDates: [{ date: "", startTime: "", endTime: "" }],
     TournamentDaysNumber: 1,
     TeamsCount: 16,
     TablesCount: 8,
@@ -157,19 +105,22 @@ const formData = reactive({
 const steps = [
     {
         id: 0,
-        label: "معلومات البطولة",
+        title: "معلومات البطولة",
+        description: "معلومات البطولة",
         slot: "TourInfo",
         icon: "i-heroicons-trophy",
     },
     {
         id: 1,
-        label: "تفاصيل البطولة",
+        title: "تفاصيل البطولة",
+        description: "تفاصيل البطولة",
         slot: "TourDetail",
         icon: "i-heroicons-clipboard-document-list",
     },
     {
         id: 2,
-        label: "قوانين البطولة",
+        title: "قوانين البطولة",
+        description: "قوانين البطولة",
         slot: "TourRules",
         icon: "i-heroicons-scale",
     },
