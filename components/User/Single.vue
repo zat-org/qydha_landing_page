@@ -1,5 +1,6 @@
 <template>
   <UCard>
+
     <div class="flex flex-col gap-6">
       <!-- Profile Header -->
       <div class="flex flex-col items-center gap-4 p-4">
@@ -80,7 +81,7 @@
     </div>
 
     <template #footer>
-      <div class="flex justify-between p-4">
+      <div class="flex justify-between items-center p-4">
         <UButton 
           color="error" 
           variant="soft"
@@ -88,6 +89,17 @@
           @click="router.back()"
         >
           عودة
+        </UButton>
+
+        <!-- Organizer button - visible for organizers, admins, or staff -->
+        <UButton
+          v-if="showOrganizerButton"
+          color="primary"
+          variant="outline"
+          icon="i-heroicons-building-office"
+          :to="`/user/${userData?.user.id}/organizer`"
+        >
+          ملف المنظم
         </UButton>
       </div>
     </template>
@@ -104,6 +116,7 @@ const getREQ = await userApi.getSingleUser()
 const updateREQ = await userApi.updateUser()
 const toast = useToast()
 const userStore = useMyAuthStore()
+const { hasRole } = usePermissions()
 
 await getREQ.fetchREQ(props.id)
 if (getREQ.status.value == "error") {
@@ -112,6 +125,21 @@ if (getREQ.status.value == "error") {
 
 const userData = computed(() => {
   return getREQ.data.value?.data
+})
+
+// Show organizer button if user is admin, staff, or if viewing own profile and has organized tournaments
+const showOrganizerButton = computed(() => {
+  // Show for admins and staff
+  if (hasRole(['SuperAdmin', 'StaffAdmin'])) {
+    return true
+  }
+  
+  // Show if it's the user's own profile (they can view their organizer info)
+  if (userStore.user?.user.id === props.id) {
+    return true
+  }
+  
+  return false
 })
 
 const roles = ref<string[]>(userData.value?.user.roles!)

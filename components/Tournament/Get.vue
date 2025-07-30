@@ -69,7 +69,7 @@
           color="neutral" 
           variant="soft"
           icon="i-mdi-arrow-left"
-          @click="navigateTo('/tournament')" 
+          @click="$router.back()" 
         />
         
         <div class="flex gap-3">

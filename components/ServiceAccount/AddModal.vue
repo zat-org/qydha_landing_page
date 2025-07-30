@@ -11,8 +11,8 @@
         <UFormField label="description" name="description">
           <UInput v-model="state.description"></UInput>
         </UFormField>
-        <UFormField label="permissions">
-          <USelectMenu v-model="state.permissions" :options="permissions" multiple />
+        <UFormField label="permissions " class="w-full">
+          <USelectMenu v-model="state.permissions" :items="permissions" multiple class="w-full" />
         </UFormField>
       </UForm>
     </template>
