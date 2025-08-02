@@ -1,73 +1,50 @@
 <template>
-  <UModal prevent-close>
-    <UCard :ui="{ base: 'px-5 py-2' }">
+  <UModal prevent-close title="اضافة مرسلة" description=""cription="اضافة مرسلة جديدة">
+    <template #body>
       <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit" class=" flex flex-col gap-5 ">
         <UFormField label="النموذج" name="templateName">
-          <USelectMenu
-            v-model="state.templateName"
-            :options="templates"
-          ></USelectMenu>
+          <USelect v-model="state.templateName" :items="templates" class="w-full" ></USelect>
         </UFormField>
-<div class="flex gap-2 justify-between items-center" >
-  
-  <UFormField label="رقم الهاتف" name="phonesNumbers">
-    <vue-tel-input
-      mode="auto"
-      :autoFormat="true"
-      dir="ltr"
-      :validCharactersOnly="true"
-      :autoDefaultCountry="true"
-      :inputOptions="{ showDialCode: true, showFlags: true }"
-      invalidMsg="this phone is invalid "
-      :dropdownOptions="{
-        showDialCodeInSelection: true,
-        showFlags: true,
-        showSearchBox: true,
-      }"
-      @country-changed="phoneChanged"
-      @keydown.enter.prevent="AddphoneNumber"
-      v-model="phoneinput"
-    ></vue-tel-input>
-  </UFormField>
-  <UButton type="button" label="add phone" @click="AddphoneNumber" class="h-full" />
-</div>
+        <div class="flex gap-2 justify-between items-center">
 
-        <div dir="ltr"
-          class="h-40 w-full overflow-y-auto p-4 bg-gray-50 rounded-lg border border-gray-200"
-        >
+          <UFormField label="رقم الهاتف" name="phonesNumbers">
+            <AsyncPhoneInput v-model="phoneinput" dir="ltr" />
+            <!-- <vue-tel-input mode="auto" :autoFormat="true" dir="ltr" :validCharactersOnly="true"
+              :autoDefaultCountry="true" :inputOptions="{ showDialCode: true, showFlags: true }"
+              invalidMsg="this phone is invalid " :dropdownOptions="{
+                showDialCodeInSelection: true,
+                showFlags: true,
+                showSearchBox: true,
+              }" @country-changed="phoneChanged" @keydown.enter.prevent="AddphoneNumber" v-model="phoneinput"></vue-tel-input> -->
+          </UFormField>
+          <UButton type="button" label="add phone" @click="AddphoneNumber" class="h-full" />
+        </div>
+
+        <div dir="ltr" class="h-40 w-full overflow-y-auto p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="(ph, index) in state.phonesNumbers"
-              :key="index"
-              :label="ph"
-              class="flex items-center gap-2 px-3 py-1.5"
-            >
+            <UBadge v-for="(ph, index) in state.phonesNumbers" :key="index" :label="ph"
+              class="flex items-center gap-2 px-3 py-1.5">
               {{ ph }}
 
-              <button
-                type="button"
-                @click="() => state.phonesNumbers.splice(index, 1)"
-                class="ml-2 hover:text-red-500 duration-300 transition-all"
-              >
+              <button type="button" @click="() => state.phonesNumbers.splice(index, 1)"
+                class="ml-2 hover:text-red-500 duration-300 transition-all">
                 <IconDelete class="text-xl"></IconDelete>
               </button>
             </UBadge>
           </div>
         </div>
         <UFormField label="الرقم المرسل " name="senderPhone">
-          <USelect
-            :options="phoneOptions"
-            v-model="state.senderPhone"
-          ></USelect>
+          <USelect :items="phoneOptions" v-model="state.senderPhone"></USelect>
         </UFormField>
       </UForm>
+    </template>
+    
       <template #footer>
         <div class="flex justify-between items-center">
           <UButton label="اضافة" @click="AddForm?.submit()" />
-          <UButton label="اغلاق" color="red" @click="emit('close')" />
+          <UButton label="اغلاق" color="error" @click="emit('close')" />
         </div>
       </template>
-    </UCard>
   </UModal>
 </template>
 
@@ -80,7 +57,7 @@ import { VueTelInput } from "vue-tel-input";
 const AddForm = ref<any>();
 const phoneOptions = senderPhone;
 const emit = defineEmits(['close'])
-const toast =useToast()
+const toast = useToast()
 const phoneinput = ref();
 const lastCode = ref();
 const getTemplateREQ = await useMarketing().getTemplates();
@@ -102,9 +79,10 @@ const schema = object({
   senderPhone: string().required(),
 });
 const AddphoneNumber = () => {
+  console.log(phoneinput.value)
   if (phoneinput.value.length < 7) {
     AddForm.value?.setErrors([
-      { message: "phone error ", path: "phonesNumbers" },
+      { message: "phone error ", name: "phonesNumbers" },
     ]);
   } else {
     const phoneSelected = state.phonesNumbers.find(
@@ -114,25 +92,25 @@ const AddphoneNumber = () => {
       state.phonesNumbers.push(phoneinput.value);
     }
 
-    phoneinput.value = `+${lastCode.value}`;
+    phoneinput.value ="";
   }
 };
 const phoneChanged = (event: { dialCode: string }) => {
   console.log(event.dialCode);
   lastCode.value = event.dialCode;
 };
-const AddREQ= await useMarketing().addWhatsAppMessage()
- 
-const onSubmit=async ()=>{
- await AddREQ.fetchREQ(state)
- if (AddREQ.status.value=="success" ){
-   toast.add({title:"message send successfuly "})
-   emit('close')
- }
- if (AddREQ.status.value=="error" ){
-   toast.add({title:"message send successfuly "})
-   console.log(AddREQ.error.value)
- }
+const AddREQ = await useMarketing().addWhatsAppMessage()
+
+const onSubmit = async () => {
+  await AddREQ.fetchREQ(state)
+  if (AddREQ.status.value == "success") {
+    toast.add({ title: "message send successfuly " })
+    emit('close')
+  }
+  if (AddREQ.status.value == "error") {
+    toast.add({ title: "message send successfuly " })
+    console.log(AddREQ.error.value)
+  }
 }
 </script>
 
