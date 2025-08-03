@@ -1,14 +1,14 @@
 <template>
-    <UCard class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
+    <UCard
+    :ui="{
+        body: 'px-2 py-1 sm:p-1',
+        header: 'px-2 py-1 sm:p-1',
+        footer: 'px-2 py-1 sm:p-1',}"
+     class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
         <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-6 " ref="form">
             <TournamentAddTourDetailFormEnrollmentDates v-model="model" />
             <TournamentAddTourDetailFormPrizeManagement v-model="model" />
-
-
-
-
-                <!-- Tournament Statistics Section -->
 
             <UFormField label=" عدد الفرق" name="TeamsCount">
                 <div class="flex items-center gap-2">
@@ -25,9 +25,8 @@
 
 
             <TournamentAddTourDetailFormTournamentSchedule v-model="model" :best-time="timeNeeded"
-                :time-available="timeAvailable" :teams-count="model.TeamsCount" :tables-count="model.TablesCount" />
-
-
+                :time-available="timeAvailable" :teams-count="model.TeamsCount" :tables-count="model.TablesCount"
+                :sakka-options="model.SakkaOptions" />
 
             <div class="flex items-center gap-2">
                 <UFormField label=" مين يسجل النشرة " name="TeamSelectionMode" class=" flex-1">
@@ -65,12 +64,23 @@
 
 
             <div v-if="model.SakkaOptions.length > 0" class="space-y-4 mt-6">
-                <h4 class="text-md font-medium text-gray-700 dark:text-gray-200 mb-3">اختيارات الصكات لكل دور</h4>
+                <div class="flex items-center justify-between mb-4">
+                    <h4 class="text-md font-medium text-gray-700 dark:text-gray-200">اختيارات الصكات لكل دور</h4>
+                    <div
+                        class="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded">
+                        التوقيت: 1 صكة = 30د، 3 صكات = 60د، 5 صكات = 90د
+                    </div>
+                </div>
                 <div v-for="(sakka, index) in model.SakkaOptions" :key="index"
                     class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <UFormField :label="sakka.group" :name="`SakkaOptions[${index}].sakka`">
-                        <USelect v-model="sakka.sakka" value-key="value" :items="SelectSakkaOptions" />
-                    </UFormField>
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex-1">
+                            <UFormField :label="sakka.group" :name="`SakkaOptions[${index}].sakka`"
+                                :hint="`${calculateMatchTimeDisplay(parseInt(sakka.sakka))} لكل مباراة`">
+                                <USelect v-model="sakka.sakka" value-key="value" :items="SelectSakkaOptions" />
+                            </UFormField>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -217,10 +227,7 @@ const localSchema = object({
                 const { startTime, endTime } = dates[i];
                 if (!startTime || !endTime) continue;
 
-                const start = new Date(`1970-01-01T${startTime}`);
-                const end = new Date(`1970-01-01T${endTime}`);
-
-                if (start >= end) {
+                if (!isValidTimeRange(startTime, endTime)) {
                     return this.createError({
                         path: `TournamentDates[${i}].startTime`,
                         message: `في اليوم ${i + 1}: وقت البداية يجب أن يكون قبل وقت النهاية`
@@ -268,13 +275,23 @@ defineExpose({
 
 
 // Use the tournament calculations composable
-const { 
-    calculateSakkaOptions, 
-    calculateTournamentTime, 
-    calculateAvailableTime, 
+const {
+    calculateSakkaOptions,
+    calculateTournamentTime,
+    calculateAvailableTime,
     calculateOptimalTables,
-    formatTime 
+    calculateMatchTime,
+    isValidTimeRange,
+    formatTime
 } = useTournamentCalculations();
+
+// Helper functions for sakka display
+const calculateMatchTimeDisplay = (sakkaCount: number): string => {
+    const minutes = calculateMatchTime(sakkaCount);
+    return formatTime(minutes);
+};
+
+
 
 const TeamsCount = ref<number | string>(model.value.TeamsCount);
 
@@ -358,8 +375,7 @@ const validatePositiveNumber = (event: Event) => {
 
 // Enhanced sakka options using the composable
 const updateSakkaOptions = () => {
-    const teamsCount = model.value.TeamsCount;
-    model.value.SakkaOptions = calculateSakkaOptions(teamsCount);
+    model.value.SakkaOptions = calculateSakkaOptions(model.value.TeamsCount);
 }
 
 // Computed values using the composable
@@ -372,7 +388,7 @@ const timeAvailable = computed(() => {
 })
 
 const timeNeeded = computed(() => {
-    return calculateTournamentTime(model.value.TeamsCount, model.value.TablesCount);
+    return calculateTournamentTime(model.value.TeamsCount, model.value.TablesCount, model.value.SakkaOptions);
 })
 
 // Watch effects

@@ -43,7 +43,7 @@
           />
         </UFormField>
         <UFormField v-show="prize.isMoney" :label="`العملة`" :name="`TournametPrize[${index}].currency`">
-          <UInput v-model="prize.currency"  placeholder="العملة" />
+          <CurrencyInput v-model="prize.currency"  placeholder="العملة" /> 
         </UFormField>
         <!-- Items Prize Section -->
         <UFormField 

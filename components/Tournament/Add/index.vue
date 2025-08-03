@@ -1,33 +1,28 @@
 <template>
-    <UCard>
+    <UCard :ui="{
+            body: 'p-1 sm:p-1',
+            header: 'p-1 sm:p-1',
+            footer: 'p-1 sm:p-1',
+        
+    }">
         <template #header>
             <div class="flex justify-center items-center w-full ">
                 <div class="flex gap-2">
-                    <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost" >
+                    <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1" >
                         العودة
                     </UButton>
-                    <UButton to="/tournament/add/info" icon="i-heroicons-information-circle" variant="ghost" >
-                        معلومات البطولات
+                    <UButton to="/tournament/add/info" size="sm" icon="i-heroicons-information-circle" variant="ghost">
+                        دليل انشاء البطولة
                     </UButton>
                 </div>
 
                 <UStepper size="sm":items="[...validation.enhancedSteps.value].map(step => ({...step, color: step.color.value}))" class="w-full " v-model="currentStepValue" />
-                <!-- <UButtonGroup class="hidden md:block mx-auto">
-                    <UButton v-for="step in validation.enhancedSteps.value" :key="step.id" :label="step.label"
-                        :class="step.class" @click="validation.goToStep(step.id)">
-                    </UButton>
-                </UButtonGroup>
-
-                <UButtonGroup class="block md:hidden mx-auto">
-                    <UButton v-for="step in validation.enhancedSteps.value" :key="step.id" :icon="step.icon"
-                        :class="step.class" @click="validation.goToStep(step.id)">
-                    </UButton>
-                </UButtonGroup> -->
+        
             </div>
         </template>
 
         <template #default>
-            <div class="overflow-y-auto max-h-[calc(100vh-300px)] min-h-[400px] p-5">
+            <div class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
                 <div class="h-full">
                     <KeepAlive>
                         <TournamentAddTourForm ref="tourForm" v-show="currentStepValue === 0" v-model="formData" />

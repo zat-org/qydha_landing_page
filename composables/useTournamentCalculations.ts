@@ -17,57 +17,79 @@ interface SakkaOption {
 }
 
 export const useTournamentCalculations = () => {
-  const TIME_OF_MATCH = 30; // minutes per match
+  const BASE_TIME_OF_MATCH = 30; // Base time for 1 sakka (minutes)
 
   /**
-   * Calculate tournament rounds structure based on team count
+   * Calculate time per match based on sakka count
+   * Formula: 30 + (sakka - 1) * 15
+   * 1 sakka = 30 min, 3 sakka = 60 min, 5 sakka = 90 min
    */
-  const calculateTournamentRounds = (teamsCount: number, tablesCount: number = 1): TournamentRound[] => {
+  const calculateMatchTime = (sakkaCount: number): number => {
+    return BASE_TIME_OF_MATCH + (sakkaCount - 1) * 15;
+  };
+
+  /**
+   * Generate round name based on remaining teams
+   */
+  const generateRoundName = (remainingTeams: number): string => {
+    if (remainingTeams === 2) return "النهائي";
+    if (remainingTeams === 4) return "نصف النهائي";
+    if (remainingTeams === 8) return "ربع النهائي";
+    if (remainingTeams === 16) return "دور الـ16";
+    if (remainingTeams === 32) return "دور الـ32";
+    if (remainingTeams === 64) return "دور الـ64";
+    if (remainingTeams === 128) return "دور الـ128";
+    return `دور الـ${remainingTeams}`;
+  };
+
+  /**
+   * Helper function to get sakka count for a specific round
+   */
+  const getSakkaForRound = (
+    roundName: string,
+    sakkaOptions: { group: string; sakka: string }[]
+  ): number => {
+    const sakkaOption = sakkaOptions.find(
+      (option) => option.group === roundName
+    );
+    return sakkaOption ? parseInt(sakkaOption.sakka) : 1;
+  };
+
+  /**
+   * Generate basic round structure (names and match counts) for tournament
+   * This eliminates code duplication between different calculation functions
+   */
+  const generateRoundStructure = (
+    teamsCount: number
+  ): Array<{ name: string; matches: number; remainingTeams: number }> => {
     if (teamsCount <= 1) return [];
 
-    const rounds: TournamentRound[] = [];
+    const rounds: Array<{
+      name: string;
+      matches: number;
+      remainingTeams: number;
+    }> = [];
     const nextPowerOf2 = Math.pow(2, Math.floor(Math.log2(teamsCount)));
     let remainingTeams = teamsCount;
 
     // Play-in round if needed
     if (teamsCount > nextPowerOf2) {
-      const matches = teamsCount - nextPowerOf2;
-      const tablesNeeded = Math.min(matches, tablesCount);
-      const timeNeeded = Math.ceil(matches / tablesCount) * TIME_OF_MATCH;
-
       rounds.push({
         name: "دور التأهل",
-        matches,
-        timeNeeded,
-        tablesNeeded
+        matches: teamsCount - nextPowerOf2,
+        remainingTeams,
       });
-
       remainingTeams = nextPowerOf2;
     }
 
     // Regular knockout rounds
     while (remainingTeams > 1) {
-      let roundName = "";
-      if (remainingTeams === 2) roundName = "النهائي";
-      else if (remainingTeams === 4) roundName = "نصف النهائي";
-      else if (remainingTeams === 8) roundName = "ربع النهائي";
-      else if (remainingTeams === 16) roundName = "دور الـ16";
-      else if (remainingTeams === 32) roundName = "دور الـ32";
-      else if (remainingTeams === 64) roundName = "دور الـ64";
-      else if (remainingTeams === 128) roundName = "دور الـ128";
-      else roundName = `دور الـ${remainingTeams}`;
-
-      const matches = remainingTeams / 2;
-      const tablesNeeded = Math.min(matches, tablesCount);
-      const timeNeeded = Math.ceil(matches / tablesCount) * TIME_OF_MATCH;
-
+      const roundName = generateRoundName(remainingTeams);
       rounds.push({
         name: roundName,
-        matches,
-        timeNeeded,
-        tablesNeeded
+        matches: remainingTeams / 2,
+        remainingTeams,
       });
-
       remainingTeams = remainingTeams / 2;
     }
 
@@ -75,118 +97,120 @@ export const useTournamentCalculations = () => {
   };
 
   /**
+   * Calculate tournament rounds structure based on team count and sakka options
+   */
+  const calculateTournamentRounds = (
+    teamsCount: number,
+    tablesCount: number = 1,
+    sakkaOptions: { group: string; sakka: string }[] = []
+  ): TournamentRound[] => {
+    const roundStructure = generateRoundStructure(teamsCount);
+
+    return roundStructure.map((round) => {
+      const tablesNeeded = Math.min(round.matches, tablesCount);
+      const sakkaCount = getSakkaForRound(round.name, sakkaOptions);
+      const matchTime = calculateMatchTime(sakkaCount);
+      const timeNeeded = Math.ceil(round.matches / tablesCount) * matchTime;
+
+      return {
+        name: round.name,
+        matches: round.matches,
+        timeNeeded,
+        tablesNeeded,
+      };
+    });
+  };
+
+  /**
    * Calculate sakka options for each round
    */
   const calculateSakkaOptions = (teamsCount: number): SakkaOption[] => {
-    if (teamsCount <= 1) return [];
+    const roundStructure = generateRoundStructure(teamsCount);
 
-    const sakkaOptions: SakkaOption[] = [];
-    const nextPowerOf2 = Math.pow(2, Math.floor(Math.log2(teamsCount)));
-    let remainingTeams = teamsCount;
-
-    // First round: Play-in games if needed
-    if (teamsCount > nextPowerOf2) {
-      sakkaOptions.push({
-        group: "دور التأهل",
-        sakka: "1"
-      });
-      remainingTeams = nextPowerOf2;
-    }
-
-    // Regular knockout rounds
-    while (remainingTeams > 1) {
-      let roundName = "";
-      if (remainingTeams === 2) roundName = "النهائي";
-      else if (remainingTeams === 4) roundName = "نصف النهائي";
-      else if (remainingTeams === 8) roundName = "ربع النهائي";
-      else if (remainingTeams === 16) roundName = "دور الـ16";
-      else if (remainingTeams === 32) roundName = "دور الـ32";
-      else if (remainingTeams === 64) roundName = "دور الـ64";
-      else if (remainingTeams === 128) roundName = "دور الـ128";
-      else roundName = `دور الـ${remainingTeams}`;
-
-      sakkaOptions.push({
-        group: roundName,
-        sakka: "1"
-      });
-
-      remainingTeams = remainingTeams / 2;
-    }
-
-    return sakkaOptions;
+    return roundStructure.map((round) => ({
+      group: round.name,
+      sakka: "1", // Default to 1 sakka
+    }));
   };
 
   /**
-   * Calculate total time needed for tournament
+   * Calculate total time needed for tournament with sakka considerations
    */
-  const calculateTournamentTime = (teamsCount: number, tablesCount: number): number => {
-    if (teamsCount <= 1 || tablesCount <= 0) return 0;
-
-    const nextPowerOf2 = Math.pow(2, Math.floor(Math.log2(teamsCount)));
-    let remainingTeams = teamsCount;
-    let totalTimeSlots = 0;
-
-    // First round: Play-in games if needed
-    if (teamsCount > nextPowerOf2) {
-      const playInMatches = teamsCount - nextPowerOf2;
-      const playInTimeSlots = Math.ceil(playInMatches / tablesCount);
-      totalTimeSlots += playInTimeSlots;
-      remainingTeams = nextPowerOf2;
-    }
-
-    // Regular knockout rounds
-    while (remainingTeams > 1) {
-      const matchesThisRound = remainingTeams / 2;
-      const timeSlotsThisRound = Math.ceil(matchesThisRound / tablesCount);
-      totalTimeSlots += timeSlotsThisRound;
-      remainingTeams = remainingTeams / 2;
-    }
-
-    return totalTimeSlots * TIME_OF_MATCH;
+  const calculateTournamentTime = (
+    teamsCount: number,
+    tablesCount: number,
+    sakkaOptions: { group: string; sakka: string }[] = []
+  ): number => {
+    const rounds = calculateTournamentRounds(
+      teamsCount,
+      tablesCount,
+      sakkaOptions
+    );
+    return rounds.reduce((total, round) => total + round.timeNeeded, 0);
   };
 
   /**
-   * Calculate available time from tournament dates
+   * Helper function to create a Date object from time string
+   * Centralizes date creation pattern used across time calculations
    */
-  const calculateAvailableTime = (tournamentDates: TournamentDate[]): number => {
-    let totalMinutes = 0;
-
-    tournamentDates.forEach(date => {
-      if (date.startTime && date.endTime) {
-        const startTime = new Date(`1970-01-01T${date.startTime}`);
-        const endTime = new Date(`1970-01-01T${date.endTime}`);
-        const diffMs = Math.abs(endTime.getTime() - startTime.getTime());
-        const diffMinutes = diffMs / (1000 * 60);
-        totalMinutes += diffMinutes;
-      }
-    });
-
-    return totalMinutes;
+  const createTimeDate = (timeString: string): Date => {
+    return new Date(`1970-01-01T${timeString}`);
   };
+
+  /**
+   * Helper function to calculate time difference between start and end time
+   * Centralizes the time calculation logic to eliminate redundancy
+   */
+  const calculateTimeDifference = (startTime: string, endTime: string): number => {
+    if (!startTime || !endTime) return 0;
+    
+    const start = createTimeDate(startTime);
+    const end = createTimeDate(endTime);
+    const diffMs = Math.abs(end.getTime() - start.getTime());
+    return diffMs / (1000 * 60); // Convert to minutes
+  };
+
+  /**
+   * Helper function to validate that start time is before end time
+   * Reusable validation logic for time ranges
+   */
+  const isValidTimeRange = (startTime: string, endTime: string): boolean => {
+    if (!startTime || !endTime) return true; // Skip validation if either is missing
+    
+    const start = createTimeDate(startTime);
+    const end = createTimeDate(endTime);
+    return start < end;
+  };
+
+  /**
+   * Calculate available time for a specific day
+   */
+  const calculateDayAvailableTime = (date: TournamentDate): number => {
+    return calculateTimeDifference(date.startTime, date.endTime);
+  };
+
+  /**
+   * Calculate total available time from all tournament dates
+   */
+  const calculateAvailableTime = (
+    tournamentDates: TournamentDate[]
+  ): number => {
+    return tournamentDates.reduce((totalMinutes, date) => {
+      return totalMinutes + calculateDayAvailableTime(date);
+    }, 0);
+  };
+
 
   /**
    * Calculate optimal number of tables for tournament
    */
   const calculateOptimalTables = (teamsCount: number): number => {
-    if (teamsCount <= 1) return 0;
+    const roundStructure = generateRoundStructure(teamsCount);
 
-    const nextPowerOf2 = Math.pow(2, Math.floor(Math.log2(teamsCount)));
-    let maxMatches = 0;
-    let remainingTeams = teamsCount;
+    if (roundStructure.length === 0) return 0;
 
-    // Play-in round if needed
-    if (teamsCount > nextPowerOf2) {
-      maxMatches = Math.max(maxMatches, teamsCount - nextPowerOf2);
-      remainingTeams = nextPowerOf2;
-    }
-
-    // Regular rounds
-    while (remainingTeams > 1) {
-      maxMatches = Math.max(maxMatches, remainingTeams / 2);
-      remainingTeams = remainingTeams / 2;
-    }
-
-    return maxMatches;
+    // Find the round with the maximum number of matches
+    return Math.max(...roundStructure.map((round) => round.matches));
   };
 
   /**
@@ -214,34 +238,32 @@ export const useTournamentCalculations = () => {
   /**
    * Calculate available time for a specific day
    */
-  const calculateDayAvailableTime = (date: TournamentDate): number => {
-    if (!date.startTime || !date.endTime) return 0;
-
-    const startTime = new Date(`1970-01-01T${date.startTime}`);
-    const endTime = new Date(`1970-01-01T${date.endTime}`);
-    const diffMs = Math.abs(endTime.getTime() - startTime.getTime());
-    return diffMs / (1000 * 60); // Convert to minutes
-  };
-
+ 
   /**
    * Validate if tournament time fits within available time
    */
   const validateTournamentTime = (
-    teamsCount: number, 
-    tablesCount: number, 
-    tournamentDates: TournamentDate[]
+    teamsCount: number,
+    tablesCount: number,
+    tournamentDates: TournamentDate[],
+    sakkaOptions: { group: string; sakka: string }[] = []
   ): { isValid: boolean; timeNeeded: number; timeAvailable: number } => {
-    const timeNeeded = calculateTournamentTime(teamsCount, tablesCount);
+    const timeNeeded = calculateTournamentTime(
+      teamsCount,
+      tablesCount,
+      sakkaOptions
+    );
     const timeAvailable = calculateAvailableTime(tournamentDates);
-    
+
     return {
       isValid: timeNeeded <= timeAvailable,
       timeNeeded,
-      timeAvailable
+      timeAvailable,
     };
   };
 
   return {
+    // Main calculation functions
     calculateTournamentRounds,
     calculateSakkaOptions,
     calculateTournamentTime,
@@ -250,7 +272,20 @@ export const useTournamentCalculations = () => {
     calculateTotalMatches,
     calculateDayAvailableTime,
     validateTournamentTime,
+    calculateMatchTime,
     formatTime,
-    TIME_OF_MATCH
+
+    // Helper utilities (exposed for reuse)
+    generateRoundStructure,
+    generateRoundName,
+    getSakkaForRound,
+    calculateTimeDifference,
+    createTimeDate,
+    isValidTimeRange,
+
+    // Constants
+    BASE_TIME_OF_MATCH,
+    // Legacy support - kept for backward compatibility
+    TIME_OF_MATCH: BASE_TIME_OF_MATCH,
   };
-}; 
+};

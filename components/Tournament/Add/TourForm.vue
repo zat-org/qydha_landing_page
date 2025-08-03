@@ -67,11 +67,11 @@
         </div>
       </UFormField>
 
-      <UFormField label="عنوان البطولة" name="TournamentAddress" required>
+      <UFormField label="مكان البطولة" name="TournamentAddress" required>
         <UInput v-model="modelValue.TournamentAddress" placeholder="أدخل عنوان البطولة" />
       </UFormField>
 
-      <UFormField label="مكان البطولة" name="TournamentLocation" required
+      <UFormField label="موقع البطولة" name="TournamentLocation" required
         :help="modelValue.TournamentLocation.lat != 0 && modelValue.TournamentLocation.lng != 0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'">
         <MapInputModal v-model="modelValue.TournamentLocation" name="TournamentLocation" label="مكان البطولة"
           required />

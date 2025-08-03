@@ -5,49 +5,81 @@
       <p class="text-sm text-gray-600 dark:text-gray-400">خطط جدولك الزمني للبطولة</p>
     </div>
 
-    <UFormField label="عدد أيام البطولة" name="TournamentDaysNumber"
-      :hint="`أفضل عدد ساعات لإدارة البطولة ${bestTime ? formatTime(bestTime) : '0'} ساعة`" required>
-      <div
-        class="flex items-center justify-center gap-3 bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border border-gray-300 dark:border-gray-600">
-        <UInput type="number" v-model="model.TournamentDaysNumber" min="1" @input="updateTournamentDates"
-          class="text-center w-20 text-base font-medium" />
-        <span class="text-base text-gray-700 dark:text-gray-300">يوم</span>
+    <!-- Sakka Impact Summary -->
+    <!-- <div v-if="props.sakkaOptions && props.sakkaOptions.length > 0" 
+      class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <div class="text-blue-600 dark:text-blue-400 text-lg">⚡</div>
+        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200">تأثير الصكات على الجدولة</h4>
       </div>
-    </UFormField>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+        <div v-for="sakka in props.sakkaOptions" :key="sakka.group" 
+          class="bg-white dark:bg-gray-800 p-2 rounded border border-blue-100 dark:border-blue-800">
+          <div class="font-medium text-gray-900 dark:text-gray-100 truncate">{{ sakka.group }}</div>
+          <div class="text-blue-600 dark:text-blue-400">{{ sakka.sakka }} صكة = {{ formatTime(getMatchTimeForRound(sakka.group)) }}</div>
+        </div>
+      </div>
+    </div> -->
+    <div class="flex gap-4 items-center justify-center">
+      <UFormField label="عدد أيام البطولة" name="TournamentDaysNumber" class="w-max mx-auto"
+        :hint="`أفضل عدد ساعات لإدارة البطولة ${bestTime ? formatTime(bestTime) : '0'} ساعة`" required>
+        <div
+          class="flex items-center justify-center gap-3 bg-gray-100 dark:bg-gray-800 p-3 rounded-lg border border-gray-300 dark:border-gray-600">
+          <UInput type="number" v-model="model.TournamentDaysNumber" min="1" @input="updateTournamentDates"
+            class="text-center w-20 text-base font-medium" />
+          <span class="text-base text-gray-700 dark:text-gray-300">يوم</span>
+        </div>
+      </UFormField>
 
-    <div v-if="model.TournamentDaysNumber > 0" class="space-y-6">
-      <!-- Tournament Overview Stats -->
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-        <div
-          class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-3 sm:p-4 rounded-lg text-center">
-          <div class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{{ tournamentRounds.length }}</div>
-          <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">إجمالي الأدوار</div>
-        </div>
-        <div
-          class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-3 sm:p-4 rounded-lg text-center">
-          <div class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{{ totalMatches }}</div>
-          <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">إجمالي المباريات</div>
-        </div>
-        <div
-          class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-3 sm:p-4 rounded-lg text-center">
-          <div class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{{ formatTime(bestTime || 0) }}
+      <div v-if="model.TournamentDaysNumber > 0"
+        class="flex items-center justify-between  w-max mx-auto  bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+        <div class="flex items-center gap-6">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-trophy" class="text-primary-500 dark:text-primary-400 text-lg" />
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">الأدوار</div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ tournamentRounds.length }}</div>
+            </div>
           </div>
-          <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">ساعات مطلوبة</div>
-        </div>
-        <div
-          class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 p-3 sm:p-4 rounded-lg text-center">
-          <div class="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100">{{ formatTime(availableTime) }}
+          <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-flag" class="text-primary-500 dark:text-primary-400 text-lg" />
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">المباريات</div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ totalMatches }}</div>
+            </div>
           </div>
-          <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">الوقت المتاح</div>
+          <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-clock" class="text-primary-500 dark:text-primary-400 text-lg" />
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">الوقت المطلوب</div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ formatTime(bestTime || 0) }}</div>
+            </div>
+          </div>
+          <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex items-center gap-2">
+            <UIcon name="i-heroicons-calendar" class="text-primary-500 dark:text-primary-400 text-lg" />
+            <div>
+              <div class="text-sm text-gray-600 dark:text-gray-400">الوقت المتاح</div>
+              <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ formatTime(availableTime) }}</div>
+            </div>
+          </div>
+
         </div>
       </div>
+    </div>
+
+    <div v-if="model.TournamentDaysNumber > 0" class="space-y-6 ">
+      <!-- Tournament Overview Stats -->
+
 
       <!-- Main Layout: Detail Pane + Sidebar -->
       <div class="flex flex-col lg:flex-row gap-6">
-        
+
 
         <!-- Sidebar (Right side on desktop, bottom on mobile) -->
-        <div class="w-full lg:w-80 lg:flex-shrink-0 min-h-[100px] max-h-[500px] overflow-y-auto" >
+        <div class="w-full lg:w-80 lg:flex-shrink-0 min-h-[100px] max-h-[500px] overflow-y-auto">
           <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <!-- Sidebar Header -->
             <div class="bg-gray-200 dark:bg-gray-700 px-4 py-3 border-b border-gray-300 dark:border-gray-600">
@@ -177,64 +209,112 @@
                 </div>
 
                 <!-- Rounds Schedule -->
-                <div
-                  v-if="roundDistribution && roundDistribution[selectedDayIndex] && roundDistribution[selectedDayIndex].length > 0">
+                <div v-if="roundDistribution && roundDistribution[selectedDayIndex] && roundDistribution[selectedDayIndex].length > 0" class="space-y-6">
                   <div class="flex items-center justify-between mb-4">
-                    <h5 class="text-lg font-semibold text-gray-900 dark:text-gray-100">الأدوار المقررة</h5>
-                    <span
-                      class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded text-sm">
-                      {{ roundDistribution[selectedDayIndex].length }} دور
-                    </span>
+                    <div class="flex items-center gap-3">
+                      <UIcon name="i-heroicons-calendar-days" class="text-primary-500 dark:text-primary-400 text-xl" />
+                      <h5 class="text-lg font-semibold text-gray-900 dark:text-gray-100">الأدوار المقررة</h5>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <UBadge size="lg" color="primary">
+                        {{ roundDistribution[selectedDayIndex].length }} دور
+                      </UBadge>
+              
+                    </div>
                   </div>
 
-                  <div class="space-y-4 ">
-                    <div v-for="(round, roundIndex) in roundDistribution[selectedDayIndex]"
-                      :key="`${round.name}-${selectedDayIndex}`" :class="[
-                        'border rounded-lg p-4',
-                        round.isPartial
-                          ? 'border-orange-300 dark:border-orange-600 bg-orange-50 dark:bg-orange-900/20'
-                          : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-                      ]">
-                      <!-- Round Header -->
-                      <div class="flex justify-between items-start mb-3">
+                  <div class="space-y-3">
+                    <div v-for="(round, roundIndex) in roundDistribution[selectedDayIndex]" 
+                         :key="`${round.name}-${selectedDayIndex}`"
+                         class="relative overflow-hidden group transition-all duration-200 hover:scale-[1.01]">
+                      
+                      <!-- Status Indicator Strip -->
+                      <div class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-200"
+                           :class="{
+                             'bg-success-500 dark:bg-success-400': !round.isPartial && round.matchesPlayed === round.totalMatches,
+                             'bg-warning-500 dark:bg-warning-400': round.isPartial,
+                             'bg-primary-500 dark:bg-primary-400': !round.isPartial && round.matchesPlayed < round.totalMatches
+                           }">
+                      </div>
+
+                      <div class="flex items-center gap-4 p-5 pl-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 shadow-sm hover:shadow-md">
+                        <!-- Round Info -->
+                        <div class="flex items-center gap-3 w-48">
+                          <div class="flex flex-col">
+                            <UBadge color="primary" size="sm" class="mb-1.5 group-hover:scale-105 transition-transform w-max">دور {{ roundIndex + 1 }}</UBadge>
+                            <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ round.name }}</span>
+                          </div>
+                        </div>
+
+                        <!-- Stats Grid -->
                         <div class="flex-1">
-                          <h6 class="font-semibold text-gray-900 dark:text-gray-100 text-base mb-1">
-                            {{ round.name }}
-                          </h6>
-                          <div v-if="round.isPartial" class="text-sm text-orange-600 dark:text-orange-400">
-                            {{ getPartialStatusText(round) }}
-                          </div>
-                        </div>
-                        <span
-                          class="text-sm bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-3 py-1 rounded">
-                          دور #{{ roundIndex + 1 }}
-                        </span>
-                      </div>
+                          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
+                            <div class="flex items-center gap-6 justify-between">
+                              <!-- Matches Status -->
+                              <div class="flex items-center gap-3">
+                                <UIcon name="i-heroicons-flag" class="text-primary-500 text-2xl" />
+                                <div>
+                                  <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">المباريات</div>
+                                  <div class="flex items-center gap-1">
+                                    <span class="text-lg font-semibold text-primary-600 dark:text-primary-400">{{ round.matchesPlayed }}</span>
+                                    <span class="text-lg font-semibold text-gray-400 dark:text-gray-500">/</span>
+                                    <span class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ round.totalMatches }}</span>
+                                  </div>
+                                </div>
+                              </div>
 
-                      <!-- Round Stats -->
-                      <div class="grid grid-cols-3 gap-4">
-                        <div class="text-center bg-gray-100 dark:bg-gray-700 p-3 rounded">
-                          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">الوقت المطلوب</div>
-                          <div class="font-semibold text-gray-900 dark:text-gray-100">{{ formatTime(round.timeUsed) }}
-                          </div>
-                        </div>
-                        <div class="text-center bg-gray-100 dark:bg-gray-700 p-3 rounded">
-                          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">الطاولات المطلوبة</div>
-                          <div class="font-semibold text-gray-900 dark:text-gray-100">{{ round.tablesNeeded }}</div>
-                        </div>
-                        <div class="text-center bg-gray-100 dark:bg-gray-700 p-3 rounded">
-                          <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">المباريات</div>
-                          <div class="font-semibold text-gray-900 dark:text-gray-100">
-                            {{ round.matchesPlayed }}/{{ round.totalMatches }}
-                          </div>
-                        </div>
-                      </div>
+                              <div class="h-12 w-px bg-gray-200 dark:bg-gray-600"></div>
 
-                      <!-- Progress Bar for Partial Rounds -->
-                      <div v-if="round.isPartial" class="mt-3">
-                        <div class="bg-gray-300 dark:bg-gray-600 rounded-full h-2 overflow-hidden">
-                          <div class="bg-orange-500 dark:bg-orange-400 h-full transition-all duration-300"
-                            :style="{ width: `${(round.matchesPlayed / round.totalMatches) * 100}%` }"></div>
+                              <!-- Sakka Count -->
+                              <div class="flex items-center gap-3">
+                                <UIcon name="i-heroicons-bolt" class="text-warning-500 text-2xl" />
+                                <div>
+                                  <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">الصكات</div>
+                                  <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ getSakkaCountForRound(round.name) }}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="h-12 w-px bg-gray-200 dark:bg-gray-600"></div>
+
+                              <!-- Tables -->
+                              <div class="flex items-center gap-3">
+                                <UIcon name="i-heroicons-table-cells" class="text-info-500 text-2xl" />
+                                <div>
+                                  <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">الطاولات</div>
+                                  <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ round.tablesNeeded }}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="h-12 w-px bg-gray-200 dark:bg-gray-600"></div>
+
+                              <!-- Time -->
+                              <div class="flex items-center gap-3">
+                                <UIcon name="i-heroicons-clock" class="text-success-500 text-2xl" />
+                                <div>
+                                  <div class="text-sm text-gray-600 dark:text-gray-300 mb-1">الوقت</div>
+                                  <div class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ formatTime(round.timeUsed) }}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Status Badge -->
+                        <div class="w-40 flex justify-end">
+                          <UBadge
+                            :color="round.isPartial ? 'warning' : (round.matchesPlayed === round.totalMatches ? 'success' : 'primary')"
+                            variant="subtle"
+                            size="lg"
+                            class="text-sm font-medium transition-transform group-hover:scale-105"
+                          >
+                            {{ round.isPartial ? 'جزئي' : (round.matchesPlayed === round.totalMatches ? 'مكتمل' : 'قيد التنفيذ') }}
+                          </UBadge>
                         </div>
                       </div>
                     </div>
@@ -378,6 +458,7 @@ const props = defineProps<{
   timeAvailable?: number;
   teamsCount?: number;
   tablesCount?: number;
+  sakkaOptions?: { group: string, sakka: string }[];
 }>();
 
 const emit = defineEmits<{
@@ -395,13 +476,15 @@ watch(() => model.value.TournamentDaysNumber, (newVal) => {
 }, { immediate: true });
 
 // Use the tournament calculations composable
-const { 
-  calculateTournamentRounds, 
-  calculateTotalMatches, 
+const {
+  calculateTournamentRounds,
+  calculateTotalMatches,
   calculateDayAvailableTime,
   calculateAvailableTime,
+  calculateMatchTime,
+  getSakkaForRound,
   formatTime,
-  TIME_OF_MATCH 
+  BASE_TIME_OF_MATCH
 } = useTournamentCalculations();
 
 // UI Helper Functions
@@ -478,11 +561,22 @@ const getPartialStatusText = (round: PartialRound): string => {
   }
 };
 
+// Helper functions for sakka display in rounds
+const getSakkaCountForRound = (roundName: string): number => {
+  return getSakkaForRound(roundName, props.sakkaOptions || []);
+};
+
+const getMatchTimeForRound = (roundName: string): number => {
+  const sakkaCount = getSakkaCountForRound(roundName);
+  return calculateMatchTime(sakkaCount);
+};
+
 // Tournament rounds calculation using composable
 const tournamentRounds = computed((): TournamentRound[] => {
   const teamsCount = props.teamsCount || 0;
   const tablesCount = props.tablesCount || 1;
-  return calculateTournamentRounds(teamsCount, tablesCount);
+  const sakkaOptions = props.sakkaOptions || [];
+  return calculateTournamentRounds(teamsCount, tablesCount, sakkaOptions);
 });
 
 // Calculate total matches using composable
@@ -507,7 +601,7 @@ const availableTime = computed(() => {
   return calculateAvailableTime(model.value.TournamentDates);
 });
 
-// Enhanced round distribution algorithm that handles splitting rounds across days
+// Enhanced round distribution algorithm that handles splitting rounds across days with dynamic sakka times
 const calculateRoundDistribution = () => {
   const rounds = [...tournamentRounds.value];
   const distribution: PartialRound[][] = Array(model.value.TournamentDaysNumber).fill(null).map(() => []);
@@ -517,25 +611,25 @@ const calculateRoundDistribution = () => {
   for (const round of rounds) {
     let remainingMatches = round.matches;
     let roundScheduled = false;
+    const sakkaCount = getSakkaForRound(round.name, props.sakkaOptions || []);
+    const matchTime = calculateMatchTime(sakkaCount);
 
     for (let dayIndex = 0; dayIndex < model.value.TournamentDaysNumber && remainingMatches > 0; dayIndex++) {
       const availableTime = getDayAvailableTime(dayIndex);
-      console.log("availableTime", availableTime)
       const currentTime = dayTimes[dayIndex];
-      console.log("currentTime", currentTime)
       const remainingTime = availableTime - currentTime;
 
       if (remainingTime <= 0) continue; // No time left in this day
 
-      // Calculate how many matches can fit in remaining time
-      const timeSlotsAvailable = Math.floor(remainingTime / TIME_OF_MATCH);
+      // Calculate how many matches can fit in remaining time using dynamic match time
+      const timeSlotsAvailable = Math.floor(remainingTime / matchTime);
       const matchesCanPlay = Math.min(
         timeSlotsAvailable * props.tablesCount!,
         remainingMatches
       );
 
       if (matchesCanPlay > 0) {
-        const timeUsed = Math.ceil(matchesCanPlay / props.tablesCount!) * TIME_OF_MATCH;
+        const timeUsed = Math.ceil(matchesCanPlay / props.tablesCount!) * matchTime;
 
         // Determine partial type
         let partialType: 'start' | 'continue' | 'middle' | 'end' | undefined;
@@ -576,7 +670,7 @@ const calculateRoundDistribution = () => {
       unscheduled.push({
         ...round,
         matches: remainingMatches,
-        timeNeeded: Math.ceil(remainingMatches / props.tablesCount!) * TIME_OF_MATCH
+        timeNeeded: Math.ceil(remainingMatches / props.tablesCount!) * matchTime
       });
     }
   }
@@ -597,9 +691,9 @@ watch(showTimeWarning, (newVal) => {
 });
 
 // Watch for changes that should trigger recalculation
-watch([() => props.teamsCount, () => props.tablesCount], () => {
+watch([() => props.teamsCount, () => props.tablesCount, () => props.sakkaOptions], () => {
   calculateRoundDistribution();
-}, { immediate: true });
+}, { immediate: true, deep: true });
 
 watch(() => model.value.TournamentDates, () => {
   calculateRoundDistribution();

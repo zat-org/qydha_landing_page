@@ -9,13 +9,7 @@
 
           <UFormField label="رقم الهاتف" name="phonesNumbers">
             <AsyncPhoneInput v-model="phoneinput" dir="ltr" />
-            <!-- <vue-tel-input mode="auto" :autoFormat="true" dir="ltr" :validCharactersOnly="true"
-              :autoDefaultCountry="true" :inputOptions="{ showDialCode: true, showFlags: true }"
-              invalidMsg="this phone is invalid " :dropdownOptions="{
-                showDialCodeInSelection: true,
-                showFlags: true,
-                showSearchBox: true,
-              }" @country-changed="phoneChanged" @keydown.enter.prevent="AddphoneNumber" v-model="phoneinput"></vue-tel-input> -->
+           
           </UFormField>
           <UButton type="button" label="add phone" @click="AddphoneNumber" class="h-full" />
         </div>
