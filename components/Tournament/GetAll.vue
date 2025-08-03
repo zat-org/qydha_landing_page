@@ -9,7 +9,7 @@
           </div>
           <div class="flex gap-3">
             <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/add/info"
-              label="معلومات البطولات" class="px-6" />
+              label="دليل انشاء البطولة" class="px-6" />
             <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/add"
               label="إضافة بطولة جديدة" class="px-6" />
           </div>
