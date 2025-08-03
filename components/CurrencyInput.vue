@@ -1,6 +1,6 @@
 <template>
-    <USelect v-model="currency" :items="currencyOptions" placeholder="اختر العملة" />
-    {{ currency }}
+    <USelect v-model="currency" :items="currencyOptions" />
+
 </template>
 
 <script setup lang="ts">

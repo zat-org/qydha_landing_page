@@ -75,11 +75,11 @@
 
 
       <!-- Main Layout: Detail Pane + Sidebar -->
-      <div class="flex flex-col lg:flex-row gap-6">
+      <div class="flex flex-col lg:flex-row gap-6 w-full">
 
 
         <!-- Sidebar (Right side on desktop, bottom on mobile) -->
-        <div class="w-full lg:w-80 lg:flex-shrink-0 min-h-[100px] max-h-[500px] overflow-y-auto">
+        <div class=" flex-1  lg:flex-shrink-0 min-h-[100px] max-h-[500px] overflow-y-auto">
           <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <!-- Sidebar Header -->
             <div class="bg-gray-200 dark:bg-gray-700 px-4 py-3 border-b border-gray-300 dark:border-gray-600">
@@ -142,7 +142,7 @@
         </div>
 
 
-        <div class="flex-1 lg:flex-[2]">
+        <div class="flex-4 ">
           <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
             <!-- Detail Header -->
             <div class="bg-gray-200 dark:bg-gray-700 px-4 py-3 border-b border-gray-300 dark:border-gray-600">
@@ -158,7 +158,7 @@
             </div>
 
             <!-- Detail Content -->
-            <div class="p-4  min-h-[100px] max-h-[500px] overflow-y-auto">
+            <div class="p-2  min-h-[100px] max-h-[500px] overflow-y-auto ">
               <div v-if="selectedDayIndex !== null" class="space-y-4  ">
                 <!-- Date and Time Inputs -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sticky   bg-white dark:bg-gray-800 ">
@@ -237,9 +237,9 @@
                            }">
                       </div>
 
-                      <div class="flex items-center gap-4 p-5 pl-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 shadow-sm hover:shadow-md">
+                      <div class="grid grid-cols-[1fr_auto_1fr] gap-4 p-2 pl-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-all duration-200 shadow-sm hover:shadow-md">
                         <!-- Round Info -->
-                        <div class="flex items-center gap-3 w-48">
+                        <div class="flex items-center gap-3 col-span-1">
                           <div class="flex flex-col">
                             <UBadge color="primary" size="sm" class="mb-1.5 group-hover:scale-105 transition-transform w-max">دور {{ roundIndex + 1 }}</UBadge>
                             <span class="font-semibold text-gray-900 dark:text-gray-100 text-lg">{{ round.name }}</span>
@@ -247,7 +247,7 @@
                         </div>
 
                         <!-- Stats Grid -->
-                        <div class="flex-1">
+                        <div class="w-max mx-auto">
                           <div class="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4">
                             <div class="flex items-center gap-6 justify-between">
                               <!-- Matches Status -->
@@ -306,7 +306,7 @@
                         </div>
 
                         <!-- Status Badge -->
-                        <div class="w-40 flex justify-end">
+                        <div class=" flex justify-end">
                           <UBadge
                             :color="round.isPartial ? 'warning' : (round.matchesPlayed === round.totalMatches ? 'success' : 'primary')"
                             variant="subtle"

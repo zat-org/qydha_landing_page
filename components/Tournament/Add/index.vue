@@ -6,8 +6,8 @@
         
     }">
         <template #header>
-            <div class="flex justify-center items-center w-full ">
-                <div class="flex gap-2">
+            <div class="flex justify-around  items-center w-full">
+                <div class=" flex-1 flex  gap-2">
                     <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1" >
                         العودة
                     </UButton>
@@ -16,7 +16,7 @@
                     </UButton>
                 </div>
 
-                <UStepper size="sm":items="[...validation.enhancedSteps.value].map(step => ({...step, color: step.color.value}))" class="w-full " v-model="currentStepValue" />
+                <UStepper size="sm":items="[...validation.enhancedSteps.value].map(step => ({...step, color: step.color.value}))" class="flex-4 " v-model="currentStepValue" />
         
             </div>
         </template>
@@ -101,21 +101,21 @@ const steps = [
     {
         id: 0,
         title: "معلومات البطولة",
-        description: "معلومات البطولة",
+        // description: "معلومات البطولة",
         slot: "TourInfo",
         icon: "i-heroicons-trophy",
     },
     {
         id: 1,
         title: "تفاصيل البطولة",
-        description: "تفاصيل البطولة",
+        // description: "تفاصيل البطولة",
         slot: "TourDetail",
         icon: "i-heroicons-clipboard-document-list",
     },
     {
         id: 2,
         title: "قوانين البطولة",
-        description: "قوانين البطولة",
+        // description: "قوانين البطولة",
         slot: "TourRules",
         icon: "i-heroicons-scale",
     },
