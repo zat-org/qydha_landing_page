@@ -9,16 +9,15 @@
       'text-gray-900 dark:text-gray-100'
     ]"
   >
-  <UApp>   
-    <NuxtLayout>
-        <NuxtPage />
+  <UApp >   
+    <NuxtLayout >
+        <NuxtPage  />
       </NuxtLayout>
     </UApp>
   </div>
 </template>
 
 <script setup lang="ts">
-
 </script>
 
 <style>
