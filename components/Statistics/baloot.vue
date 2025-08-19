@@ -2,7 +2,7 @@
     <div class="min-h-[100px] max-h-[66vh] w-[99%] p-2  flex flex-col gap-4 h-full overflow-y-auto ">
         <UCard>
             <template #header> عدد الصكات المتوسطة للمستخدم </template>
-            <ApexChart type="line" :options="{ ...defaults, ...GameUsersOptions }" height="300"
+            <ApexChart type="line" :options="{ ...defaultChartOptions, ...GameUsersOptions }" height="300"
                 :series="GameUsersSeries" />
         </UCard>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -14,44 +14,52 @@
                     <p class="text-2xl font-bold"> {{ totalGames }} </p>
                 </div>
             </UCard>
-
             <UCard>
                 <template #header>
-                    <h2 class="text-lg font-bold"> احصائيات الصكات المكتملة و غير المكتملة</h2>
+                    <h2 class="text-lg font-bold"> عدد الصكات المتوسطة للمستخدم </h2>
                 </template>
-                <ApexChart type="pie" :options="{ ...defaults, ...completeSakkaChartOptions }" height="200"
-                    :series="completeSakkaSeries" />
+                <div class="flex justify-center items-center h-full">
+                    <div class="flex flex-col items-center gap-2">
+                        <p class="text-2xl font-bold"> {{ averageSakkasPerUser }} صكة </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400"> ل {{ numberOfUsers }} مستخدمين </p>
+                    </div>
+                </div>
+                <!-- <ApexChart type="pie" :options="{ ...defaults, ...AverageSakkasOptions }" height="200"
+                    :series="AverageSakkasSeries" /> -->
             </UCard>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <UCard>
                 <template #header>
-                    <h2 class="text-lg font-bold">  نسبة عدد الصكات في الالعاب </h2>
+                    <h2 class="text-lg font-bold"> نسبة عدد الصكات في الالعاب </h2>
                 </template>
-                <ApexChart type="pie" :options="{ ...defaults, ...SakkasCountOptions }" height="200"
+                <ApexChart type="pie" :options="{ ...defaultChartOptions, ...SakkasCountOptions }" height="200"
                     :series="SakkasCountSeries" />
             </UCard>
+
+
             <UCard>
                 <template #header>
-                    <h2 class="text-lg font-bold"> عدد الصكات المتوسطة للمستخدم </h2>
+                    <h2 class="text-lg font-bold"> احصائيات الصكات المكتملة و غير المكتملة</h2>
                 </template>
-                <ApexChart type="pie" :options="{ ...defaults, ...AverageSakkasOptions }" height="200"
-                    :series="AverageSakkasSeries" />
+                <ApexChart type="pie" :options="{ ...defaultChartOptions, ...completeSakkaChartOptions }" height="200"
+                    :series="completeSakkaSeries" />
             </UCard>
+
 
         </div>
 
 
 
 
-        
+
 
         <UCard>
             <template #header>
                 <h2 class="text-lg font-bold">إعدادات البلوت</h2>
             </template>
-            <ApexChart type="bar" stacked="true" :options="{ ...defaults, ...BalootSettingsChartOptions }" height="200"
-                :series="BalootSettingsSeries" />
+            <ApexChart type="bar" stacked="true" :options="{ ...defaultChartOptions, ...BalootSettingsChartOptions }"
+                height="200" :series="BalootSettingsSeries" />
         </UCard>
 
 
@@ -82,15 +90,21 @@ const defaults = inject('ApexChartOptions') as any
 
 // Computed properties for better data organization
 const totalGames = computed(() => data.value?.data?.gamesCount?.gamesCount || 0)
-const hasNoSakkaData = computed(() => completeSakkaSeries.value.every(item => item === 0))
-const hasUserStats = computed(() => data.value?.data?.gameUsersStatistics?.length && data.value?.data?.gameUsersStatistics?.length > 0)
+
+const defaultChartOptions = computed(() => ({
+    ...defaults,
+    chart: {
+        foreColor: colorMode.value === 'dark' ? '#fff' : '#000',
+    },
+    theme: {
+        palette:  'palette1',
+        // mode: colorMode.value === 'dark' ? 'dark' : 'light'
+    },
+}))
 
 // settings 
 const BalootSettingsChartOptions = computed(() => ({
-    theme: {
-        palette: 'palette1',
-        mode: colorMode.value === 'dark' ? 'dark' : 'light'
-    },
+
     chart: {
         stacked: true
     },
@@ -131,14 +145,7 @@ const BalootSettingsSeries = computed(() => {
 
 })
 
-
-
-// compleet sakkas 
 const completeSakkaChartOptions = computed(() => ({
-    theme: {
-        palette: 'palette1',
-        mode: colorMode.value === 'dark' ? 'dark' : 'light'
-    },
     labels: ['الصكات المكتملة', 'الصكات غير المكتملة']
 }))
 const completedSakkas = computed(() => data.value?.data?.sakkasFinishedStats?.finishedCount || 0)
@@ -160,48 +167,52 @@ const SakkasCountOptions = computed(() => ({
 }))
 
 
-const AverageSakkasSeries = computed(() => {
-    return [{
-        name: 'عدد المستخدمين',
-        data: data?.value?.data.averageSakkasPerUser?.map(x => x.usersCount) || []
-    }]
+// const AverageSakkasSeries = computed(() => {
+//     return [{
+//         name: 'عدد المستخدمين',
+//         data: data?.value?.data.averageSakkasPerUser?.map(x => x.usersCount) || []
+//     }]
+// })
+// const AverageSakkasOptions = computed(() => ({
+//     chart: {
+//         type: 'bar',
+//         height: 250,
+//         toolbar: { show: false }
+//     },
+//     plotOptions: {
+//         bar: {
+//             horizontal: false,    // 👈 ensures it's a vertical column chart
+//             // columnWidth: '50%',
+//             // borderRadius: 6
+//         }
+//     },
+//     // dataLabels: {
+//     //     enabled: true,
+//     //     style: { fontSize: '14px', fontWeight: 'bold' }
+//     // },
+//     xaxis: {
+//         categories: data.value?.data?.averageSakkasPerUser?.map(x => ` ${x.sakkaCount}`) || [],
+//         title: { text: 'عدد الصكات لكل مستخدم' },
+//         labels: { style: { fontSize: '14px' } }
+//     },
+//     yaxis: {
+//         title: { text: 'عدد المستخدمين' },
+//         labels: { style: { fontSize: '14px' } }
+//     },
+//     // tooltip: {
+//     //     y: {
+//     //         formatter: (val: number) => `${val} مستخدم`
+//     //     }
+//     // },
+//     // legend: {
+//     //     show: false
+//     // }
+// }))
+const numberOfUsers = computed(() => data.value?.data?.averageSakkasPerUser?.length || 0)
+const averageSakkasPerUser = computed(() => {
+    if (data.value?.data?.averageSakkasPerUser)
+        return data.value?.data?.averageSakkasPerUser?.reduce((acc, ele) => acc + ele.sakkaCount, 0) / numberOfUsers.value || 0
 })
-const AverageSakkasOptions = computed(() => ({
-    chart: {
-        type: 'bar',
-        height: 250,
-        toolbar: { show: false }
-    },
-    plotOptions: {
-        bar: {
-            horizontal: false,    // 👈 ensures it's a vertical column chart
-            // columnWidth: '50%',
-            // borderRadius: 6
-        }
-    },
-    // dataLabels: {
-    //     enabled: true,
-    //     style: { fontSize: '14px', fontWeight: 'bold' }
-    // },
-    xaxis: {
-        categories: data.value?.data?.averageSakkasPerUser?.map(x => ` ${x.sakkaCount}`) || [],
-        title: { text: 'عدد الصكات لكل مستخدم' },
-        labels: { style: { fontSize: '14px' } }
-    },
-    yaxis: {
-        title: { text: 'عدد المستخدمين' },
-        labels: { style: { fontSize: '14px' } }
-    },
-    // tooltip: {
-    //     y: {
-    //         formatter: (val: number) => `${val} مستخدم`
-    //     }
-    // },
-    // legend: {
-    //     show: false
-    // }
-}))
-
 
 
 // game users
