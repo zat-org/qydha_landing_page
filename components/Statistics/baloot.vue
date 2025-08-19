@@ -16,12 +16,11 @@
             </UCard>
             <UCard>
                 <template #header>
-                    <h2 class="text-lg font-bold"> عدد الصكات المتوسطة للمستخدم </h2>
+                    <h2 class="text-lg font-bold">  متوسط عدد الصكات ل{{ numberOfUsers }} مستخدمين </h2>
                 </template>
                 <div class="flex justify-center items-center h-full">
                     <div class="flex flex-col items-center gap-2">
                         <p class="text-2xl font-bold"> {{ averageSakkasPerUser }} صكة </p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400"> ل {{ numberOfUsers }} مستخدمين </p>
                     </div>
                 </div>
                 <!-- <ApexChart type="pie" :options="{ ...defaults, ...AverageSakkasOptions }" height="200"
