@@ -13,6 +13,12 @@ onMounted(() => {
   setPageLayout(layout);
 });
 
+useHead({
+  title:'البطولات',
+  meta:[
+    {name:'description',content:'البطولات'}
+  ]
+})
 
 </script>
 

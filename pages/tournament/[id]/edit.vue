@@ -11,6 +11,12 @@ const tourApi = useTournament()
 const getREQ =await tourApi.getTourById()
 await getREQ.fetchREQ(+tourId)
 if(getREQ.status.value=="error") navigateTo('/tournament')
+useHead({
+  title:'تعديل البطولة',
+  meta:[
+    {name:'description',content:'تعديل البطولة'}
+  ]
+})
 </script>
 
 <style>

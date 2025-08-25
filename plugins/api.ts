@@ -13,7 +13,7 @@ export default defineNuxtPlugin(() => {
       const {user} =storeToRefs(authStore)
   const config = useRuntimeConfig();
   const $api = $fetch.create({
-    baseURL: config.public.qydhaapiBase,
+    baseURL: config.public.apiBase,
     onRequest:async({options}:{options:FetchOptions})=>{
       
       let token = authStore.user?.jwtToken

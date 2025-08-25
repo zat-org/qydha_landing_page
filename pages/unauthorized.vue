@@ -36,6 +36,12 @@ const goToAppropriateRoute = () => {
   navigateTo(getRedirectPath())
 }
 
+useHead({
+  title:'غير مصرح لك بالوصول',
+  meta:[
+    {name:'description',content:'غير مصرح لك بالوصول'}
+  ]
+})
 // Set page meta
 definePageMeta({
   layout: false // Use no layout for this error page

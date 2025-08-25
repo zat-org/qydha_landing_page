@@ -21,11 +21,34 @@ import Features from '~/components/Home/Features.vue'
 import Subscription from '~/components/Home/Subscription.vue'
 import Clients from '~/components/Home/Clients.vue'
 import Blogs from '~/components/Home/Blogs.vue'
+const { logo,title , description } = useRuntimeConfig().public
 
+
+useSeoMeta({
+  ogImage: logo,
+  twitterTitle: title as string,
+  twitterDescription: description as string,
+  twitterImage: logo as string
+})
+
+useHead({
+  link: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      href: '/favicon.png'
+    }
+  ]
+})
 
 definePageMeta({
     layout: "landing"
 })
-
+useHead({
+  title:'الرئيسية',
+  meta:[
+    {name:'description',content:'الرئيسية'}
+  ]
+})
 </script>
 

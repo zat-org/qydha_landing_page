@@ -34,6 +34,12 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
+useHead({
+  title:'سياسة الخصوصية',
+  meta:[
+    {name:'description',content:'سياسة الخصوصية'}
+  ]
+})
 const showScrollButton = ref(false)
 
 const scrollToTop = () => {

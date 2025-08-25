@@ -14,31 +14,11 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: false,
 
-  modules: [
-    "@nuxt/ui",
-    "@pinia/nuxt",
-    "pinia-plugin-persistedstate/nuxt",
-    "nuxt-aos",
-    "@unlok-co/nuxt-stripe",
-  ],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "pinia-plugin-persistedstate/nuxt", "nuxt-aos", "@unlok-co/nuxt-stripe", "@nuxtjs/seo", "@nuxtjs/robots", "nuxt-og-image"],
 
-  // Stripe Configuration
-  stripe: {
-    server: {
-      key: process.env.STRIPE_SECRET_KEY,
-      options: {
-        apiVersion: '2025-05-28.basil',
-      },
-    },
-    client: {
-      key: process.env.STRIPE_PUBLISHABLE_KEY,
-      options: {},
-    },
-  },
+  // //
 
-  css: [
-    "~/assets/css/main.css"
-  ],
+  css: ["~/assets/css/main.css"],
 
   app: {
     head: {
@@ -67,17 +47,53 @@ export default defineNuxtConfig({
       //   },
       // ],
     },
+  } ,
+  ogImage: {
+    defaults: {
+    component: 'NuxtSeo',
+      // title: "Welcome to Nuxt OG Image",
+      // description: "You can modify the og:image by changing these props.",
+      // colorMode: "dark",
+    },
+  },
+  site: {
+    url: WebsiteUrl,
+    name: "Qydha",
+    description: Description,
+    keywords: Keywords,
+    image: LogoURL,
+    type: "website",
+    locale: "ar",
+    twitterCard: "summary_large_image",
+    twitterSite: "@qydha",
+    twitterCreator: "@qydha",
+    twitterTitle: Title,
+    twitterDescription: Description,
+    twitterImage: LogoURL,
+    twitterUrl: WebsiteUrl,
+    indexable: true ,
+  },
+  robots: {
+    disallow: ["/me", "/user", "/stream", "/tournament", "/unauthorized"],
+    sitemap: "https://qydha.com/sitemap.xml",
   },
 
   compatibilityDate: "2024-08-20",
 
   runtimeConfig: {
+    
     // Private keys (only available on server-side)
-    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    qydhaapiBase: process.env.QydhaApiBase,
     
     public: {
-      qydhaapiBase: process.env.QydhaApiBase,
       qydhaToken: process.env.QydhaToken,
+      apiBase:"/api",
+
+      logo:LogoURL,
+      title:Title,
+      description:Description,
+      
       apiKey: process.env.apiKey,
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
@@ -95,9 +111,9 @@ export default defineNuxtConfig({
         port: 24678,
       },
       allowedHosts: [
-        'hip-lies-create.loca.lt',
-        'three-tips-move.loca.lt',
-        '.loca.lt' // Allow all loca.lt subdomains
+        "hip-lies-create.loca.lt",
+        "three-tips-move.loca.lt",
+        ".loca.lt", // Allow all loca.lt subdomains
       ],
     },
   },
@@ -107,12 +123,7 @@ export default defineNuxtConfig({
       watch: [],
     },
     prerender: {
-      ignore: [
-        '/draft',
-        '/test',
-        '/admin/**',
-      ],
+      ignore: ["/draft", "/test", "/admin/**"],
     },
   },
-
 });

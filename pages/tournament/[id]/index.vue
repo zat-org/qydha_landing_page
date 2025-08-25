@@ -15,6 +15,12 @@ onMounted(() => {
   const layout = userStore.logedin ? 'default' : 'tournament';
   setPageLayout(layout);
 });
+useHead({
+  title:'البطولة',
+  meta:[
+    {name:'description',content:'البطولة'}
+  ]
+})
 </script>
 
 <style>

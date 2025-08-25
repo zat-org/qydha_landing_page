@@ -47,6 +47,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
+useHead({
+  title:'الشروط والأحكام',
+  meta:[
+    {name:'description',content:'الشروط والأحكام'}
+  ]
+})
+
 const showScrollButton = ref(false)
 
 const scrollToTop = () => {

@@ -11,7 +11,12 @@ definePageMeta({
   layout: 'default',
   middleware: 'auth',
   requiredRoles: ['SuperAdmin', 'StaffAdmin', 'User'],
-  title: 'ملف المنظم'
+})
+useHead({
+  title:'ملف المنظم',
+  meta:[
+    {name:'description',content:'ملف المنظم'}
+  ]
 })
 
 </script> 

@@ -22,7 +22,12 @@ definePageMeta({
   layout: "custom",
 
 });
-
+useHead({
+  title:'خريطة البطولة',
+  meta:[
+    {name:'description',content:'خريطة البطولة'}
+  ]
+})
 const route = useRoute();
 const tourid = route.params.id.toString()
 

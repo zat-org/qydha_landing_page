@@ -8,6 +8,12 @@
   definePageMeta({ middleware: ['auth','role'],
     requiredRoles: ['StaffAdmin', 'SuperAdmin'],
    });
+   useHead({
+    title:'ملف المستخدم',
+    meta:[
+      {name:'description',content:'ملف المستخدم'}
+    ]
+   })
   </script>
   
   <style>

@@ -442,6 +442,12 @@ definePageMeta({
   middleware: ['auth', 'role'],
   requiredRoles: ['StaffAdmin', 'SuperAdmin'],
 });
+useHead({
+  title:'دليل إنشاء البطولة',
+  meta:[
+    {name:'description',content:'دليل إنشاء البطولة'}
+  ]
+})
 </script>
 
 <style scoped></style>

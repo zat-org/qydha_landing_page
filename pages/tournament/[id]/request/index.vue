@@ -10,6 +10,12 @@ definePageMeta({
   middleware: ['auth','role'],
   requiredRoles: ['StaffAdmin', 'SuperAdmin'],
 });
+useHead({
+  title:' طلبات البطولة',
+  meta:[
+    {name:'description',content:'طلبات البطولة'}
+  ]
+})
 </script>
 
 <style>

@@ -9,6 +9,12 @@ definePageMeta({
     middleware: ['auth','role'],
     requiredRoles: ['StaffAdmin', 'SuperAdmin'],
 })
+useHead({
+  title:'الإحصائيات',
+  meta:[
+    {name:'description',content:'الإحصائيات'}
+  ]
+})
 
 </script>
 

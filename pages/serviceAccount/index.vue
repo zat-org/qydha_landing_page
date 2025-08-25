@@ -7,16 +7,12 @@ import { useMyAuthStore } from "~/store/Auth";
 definePageMeta({
     middleware: 'auth'
 })
-
-const userStore = useMyAuthStore();
-
-// const { user } = storeToRefs(userStore);
-// if (user.value?.user.roles.includes("Streamer")) {
-//   navigateTo("/stream");
-// } else {
-//   navigateTo("/deleteuser");
-// }
-// navigateTo("/stream");
+useHead({
+  title:'الحسابات الخدمية',
+  meta:[
+    {name:'description',content:'الحسابات الخدمية'}
+  ]
+})
 </script>
 
 <style></style>

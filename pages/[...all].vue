@@ -8,5 +8,10 @@
 </template>
 
 <script setup>
-
+useHead({
+  title:'404',
+  meta:[
+    {name:'description',content:'404 page not found'}
+  ]
+})
 </script> 
