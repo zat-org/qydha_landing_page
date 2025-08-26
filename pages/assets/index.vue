@@ -10,7 +10,9 @@ definePageMeta({
 useHead({
   title:'الملفات الثابته',
   meta:[
-    {name:'description',content:'الملفات الثابته'}
+    {name:'description',content:'الملفات الثابته'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

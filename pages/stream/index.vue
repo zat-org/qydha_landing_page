@@ -11,7 +11,9 @@ definePageMeta({
 useHead({
   title:'البث',
   meta:[
-    {name:'description',content:'البث'}
+    {name:'description',content:'البث'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 </script>

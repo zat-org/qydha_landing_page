@@ -9,7 +9,9 @@ definePageMeta({ middleware: ['auth','role'],
  useHead({
   title:' اللاعبين في البطولة',
   meta:[
-    {name:'description',content:'اللاعبين في البطولة'}
+    {name:'description',content:'اللاعبين في البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
  })
 </script>

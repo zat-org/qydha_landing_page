@@ -11,7 +11,9 @@ definePageMeta({ middleware: ['auth','role'],
  useHead({
   title:' الحكام في البطولة',
   meta:[
-    {name:'description',content:'الحكام في البطولة'}
+    {name:'description',content:'الحكام في البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
  })
 </script>

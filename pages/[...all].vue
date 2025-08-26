@@ -11,7 +11,9 @@
 useHead({
   title:'404',
   meta:[
-    {name:'description',content:'404 page not found'}
+    {name:'description',content:'404 page not found'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 </script> 

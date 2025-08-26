@@ -11,7 +11,9 @@ definePageMeta({
 useHead({
   title:'حذف المستخدم',
   meta:[
-    {name:'description',content:'حذف المستخدم'}
+    {name:'description',content:'حذف المستخدم'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 </script>

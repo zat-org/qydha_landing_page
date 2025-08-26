@@ -12,7 +12,9 @@ const id = ref(authuser.user?.user.id)
 useHead({
   title: 'الصفحة الشخصية',
   meta: [
-    { name: 'description', content: 'الصفحة الشخصية' }
+    { name: 'description', content: 'الصفحة الشخصية' },
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

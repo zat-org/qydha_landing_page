@@ -50,7 +50,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 useHead({
   title:'الشروط والأحكام',
   meta:[
-    {name:'description',content:'الشروط والأحكام'}
+    {name:'description',content:'الشروط والأحكام'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

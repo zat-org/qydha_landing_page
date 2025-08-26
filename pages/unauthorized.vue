@@ -39,7 +39,10 @@ const goToAppropriateRoute = () => {
 useHead({
   title:'غير مصرح لك بالوصول',
   meta:[
-    {name:'description',content:'غير مصرح لك بالوصول'}
+    {name:'description',content:'غير مصرح لك بالوصول'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
+
   ]
 })
 // Set page meta

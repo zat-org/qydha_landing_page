@@ -15,7 +15,9 @@ definePageMeta({
 useHead({
   title:'ملف المنظم',
   meta:[
-    {name:'description',content:'ملف المنظم'}
+    {name:'description',content:'ملف المنظم'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

@@ -37,7 +37,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 useHead({
   title:'سياسة الخصوصية',
   meta:[
-    {name:'description',content:'سياسة الخصوصية'}
+    {name:'description',content:'سياسة الخصوصية'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 const showScrollButton = ref(false)

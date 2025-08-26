@@ -10,7 +10,9 @@ definePageMeta({
 useHead({
   title:'الإشعارات',
   meta:[
-    {name:'description',content:'الإشعارات'}
+    {name:'description',content:'الإشعارات'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

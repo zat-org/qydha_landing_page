@@ -1,15 +1,15 @@
 <template>
-    <section class="space-y-10">
+  <section class="space-y-10">
 
-        <Hero />
-        <Calculators />
-        <Statistics />
-        <Download />
-        <Features />
-        <Subscription />
-        <Clients />
-        <Blogs />
-    </section>
+    <Hero />
+    <Calculators />
+    <Statistics />
+    <Download />
+    <Features />
+    <Subscription />
+    <Clients />
+    <Blogs />
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +21,7 @@ import Features from '~/components/Home/Features.vue'
 import Subscription from '~/components/Home/Subscription.vue'
 import Clients from '~/components/Home/Clients.vue'
 import Blogs from '~/components/Home/Blogs.vue'
-const { logo,title , description } = useRuntimeConfig().public
+const { logo, title, description } = useRuntimeConfig().public
 
 
 useSeoMeta({
@@ -35,20 +35,21 @@ useHead({
   link: [
     {
       rel: 'icon',
-      type: 'image/png',
-      href: '/favicon.png'
+      href: '/favicon.icon'
     }
   ]
 })
 
 definePageMeta({
-    layout: "landing"
+  layout: "landing"
 })
 useHead({
-  title:'الرئيسية',
-  meta:[
-    {name:'description',content:'الرئيسية'}
+  title: 'الرئيسية',
+  meta: [
+    { name: 'description', content: 'الرئيسية' },
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
+
   ]
 })
 </script>
-

@@ -10,7 +10,9 @@ definePageMeta({
 useHead({
   title:'اكواد التسويق',
   meta:[
-    {name:'description',content:'اكواد التسويق'}
+    {name:'description',content:'اكواد التسويق'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

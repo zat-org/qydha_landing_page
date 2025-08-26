@@ -11,7 +11,9 @@
    useHead({
     title:'ملف المستخدم',
     meta:[
-      {name:'description',content:'ملف المستخدم'}
+      {name:'description',content:'ملف المستخدم'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
     ]
    })
   </script>

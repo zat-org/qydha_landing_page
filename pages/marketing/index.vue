@@ -10,7 +10,9 @@ definePageMeta({
 useHead({
   title:'التسويق',
   meta:[
-    {name:'description',content:'التسويق'}
+    {name:'description',content:'التسويق'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

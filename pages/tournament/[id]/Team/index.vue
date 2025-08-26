@@ -9,7 +9,9 @@ definePageMeta({ middleware: ['auth','role'],
  useHead({
   title:' الفرق في البطولة',
   meta:[
-    {name:'description',content:'الفرق في البطولة'}
+    {name:'description',content:'الفرق في البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
  })
 </script>

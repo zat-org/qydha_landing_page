@@ -16,7 +16,9 @@ onMounted(() => {
 useHead({
   title:'البطولات',
   meta:[
-    {name:'description',content:'البطولات'}
+    {name:'description',content:'البطولات'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

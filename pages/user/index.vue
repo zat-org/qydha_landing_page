@@ -9,7 +9,9 @@
 useHead({
   title:'المستخدمين',
   meta:[
-    {name:'description',content:'المستخدمين'}
+    {name:'description',content:'المستخدمين'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 </script>

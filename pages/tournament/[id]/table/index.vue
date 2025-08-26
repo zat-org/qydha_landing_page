@@ -9,7 +9,9 @@ definePageMeta({ middleware: ['auth','role'],
  useHead({
   title:' طاولات البطولة',
   meta:[
-    {name:'description',content:'طاولات البطولة'}
+    {name:'description',content:'طاولات البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
  })
 </script>

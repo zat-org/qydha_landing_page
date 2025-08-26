@@ -445,7 +445,9 @@ definePageMeta({
 useHead({
   title:'دليل إنشاء البطولة',
   meta:[
-    {name:'description',content:'دليل إنشاء البطولة'}
+    {name:'description',content:'دليل إنشاء البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 </script>

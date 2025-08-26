@@ -12,7 +12,9 @@ definePageMeta({
 useHead({
   title:'الإحصائيات',
   meta:[
-    {name:'description',content:'الإحصائيات'}
+    {name:'description',content:'الإحصائيات'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
   ]
 })
 

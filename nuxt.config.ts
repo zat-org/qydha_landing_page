@@ -12,9 +12,18 @@ const LogoURL =
   "https://storage.googleapis.com/qydha_bucket/qydha_assets/qydha.com-assets/qydha-logo.svg";
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
-  ssr: false,
-
-  modules: ["@nuxt/ui", "@pinia/nuxt", "pinia-plugin-persistedstate/nuxt", "nuxt-aos", "@unlok-co/nuxt-stripe", "@nuxtjs/seo", "@nuxtjs/robots", "nuxt-og-image"],
+  ssr: true,
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "nuxt-aos",
+    "@unlok-co/nuxt-stripe",
+    "@nuxtjs/seo",
+    "@nuxtjs/robots",
+    "nuxt-og-image",
+    "@nuxtjs/sitemap",
+  ],
 
   // //
 
@@ -34,44 +43,29 @@ export default defineNuxtConfig({
         { name: "og:image", content: LogoURL },
         { name: "og:url", content: WebsiteUrl },
         { name: "author", content: "Zat Compony" },
-        // { hid: "description", name: "description", content: Description },
-        // { hid: "keywords", name: "keywords", content: Keywords },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { charset: "utf-8" },
       ],
-      // noscript: [
-      //   {
-      //     children: `
-      //     <p style='text-align: center;color:white ; background-color:rgb(218, 55, 55); margin:5px 10px; padding: 10px 5px ;  border-radius:10px '>Warning: Please Enable Js</p>
-      //   `,
-      //   },
-      // ],
     },
-  } ,
+  },
   ogImage: {
     defaults: {
-    component: 'NuxtSeo',
+      component: "NuxtSeo",
       // title: "Welcome to Nuxt OG Image",
       // description: "You can modify the og:image by changing these props.",
       // colorMode: "dark",
     },
   },
   site: {
-    url: WebsiteUrl,
-    name: "Qydha",
-    description: Description,
-    keywords: Keywords,
-    image: LogoURL,
-    type: "website",
-    locale: "ar",
-    twitterCard: "summary_large_image",
-    twitterSite: "@qydha",
-    twitterCreator: "@qydha",
-    twitterTitle: Title,
-    twitterDescription: Description,
-    twitterImage: LogoURL,
-    twitterUrl: WebsiteUrl,
-    indexable: true ,
+    url: "https://qydha.com/",
+    name: "قيدها | Qydha",
+    routes: [
+      "/login",
+      "/register",
+      "/privacy-Policy",
+      "/Term-Of-Use",
+      "/tournament",
+    ],
   },
   robots: {
     disallow: ["/me", "/user", "/stream", "/tournament", "/unauthorized"],
@@ -81,19 +75,15 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-08-20",
 
   runtimeConfig: {
-    
     // Private keys (only available on server-side)
     // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     qydhaapiBase: process.env.QydhaApiBase,
-    
     public: {
       qydhaToken: process.env.QydhaToken,
-      apiBase:"/api",
-
-      logo:LogoURL,
-      title:Title,
-      description:Description,
-      
+      apiBase: "/api",
+      logo: LogoURL,
+      title: Title,
+      description: Description,
       apiKey: process.env.apiKey,
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
@@ -103,27 +93,5 @@ export default defineNuxtConfig({
 
   devtools: {
     enabled: true,
-  },
-
-  vite: {
-    server: {
-      hmr: {
-        port: 24678,
-      },
-      allowedHosts: [
-        "hip-lies-create.loca.lt",
-        "three-tips-move.loca.lt",
-        ".loca.lt", // Allow all loca.lt subdomains
-      ],
-    },
-  },
-
-  nitro: {
-    devServer: {
-      watch: [],
-    },
-    prerender: {
-      ignore: ["/draft", "/test", "/admin/**"],
-    },
   },
 });

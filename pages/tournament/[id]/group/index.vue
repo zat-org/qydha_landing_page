@@ -11,7 +11,9 @@
      useHead({
       title:' مجموعات البطولة',
       meta:[
-        {name:'description',content:'مجموعات البطولة'}
+        {name:'description',content:'مجموعات البطولة'},
+    { property: 'og:title', content: 'قيدها |Qydha' },
+    { property: 'og:image', content: '/images/preview.PNG'}
       ]
      })
     </script>

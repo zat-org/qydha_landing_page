@@ -5,16 +5,8 @@
       <!-- Profile Header -->
       <div class="flex flex-col items-center gap-4 p-4">
         <div class="relative w-[150px] h-[150px] rounded-full overflow-hidden shadow-lg">
-          <img 
-            v-if="userData?.user.avatarUrl" 
-            class="w-full h-full object-cover"
-            :src="userData?.user.avatarUrl" 
-          />
-          <UIcon 
-            v-else 
-            name="i-heroicons-user-circle" 
-            class="w-full h-full text-primary-500 dark:text-primary-400" 
-          />
+          <img v-if="userData?.user.avatarUrl" class="w-full h-full object-cover" :src="userData?.user.avatarUrl" />
+          <UIcon v-else name="i-heroicons-user-circle" class="w-full h-full text-primary-500 dark:text-primary-400" />
         </div>
 
         <div class="text-center">
@@ -26,24 +18,11 @@
         </div>
 
         <div class="flex flex-col sm:flex-row items-center gap-3 w-full max-w-md">
-          <USelect
-            :popper="{ placement: 'bottom' }" 
-            value-attribute="value" 
-            option-attribute="value"
-            v-if="userStore.user?.user.roles.includes('SuperAdmin')||userStore.user?.user.roles.includes('StaffAdmin')"
-            v-model="roles" 
-            multiple 
-            :items="rolesOption"
-            class="w-full"
-
-          />
+          <USelect :popper="{ placement: 'bottom' }" value-attribute="value" option-attribute="value"
+            v-if="userStore.user?.user.roles.includes('SuperAdmin') || userStore.user?.user.roles.includes('StaffAdmin')"
+            v-model="roles" multiple :items="rolesOption" class="w-full" />
           <div v-else class="flex flex-wrap justify-center gap-2">
-            <UBadge
-              v-for="role in userData?.user.roles"
-              :key="role"
-              :color="getRoleColor(role)"
-              variant="soft"
-            >
+            <UBadge v-for="role in userData?.user.roles" :key="role" :color="getRoleColor(role)" variant="soft">
               {{ role }}
             </UBadge>
           </div>
@@ -52,11 +31,7 @@
 
       <!-- Tabs Section -->
       <div class="w-full">
-        <UTabs 
-          :items="tabsItems" 
-          dir="rtl" 
-          class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4"
-        >
+        <UTabs :items="tabsItems" dir="rtl" class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
           <template #promo>
             <div class="overflow-x-auto">
               <UTable :data="userData?.promoCodes" :columns="promocols" hover />
@@ -70,7 +45,7 @@
           <template #influncer>
             <div class="overflow-x-auto">
               <UTable :data="userData?.influencerCodes" :columns="influncerCols" hover>
-                <template #category-cell="{row}">
+                <template #category-cell="{ row }">
                   <p>{{ row.original.categoryName }}</p>
                 </template>
               </UTable>
@@ -82,23 +57,13 @@
 
     <template #footer>
       <div class="flex justify-between items-center p-4">
-        <UButton 
-          color="error" 
-          variant="soft"
-          icon="i-heroicons-arrow-left"
-          @click="router.back()"
-        >
+        <UButton color="error" variant="soft" icon="i-heroicons-arrow-left" @click="router.back()">
           عودة
         </UButton>
 
         <!-- Organizer button - visible for organizers, admins, or staff -->
-        <UButton
-          v-if="showOrganizerButton"
-          color="primary"
-          variant="outline"
-          icon="i-heroicons-building-office"
-          :to="`/user/${userData?.user.id}/organizer`"
-        >
+        <UButton v-if="showOrganizerButton" color="primary" variant="outline" icon="i-heroicons-building-office"
+          :to="`/user/${userData?.user.id}/organizer`">
           ملف المنظم
         </UButton>
       </div>
@@ -133,12 +98,12 @@ const showOrganizerButton = computed(() => {
   if (hasRole(['SuperAdmin', 'StaffAdmin'])) {
     return true
   }
-  
+
   // Show if it's the user's own profile (they can view their organizer info)
   if (userStore.user?.user.id === props.id) {
     return true
   }
-  
+
   return false
 })
 
@@ -152,7 +117,7 @@ const rolesOption = [
 ]
 
 const getRoleColor = (role: string): 'error' | 'success' | 'primary' | 'secondary' | 'warning' | 'neutral' => {
-  switch(role) {
+  switch (role) {
     case 'SuperAdmin': return 'primary'
     case 'StaffAdmin': return 'success'
     case 'Streamer': return 'warning'
@@ -163,7 +128,7 @@ const getRoleColor = (role: string): 'error' | 'success' | 'primary' | 'secondar
 watch(roles, async (newValue, oldValue) => {
   await updateREQ.fetchREQ(userData.value?.user.id!, newValue)
   if (updateREQ.status.value == "success") {
-    toast.add({ 
+    toast.add({
       title: "تم تحديث الصلاحيات بنجاح",
       color: 'success'
     })
@@ -179,21 +144,23 @@ const tabsItems = [
 const promocols = [
   { accessorKey: 'code', header: 'الاسم ' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
-  { accessorKey: 'usedAt', header: 'استخدم في ' ,
-  cell: ({row}:{row:any}) => {
-    return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
-  }
+  {
+    accessorKey: 'usedAt', header: 'استخدم في ',
+    cell: ({ row }: { row: any }) => {
+      return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
+    }
   },
 ]
 
 const purchaseCols = [
   { accessorKey: 'type', header: 'النوع' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
-  { accessorKey: 'purchaseDate', header: 'تاريخ الشراء',
-    cell: ({row}:{row:any}) => {
-    return row.original!.purchaseDate ? new Date(row.original.purchaseDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'numeric', year: 'numeric' }) : 'لم يشتري'
-  }
-   },
+  {
+    accessorKey: 'purchaseDate', header: 'تاريخ الشراء',
+    cell: ({ row }: { row: any }) => {
+      return row.original!.purchaseDate ? new Date(row.original.purchaseDate).toLocaleDateString('ar-EG', { day: 'numeric', month: 'numeric', year: 'numeric' }) : 'لم يشتري'
+    }
+  },
 
 ]
 
@@ -201,10 +168,11 @@ const influncerCols = [
   { accessorKey: 'influencerCodeName', header: 'الكود' },
   { accessorKey: 'numberOfDays', header: 'عدد الايام' },
   { accessorKey: 'category.name', header: ' النوع' },
-  { accessorKey: 'usedAt', header: 'استخدم في' ,
-  cell: ({row}:{row:any}) => {
-    return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
-  }
+  {
+    accessorKey: 'usedAt', header: 'استخدم في',
+    cell: ({ row }: { row: any }) => {
+      return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
+    }
   },
 
 ]
