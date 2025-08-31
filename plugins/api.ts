@@ -1,27 +1,28 @@
-import { type FetchOptions } from 'ofetch';
-import {jwtDecode} from 'jwt-decode';
-import { useMyAuthStore } from '~/store/Auth';
-import type { IUserData } from '~/models/user';
-import type { NuxtError } from '#app';
+import { type FetchOptions } from "ofetch";
+import { jwtDecode } from "jwt-decode";
+import { useMyAuthStore } from "~/store/Auth";
+import type { IUserData } from "~/models/user";
+import type { NuxtError } from "#app";
+import { useMyClientInfoStore } from "~/store/ClientInfo";
 interface DecodedToken {
   exp: number;
 }
 
 export default defineNuxtPlugin(() => {
   // get user data if it exist or not
-  const authStore =useMyAuthStore()
-      const {user} =storeToRefs(authStore)
+  const ClientInfoStore = useMyClientInfoStore();
+  const authStore = useMyAuthStore();
+  const { user } = storeToRefs(authStore);
   const config = useRuntimeConfig();
   const $api = $fetch.create({
     baseURL: config.public.apiBase,
-    onRequest:async({options}:{options:FetchOptions})=>{
-      
-      let token = authStore.user?.jwtToken
-      if (token){
+    onRequest: async ({ options }: { options: FetchOptions }) => {
+      let token = authStore.user?.jwtToken;
+      if (token) {
         // const decodedToken = jwtDecode<DecodedToken>(token);
         // // Check if the token is expired.
         // const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds.
-        // if (decodedToken.exp < currentTime) { 
+        // if (decodedToken.exp < currentTime) {
         //   try {
         //     // Call your refresh token endpoint.
         //     const response = await $fetch<{data:IUserData,message:string}>(`${config.public.qydhaapiBase}/auth/refresh-token`, {
@@ -44,20 +45,30 @@ export default defineNuxtPlugin(() => {
         //     authStore.user=null
         //     navigateTo("/login");
         //   }
-        // } 
+        // }
 
-        options.headers= {...options.headers,Authorization:`Bearer ${ authStore.user?.jwtToken}`}
-      
-    }else{
-      options.headers= {...options.headers,Authorization:`Bearer ${config.public.qydhaToken}`}
-    }
-  },onResponseError:(error)=>{
-    if(error.response.status ==403 || error.response.status ==401){
-      user.value = null;
-      navigateTo("/")
-    }
-
-  }})
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${authStore.user?.jwtToken}`,
+          "x-info":JSON.stringify( ClientInfoStore.clientInfo),
+          "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
+        };
+      } else {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${config.public.qydhaToken}`,
+          "x-info": JSON.stringify(ClientInfoStore.clientInfo),
+          "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
+        };
+      }
+    },
+    onResponseError: (error) => {
+      if (error.response.status == 403 || error.response.status == 401) {
+        user.value = null;
+        navigateTo("/");
+      }
+    },
+  });
 
   return {
     provide: {
