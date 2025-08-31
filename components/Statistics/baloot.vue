@@ -93,12 +93,17 @@ const totalGames = computed(() => data.value?.data?.gamesCount?.gamesCount || 0)
 const defaultChartOptions = computed(() => ({
     ...defaults,
     chart: {
-        foreColor: colorMode.value === 'dark' ? '#fff' : '#000',
+        // foreColor: colorMode.value === 'dark' ? '#fff' : '#000',
     },
     theme: {
         palette:  'palette1',
-        // mode: colorMode.value === 'dark' ? 'dark' : 'light'
+        mode: colorMode.value === 'dark' ? 'dark' : 'light'
     },
+    tooltip: {
+    style: {
+      color: '#000' // 👈 Makes overlay data labels black
+    }
+  }
 }))
 
 // settings 
@@ -280,4 +285,8 @@ const GameUsersOptions = computed(() => ({
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+
+
+</style>
