@@ -32,7 +32,9 @@
         </KeepAlive>
       </template>
       <template #rules>
-        قريبا
+        <KeepAlive>
+          <StatisticsRules v-if="active == 'rules'" :type="timeRange" :startDate="range.start" :endDate="range.end" />
+        </KeepAlive>
         <!-- <StatisticsRules /> -->
       </template>
       <template #baloot>

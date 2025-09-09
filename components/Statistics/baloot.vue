@@ -16,15 +16,13 @@
             </UCard>
             <UCard>
                 <template #header>
-                    <h2 class="text-lg font-bold">  متوسط عدد الصكات ل{{ numberOfUsers }} مستخدمين </h2>
+                    <h2 class="text-lg font-bold"> متوسط عدد الصكات ل{{ numberOfUsers }} مستخدمين </h2>
                 </template>
                 <div class="flex justify-center items-center h-full">
                     <div class="flex flex-col items-center gap-2">
                         <p class="text-2xl font-bold"> {{ averageSakkasPerUser }} صكة </p>
                     </div>
                 </div>
-                <!-- <ApexChart type="pie" :options="{ ...defaults, ...AverageSakkasOptions }" height="200"
-                    :series="AverageSakkasSeries" /> -->
             </UCard>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -50,9 +48,6 @@
 
 
 
-
-
-
         <UCard>
             <template #header>
                 <h2 class="text-lg font-bold">إعدادات البلوت</h2>
@@ -61,7 +56,20 @@
                 height="200" :series="BalootSettingsSeries" />
         </UCard>
 
+        <UCard>
+            <template #header>
+                <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
+            </template>
+            <MapStatics :balootGamesCountWithLocation="data?.data?.balootGamesCountWithLocation ?? []" />
+        </UCard>
 
+        <UCard>
+            <template #header>
+                <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
+            </template>
+            <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }" height="400"
+                :series="gameLocationChartSeries" />
+        </UCard>
 
     </div>
 
@@ -96,14 +104,14 @@ const defaultChartOptions = computed(() => ({
         // foreColor: colorMode.value === 'dark' ? '#fff' : '#000',
     },
     theme: {
-        palette:  'palette1',
+        palette: 'palette1',
         mode: colorMode.value === 'dark' ? 'dark' : 'light'
     },
     tooltip: {
-    style: {
-      color: '#000' // 👈 Makes overlay data labels black
+        style: {
+            color: '#000' // 👈 Makes overlay data labels black
+        }
     }
-  }
 }))
 
 // settings 
@@ -171,47 +179,7 @@ const SakkasCountOptions = computed(() => ({
 }))
 
 
-// const AverageSakkasSeries = computed(() => {
-//     return [{
-//         name: 'عدد المستخدمين',
-//         data: data?.value?.data.averageSakkasPerUser?.map(x => x.usersCount) || []
-//     }]
-// })
-// const AverageSakkasOptions = computed(() => ({
-//     chart: {
-//         type: 'bar',
-//         height: 250,
-//         toolbar: { show: false }
-//     },
-//     plotOptions: {
-//         bar: {
-//             horizontal: false,    // 👈 ensures it's a vertical column chart
-//             // columnWidth: '50%',
-//             // borderRadius: 6
-//         }
-//     },
-//     // dataLabels: {
-//     //     enabled: true,
-//     //     style: { fontSize: '14px', fontWeight: 'bold' }
-//     // },
-//     xaxis: {
-//         categories: data.value?.data?.averageSakkasPerUser?.map(x => ` ${x.sakkaCount}`) || [],
-//         title: { text: 'عدد الصكات لكل مستخدم' },
-//         labels: { style: { fontSize: '14px' } }
-//     },
-//     yaxis: {
-//         title: { text: 'عدد المستخدمين' },
-//         labels: { style: { fontSize: '14px' } }
-//     },
-//     // tooltip: {
-//     //     y: {
-//     //         formatter: (val: number) => `${val} مستخدم`
-//     //     }
-//     // },
-//     // legend: {
-//     //     show: false
-//     // }
-// }))
+
 const numberOfUsers = computed(() => data.value?.data?.averageSakkasPerUser?.length || 0)
 const averageSakkasPerUser = computed(() => {
     if (data.value?.data?.averageSakkasPerUser)
@@ -281,12 +249,81 @@ const GameUsersOptions = computed(() => ({
         x: { format: 'dd MMM yyyy' }
     }
 }))
+//  location 
+const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.sort((a, b) => b.gamesCount - a.gamesCount) ?? [])
 
+const gameLocationChartOptions = computed(() => ({
+  chart: {
+    type: 'bar',
+    toolbar: { show: false },
+    animations: { enabled: true },
+    rtl: true // Enable RTL for the chart
+  },
+  plotOptions: {
+    bar: {
+      horizontal: true,
+      distributed: false,
+      dataLabels: {
+        position: 'center'
+      }
+    }
+  },
+  xaxis: {
+    categories: sortedCities.value.map(c => c.cityName),
+    title: { 
+      text: 'عدد الالعاب بالنسبة للمدن',
+      style: {
+        fontSize: '14px',
+        fontWeight: 'bold'
+      }
+    },
+    labels: {
+      style: {
+        fontSize: '12px'
+      }
+    },
+    reversed: true,
+  },
+  yaxis: {
+    reversed: true,
+    opposite: true,
+    title: { 
+      style: {
+        fontSize: '14px',
+        fontWeight: 'bold'
+      }
+    },
+    labels: {
+      style: {
+        fontSize: '12px'
+      }
+    }
+  },
+  dataLabels: {
+    enabled: true,
+    style: {
+      fontSize: '11px',
+      fontWeight: 'bold'
+    }
+  },
+  tooltip: {
+    y: { formatter: (val: number) => `${val} لعبة` }
+  },
+  grid: { 
+    strokeDashArray: 4,
+    show: true
+  },
+  colors: ['#3b82f6'], // Tailwind blue
+  legend: {
+    position: 'bottom',
+    horizontalAlign: 'center'
+  }
+}))
+
+const gameLocationChartSeries = computed(() => [
+  { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
+])
 
 </script>
 
-<style scoped>
-
-
-
-</style>
+<style scoped></style>

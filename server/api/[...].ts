@@ -36,5 +36,6 @@ export default defineEventHandler(async (event) => {
     body: ["GET","HEAD"].includes(method!)?undefined : await readBody(event),
     headers,
   });
+  // console.log(response)
   return response;
 });

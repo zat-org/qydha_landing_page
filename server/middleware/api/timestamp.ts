@@ -28,7 +28,7 @@ export default defineEventHandler((event) => {
 
   const now = Math.floor(Date.now() / 1000);
   const diff =Math.abs( now - Number(ts));
-  console.log(isNaN(diff) ||  diff < 180)
+  // console.log(isNaN(diff) ||  diff < 180)
   if (isNaN(diff) ||  diff > 180) {
     // 3 minutes max
     throw createError({ statusCode: 400, statusMessage: "Request expired" });
