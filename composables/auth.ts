@@ -22,6 +22,7 @@ export const useAuth = () => {
         console.log(
           "done"
         )
+        console.log(data.value?.data)
         user.value = data.value?.data;
         if (user.value.user.roles.includes("Streamer")) {
           navigateTo("/stream");

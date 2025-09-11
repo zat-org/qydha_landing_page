@@ -735,13 +735,20 @@ import { useMyAuthStore } from "~/store/Auth";
 const updateForm = ref<HTMLFormElement>();
 const authstore = useMyAuthStore();
 const boardID = computed(() => {
-  if (authstore.user)
-    return authstore.user.boardLink.split("/")[
-      authstore.user.boardLink.split("/").length - 1
-    ];
+  console.log(authstore.user)
+  if (authstore.user?.boardLink) {
+    const linkParts = authstore.user.boardLink.split("/");
+    return linkParts[linkParts.length - 1];
+  }
+  return undefined;
 });
 
-let data: TableData = await useBoardFB().getOrCreateTable(boardID.value!);
+let data: TableData | null = null;
+
+// Wait for boardID to be available before fetching data
+if (boardID.value) {
+  data = await useBoardFB().getOrCreateTable(boardID.value);
+}
 const schema = object({
   dimension: object({
     width: number().required(),
@@ -755,15 +762,11 @@ const schema = object({
         size: number().required(),
         top: number().required(),
         left: number().required(),
-        width: number().required(),
-        height: number().required(),
       }),
       score: object({
         size: number().required(),
         top: number().required(),
         left: number().required(),
-        width: number().required(),
-        height: number().required(),
       }),
     }),
     rightTeam: object({
@@ -771,15 +774,11 @@ const schema = object({
         size: number().required(),
         top: number().required(),
         left: number().required(),
-        width: number().required(),
-        height: number().required(),
       }),
       score: object({
         size: number().required(),
         top: number().required(),
         left: number().required(),
-        width: number().required(),
-        height: number().required(),
       }),
     }),
   }),
@@ -800,64 +799,63 @@ const schema = object({
   
 });
 
-let  state = reactive<TableUpdate>({
+let state = reactive<TableUpdate>({
   dimension: {
-    width: +data.dimension.width.replace("px", ""),
-    height: +data.dimension.height.replace("px", ""),
+    width: data ? +data.dimension.width.replace("px", "") : 0,
+    height: data ? +data.dimension.height.replace("px", "") : 0,
   },
   scorePanel: {
-    topMargin: +data.scorePanel.topMargin.replace("px", ""),
-    height: +data.scorePanel.height.replace("px", ""),
+    topMargin: data ? +data.scorePanel.topMargin.replace("px", "") : 0,
+    height: data ? +data.scorePanel.height.replace("px", "") : 0,
     position: {
-      scale: data.scorePanel.position.scale,
-      top: +data.scorePanel.position.top.replace("px", ""),
-      left: +data.scorePanel.position.left.replace("px", ""),
+      scale: data ? data.scorePanel.position.scale : 1,
+      top: data ? +data.scorePanel.position.top.replace("px", "") : 0,
+      left: data ? +data.scorePanel.position.left.replace("px", "") : 0,
     },
     leftTeam: {
       name: {
-        size: +data.scorePanel.leftTeam.name.size.replace("px", ""),
-        top: +data.scorePanel.leftTeam.name.top.replace("px", ""),
-        left: +data.scorePanel.leftTeam.name.left.replace("px", ""),
+        size: data ? +data.scorePanel.leftTeam.name.size.replace("px", "") : 0,
+        top: data ? +data.scorePanel.leftTeam.name.top.replace("px", "") : 0,
+        left: data ? +data.scorePanel.leftTeam.name.left.replace("px", "") : 0,
       },
 
       score: {
-        size: +data.scorePanel.leftTeam.score.size.replace("px", ""),
-        top: +data.scorePanel.leftTeam.score.top.replace("px", ""),
-        left: +data.scorePanel.leftTeam.score.left.replace("px", ""),
+        size: data ? +data.scorePanel.leftTeam.score.size.replace("px", "") : 0,
+        top: data ? +data.scorePanel.leftTeam.score.top.replace("px", "") : 0,
+        left: data ? +data.scorePanel.leftTeam.score.left.replace("px", "") : 0,
       },
     },
     rightTeam: {
       name: {
-        size: +data.scorePanel.rightTeam.name.size.replace("px", ""),
-        top: +data.scorePanel.rightTeam.name.top.replace("px", ""),
-        left: +data.scorePanel.rightTeam.name.left.replace("px", ""),
+        size: data ? +data.scorePanel.rightTeam.name.size.replace("px", "") : 0,
+        top: data ? +data.scorePanel.rightTeam.name.top.replace("px", "") : 0,
+        left: data ? +data.scorePanel.rightTeam.name.left.replace("px", "") : 0,
       },
 
       score: {
-        size: +data.scorePanel.rightTeam.score.size.replace("px", ""),
-        top: +data.scorePanel.rightTeam.score.top.replace("px", ""),
-        left: +data.scorePanel.rightTeam.score.left.replace("px", ""),
+        size: data ? +data.scorePanel.rightTeam.score.size.replace("px", "") : 0,
+        top: data ? +data.scorePanel.rightTeam.score.top.replace("px", "") : 0,
+        left: data ? +data.scorePanel.rightTeam.score.left.replace("px", "") : 0,
       },
     },
   },
   LeftPlayer: {
-    top: +data.LeftPlayer.top.replace("px", ""),
-    left: +data.LeftPlayer.left.replace("px", ""),
+    top: data ? +data.LeftPlayer.top.replace("px", "") : 0,
+    left: data ? +data.LeftPlayer.left.replace("px", "") : 0,
   },
   RightPlayer: {
-    top: +data.RightPlayer.top.replace("px", ""),
-    right: +data.RightPlayer.right.replace("px", ""),
+    top: data ? +data.RightPlayer.top.replace("px", "") : 0,
+    right: data ? +data.RightPlayer.right.replace("px", "") : 0,
   },
   BottomPlayer: {
-    bottom: +data.BottomPlayer.bottom.replace("px", ""),
-    left: +data.BottomPlayer.left.replace("px", ""),
+    bottom: data ? +data.BottomPlayer.bottom.replace("px", "") : 0,
+    left: data ? +data.BottomPlayer.left.replace("px", "") : 0,
   },
-  PlayerImageWidth: data.PlayerImageWidth,
-  DetailScore:{Color: data.DetailScore.Color,
-    FontSize: +data.DetailScore.FontSize.replace("px", ""),
+  PlayerImageWidth: data ? data.PlayerImageWidth : 0,
+  DetailScore: {
+    Color: data ? data.DetailScore.Color : "#000000",
+    FontSize: data ? +data.DetailScore.FontSize.replace("px", "") : 0,
   }
-  
-
 });
 const updateBoard = () => {
   updateForm.value?.submit();
@@ -869,8 +867,12 @@ const closeModal = () => {
   // This will be handled by the modal's built-in close functionality
 };
 const onSubmit = async (event: any) => {
+  if (!boardID.value) {
+    useToast().add({ title: "Board ID not available", color: "error" });
+    return;
+  }
   try {
-    await useBoardFB().updateTable(boardID.value!, state);
+    await useBoardFB().updateTable(boardID.value, state);
     useToast().add({ title: "update Done" });
   } catch (error: any) {
     console.log(error.message);
@@ -892,12 +894,12 @@ const resetBoard = async () => {
       height: 300,
       // svgViewBox: { width: "1180", height: "400" },
       leftTeam: {
-        name: { size: 30, top: 0, left: 0,  },
-        score: { size: 50, top: 0, left: 0, },
+        name: { size: 30, top: 0, left: 0 },
+        score: { size: 50, top: 0, left: 0 },
       },
       rightTeam: {
-        name: { size: 30, top: 0, left: 0,  },
-        score: { size: 50, top: 0, left: 0, },
+        name: { size: 30, top: 0, left: 0 },
+        score: { size: 50, top: 0, left: 0 },
       },
     },
     LeftPlayer: { top: 100, left: 0 },
@@ -909,8 +911,12 @@ const resetBoard = async () => {
     }
   };
 
+  if (!boardID.value) {
+    useToast().add({ title: "Board ID not available", color: "error" });
+    return;
+  }
   try {
-    await useBoardFB().updateTable(boardID.value!, defaultTableData);
+    await useBoardFB().updateTable(boardID.value, defaultTableData);
     state = defaultTableData;
     useToast().add({ title: "update Done" });
   } catch (error: any) {
@@ -922,8 +928,10 @@ const resetBoard = async () => {
 watch(
   state,
   async (n, o) => {
+    console.log(state)
+    if (!boardID.value) return;
     try {
-      await useBoardFB().updateTable(boardID.value!, n);
+      await useBoardFB().updateTable(boardID.value, n);
       // useToast().add({ title: "update Done" });
     } catch (error: any) {
       console.log(error.message);

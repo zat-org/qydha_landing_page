@@ -45,14 +45,14 @@ export const useMyAuthStore = defineStore(
         storage: piniaPluginPersistedstate.cookies({
           maxAge: 60 * 60 * 24 * 2,
         }),
-        pick: ["user.jwtToken","user.user.roles"],
+        pick: ["user.jwtToken","user.user.roles","user.boardLink"],
       },
       {
         storage: piniaPluginPersistedstate.localStorage(),
         // storage: piniaPluginPersistedstate.cookies({
         //   maxAge: 60 * 60 * 24 * 2,
         // }),
-        pick: ["user.user"],
+  
       },
     ],
   }

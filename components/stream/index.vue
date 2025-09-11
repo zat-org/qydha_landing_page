@@ -1,22 +1,29 @@
 <template>
   <UCard>
-    <UTable  :data="rows" :columns="columns" >
-      
+    <div v-if="!boardlink" class="flex items-center justify-center p-8">
+      <div class="text-center">
+        <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin mx-auto mb-4 text-gray-400" />
+        <p class="text-gray-500">جاري تحميل بيانات المستخدم...</p>
+      </div>
+    </div>
+    <UTable v-else :data="rows" :columns="columns">
+
       <template #link-cell="{ row }">
         <div class="flex items-center gap-2">
-          <UButton :to="row.original.link" target="_blank" variant="ghost" size="lg" color="primary" icon="i-heroicons-arrow-top-right-on-square" />
-         
-          <UButton @click="copyLink(row.original.link)" variant="ghost" size="lg" color="neutral" icon="i-heroicons-clipboard-document" >
-    
+          <UButton :to="row.original.link" @click="OpenLink(row.original.link)" target="_blank" variant="ghost" size="lg" color="primary"
+            icon="i-heroicons-arrow-top-right-on-square" />
+
+          <UButton @click="copyLink(row.original.link)" variant="ghost" size="lg" color="neutral"
+            icon="i-heroicons-clipboard-document">
+
           </UButton>
         </div>
       </template>
 
       <template #edit-cell="{ row }">
-        <UButton v-if="row.original.edit" 
-        @click="openEditModal()" 
-        variant="soft" color="warning" size="lg" icon="i-heroicons-adjustments-horizontal" >
-         
+        <UButton v-if="row.original.edit" @click="openEditModal()" variant="soft" color="warning" size="lg"
+          icon="i-heroicons-adjustments-horizontal">
+
         </UButton>
       </template>
 
@@ -61,13 +68,21 @@ import StreamEditModal from "./StreamEditModal.vue";
 
 const authstore = useMyAuthStore();
 const toast = useToast();
-
+const OpenLink = (link: string) => {
+  // window.open(link, '_blank');
+  console.log(link)
+}
 const boardlink = computed(() => {
-  if (authstore.user) return authstore.user.boardLink;
-  return '';
+  const link = authstore.user?.boardLink || '';
+  console.log('BoardLink computed:', link, 'User:', authstore.user);
+  return link;
 });
-
 const rows = computed(() => {
+  // Return empty array if boardlink is not available yet
+  if (!boardlink.value) {
+    return [];
+  }
+
   const baseRows = [
     {
       name: "قيدها",
@@ -86,11 +101,11 @@ const rows = computed(() => {
       edit: true,
     },
   ];
-
+console.log(authstore.user?.user.username)
   // Add admin-only rows
-  if (
-    authstore.user?.user.username.toLowerCase() === "admin" ||
-    authstore.user?.user.username.toLowerCase() === "sam"
+  if ( authstore.user?.user?.username &&
+    (authstore.user.user.username.toLowerCase() === "admin" ||
+    authstore.user.user.username.toLowerCase() === "sam")
   ) {
     baseRows.push(
       {
