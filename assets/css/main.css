@@ -6,6 +6,7 @@
 
 * {
   font-family: Alexandria, sans-serif;
+  scroll-behavior: smooth;
 }
 
 /* Vue Tel Input - Simple CSS */

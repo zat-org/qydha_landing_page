@@ -9,13 +9,13 @@
             <div class="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12">
                 <div class="w-full lg:w-1/2 space-y-4 lg:space-y-6 text-center lg:text-right" data-aos="fade-left"
                     data-aos-duration="400" data-aos-delay="100" data-aos-once="true">
-                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold py-2">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold py-2 pb-3 flex flex-col  ">
                         <span
-                            class="block mb-2 bg-gradient-to-r from-gray-900 to-gray-700 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent">حمِّل
+                            class="block mb-2 bg-gradient-to-r leading-[70px] from-gray-900 to-gray-700 dark:from-amber-400 dark:to-amber-600 bg-clip-text text-transparent">حمل
                             تطبيق قيدها</span>
                         <span
-                            class="block text-2xl sm:text-3xl lg:text-4xl bg-gradient-to-r from-gray-800 to-gray-600 dark:from-amber-500 dark:to-amber-700 bg-clip-text text-transparent">
-                            للهواتف الذكية مجانًا
+                            class="block text-2xl sm:text-3xl lg:text-4xl bg-gradient-to-r leading-[50px] from-gray-800 to-gray-600 dark:from-amber-500 dark:to-amber-700 bg-clip-text text-transparent">
+                            للهواتف الذكية مجانا
                         </span>
                     </h2>
                     <p class="text-base sm:text-lg text-gray-700 dark:text-gray-300 leading-relaxed px-4 lg:px-0">

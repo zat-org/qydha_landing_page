@@ -2,7 +2,7 @@
     <div class="min-h-[100px] max-h-[66vh] w-[99%] p-2  flex flex-col gap-4 h-full overflow-y-auto ">
         <UCard>
             <template #header> عدد الصكات المتوسطة للمستخدم </template>
-            <ApexChart type="line" :options="{ ...defaultChartOptions, ...GameUsersOptions }" height="300"
+            <ApexChart :type="GameUserChartType" :options="{ ...defaultChartOptions, ...GameUsersOptions }" height="300"
                 :series="GameUsersSeries" />
         </UCard>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -58,18 +58,21 @@
 
         <UCard>
             <template #header>
-                <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
+                <div class="flex justify-between items-center">
+                    <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
+                    <USelect v-model="selectedCountry" :items="counteries" class="w-[200px]" />
+                </div>
             </template>
-            <MapStatics :balootGamesCountWithLocation="data?.data?.balootGamesCountWithLocation ?? []" />
+            <div class="flex gap-8 justify-between">
+                <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }"
+                     :series="gameLocationChartSeries"  class="w-[50%] " height="500"/>
+                <MapStatics :balootGamesCountWithLocation="sortedCities ?? []" class="w-[50%]" />
+            </div>
+
         </UCard>
 
-        <UCard>
-            <template #header>
-                <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
-            </template>
-            <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }" height="400"
-                :series="gameLocationChartSeries" />
-        </UCard>
+
+        
 
     </div>
 
@@ -214,8 +217,12 @@ const GameUsersSeries = computed(() => {
     ]
 })
 
+const GameUsersStats =computed(() => data.value?.data?.gameUsersStatistics || [])
+  const GameUserChartType = computed(() => GameUsersStats.value.length <= 1 ? 'bar' : 'line')
 const GameUsersOptions = computed(() => ({
-
+    chart:{
+        type: GameUserChartType.value,
+    },
     xaxis: {
         type: 'datetime',
         labels: {
@@ -250,78 +257,89 @@ const GameUsersOptions = computed(() => ({
     }
 }))
 //  location 
-const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.sort((a, b) => b.gamesCount - a.gamesCount) ?? [])
+const counteries = computed(() => {
+
+    let result = data.value?.data?.balootGamesCountWithLocation.map(c => {
+        return c.countryName
+    }) ?? []
+    let unique = [...new Set(result)]
+    unique.unshift('جميع الدول')
+    return unique
+}
+)
+const selectedCountry = ref<string>('جميع الدول')
+const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? [])
 
 const gameLocationChartOptions = computed(() => ({
-  chart: {
-    type: 'bar',
-    toolbar: { show: false },
-    animations: { enabled: true },
-    rtl: true // Enable RTL for the chart
-  },
-  plotOptions: {
-    bar: {
-      horizontal: true,
-      distributed: false,
-      dataLabels: {
-        position: 'center'
-      }
-    }
-  },
-  xaxis: {
-    categories: sortedCities.value.map(c => c.cityName),
-    title: { 
-      text: 'عدد الالعاب بالنسبة للمدن',
-      style: {
-        fontSize: '14px',
-        fontWeight: 'bold'
-      }
+    chart: {
+        type: 'bar',
+        toolbar: { show: false },
+        animations: { enabled: true },
+        rtl: true // Enable RTL for the chart
     },
-    labels: {
-      style: {
-        fontSize: '12px'
-      }
+    plotOptions: {
+        bar: {
+            horizontal: true,
+            distributed: false,
+            dataLabels: {
+                position: 'center'
+            }
+        }
     },
-    reversed: true,
-  },
-  yaxis: {
-    reversed: true,
-    opposite: true,
-    title: { 
-      style: {
-        fontSize: '14px',
-        fontWeight: 'bold'
-      }
+    xaxis: {
+        categories: sortedCities.value.map(c => c.cityName),
+        title: {
+            text: 'عدد الالعاب بالنسبة للمدن',
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold'
+            }
+        },
+        labels: {
+            style: {
+                fontSize: '12px'
+            }
+        },
+        reversed: true,
     },
-    labels: {
-      style: {
-        fontSize: '12px'
-      }
+    yaxis: {
+        reversed: true,
+        opposite: true,
+        title: {
+            style: {
+                fontSize: '14px',
+                fontWeight: 'bold'
+            }
+        },
+        labels: {
+            style: {
+                fontSize: '12px'
+            }
+        }
+    },
+    dataLabels: {
+        enabled: true,
+        style: {
+            fontSize: '11px',
+            fontWeight: 'bold'
+        }
+    },
+    tooltip: {
+        y: { formatter: (val: number) => `${val} لعبة` }
+    },
+    grid: {
+        strokeDashArray: 4,
+        show: true
+    },
+    colors: ['#3b82f6'], // Tailwind blue
+    legend: {
+        position: 'bottom',
+        horizontalAlign: 'center'
     }
-  },
-  dataLabels: {
-    enabled: true,
-    style: {
-      fontSize: '11px',
-      fontWeight: 'bold'
-    }
-  },
-  tooltip: {
-    y: { formatter: (val: number) => `${val} لعبة` }
-  },
-  grid: { 
-    strokeDashArray: 4,
-    show: true
-  },
-  colors: ['#3b82f6'], // Tailwind blue
-  legend: {
-    position: 'bottom',
-    horizontalAlign: 'center'
-  }
 }))
 
 const gameLocationChartSeries = computed(() => [
-  { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
+    { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
 ])
 
 </script>

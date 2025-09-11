@@ -5,10 +5,10 @@
 
     <div class="container mx-auto px-4 relative z-10">
       <h2 class="text-2xl sm:text-3xl font-bold mb-3" data-aos="fade-down" data-aos-duration="400" data-aos-once="true">
-        <span
+        <p
           class="bg-gradient-to-r from-amber-500 to-amber-700 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
           عروض مميزه على الباقات لاتفوتك
-        </span>
+      </p>
       </h2>
       <p class="text-lg text-gray-800 dark:text-gray-300 mb-8" data-aos="fade-down" data-aos-duration="400"
         data-aos-delay="100" data-aos-once="true">

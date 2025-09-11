@@ -23,9 +23,11 @@ const { balootGamesCountWithLocation } = toRefs(props)
 const mapContainer = ref<HTMLElement>();
 const map = ref<L.Map>();
 const mapReady = ref(false)
+const bounds = ref<L.LatLngBounds | null>(null)
 const circlesLayer = ref<L.LayerGroup | null>(null)
+const markersLayer = ref<L.LayerGroup | null>(null)
 const heatLayer = ref<any>(null)
-const showHeatMap = ref(false) // Toggle between heatmap and circles
+const showHeatMap = ref(true) // Toggle between heatmap and circles
 const initMap = async () => {
     if (!mapContainer.value) return;
 
@@ -49,7 +51,8 @@ const initMap = async () => {
             doubleClickZoom: true,
             boxZoom: true,
             keyboard: true
-        }).setView([25, 40], 4);
+        }).setView([25, 40], 6);
+
 
         L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 18,
@@ -78,7 +81,6 @@ const initMap = async () => {
 };
 const addHeatMap = () => {
     // Remove existing heatmap if any
-    console.log('addHeatMap')
     if (heatLayer.value) {
         map.value!.removeLayer(heatLayer.value)
         heatLayer.value = null
@@ -87,7 +89,7 @@ const addHeatMap = () => {
     if (balootGamesCountWithLocation.value && balootGamesCountWithLocation.value.length > 0) {
         // Convert data to heatmap format: [lat, lng, intensity]
         const heatPoints = balootGamesCountWithLocation.value
-            .filter(city => city.latitude && city.longitude && 
+            .filter(city => city.latitude && city.longitude &&
                 !isNaN(city.latitude) && !isNaN(city.longitude))
             .map(city => [
                 city.latitude,
@@ -97,10 +99,10 @@ const addHeatMap = () => {
 
         if (heatPoints.length > 0) {
             heatLayer.value = L.heatLayer(heatPoints, {
-                radius: 30,
-                blur: 1,
-                maxZoom: 10,
-                max: 1.0,
+                radius: 15,
+                blur: 20,
+                maxZoom: 1,
+                max: .1,
                 gradient: {
                     0.0: 'blue',
                     0.2: 'cyan',
@@ -114,40 +116,50 @@ const addHeatMap = () => {
     }
 }
 
-const addCircles = () => {
+const addMarkers = () => {
     // Remove existing circles if any
-    if (circlesLayer.value) {
-        circlesLayer.value.clearLayers();
+    if (markersLayer.value) {
+        markersLayer.value.clearLayers();
     } else {
-        circlesLayer.value = L.layerGroup().addTo(map.value!);
+        markersLayer.value = L.layerGroup().addTo(map.value!);
     }
 
     if (balootGamesCountWithLocation.value && balootGamesCountWithLocation.value.length > 0) {
         balootGamesCountWithLocation.value.forEach(city => {
             // Validate coordinates
-            if (city.latitude && city.longitude && 
+            if (city.latitude && city.longitude &&
                 !isNaN(city.latitude) && !isNaN(city.longitude) &&
                 city.latitude >= -90 && city.latitude <= 90 &&
                 city.longitude >= -180 && city.longitude <= 180) {
-                
+
                 const radius = 10000;
-                const circle = L.circle([city.latitude, city.longitude], {
-                    color: 'blue',
-                    fillColor: '#3b82f6',
-                    fillOpacity: 0.5,
-                    radius
-                }).bindPopup(`<b>${city.cityName}</b><br/>Games: ${city.gamesCount}`);
-                
+                const marker = L.marker([city.latitude, city.longitude], {
+                    icon: L.icon({
+                        iconUrl: '/images/location.png',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 32],
+                        popupAnchor: [0, -32],
+
+                    }),
+                    title: `${city.cityName} - ${city.gamesCount}`
+                }).addTo(map.value!);
+                // const circle = L.circle([city.latitude, city.longitude], {
+                //     color: 'blue',
+                //     fillColor: '#3b82f6',
+                //     fillOpacity: 0.5,
+                //     radius
+                // }).bindPopup(`<b>${city.cityName}</b><br/>Games: ${city.gamesCount}`);
+
                 // Add hover events to show/hide popup
-                circle.on('mouseover', function(e) {
-                    this.openPopup();
-                }).on('mouseout', function(e) {
-                    this.closePopup();
-                }).on('click', function(e) {
-                    this.openPopup();
-                });
-                
-                circlesLayer.value!.addLayer(circle);
+                // circle.on('mouseover', function(e) {
+                //     this.openPopup();
+                // }).on('mouseout', function(e) {
+                //     this.closePopup();
+                // }).on('click', function(e) {
+                //     this.openPopup();
+                // });
+                markersLayer.value!.addLayer(marker);
+                // circlesLayer.value!.addLayer(circle);
             } else {
                 // console.warn('Invalid coordinates for city:', city);
             }
@@ -155,10 +167,15 @@ const addCircles = () => {
     }
 }
 
-const removeCircles = () => {
-    if (circlesLayer.value) {
-        circlesLayer.value.clearLayers();
+const removeMarkers = () => {
+    if (markersLayer.value) {
+        markersLayer.value.clearLayers();
     }
+    // if (circlesLayer.value) {
+    //     circlesLayer.value.clearLayers();
+
+    // }
+
 }
 
 const removeHeatMap = () => {
@@ -168,21 +185,35 @@ const removeHeatMap = () => {
     }
 }
 
-const toggleVisualization = () => {
-    showHeatMap.value = !showHeatMap.value;
-}
+// const toggleVisualization = () => {
+//     showHeatMap.value = !showHeatMap.value;
+// }
 // Watch for changes in visualization type and data
 watch([showHeatMap, balootGamesCountWithLocation], () => {
     if (mapReady.value) {
         if (showHeatMap.value) {
-            removeCircles()
+            removeMarkers()
+
             addHeatMap()
         } else {
             removeHeatMap()
-            addCircles()
+            addMarkers()
+        }
+        bounds.value = L.latLngBounds(balootGamesCountWithLocation.value.map(location => [
+            location.latitude,
+            location.longitude
+        ]));
+
+        // Fit map to show all points with some padding
+        if (balootGamesCountWithLocation.value.length <= 2) {
+            map.value!.setZoom(8);
+        } else{
+            map.value!.fitBounds(bounds.value, {
+                padding: [50, 50] // Add 50px padding around the bounds
+            });
         }
     }
-}, { deep: true })
+}, { deep: true, immediate: true })
 
 // Watch for map ready state
 watch(mapReady, (isReady) => {
@@ -190,7 +221,7 @@ watch(mapReady, (isReady) => {
         if (showHeatMap.value) {
             addHeatMap()
         } else {
-            addCircles()
+            addMarkers()
         }
     }
 })

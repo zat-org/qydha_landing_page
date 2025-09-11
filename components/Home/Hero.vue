@@ -43,11 +43,12 @@
                         variant="outline"
                         class="w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 text-base sm:text-lg font-semibold hover-lift" 
                         to="#features"
+
                         padded
                     >
                         <span class="flex items-center justify-center gap-2">
                             <Icon name="material-symbols:info" class="text-xl" />
-                            تعرف على المميزات
+                            تعرف على خدماتنا
                         </span>
                     </UButton>
                 </div>
@@ -55,11 +56,11 @@
                 <!-- Stats preview -->
                 <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-4">
                     <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">45K+</div>
+                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">72K+</div>
                         <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">تنزيلات</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">10K+</div>
+                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">27K+</div>
                         <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">مستخدمين</div>
                     </div>
                     <div class="text-center">
