@@ -1,6 +1,6 @@
 <template>
   <UForm
-    :state="state"
+    :state="formState"
     :schema="schema"
     ref="notificationForm"
     @submit="onSubmit"
@@ -25,43 +25,44 @@
     </UButtonGroup>
     <UFormField label="المستخدم" name="user" v-if="target == 'User'">
       <UInputMenu
-        v-model="state.user"
+        v-model="formState.user"
+        v-model:search-term="search_user"
         :loading="usergetREQ.status.value == 'pending'"
-        :options="users"
-        :search="search"
-        option-attribute="username"
-        value-attribute="id"
+        :items="users"
+        
+        option-key="username"
+        value-key="id"
       />
     </UFormField>
     <UFormField label="العنوان" name="title">
-      <UInput v-model="state.title" />
+      <UInput v-model="formState.title" />
     </UFormField>
     <UFormField label="الوصف" name="description">
-      <UInput v-model="state.description" />
+      <UInput v-model="formState.description" />
     </UFormField>
     <UFormField label="النوع" name="actionType">
-      <USelect v-model="state.actionType" :items="notificationActionsArray" class="w-full"  />
+      <USelect v-model="formState.actionType" :items="notificationActionsArray" class="w-full"  />
     </UFormField>
     <UFormField
       label="الهدف"
       name="actionPath"
-      v-if="state.actionType != popUpActionType.PopUpWithNoAction"
+      v-if="formState.actionType != popUpActionType.PopUpWithNoAction"
     >
       <UInput
-        v-model="state.actionPath"
-        v-if="state.actionType == popUpActionType.PopUpWithGoToURL"
+        v-model="formState.actionPath"
+        v-if="formState.actionType == popUpActionType.PopUpWithGoToURL"
       />
       <USelect
         class="w-full"
-        v-model="state.actionPath"
+        v-model="formState.actionPath"
         :items="
-          state.actionType == popUpActionType.PopUpWithGoToScreen
+          formState.actionType == popUpActionType.PopUpWithGoToScreen
             ? screenOptions
             : tabOptions
         "
         v-if="
-          state.actionType == popUpActionType.PopUpWithGoToScreen ||
-          state.actionType == popUpActionType.PopUpWithGoToTab
+          formState.actionType == popUpActionType.PopUpWithGoToScreen ||
+          formState.actionType == popUpActionType.PopUpWithGoToTab
         "
       />
     </UFormField>
@@ -76,6 +77,7 @@
 
 <script lang="ts" setup>
 import { string, object } from "yup";
+import { refDebounced } from '@vueuse/core'
 import {
   popUpActionType,
   type INotificationPopupCreate,
@@ -84,7 +86,8 @@ const notificationForm = ref<HTMLFormElement>();
 const toast = useToast();
 const emit = defineEmits(['close'])
 const imageUrl = ref("");
-
+const search_user = ref("")
+const search_userDebounced = refDebounced(search_user, 500)
 const AddNotificatoion = () => {
   notificationForm.value?.submit();
 };
@@ -93,7 +96,7 @@ defineExpose({ AddNotificatoion });
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
 const users = computed(() => {
-  return usergetREQ.data.value?.data.items;
+  return usergetREQ.data.value?.data.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
 });
 
 const target = ref<"All" | "User" | "Anonymos">("All");
@@ -103,17 +106,31 @@ watch(target, (newValue, oldValue) => {
     schema.fields.user = string().required();
   }
 });
+// Watch for changes in the debounced search term and trigger search
+watch(search_userDebounced, async (newSearchTerm) => {
+    await search(newSearchTerm);
+});
+
 const search = async (q: string) => {
   await usergetREQ.fetchREQ(q);
   return users.value!;
 };
+
+const formState = reactive({
+  title: "",
+  description: "",
+  actionPath: "_",
+  actionType: popUpActionType.PopUpWithNoAction,
+  popUpImage: null as string | null,
+  user: "",
+});
 
 const state = reactive<INotificationPopupCreate>({
   title: "",
   description: "",
   actionPath: "_",
   actionType: popUpActionType.PopUpWithNoAction,
-  popUpImage: "",
+  popUpImage: null,
   user: "",
 });
 const schema = object({
@@ -121,7 +138,7 @@ const schema = object({
   description: string(),
   actionPath: string(),
   actionType: string().required(),
-  popUpImage: string().required(),
+  popUpImage: string().nullable(),
   user: string(),
 });
 // screen name options
@@ -145,11 +162,15 @@ const tabOptions = [
   { label: " الرئيسية", value: "home" },
 ];
 // handel file input
-const filechange = (event: FileList) => {
-  imageUrl.value = "";
-  const file = event.item(0);
-  if (file) {
+const filechange = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const files = target.files;
+  if (files && files.length > 0) {
+    console.log(files);
+    imageUrl.value = "";
+    const file = files[0];
     state.popUpImage = file;
+    formState.popUpImage = file.name; // Store filename for form validation
     const reader = new FileReader();
     reader.onload = (e) => {
       imageUrl.value = e.target?.result as string; // Get the image URL
@@ -158,38 +179,33 @@ const filechange = (event: FileList) => {
   }
 };
 // handel notification action type data
-const notificationActionsArray = Object.values(popUpActionType).map(
-  (action) => {
-    if (action == "PopUpWithNoAction") {
-      return {
-        value: action,
-        label: "اشعار فقط",
-      };
-    } else if (action == "PopUpWithGoToURL") {
-      return {
-        value: action,
-        label: "التوجه للينك معين",
-      };
-    } else if (action == "PopUpWithGoToScreen") {
-      return {
-        value: action,
-        label: "التوجة لشاشة في التطبيق",
-      };
-    } else if (action == "PopUpWithGoToTab") {
-      return {
-        value: action,
-        label: "التوجة لواجهة  في التطبيق",
-      };
-    }
-  }
-);
+const notificationActionsArray: { value: popUpActionType; label: string }[] = [
+  {
+    value: popUpActionType.PopUpWithNoAction,
+    label: "اشعار فقط",
+  },
+  {
+    value: popUpActionType.PopUpWithGoToURL,
+    label: "التوجه للينك معين",
+  },
+  {
+    value: popUpActionType.PopUpWithGoToScreen,
+    label: "التوجة لشاشة في التطبيق",
+  },
+  {
+    value: popUpActionType.PopUpWithGoToTab,
+    label: "التوجة لواجهة  في التطبيق",
+  },
+];
 
 watch(
-  () => state.actionType,
+  () => formState.actionType,
   (newValue, oldValue) => {
+    formState.actionPath = "";
     state.actionPath = "";
     if (newValue == popUpActionType.PopUpWithNoAction) {
       schema.fields.actionPath = string();
+      formState.actionPath = "_";
       state.actionPath = "_";
     } else if (newValue == popUpActionType.PopUpWithGoToURL) {
       schema.fields.actionPath = string().url().required();
@@ -201,8 +217,14 @@ watch(
 );
 
 // handel sent req on form submit
-
 const onSubmit = async () => {
+  // Sync formState with state
+  state.title = formState.title;
+  state.description = formState.description;
+  state.actionPath = formState.actionPath;
+  state.actionType = formState.actionType;
+  state.user = formState.user;
+  
   console.log(state);
   await addREQ.fetchREQ(state, target.value, state.user);
   if (addREQ.status.value == "success")

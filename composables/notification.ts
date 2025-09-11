@@ -33,6 +33,7 @@ export const useNotification = () => {
       
 
       await execute()
+      body.value = new FormData()
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }

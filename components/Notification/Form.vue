@@ -27,11 +27,12 @@
     <UFormField label="المستخدم" name="user" v-if="target == 'User'">
       <UInputMenu
         v-model="state.user"
+        v-model:search-term="search_user"
         :loading="usergetREQ.status.value == 'pending'"
-        :options="users"
-        :search="search"
-        option-attribute="username"
-        value-attribute="id"
+        :items="users"
+   
+        option-key="username"
+        value-key="id"
       />
     </UFormField>
     <UFormField label="العنوان" name="title">
@@ -39,7 +40,7 @@
     </UFormField>
     <UFormField label="الوصف" name="description">
       <UInput v-model="state.description" />
-    </UFormField>
+      </UFormField>
     <UFormField label="النوع" name="actionType">
       <USelect v-model="state.actionType" :items="notificationActionsArray" class="w-full"  />
     </UFormField>
@@ -71,6 +72,10 @@
 
 <script lang="ts" setup>
 import { string, object } from "yup";
+import { refDebounced } from '@vueuse/core'
+const search_user = ref("")
+const search_userDebounced = refDebounced(search_user, 500)
+
 import {
   NotificationActionType,
   type INotificationCreate,
@@ -87,7 +92,7 @@ const target = ref<"All" | "User" | "Anonymos">("All");
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
 const users = computed(() => {
-  return usergetREQ.data.value?.data.items;
+  return usergetREQ.data.value?.data.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
 });
 
 watch(target, (newValue, oldValue) => {
@@ -96,10 +101,17 @@ watch(target, (newValue, oldValue) => {
     schema.fields.user = string().required();
   }
 });
+
 const search = async (q: string) => {
+  console.log(q)
   await usergetREQ.fetchREQ(q);
   return users.value!;
 };
+
+// Watch for changes in the debounced search term and trigger search
+watch(search_userDebounced, async (newSearchTerm) => {
+    await search(newSearchTerm);
+});
 
 const state = reactive<INotificationCreate>({
   title: "",
@@ -144,31 +156,24 @@ const tabOptions = [
 //   }
 // }
 // handel notification action type data
-const notificationActionsArray = Object.values(NotificationActionType).map(
-  (action) => {
-    if (action == "NoAction") {
-      return {
-        value: action,
-        label: "اشعار فقط",
-      };
-    } else if (action == "GotoURL") {
-      return {
-        value: action,
-        label: "التوجه للينك معين",
-      };
-    } else if (action == "GoToScreen") {
-      return {
-        value: action,
-        label: "التوجة لشاشة في التطبيق",
-      };
-    } else if (action == "GoToTab") {
-      return {
-        value: action,
-        label: "التوجة لواجهة  في التطبيق",
-      };
-    }
-  }
-).filter(Boolean)
+const notificationActionsArray: { value: NotificationActionType; label: string }[] = [
+  {
+    value: NotificationActionType.NoAction,
+    label: "اشعار فقط",
+  },
+  {
+    value: NotificationActionType.GoToURL,
+    label: "التوجه للينك معين",
+  },
+  {
+    value: NotificationActionType.GoToScreen,
+    label: "التوجة لشاشة في التطبيق",
+  },
+  {
+    value: NotificationActionType.GoToTab,
+    label: "التوجة لواجهة  في التطبيق",
+  },
+]
 
 watch(
   () => state.actionType,
