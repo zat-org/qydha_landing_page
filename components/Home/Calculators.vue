@@ -4,7 +4,7 @@
     <div class="container mx-auto px-4">
       <div class="text-center space-y-4 mb-12" data-aos="fade-down" data-aos-once="true">
         <h2
-          class="text-4xl font-bold bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
+          class="text-4xl font-bold bg-gradient-to-r h-[50px] from-amber-500 to-amber-600 dark:from-amber-400 dark:to-amber-500 bg-clip-text text-transparent">
           حاسبات قيدها
         </h2>
         <p class="text-xl text-gray-700 dark:text-gray-300">
