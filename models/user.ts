@@ -12,7 +12,11 @@ export enum Privilege {
 // for auth user
 export interface IUserData {
 
-  boardLink: string
+  
+boardsLinks: {
+  baloot: string,
+  hand: string,
+}
   jwtToken: string
   user: User
 

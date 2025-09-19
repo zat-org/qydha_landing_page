@@ -52,7 +52,7 @@
           </div>
 
           <!-- Error Message -->
-          <div v-if="errormesage" 
+            <div v-if="errormesage" 
                class="p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg text-sm text-center">
             {{ errormesage }}
           </div>
@@ -104,12 +104,16 @@ const onSubmit = async () => {
    await loginREQ.fetchREQ(state);
 };
 const errormesage = computed(() => {
-  if(loginREQ.error.value?.data) {
-    if(loginREQ.error.value.data.code == "InvalidCredentials") {
-      return "اسم المستخدم او كلمة المرور غير صحيح"
+  if (loginREQ.status.value == "error") {
+    if(loginREQ.error.value?.statusCode == 400 ){
+      return "اسم المستخدم او كلمة المرور غير صحيحة "
+    }else{
+      return "خطاء ما حدث"
     }
+
   }
-  return null;
+  
+  
 });
 </script>
 
