@@ -294,77 +294,9 @@ const counteries = computed(() => {
 
 const selectedCountry = ref<string>('جميع الدول')
 const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? []);
-// const gameLocationChartOptions = computed(() => ({
-//     chart: {
-//         type: 'bar',
-//         toolbar: { show: false },
-//         animations: { enabled: true },
-//         rtl: true // Enable RTL for the chart
-//     },
-//     plotOptions: {
-//         bar: {
-//             horizontal: true,
-//             distributed: false,
-//             dataLabels: {
-//                 position: 'center'
-//             }
-//         }
-//     },
-//     xaxis: {
-//         categories: sortedCities.value.map(c => c.cityName),
-//         title: {
-//             text: 'عدد الالعاب بالنسبة للمدن',
-//             style: {
-//                 fontSize: '14px',
-//                 fontWeight: 'bold'
-//             }
-//         },
-//         labels: {
-//             style: {
-//                 fontSize: '12px'
-//             }
-//         },
-//         reversed: true,
-//     },
-//     yaxis: {
-//         reversed: true,
-//         opposite: true,
-//         title: {
-//             style: {
-//                 fontSize: '14px',
-//                 fontWeight: 'bold'
-//             }
-//         },
-//         labels: {
-//             style: {
-//                 fontSize: '12px'
-//             }
-//         }
-//     },
-//     dataLabels: {
-//         enabled: true,
-//         style: {
-//             fontSize: '11px',
-//             fontWeight: 'bold'
-//         }
-//     },
-//     tooltip: {
-//         y: { formatter: (val: number) => `${val} لعبة` }
-//     },
-//     grid: {
-//         strokeDashArray: 4,
-//         show: true
-//     },
-//     colors: ['#3b82f6'], // Tailwind blue
-//     legend: {
-//         position: 'bottom',
-//         horizontalAlign: 'center'
-//     }
-// }))
-
-// const gameLocationChartSeries = computed(() => [
-//     { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
-// ])
+watch(selectedCountry, () => {
+    table.value?.tableApi?.setPageIndex(0)
+})
 const pagination = ref({
     pageIndex: 0,
     pageSize: 10
