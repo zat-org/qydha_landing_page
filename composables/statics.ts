@@ -1,4 +1,4 @@
-import type { IBalootStatics, IMainApplicationStatics } from "~/models/statics";
+import type { IBalootBookStatics, IBalootStatics, IMainApplicationStatics } from "~/models/statics";
 export const useStatics = () => {
   const { $api } = useNuxtApp();
 
@@ -49,7 +49,7 @@ export const useStatics = () => {
     const startDate = ref<Date | null>(null);
     const endDate = ref<Date | null>(null);
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData(
+      await useAsyncData<IBalootBookStatics>(
         "getBalootBookStatics",
         () => $api("/statistcs/baloot-book",{query:{
           from: startDate.value?.toISOString(),

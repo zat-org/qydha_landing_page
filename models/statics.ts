@@ -57,3 +57,26 @@ export interface IBalootStatics {
   };
   message: string;
 }
+
+// book statics
+
+export interface IBalootBookStatics {
+  data: IBalootBookStaticsData
+  message: string
+}
+
+ interface IBalootBookStaticsData {
+  balootBookElapsedTime: IBalootBookElapsedTime[]
+  balootBookInSakkaPeriod: IBalootBookInSakkaPeriod
+}
+
+ interface IBalootBookElapsedTime {
+  eventDate: string
+  elapsedTime: string
+}
+
+ interface IBalootBookInSakkaPeriod {
+  start: number
+  middle: number
+  end: number
+}

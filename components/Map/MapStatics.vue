@@ -242,7 +242,7 @@ onUnmounted(() => {
 
 <template>
     <div class="relative">
-        <div ref="mapContainer" class="w-full h-[500px] rounded-xl shadow z-0"></div>
+        <div ref="mapContainer" style="height: 500px;" class="w-full h-[500px] rounded-xl shadow z-0"></div>
         <!-- Toggle Button -->
         <!-- <button 
             @click="toggleVisualization"

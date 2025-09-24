@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{header:'p-1'}">
+  <UCard :ui="{ header: 'p-1' }">
     <template #header>
       <div class="flex justify-between items-center mb-6 gap-2">
         <UFormField label="الفترة" name="timeRange" class="w-full">
@@ -24,29 +24,38 @@
       </div>
     </template>
 
-    <UTabs v-model="active" :items="tabs" :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }"
-      orientation="vertical" dir="rtl">
+    <UTabs v-model="active" :items="tabs"
+      :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }" orientation="vertical" dir="rtl"
+      :unmountOnHide="false">
       <template #general>
-        <KeepAlive>
-          <StatisticsGeneral v-if="active == 'general'" />
-        </KeepAlive>
+        <Suspense>
+          <LazyStatisticsGeneral v-if="active == 'general'" />
+          <template #fallback>
+            <Loading/>
+          </template>
+        </Suspense>
       </template>
       <template #rules>
-        <KeepAlive>
-          <StatisticsRules v-if="active == 'rules'" :type="timeRange" :startDate="range.start" :endDate="range.end" />
-        </KeepAlive>
-        <!-- <StatisticsRules /> -->
+        <Suspense>
+          <LazyStatisticsRules v-if="active == 'rules'" :type="timeRange" :startDate="range.start" :endDate="range.end" />
+          <template #fallback>
+            <Loading />
+          </template>
+        </Suspense>
       </template>
       <template #baloot>
-        <KeepAlive> 
-          <StatisticsBaloot v-if="active == 'baloot'" :type="timeRange" :startDate="range.start" :endDate="range.end" />
-        </KeepAlive>
+        <Suspense>
+          <LazyStatisticsBaloot v-if="active == 'baloot'" :type="timeRange" :startDate="range.start" :endDate="range.end" />
+          <template #fallback>
+            <Loading />
+          </template>
+        </Suspense>
       </template>
       <template #hand>
         <!-- <KeepAlive> -->
-          قريبا
+        قريبا
 
-          <!-- <StatisticsHand v-if="active == 'hand'" /> -->
+        <!-- <StatisticsHand v-if="active == 'hand'" /> -->
         <!-- </KeepAlive> -->
       </template>
     </UTabs>

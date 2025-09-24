@@ -1,85 +1,109 @@
 <template>
     <div class="min-h-[100px] max-h-[66vh] w-[99%] p-2  flex flex-col gap-4 h-full overflow-y-auto ">
-        <UCard>
-            <template #header> عدد الصكات المتوسطة للمستخدم </template>
-            <ApexChart :type="GameUserChartType" :options="{ ...defaultChartOptions, ...GameUsersOptions }" height="300"
-                :series="GameUsersSeries" />
-        </UCard>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Loading v-if="status == 'pending'" />
+        <template v-else>
             <UCard>
-                <template #header>
-                    <h2 class="text-lg font-bold"> عدد الالعاب </h2>
-                </template>
-                <div class="flex justify-center items-center h-full">
-                    <p class="text-2xl font-bold"> {{ totalGames }} </p>
-                </div>
+                <template #header> عدد الصكات المتوسطة للمستخدم </template>
+                <ApexChart :type="GameUserChartType" :options="{ ...defaultChartOptions, ...GameUsersOptions }"
+                    height="300" :series="GameUsersSeries" />
             </UCard>
-            <UCard>
-                <template #header>
-                    <h2 class="text-lg font-bold"> متوسط عدد الصكات ل{{ numberOfUsers }} مستخدمين </h2>
-                </template>
-                <div class="flex justify-center items-center h-full">
-                    <div class="flex flex-col items-center gap-2">
-                        <p class="text-2xl font-bold"> {{ averageSakkasPerUser }} صكة </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <UCard>
+                    <template #header>
+                        <h2 class="text-lg font-bold"> عدد الالعاب </h2>
+                    </template>
+                    <div class="flex justify-center items-center h-full">
+                        <p class="text-2xl font-bold"> {{ totalGames.toLocaleString() }} </p>
                     </div>
-                </div>
-            </UCard>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <UCard>
-                <template #header>
-                    <h2 class="text-lg font-bold"> نسبة عدد الصكات في الالعاب </h2>
-                </template>
-                <ApexChart type="pie" :options="{ ...defaultChartOptions, ...SakkasCountOptions }" height="200"
-                    :series="SakkasCountSeries" />
-            </UCard>
+                </UCard>
+                <UCard>
+                    <template #header>
+                        <h2 class="text-lg font-bold"> متوسط عدد الصكات ل{{ numberOfUsers.toLocaleString() }} مستخدمين
+                        </h2>
+                    </template>
+                    <div class="flex justify-center items-center h-full">
+                        <div class="flex flex-col items-center gap-2">
+                            <p v-if="averageSakkasPerUser" class="text-2xl font-bold"> {{
+                                Math.round(averageSakkasPerUser).toLocaleString() }} صكة </p>
+                        </div>
+                    </div>
+                </UCard>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <UCard>
+                    <template #header>
+                        <h2 class="text-lg font-bold"> نسبة عدد الصكات في الالعاب </h2>
+                    </template>
+                    <ApexChart type="pie" :options="{ ...defaultChartOptions, ...SakkasCountOptions }" height="200"
+                        :series="SakkasCountSeries" />
+                </UCard>
 
 
-            <UCard>
-                <template #header>
-                    <h2 class="text-lg font-bold"> احصائيات الصكات المكتملة و غير المكتملة</h2>
-                </template>
-                <ApexChart type="pie" :options="{ ...defaultChartOptions, ...completeSakkaChartOptions }" height="200"
-                    :series="completeSakkaSeries" />
-            </UCard>
+                <UCard>
+                    <template #header>
+                        <h2 class="text-lg font-bold"> احصائيات الصكات المكتملة و غير المكتملة</h2>
+                    </template>
+                    <ApexChart type="pie" :options="{ ...defaultChartOptions, ...completeSakkaChartOptions }"
+                        height="200" :series="completeSakkaSeries" />
+                </UCard>
 
 
-        </div>
-
-
-
-        <UCard>
-            <template #header>
-                <h2 class="text-lg font-bold">إعدادات البلوت</h2>
-            </template>
-            <ApexChart type="bar" stacked="true" :options="{ ...defaultChartOptions, ...BalootSettingsChartOptions }"
-                height="200" :series="BalootSettingsSeries" />
-        </UCard>
-
-        <UCard>
-            <template #header>
-                <div class="flex justify-between items-center">
-                    <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
-                    <USelect v-model="selectedCountry" :items="counteries" class="w-[200px]" />
-                </div>
-            </template>
-            <div class="flex gap-8 justify-between">
-                <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }"
-                     :series="gameLocationChartSeries"  class="w-[50%] " height="500"/>
-                <MapStatics :balootGamesCountWithLocation="sortedCities ?? []" class="w-[50%]" />
             </div>
 
-        </UCard>
 
 
-        
+            <UCard>
+                <template #header>
+                    <h2 class="text-lg font-bold">إعدادات البلوت</h2>
+                </template>
+                <ApexChart type="bar" stacked="true"
+                    :options="{ ...defaultChartOptions, ...BalootSettingsChartOptions }" height="200"
+                    :series="BalootSettingsSeries" />
+            </UCard>
+
+            <UCard>
+                <template #header>
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
+                        <USelect v-model="selectedCountry" :items="counteries" class="w-[200px]" />
+                    </div>
+                </template>
+                <div class="flex gap-8 justify-between">
+                    <!-- <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }"
+                     :series="gameLocationChartSeries"  class="w-[50%] " height="500"/> -->
+                    <!-- {{sortedCities}} -->
+                    <div class="flex flex-col gap-4 flex-1 ">
+                        <UTable :data="sortedCities" ref="table" :columns="columns" v-model:pagination="pagination"
+                            :pagination-options="{
+                                getPaginationRowModel: getPaginationRowModel()
+                            }" />
+                        <UPagination :default-page="(table?.tableApi?.getState().pagination.pageIndex || 0) + 1"
+                            :items-per-page="table?.tableApi?.getState().pagination.pageSize"
+                            :total="table?.tableApi?.getFilteredRowModel().rows.length"
+                            @update:page="(p) => table?.tableApi?.setPageIndex(p - 1)" />
+                    </div>
+
+
+
+
+                    <MapStatics :balootGamesCountWithLocation="sortedCities ?? []" class="w-[50%] flex-1" />
+                </div>
+
+            </UCard>
+
+        </template>
+
+
+
 
     </div>
 
 </template>
 
-<script setup lang="ts">
+<script async setup lang="ts">
+import { getPaginationRowModel } from '@tanstack/vue-table'
 
+const table = useTemplateRef('table')
 const props = defineProps<{
     type: "day" | "week" | "month" | "year" | "custom"
     startDate: Date | null
@@ -217,10 +241,10 @@ const GameUsersSeries = computed(() => {
     ]
 })
 
-const GameUsersStats =computed(() => data.value?.data?.gameUsersStatistics || [])
-  const GameUserChartType = computed(() => GameUsersStats.value.length <= 1 ? 'bar' : 'line')
+const GameUsersStats = computed(() => data.value?.data?.gameUsersStatistics || [])
+const GameUserChartType = computed(() => GameUsersStats.value.length <= 1 ? 'bar' : 'line')
 const GameUsersOptions = computed(() => ({
-    chart:{
+    chart: {
         type: GameUserChartType.value,
     },
     xaxis: {
@@ -267,80 +291,97 @@ const counteries = computed(() => {
     return unique
 }
 )
+
 const selectedCountry = ref<string>('جميع الدول')
-const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? [])
+const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? []);
+// const gameLocationChartOptions = computed(() => ({
+//     chart: {
+//         type: 'bar',
+//         toolbar: { show: false },
+//         animations: { enabled: true },
+//         rtl: true // Enable RTL for the chart
+//     },
+//     plotOptions: {
+//         bar: {
+//             horizontal: true,
+//             distributed: false,
+//             dataLabels: {
+//                 position: 'center'
+//             }
+//         }
+//     },
+//     xaxis: {
+//         categories: sortedCities.value.map(c => c.cityName),
+//         title: {
+//             text: 'عدد الالعاب بالنسبة للمدن',
+//             style: {
+//                 fontSize: '14px',
+//                 fontWeight: 'bold'
+//             }
+//         },
+//         labels: {
+//             style: {
+//                 fontSize: '12px'
+//             }
+//         },
+//         reversed: true,
+//     },
+//     yaxis: {
+//         reversed: true,
+//         opposite: true,
+//         title: {
+//             style: {
+//                 fontSize: '14px',
+//                 fontWeight: 'bold'
+//             }
+//         },
+//         labels: {
+//             style: {
+//                 fontSize: '12px'
+//             }
+//         }
+//     },
+//     dataLabels: {
+//         enabled: true,
+//         style: {
+//             fontSize: '11px',
+//             fontWeight: 'bold'
+//         }
+//     },
+//     tooltip: {
+//         y: { formatter: (val: number) => `${val} لعبة` }
+//     },
+//     grid: {
+//         strokeDashArray: 4,
+//         show: true
+//     },
+//     colors: ['#3b82f6'], // Tailwind blue
+//     legend: {
+//         position: 'bottom',
+//         horizontalAlign: 'center'
+//     }
+// }))
 
-const gameLocationChartOptions = computed(() => ({
-    chart: {
-        type: 'bar',
-        toolbar: { show: false },
-        animations: { enabled: true },
-        rtl: true // Enable RTL for the chart
+// const gameLocationChartSeries = computed(() => [
+//     { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
+// ])
+const pagination = ref({
+    pageIndex: 0,
+    pageSize: 10
+})
+const columns = [
+    {
+        accessorKey: 'countryName',
+        header: 'الدولة'
+    }, {
+        accessorKey: 'cityName',
+        header: 'المدينة'
     },
-    plotOptions: {
-        bar: {
-            horizontal: true,
-            distributed: false,
-            dataLabels: {
-                position: 'center'
-            }
-        }
-    },
-    xaxis: {
-        categories: sortedCities.value.map(c => c.cityName),
-        title: {
-            text: 'عدد الالعاب بالنسبة للمدن',
-            style: {
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        },
-        labels: {
-            style: {
-                fontSize: '12px'
-            }
-        },
-        reversed: true,
-    },
-    yaxis: {
-        reversed: true,
-        opposite: true,
-        title: {
-            style: {
-                fontSize: '14px',
-                fontWeight: 'bold'
-            }
-        },
-        labels: {
-            style: {
-                fontSize: '12px'
-            }
-        }
-    },
-    dataLabels: {
-        enabled: true,
-        style: {
-            fontSize: '11px',
-            fontWeight: 'bold'
-        }
-    },
-    tooltip: {
-        y: { formatter: (val: number) => `${val} لعبة` }
-    },
-    grid: {
-        strokeDashArray: 4,
-        show: true
-    },
-    colors: ['#3b82f6'], // Tailwind blue
-    legend: {
-        position: 'bottom',
-        horizontalAlign: 'center'
-    }
-}))
+    {
+        accessorKey: 'gamesCount',
+        header: 'عدد الالعاب'
+    }]
 
-const gameLocationChartSeries = computed(() => [
-    { name: 'العاب', data: sortedCities.value.map(c => c.gamesCount) }
-])
 
 </script>
 
