@@ -257,22 +257,22 @@ const resetBoard = async () => {
    
 };
 
-watch(
-    state,
-    async (n, o) => {
-        try {
-            const body = {
-                boardId: props.boardID,
-                portrait: state
-            }
-           await  updateREQ.fetchREQ(body)
-        } catch (error: any) {
-            console.log(error.message);
-            useToast().add({ title: "update error", color: "error" });
-        }
-    },
-    { deep: true }
-);
+// watch(
+//     state,
+//     async (n, o) => {
+//         try {
+//             const body = {
+//                 boardId: props.boardID,
+//                 portrait: state
+//             }
+//            await  updateREQ.fetchREQ(body)
+//         } catch (error: any) {
+//             console.log(error.message);
+//             useToast().add({ title: "update error", color: "error" });
+//         }
+//     },
+//     { deep: true }
+// );
 
 const items = [
     {
