@@ -11,7 +11,12 @@ export const useMyAuthStore = defineStore(
     const roles = computed(() => {
       return user.value?.user.roles;
     });
-
+    const BalootBoardSettings = computed(() => {
+      return user.value?.boardSettings.baloot;
+    });
+    const HandBoardSettings = computed(() => {
+      return user.value?.boardSettings.hand;
+    });
     const permissions = ref<string[]>([]);
     const privilege = ref<Privilege>();
 
@@ -36,6 +41,8 @@ export const useMyAuthStore = defineStore(
       isSuperAdmin,
       isStaffAdmin,
       isStreamer,
+      BalootBoardSettings,
+      HandBoardSettings,
     };
   },
   {
@@ -49,10 +56,6 @@ export const useMyAuthStore = defineStore(
       },
       {
         storage: piniaPluginPersistedstate.localStorage(),
-        // storage: piniaPluginPersistedstate.cookies({
-        //   maxAge: 60 * 60 * 24 * 2,
-        // }),
-  
       },
     ],
   }

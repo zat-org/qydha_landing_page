@@ -152,8 +152,14 @@ const copyLink = async (link: string) => {
     }
 };
 const overlay = useOverlay();
-const modal = overlay.create(StreamEditModal);
+const modal = overlay.create(StreamEditModal, {
+    props: {
+        boardID: balootBoardlink.value?.split('/')[4] || '',
+        type:"baloot"
+    }
+});
 const openEditModal = () => {
+    
     modal.open();
 
 };

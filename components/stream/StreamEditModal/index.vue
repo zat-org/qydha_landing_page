@@ -34,17 +34,17 @@
                     </template>
 
                     <template #playerImages>
-                        <PlayerImage v-model:RightPlayerRight="state.RightPlayer.right"
-                            v-model:RightPlayerTop="state.RightPlayer.top"
-                            v-model:LeftPlayerLeft="state.LeftPlayer.left" v-model:LeftPlayerTop="state.LeftPlayer.top"
-                            v-model:BottomPlayerBottom="state.BottomPlayer.bottom"
-                            v-model:BottomPlayerLeft="state.BottomPlayer.left"
-                            v-model:PlayerImageWidth="state.PlayerImageWidth" />
+                        <PlayerImage v-model:rightPlayerRight="state.rightPlayer.right"
+                            v-model:rightPlayerTop="state.rightPlayer.top"
+                            v-model:leftPlayerLeft="state.leftPlayer.left" v-model:leftPlayerTop="state.leftPlayer.top"
+                            v-model:bottomPlayerBottom="state.bottomPlayer.bottom"
+                            v-model:bottomPlayerLeft="state.bottomPlayer.left"
+                            v-model:playerImageWidth="state.playerImageWidth" />
                     </template>
 
                     <template #detailView>
-                        <DetailView v-model:DetailScoreColor="state.DetailScore.Color"
-                            v-model:DetailScoreFontSize="state.DetailScore.FontSize" />
+                        <DetailView v-model:detailScoreColor="state.detailScore.color"
+                            v-model:detailScoreFontSize="state.detailScore.fontSize" />
                     </template>
 
                 </UAccordion>
@@ -54,7 +54,7 @@
 
         <template #footer>
             <div class="flex justify-between items-center">
-                <UButton @click="closeModal()" color="error"> غلق </UButton>
+                <UButton @click="emit('close')" color="error"> غلق </UButton>
                 <UButton @click="resetBoard()">اعادة الضبط </UButton>
                 <UButton @click="updateBoard()">حفظ </UButton>
             </div>
@@ -64,31 +64,20 @@
 </template>
 
 <script lang="ts" setup>
+const props = defineProps<{
+    boardID: string;
+    type:"baloot" | "hand";
+}>();
 import ScorePanel from "./ScorePanel.vue";
 import Dimension from "./Dimension.vue";
 import Teams from "./Teams.vue";
 import PlayerImage from "./playerImage.vue";
 import DetailView from "./DetailView.vue";
 import { object, string, number } from "yup";
-import type { TableData, TableUpdate } from "~/composables/BoardFB";
 import { useMyAuthStore } from "~/store/Auth";
-const updateForm = ref<HTMLFormElement>();
+const updateForm = useTemplateRef("updateForm");
 const authstore = useMyAuthStore();
-const boardID = computed(() => {
-    console.log(authstore.user)
-    if (authstore.user?.boardLink) {
-        const linkParts = authstore.user.boardLink.split("/");
-        return linkParts[linkParts.length - 1];
-    }
-    return undefined;
-});
-
-let data: TableData | null = null;
-
-// Wait for boardID to be available before fetching data
-if (boardID.value) {
-    data = await useBoardFB().getOrCreateTable(boardID.value);
-}
+const {BalootBoardSettings} = storeToRefs(authstore)
 const schema = object({
     dimension: object({
         width: number().required(),
@@ -122,107 +111,113 @@ const schema = object({
             }),
         }),
     }),
-    LeftPlayer: object({
+    leftPlayer: object({
         left: number().required(),
     }),
-    RightPlayer: object({
+    rightPlayer: object({
         right: number().required(),
     }),
-    BottomPlayer: object({
+    bottomPlayer: object({
         bottom: number().required(),
     }),
-    PlayerImageWidth: number().required(),
-    DetailScore: object({
-        Color: string().required(),
-        FontSize: number().required(),
+    playerImageWidth: number().required(),
+    detailScore: object({
+        color: string().required(),
+        fontSize: number().required(),
     }),
 
 });
 
-let state = reactive<TableUpdate>({
-    dimension: {
-        width: data ? +data.dimension.width.replace("px", "") : 0,
-        height: data ? +data.dimension.height.replace("px", "") : 0,
+let state = reactive<any>({
+ 
+    
+        dimension: {
+        width: props.type === "baloot" ? BalootBoardSettings.value?.portrait.dimension.width!: 0,
+        height: props.type === "baloot" ? BalootBoardSettings.value?.portrait.dimension.height!: 0,
     },
     scorePanel: {
-        topMargin: data ? +data.scorePanel.topMargin.replace("px", "") : 0,
-        height: data ? +data.scorePanel.height.replace("px", "") : 0,
+        topMargin: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.topMargin!: 0,
+        height: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.height!: 0,
         position: {
-            scale: data ? data.scorePanel.position.scale : 1,
-            top: data ? +data.scorePanel.position.top.replace("px", "") : 0,
-            left: data ? +data.scorePanel.position.left.replace("px", "") : 0,
+            scale: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.position.scale!: 0,
+            top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.position.top!: 0,
+            left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.position.left!: 0,
         },
         leftTeam: {
             name: {
-                size: data ? +data.scorePanel.leftTeam.name.size.replace("px", "") : 0,
-                top: data ? +data.scorePanel.leftTeam.name.top.replace("px", "") : 0,
-                left: data ? +data.scorePanel.leftTeam.name.left.replace("px", "") : 0,
+                size: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.name.size!: 0,
+                top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.name.top!: 0,
+                left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.name.left!: 0,
             },
 
             score: {
-                size: data ? +data.scorePanel.leftTeam.score.size.replace("px", "") : 0,
-                top: data ? +data.scorePanel.leftTeam.score.top.replace("px", "") : 0,
-                left: data ? +data.scorePanel.leftTeam.score.left.replace("px", "") : 0,
+                size: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.score.size!: 0,
+                top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.score.top!: 0,
+                left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.leftTeam.score.left!: 0,
             },
         },
         rightTeam: {
             name: {
-                size: data ? +data.scorePanel.rightTeam.name.size.replace("px", "") : 0,
-                top: data ? +data.scorePanel.rightTeam.name.top.replace("px", "") : 0,
-                left: data ? +data.scorePanel.rightTeam.name.left.replace("px", "") : 0,
+                size: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.name.size!: 0,
+                top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.name.top!: 0,
+                left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.name.left!: 0,
             },
 
             score: {
-                size: data ? +data.scorePanel.rightTeam.score.size.replace("px", "") : 0,
-                top: data ? +data.scorePanel.rightTeam.score.top.replace("px", "") : 0,
-                left: data ? +data.scorePanel.rightTeam.score.left.replace("px", "") : 0,
+                size: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.score.size!: 0,
+                top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.score.top!: 0,
+                left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.scorePanel.rightTeam.score.left!: 0,
             },
         },
+        },
+        leftPlayer: {
+        top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.leftPlayer.top!: 0,
+        left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.leftPlayer.left!: 0,
     },
-    LeftPlayer: {
-        top: data ? +data.LeftPlayer.top.replace("px", "") : 0,
-        left: data ? +data.LeftPlayer.left.replace("px", "") : 0,
+    rightPlayer: {
+        top: props.type === "baloot" ? BalootBoardSettings.value?.portrait.rightPlayer.top!:    0,
+        right: props.type === "baloot" ? BalootBoardSettings.value?.portrait.rightPlayer.right!: 0,
     },
-    RightPlayer: {
-        top: data ? +data.RightPlayer.top.replace("px", "") : 0,
-        right: data ? +data.RightPlayer.right.replace("px", "") : 0,
+    bottomPlayer: {
+        bottom: props.type === "baloot" ? BalootBoardSettings.value?.portrait.bottomPlayer.bottom!: 0,
+        left: props.type === "baloot" ? BalootBoardSettings.value?.portrait.bottomPlayer.left!: 0,
     },
-    BottomPlayer: {
-        bottom: data ? +data.BottomPlayer.bottom.replace("px", "") : 0,
-        left: data ? +data.BottomPlayer.left.replace("px", "") : 0,
-    },
-    PlayerImageWidth: data ? data.PlayerImageWidth : 0,
-    DetailScore: {
-        Color: data ? data.DetailScore.Color : "#000000",
-        FontSize: data ? +data.DetailScore.FontSize.replace("px", "") : 0,
+            playerImageWidth: props.type === "baloot" ? BalootBoardSettings.value?.portrait.playerImageWidth!: 0,
+    detailScore: {
+        color: props.type === "baloot" ? BalootBoardSettings.value?.portrait.detailScore.color!: 0,
+        fontSize: props.type === "baloot" ? BalootBoardSettings.value?.portrait.detailScore.fontSize!: 0,
     }
 });
 const updateBoard = () => {
-    updateForm.value?.submit();
+    try {        
+        updateForm.value?.submit();
+    } catch (error) {
+        console.log(error)
+    }
+
 };
+const {updateBalootBoardSettings} = useBoardSettings()
+const updateREQ = await updateBalootBoardSettings()
 const emit = defineEmits(['close']);
-// Modal will be closed by th e parent component
-const closeModal = () => {
-    emit('close');
-    // This will be handled by the modal's built-in close functionality
-};
+
+
 const onSubmit = async (event: any) => {
-    if (!boardID.value) {
-        useToast().add({ title: "Board ID not available", color: "error" });
-        return;
-    }
-    try {
-        await useBoardFB().updateTable(boardID.value, state);
-        useToast().add({ title: "update Done" });
-    } catch (error: any) {
-        console.log(error.message);
-        useToast().add({ title: "update error", color: "error" });
-    }
+    console.log("onSubmit")
+   const body={
+    boardId: props.boardID,
+    portrait: state
+   }
+   await updateREQ.fetchREQ(body)
+   if (updateREQ.status.value == "success") {
+    useToast().add({ title: "update done" })
+    emit('close')
+   }
+  
 };
 
 const resetBoard = async () => {
-    const defaultTableData: TableUpdate = {
-        PlayerImageWidth: 200,
+    const defaultTableData: any = {
+        playerImageWidth: 200,
         dimension: { width: 1080, height: 1920 },
         scorePanel: {
             topMargin: 0,
@@ -242,41 +237,38 @@ const resetBoard = async () => {
                 score: { size: 50, top: 0, left: 0 },
             },
         },
-        LeftPlayer: { top: 100, left: 0 },
-        RightPlayer: { top: 100, right: 0 },
-        BottomPlayer: { bottom: 0, left: 100 },
-        DetailScore: {
-            Color: "#000000",
-            FontSize: 70
+        leftPlayer: { top: 100, left: 0 },
+        rightPlayer: { top: 100, right: 0 },
+        bottomPlayer: { bottom: 0, left: 100 },
+        detailScore: {
+            color: "#000000",
+            fontSize: 70
         }
     };
-
-    if (!boardID.value) {
-        useToast().add({ title: "Board ID not available", color: "error" });
-        return;
-    }
-    try {
-        await useBoardFB().updateTable(boardID.value, defaultTableData);
-        Object.assign(state, defaultTableData);
-        // state = defaultTableData;
-        useToast().add({ title: "update Done" });
-    } catch (error: any) {
-        console.log(error.message);
-        useToast().add({ title: "update error", color: "error" });
-    }
+    const body={
+    boardId: props.boardID,
+    portrait: defaultTableData
+   }
+   await updateREQ.fetchREQ(body)
+   if (updateREQ.status.value == "success") {
+    useToast().add({ title: "update done" })
+    emit('close')
+   }
+   
 };
 
 watch(
     state,
     async (n, o) => {
-        console.log(state)
-        if (!boardID.value) return;
         try {
-            await useBoardFB().updateTable(boardID.value, n);
-            // useToast().add({ title: "update Done" });
+            const body = {
+                boardId: props.boardID,
+                portrait: state
+            }
+           await  updateREQ.fetchREQ(body)
         } catch (error: any) {
             console.log(error.message);
-            // useToast().add({ title: "update error", color: "red" });
+            useToast().add({ title: "update error", color: "error" });
         }
     },
     { deep: true }
