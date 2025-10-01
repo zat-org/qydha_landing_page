@@ -40,7 +40,7 @@
       </template>
       <template #rules>
         <Suspense>
-          <LazyStatisticsRules v-if="balootBookData" :data="balootBookData" :status="balootBookStatus" :type="timeRange"
+          <LazyStatisticsRules  :data="balootBookData" :status="balootBookStatus" :type="timeRange"
             :startDate="range.start" :endDate="range.end" />
           <template #fallback>
             <Loading />
@@ -49,7 +49,7 @@
       </template>
       <template #baloot>
         <Suspense>
-          <LazyStatisticsBaloot v-if="balootData" :data="balootData" :status="balootStatus" :type="timeRange"
+          <LazyStatisticsBaloot :data="balootData" :status="balootStatus" :type="timeRange"
             :startDate="range.start" :endDate="range.end" />
           <template #fallback>
             <Loading />

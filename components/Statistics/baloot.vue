@@ -106,7 +106,7 @@ import type { IBalootStatics } from '~/models/statics';
 
 const table = useTemplateRef('table')
 const props = defineProps<{
-    data: IBalootStatics,
+    data: IBalootStatics| null ,
     status: string
     type: "day" | "week" | "month" | "year" | "custom"
     startDate: Date | null

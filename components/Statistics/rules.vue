@@ -21,7 +21,7 @@
 import type { IBalootBookStatics } from '~/models/statics';
 
 const props = defineProps<{
-    data: IBalootBookStatics,
+    data: IBalootBookStatics| null ,
     status: string,
     type: "day" | "week" | "month" | "year" | "custom"
     startDate: Date | null
