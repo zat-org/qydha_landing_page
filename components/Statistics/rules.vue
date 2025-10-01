@@ -18,7 +18,11 @@
 </template>
 
 <script setup lang="ts">
+import type { IBalootBookStatics } from '~/models/statics';
+
 const props = defineProps<{
+    data: IBalootBookStatics,
+    status: string,
     type: "day" | "week" | "month" | "year" | "custom"
     startDate: Date | null
     endDate: Date | null
@@ -26,11 +30,11 @@ const props = defineProps<{
 
 const { getBalootBookStatics } = useStatics()
 const { data, pending, error, refresh, status, fetchREQ } = await getBalootBookStatics()
-watch(() => [props.type, props.startDate, props.endDate], () => {
-    if (props.startDate && props.endDate) {
-        fetchREQ(props.type, props.startDate, props.endDate)
-    }
-}, { immediate: true })
+// watch(() => [props.type, props.startDate, props.endDate], () => {
+//     if (props.startDate && props.endDate) {
+//         fetchREQ(props.type, props.startDate, props.endDate)
+//     }
+// }, { immediate: true })
 const colorMode = useColorMode()
 onMounted(() => {
     fetchREQ(props.type, props.startDate, props.endDate)
@@ -87,9 +91,7 @@ const BalootBookInSakkaPeriodChartOptions = {
     }
 }
 
-watch(data, () => {
-    console.log(Object.keys(data.value?.data.balootBookInSakkaPeriod!))
-})
+
 </script>
 
 <style scoped></style>

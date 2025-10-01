@@ -66,7 +66,7 @@
                     <div class="flex justify-between items-center">
                         <h2 class="text-lg font-bold">المواقع المختلفة للبلوت</h2>
                         <USelect v-model="selectedCountry" :items="counteries" class="w-[200px]" />
-                    </div>
+                    </div> 
                 </template>
                 <div class="flex gap-8 justify-between">
                     <!-- <ApexChart dir="rtl" type="bar" :options="{ ...defaultChartOptions, ...gameLocationChartOptions }"
@@ -102,28 +102,23 @@
 
 <script async setup lang="ts">
 import { getPaginationRowModel } from '@tanstack/vue-table'
+import type { IBalootStatics } from '~/models/statics';
 
 const table = useTemplateRef('table')
 const props = defineProps<{
+    data: IBalootStatics,
+    status: string
     type: "day" | "week" | "month" | "year" | "custom"
     startDate: Date | null
     endDate: Date | null
 }>()
 
 
-const { getBalootStatics } = useStatics()
-const { data, pending, error, refresh, status, fetchREQ } = await getBalootStatics()
-watch(() => [props.type, props.startDate, props.endDate], () => {
-    if (props.startDate && props.endDate) {
-        fetchREQ(props.type, props.startDate, props.endDate)
-    }
-}, { immediate: true })
-
 const colorMode = useColorMode()
 const defaults = inject('ApexChartOptions') as any
 
 // Computed properties for better data organization
-const totalGames = computed(() => data.value?.data?.gamesCount?.gamesCount || 0)
+const totalGames = computed(() => props.data?.data?.gamesCount?.gamesCount || 0)
 
 const defaultChartOptions = computed(() => ({
     ...defaults,
@@ -163,21 +158,21 @@ const BalootSettingsSeries = computed(() => {
         {
             name: 'تعطيل',
             data: [
-                data.value?.data?.balootSettings?.numbersSoundDisabled || 0,
-                data.value?.data?.balootSettings?.commentsSoundDisabled || 0,
-                data.value?.data?.balootSettings?.sakkahMashdodahDisabled || 0,
-                data.value?.data?.balootSettings?.advancedRecordingDisabled || 0,
-                data.value?.data?.balootSettings?.flippedDisabled || 0
+                props.data?.data?.balootSettings?.numbersSoundDisabled || 0,
+                props.data?.data?.balootSettings?.commentsSoundDisabled || 0,
+                props.data?.data?.balootSettings?.sakkahMashdodahDisabled || 0,
+                props.data?.data?.balootSettings?.advancedRecordingDisabled || 0,
+                props.data?.data?.balootSettings?.flippedDisabled || 0
             ]
         },
         {
             name: 'تفعيل',
             data: [
-                data.value?.data?.balootSettings?.numbersSoundEnabled || 0,
-                data.value?.data?.balootSettings?.commentsSoundEnabled || 0,
-                data.value?.data?.balootSettings?.sakkahMashdodahEnabled || 0,
-                data.value?.data?.balootSettings?.advancedRecordingEnabled || 0,
-                data.value?.data?.balootSettings?.flippedEnabled || 0
+                props.data?.data?.balootSettings?.numbersSoundEnabled || 0,
+                props.data?.data?.balootSettings?.commentsSoundEnabled || 0,
+                props.data?.data?.balootSettings?.sakkahMashdodahEnabled || 0,
+                props.data?.data?.balootSettings?.advancedRecordingEnabled || 0,
+                props.data?.data?.balootSettings?.flippedEnabled || 0
             ]
         }
     ]
@@ -187,18 +182,18 @@ const BalootSettingsSeries = computed(() => {
 const completeSakkaChartOptions = computed(() => ({
     labels: ['الصكات المكتملة', 'الصكات غير المكتملة']
 }))
-const completedSakkas = computed(() => data.value?.data?.sakkasFinishedStats?.finishedCount || 0)
-const incompleteSakkas = computed(() => data.value?.data?.sakkasFinishedStats?.notFinishedCount || 0)
+const completedSakkas = computed(() => props.data?.data?.sakkasFinishedStats?.finishedCount || 0)
+const incompleteSakkas = computed(() => props.data?.data?.sakkasFinishedStats?.notFinishedCount || 0)
 const completeSakkaSeries = computed(() => [completedSakkas.value, incompleteSakkas.value])
 
 
 const SakkasCountSeries = computed(() => {
-    return data.value?.data?.sakkasCountPercentage?.map(x => x.percentage) || []
+    return props.data?.data?.sakkasCountPercentage?.map(x => x.percentage) || []
 })
 
 const SakkasCountOptions = computed(() => ({
 
-    labels: data.value?.data?.sakkasCountPercentage?.map(x => `صكه ${x.maxSakkaPerGame}`) || [],
+    labels: props.data?.data?.sakkasCountPercentage?.map(x => `صكه ${x.maxSakkaPerGame}`) || [],
 
     legend: {
         position: 'bottom'
@@ -207,16 +202,16 @@ const SakkasCountOptions = computed(() => ({
 
 
 
-const numberOfUsers = computed(() => data.value?.data?.averageSakkasPerUser?.length || 0)
+const numberOfUsers = computed(() => props.data?.data?.averageSakkasPerUser?.length || 0)
 const averageSakkasPerUser = computed(() => {
-    if (data.value?.data?.averageSakkasPerUser)
-        return data.value?.data?.averageSakkasPerUser?.reduce((acc, ele) => acc + ele.sakkaCount, 0) / numberOfUsers.value || 0
+    if (props.data?.data?.averageSakkasPerUser)
+        return props.data?.data?.averageSakkasPerUser?.reduce((acc, ele) => acc + ele.sakkaCount, 0) / numberOfUsers.value || 0
 })
 
 
 // game users
 const GameUsersSeries = computed(() => {
-    const stats = data.value?.data?.gameUsersStatistics || []
+    const stats = props.data?.data?.gameUsersStatistics || []
     return [
         {
             name: 'الأجهزة',
@@ -241,7 +236,7 @@ const GameUsersSeries = computed(() => {
     ]
 })
 
-const GameUsersStats = computed(() => data.value?.data?.gameUsersStatistics || [])
+const GameUsersStats = computed(() => props.data?.data?.gameUsersStatistics || [])
 const GameUserChartType = computed(() => GameUsersStats.value.length <= 1 ? 'bar' : 'line')
 const GameUsersOptions = computed(() => ({
     chart: {
@@ -283,7 +278,7 @@ const GameUsersOptions = computed(() => ({
 //  location 
 const counteries = computed(() => {
 
-    let result = data.value?.data?.balootGamesCountWithLocation.map(c => {
+    let result = props.data?.data?.balootGamesCountWithLocation.map(c => {
         return c.countryName
     }) ?? []
     let unique = [...new Set(result)]
@@ -293,7 +288,7 @@ const counteries = computed(() => {
 )
 
 const selectedCountry = ref<string>('جميع الدول')
-const sortedCities = computed(() => data.value?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? []);
+const sortedCities = computed(() => props.data?.data?.balootGamesCountWithLocation.filter(c => selectedCountry.value !== 'جميع الدول' ? c.countryName === selectedCountry.value : true).sort((a, b) => b.gamesCount - a.gamesCount) ?? []);
 watch(selectedCountry, () => {
     table.value?.tableApi?.setPageIndex(0)
 })
