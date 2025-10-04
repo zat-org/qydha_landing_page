@@ -47,7 +47,12 @@ const links = computed(() => {
   if (userStore.isStreamer) {
     result.push({ label: "البث", to: "/stream", });
   }
-
+  if (userStore.isSuperAdmin) {
+    result.push({
+      label: 'الحسابات البرمجية',
+      to: '/serviceAccount'
+    })
+  }
   if (userStore.isSuperAdmin || userStore.isStaffAdmin) {
     result.push(
       { label: "المستخدمين ", to: "/user", },

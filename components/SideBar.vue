@@ -21,6 +21,12 @@ const links = computed(() => {
       emit("close");
     }
   });
+if( userStore.roles?.includes("SuperAdmin")){
+  result[0].push({
+      label: 'الحسابات البرمجية',
+      to: '/serviceAccount'
+    })
+}
 
   if (
     userStore.roles?.includes("SuperAdmin") ||
