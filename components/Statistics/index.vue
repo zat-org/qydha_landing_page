@@ -1,12 +1,12 @@
 <template>
-  <UCard :ui="{ header: 'p-1' }">
+  <div> تحت الصيانه </div>
+  <!-- <UCard  :ui="{ header: 'p-1' }">
     <template #header>
       <div class="flex justify-between items-end mb-6 gap-2">
         <UFormField label="الفترة" name="timeRange" class="w-full">
           <USelect :content="{ align: 'start', position: 'popper' }" v-model="timeRange" :items="timeOptions" />
         </UFormField>
 
-        <!-- <UInput v-show="timeRange == 'custom'" v-model="customTime" type="date" /> -->
         <VDatePicker v-model.range="range" dir="ltr" :masks="{ input: 'DD-MM-YYYY' }" locale="ar"
           :popover="{ visibility: 'click', hideIndicator: true, isInteractive: true }" columns="2"
           :isDark="colorMode.value == 'dark'" @dayclick="(day: any, event: any) => { event.target.blur(); }">
@@ -20,51 +20,45 @@
               </UFormField>
             </div>
           </template>
-        </VDatePicker>
+</VDatePicker>
 
-        <!-- <UButton label="مسح" @click="range = { start: null, end: null }" /> -->
-        <UButton label="بحث" @click="search()" class=" h-full" />
-      </div>
-    </template>
+<UButton label="بحث" @click="search()" class=" h-full" />
+</div>
+</template>
 
-    <UTabs v-model="active" :items="tabs"
-      :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }" orientation="vertical" dir="rtl"
-      :unmountOnHide="false">
-      <template #general>
+<UTabs v-model="active" :items="tabs" :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }"
+  orientation="vertical" dir="rtl" :unmountOnHide="false">
+  <template #general>
         <Suspense>
           <LazyStatisticsGeneral />
           <template #fallback>
             <Loading />
           </template>
-        </Suspense>
-      </template>
-      <template #rules>
+  </Suspense>
+  </template>
+  <template #rules>
         <Suspense>
           <LazyStatisticsRules  :data="balootBookData" :status="balootBookStatus" :type="timeRange"
             :startDate="range.start" :endDate="range.end" />
           <template #fallback>
             <Loading />
           </template>
-        </Suspense>
-      </template>
-      <template #baloot>
+  </Suspense>
+  </template>
+  <template #baloot>
         <Suspense>
           <LazyStatisticsBaloot :data="balootData" :status="balootStatus" :type="timeRange"
             :startDate="range.start" :endDate="range.end" />
           <template #fallback>
             <Loading />
           </template>
-        </Suspense>
+  </Suspense>
+  </template>
+  <template #hand>
       </template>
-      <template #hand>
-        <!-- <KeepAlive> -->
-        قريبا
-
-        <!-- <StatisticsHand v-if="active == 'hand'" /> -->
-        <!-- </KeepAlive> -->
-      </template>
-    </UTabs>
-  </UCard>
+</UTabs>
+</UCard>
+-->
 </template>
 
 <script lang="ts" setup>
@@ -72,19 +66,19 @@
 const colorMode = useColorMode()
 const timeOptions = ref([
   {
-    label: 'اليوم',
+    label: 'لاخر يوم',
     value: 'day'
   },
   {
-    label: 'الاسبوع',
+    label: 'لاخر اسبوع',
     value: 'week'
   },
   {
-    label: 'الشهر',
+    label: 'لاخر شهر',
     value: 'month'
   },
   {
-    label: 'السنة',
+    label: 'لاخر سنة',
     value: 'year'
   },
   {
@@ -143,37 +137,37 @@ const active = computed({
   }
 })
 
-const { getBalootStatics, getBalootBookStatics, getMainApplicationStatics } = useStatics()
-const { data: balootData, pending: balootPending, error: balootError, refresh: balootRefresh, status: balootStatus, fetchREQ: balootFetchREQ } = await getBalootStatics()
-const { data: balootBookData, pending: balootBookPending, error: balootBookError, refresh: balootBookRefresh, status: balootBookStatus, fetchREQ: balootBookFetchREQ } = await getBalootBookStatics()
-const { data: mainApplicationData, pending: mainApplicationPending, error: mainApplicationError, refresh: mainApplicationRefresh, status: mainApplicationStatus, execute: mainApplicationExecute } = await getMainApplicationStatics()
+// const { getBalootStatics, getBalootBookStatics, getMainApplicationStatics } = useStatics()
+// const { data: balootData, pending: balootPending, error: balootError, refresh: balootRefresh, status: balootStatus, fetchREQ: balootFetchREQ } = await getBalootStatics()
+// const { data: balootBookData, pending: balootBookPending, error: balootBookError, refresh: balootBookRefresh, status: balootBookStatus, fetchREQ: balootBookFetchREQ } = await getBalootBookStatics()
+// const { data: mainApplicationData, pending: mainApplicationPending, error: mainApplicationError, refresh: mainApplicationRefresh, status: mainApplicationStatus, execute: mainApplicationExecute } = await getMainApplicationStatics()
 
-const search = () => {
-  if (active.value == 'general') {
-    mainApplicationExecute()
-  } else {
-    if (active.value == 'baloot') {
-      balootFetchREQ(timeRange.value, range.value.start, range.value.end)
-    } else if (active.value == 'rules') {
-      refreshNuxtData('getRulesStatics')
-    } else if (active.value == 'hand') {
-      refreshNuxtData('getHandStatics')
-    }
-  }
-}
+// const search = () => {
+//   if (active.value == 'general') {
+//     mainApplicationExecute()
+//   } else {
+//     if (active.value == 'baloot') {
+//       balootFetchREQ(timeRange.value, range.value.start, range.value.end)
+//     } else if (active.value == 'rules') {
+//       refreshNuxtData('getRulesStatics')
+//     } else if (active.value == 'hand') {
+//       refreshNuxtData('getHandStatics')
+//     }
+//   }
+// }
 
-watch(active, (newVal) => {
-  if (newVal == 'baloot') {
-    balootFetchREQ(timeRange.value, range.value.start, range.value.end)
-  } else if (newVal == 'rules') {
-    balootBookFetchREQ(timeRange.value, range.value.start, range.value.end)
-  } else if (newVal == 'general') {
-    mainApplicationExecute()
-  }
-  else if (newVal == 'hand') {
-    // mainApplicationExecute()
-  }
-}, { immediate: true })
+// watch(active, (newVal) => {
+//   if (newVal == 'baloot') {
+//     balootFetchREQ(timeRange.value, range.value.start, range.value.end)
+//   } else if (newVal == 'rules') {
+//     balootBookFetchREQ(timeRange.value, range.value.start, range.value.end)
+//   } else if (newVal == 'general') {
+//     mainApplicationExecute()
+//   }
+//   else if (newVal == 'hand') {
+//     // mainApplicationExecute()
+//   }
+// }, { immediate: true })
 
 
 
