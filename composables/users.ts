@@ -61,5 +61,7 @@ export const useUsers = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
+
   return { getAllUsers, updateUser, getSingleUser }
 }
+

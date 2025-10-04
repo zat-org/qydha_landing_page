@@ -82,13 +82,20 @@ const updateREQ = await userApi.updateUser()
 const toast = useToast()
 const userStore = useMyAuthStore()
 const { hasRole } = usePermissions()
+const route = useRoute();
+if (route.path == "/me") {
+  await getREQ.fetchREQ('me')
+}else{
+  
+  await getREQ.fetchREQ(props.id)
+}
 
-await getREQ.fetchREQ(props.id)
 if (getREQ.status.value == "error") {
   navigateTo('/user')
 }
 
 const userData = computed(() => {
+
   return getREQ.data.value?.data
 })
 
