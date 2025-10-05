@@ -1,7 +1,7 @@
 <template>
-  <UCard >
+  <UCard>
 
-    <UTable :data="serviceAccounts" :columns="cols" >
+    <UTable :data="serviceAccounts" :columns="cols">
       <template #actions-cell="{ row }">
         <UButtonGroup>
           <UButton icon="material-symbols:info" color="success" @click="openInfo(row.original)" />

@@ -1,28 +1,29 @@
 <template>
   <UModal prevent-close>
-    <UCard :ui="{ base: 'flex flex-col ', body: { base: 'grow ' } }">
+    
       <template #header>
         <h1>Add new Account </h1>
       </template>
-      <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit">
-        <UFormField label="name" name="name">
-          <UInput v-model="state.name"></UInput>
-        </UFormField>
-        <UFormField label="description" name="description">
-          <UInput v-model="state.description"></UInput>
-        </UFormField>
-        <UFormField label="permissions">
-          <USelectMenu v-model="state.permissions" :options="permissions" multiple />
-        </UFormField>
-      </UForm>
+      <template #body>
+        <UForm :state="state" :schema="schema" ref="AddForm" @submit="onSubmit">
+          <UFormField label="name" name="name">
+            <UInput v-model="state.name"></UInput>
+          </UFormField>
+          <UFormField label="description" name="description">
+            <UInput v-model="state.description"></UInput>
+          </UFormField>
+          <UFormField label="permissions">
+            <USelectMenu v-model="state.permissions" :items="permissions" multiple class="w-full" />
+          </UFormField>
+        </UForm>
+      </template>
       <template #footer>
-        <div class="flex justify-between items-center">
-          <UButton label="close" color="red" @click="emit('close')" />
-          <UButton label='update' color="green" @click="AddForm?.submit()" />
+        <div class="flex justify-between items-center gap-4">
+          <UButton label="close" color="error" @click="emit('close')" />
+          <UButton label='update' color="success" @click="AddForm?.submit()" />
 
         </div>
       </template>
-    </UCard>
   </UModal>
 </template>
 
@@ -49,11 +50,12 @@ const permissions = computed(() => {
   return permissionREQ.data.value?.data.permissions
 })
 const updateREQ = await useServiceAccount().updateServiceAccount()
+
 const onSubmit = async () => {
   await updateREQ.fetchREQ(props.serviceAccount.id, state)
   if (updateREQ.status.value == 'success') {
     refreshNuxtData('getServiceAccounts')
-    toast.add({ title: 'add ing done succefuly' })
+    toast.add({ title: 'update done succefuly' })
     emit('close')
   }
 }

@@ -68,7 +68,7 @@ export const useServiceAccount = () => {
     const serviceAccount = ref<IServiceAccountCreate>()
 
     const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'deleteServiceAccount',
+      'updateServiceAccount',
       () => $api(`/service-account/${serviceAccountId.value}`, { method: 'put', body: serviceAccount.value }), { immediate: false }
     );
     const fetchREQ = async (_id: string, newServiceAccount: IServiceAccountCreate) => {
