@@ -1,6 +1,6 @@
 <template>
-  <div> تحت الصيانه </div>
-  <!-- <UCard  :ui="{ header: 'p-1' }">
+  <!-- <div> تحت الصيانه </div> -->
+  <UCard  :ui="{ header: 'p-1' }">
     <template #header>
       <div class="flex justify-between items-end mb-6 gap-2">
         <UFormField label="الفترة" name="timeRange" class="w-full">
@@ -58,7 +58,7 @@
       </template>
 </UTabs>
 </UCard>
--->
+
 </template>
 
 <script lang="ts" setup>
@@ -137,37 +137,37 @@ const active = computed({
   }
 })
 
-// const { getBalootStatics, getBalootBookStatics, getMainApplicationStatics } = useStatics()
-// const { data: balootData, pending: balootPending, error: balootError, refresh: balootRefresh, status: balootStatus, fetchREQ: balootFetchREQ } = await getBalootStatics()
-// const { data: balootBookData, pending: balootBookPending, error: balootBookError, refresh: balootBookRefresh, status: balootBookStatus, fetchREQ: balootBookFetchREQ } = await getBalootBookStatics()
-// const { data: mainApplicationData, pending: mainApplicationPending, error: mainApplicationError, refresh: mainApplicationRefresh, status: mainApplicationStatus, execute: mainApplicationExecute } = await getMainApplicationStatics()
+const { getBalootStatics, getBalootBookStatics, getMainApplicationStatics } = useStatics()
+const { data: balootData, pending: balootPending, error: balootError, refresh: balootRefresh, status: balootStatus, fetchREQ: balootFetchREQ } = await getBalootStatics()
+const { data: balootBookData, pending: balootBookPending, error: balootBookError, refresh: balootBookRefresh, status: balootBookStatus, fetchREQ: balootBookFetchREQ } = await getBalootBookStatics()
+const { data: mainApplicationData, pending: mainApplicationPending, error: mainApplicationError, refresh: mainApplicationRefresh, status: mainApplicationStatus, execute: mainApplicationExecute } = await getMainApplicationStatics()
 
-// const search = () => {
-//   if (active.value == 'general') {
-//     mainApplicationExecute()
-//   } else {
-//     if (active.value == 'baloot') {
-//       balootFetchREQ(timeRange.value, range.value.start, range.value.end)
-//     } else if (active.value == 'rules') {
-//       refreshNuxtData('getRulesStatics')
-//     } else if (active.value == 'hand') {
-//       refreshNuxtData('getHandStatics')
-//     }
-//   }
-// }
+const search = () => {
+  if (active.value == 'general') {
+    mainApplicationExecute()
+  } else {
+    if (active.value == 'baloot') {
+      balootFetchREQ(timeRange.value, range.value.start, range.value.end)
+    } else if (active.value == 'rules') {
+      refreshNuxtData('getRulesStatics')
+    } else if (active.value == 'hand') {
+      refreshNuxtData('getHandStatics')
+    }
+  }
+}
 
-// watch(active, (newVal) => {
-//   if (newVal == 'baloot') {
-//     balootFetchREQ(timeRange.value, range.value.start, range.value.end)
-//   } else if (newVal == 'rules') {
-//     balootBookFetchREQ(timeRange.value, range.value.start, range.value.end)
-//   } else if (newVal == 'general') {
-//     mainApplicationExecute()
-//   }
-//   else if (newVal == 'hand') {
-//     // mainApplicationExecute()
-//   }
-// }, { immediate: true })
+watch(active, (newVal) => {
+  if (newVal == 'baloot') {
+    balootFetchREQ(timeRange.value, range.value.start, range.value.end)
+  } else if (newVal == 'rules') {
+    balootBookFetchREQ(timeRange.value, range.value.start, range.value.end)
+  } else if (newVal == 'general') {
+    mainApplicationExecute()
+  }
+  else if (newVal == 'hand') {
+    // mainApplicationExecute()
+  }
+}, { immediate: true })
 
 
 
