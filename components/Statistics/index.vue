@@ -1,6 +1,6 @@
 <template>
-  <!-- <div> تحت الصيانه </div> -->
-  <UCard  :ui="{ header: 'p-1' }">
+  <div> تحت الصيانه </div>
+  <!-- <UCard :ui="{ header: 'p-1' }">
     <template #header>
       <div class="flex justify-between items-end mb-6 gap-2">
         <UFormField label="الفترة" name="timeRange" class="w-full">
@@ -20,44 +20,45 @@
               </UFormField>
             </div>
           </template>
-</VDatePicker>
+        </VDatePicker>
 
-<UButton label="بحث" @click="search()" class=" h-full" />
-</div>
-</template>
+        <UButton label="بحث" @click="search()" class=" h-full" />
+      </div>
+    </template>
 
-<UTabs v-model="active" :items="tabs" :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }"
-  orientation="vertical" dir="rtl" :unmountOnHide="false">
-  <template #general>
+    <UTabs v-model="active" :items="tabs"
+      :ui="{ root: 'h-full flex-1 items-stretch ', content: ' ', list: 'min-h-full ' }" orientation="vertical" dir="rtl"
+      :unmountOnHide="false">
+      <template #general>
         <Suspense>
           <LazyStatisticsGeneral />
           <template #fallback>
             <Loading />
           </template>
-  </Suspense>
-  </template>
-  <template #rules>
-        <Suspense>
-          <LazyStatisticsRules  :data="balootBookData" :status="balootBookStatus" :type="timeRange"
-            :startDate="range.start" :endDate="range.end" />
-          <template #fallback>
-            <Loading />
-          </template>
-  </Suspense>
-  </template>
-  <template #baloot>
-        <Suspense>
-          <LazyStatisticsBaloot :data="balootData" :status="balootStatus" :type="timeRange"
-            :startDate="range.start" :endDate="range.end" />
-          <template #fallback>
-            <Loading />
-          </template>
-  </Suspense>
-  </template>
-  <template #hand>
+        </Suspense>
       </template>
-</UTabs>
-</UCard>
+      <template #rules>
+        <Suspense>
+          <LazyStatisticsRules :data="balootBookData" :status="balootBookStatus" :type="timeRange"
+            :startDate="range.start" :endDate="range.end" />
+          <template #fallback>
+            <Loading />
+          </template>
+        </Suspense>
+      </template>
+      <template #baloot>
+        <Suspense>
+          <LazyStatisticsBaloot :data="balootData" :status="balootStatus" :type="timeRange" :startDate="range.start"
+            :endDate="range.end" />
+          <template #fallback>
+            <Loading />
+          </template>
+        </Suspense>
+      </template>
+      <template #hand>
+      </template>
+    </UTabs>
+  </UCard> -->
 
 </template>
 

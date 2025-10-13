@@ -3,6 +3,8 @@ import { defineEventHandler, getHeader, createError } from "h3";
 
 export default defineEventHandler((event) => {
   const url = event.node.req.url || "";
+  const method = event.node.req.method || "GET";
+
   if (!url.startsWith("/api")) { 
     return;
   }
@@ -16,8 +18,13 @@ export default defineEventHandler((event) => {
     return;
   }
 
+  // Skip CORS preflight and HEAD/OPTIONS where custom headers may be absent
+  if (["OPTIONS","HEAD"].includes(method)) {
+    return;
+  }
 
-  const ts = getHeader(event, "X-Timestamp");
+  // Accept both x-timestamp and X-Timestamp regardless of case from proxies
+  const ts = getHeader(event, "x-timestamp") || getHeader(event, "X-Timestamp");
 
   if (!ts) {
     throw createError({

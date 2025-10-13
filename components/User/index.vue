@@ -11,33 +11,34 @@
         <p>{{ items?.toLocaleString() }} مستخدم</p>
       </div>
     </template>
+      <Loading v-if="usersREQ.status.value == 'pending' " />
+      
 
-    <UTable v-model:sorting="sorting" :data="rows" :columns="cols" :loading="usersREQ.status.value == 'pending'">
-      <template #phone-cell="{ row }">
-        
-        <p>{{ `${(row.original.phone as string).replace('+', '')}+` }}</p>
-      </template>
-      <template #roles-cell="{ row }" dir="ltr">
-        <div class="flex  gap-2 items-center">
-
-            <UBadge v-for="role in row.original.roles"  variant="outline"
-            :icon="new Date(row.original.expireDate).getTime() > new Date().getTime() && role=='User'?'i-heroicons-star-16-solid':''"
-            :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
-            :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'"
-            >
-          </UBadge>
-        </div>
-      </template>
-      <template #action-cell="{ row }" dir="ltr">
-        <UButtonGroup>
-          <UButton color="primary" variant="outline" size="md" icon="i-heroicons-eye"
-            :to="`/user/${row.original.id}`" />
-          <UButton color="secondary" variant="outline" size="md" icon="i-heroicons-clipboard"
-            @click="copyToClipboard(row.original.id)" />
-        </UButtonGroup>
-      </template>
-    </UTable>
-    <UPagination v-model:page="page" :page-count="10" :total="items" class="mx-auto" />
+      <UTable v-else  v-model:sorting="sorting" :data="rows" :columns="cols" >
+        <template #phone-cell="{ row }">
+  
+          <p>{{ `${(row.original.phone as string).replace('+', '')}+` }}</p>
+        </template>
+        <template #roles-cell="{ row }" dir="ltr">
+          <div class="flex  gap-2 items-center">
+  
+            <UBadge v-for="role in row.original.roles" variant="outline"
+              :icon="new Date(row.original.expireDate).getTime() > new Date().getTime() && role == 'User' ? 'i-heroicons-star-16-solid' : ''"
+              :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
+              :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'">
+            </UBadge>
+          </div>
+        </template>
+        <template #action-cell="{ row }" dir="ltr">
+          <UButtonGroup>
+            <UButton color="primary" variant="outline" size="md" icon="i-heroicons-eye"
+              :to="`/user/${row.original.id}`" />
+            <UButton color="secondary" variant="outline" size="md" icon="i-heroicons-clipboard"
+              @click="copyToClipboard(row.original.id)" />
+          </UButtonGroup>
+        </template>
+      </UTable>
+      <UPagination v-model:page="page" :page-count="10" :total="items" class="mx-auto" />
   </UCard>
 </template>
 
@@ -51,6 +52,7 @@ const UBadge = resolveComponent('UBadge')
 //   scrollPos: 0,
 // });
 const usersREQ = await useUsers().getAllUsers();
+
 // await usersREQ.fetchREQ("",);
 const route = useRoute();
 const router = useRouter();
@@ -64,11 +66,11 @@ const page = ref(
 );
 
 await usersREQ.fetchREQ(
- query.value,
+  query.value,
   page.value,
   exactSearch.value,
   roleFilter.value,
-  
+
 );
 const items = ref(usersREQ.data.value?.data.totalCount!);
 
@@ -109,7 +111,7 @@ const cols = [
     }
   },
   { accessorKey: "phone", header: "رقم الهاتف" },
-  { accessorKey: "roles", header: "الفئة"},
+  { accessorKey: "roles", header: "الفئة" },
   { id: "action", header: "الاجراءات" },
   {
     accessorKey: "expireDate", header: "الاشتركات",
@@ -121,7 +123,7 @@ const cols = [
         icon: 'i-heroicons-calendar',
         class: 'mx-1',
       })
-  }
+    }
   }
 
 ];
@@ -152,7 +154,7 @@ watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
     roleFilter.value
   );
   items.value = usersREQ.data.value?.data.totalCount!;
-}, );
+},);
 
 const roleOptions = [
   { value: "SuperAdmin", label: "الادمن" },

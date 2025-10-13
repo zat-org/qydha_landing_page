@@ -17,50 +17,28 @@ export default defineNuxtPlugin(() => {
   const $api = $fetch.create({
     baseURL: config.public.apiBase,
     onRequest: async ({ options }: { options: FetchOptions }) => {
-      let token = authStore.user?.jwtToken;
-      if (token) {
-        // const decodedToken = jwtDecode<DecodedToken>(token);
-        // // Check if the token is expired.
-        // const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds.
-        // if (decodedToken.exp < currentTime) {
-        //   try {
-        //     // Call your refresh token endpoint.
-        //     const response = await $fetch<{data:IUserData,message:string}>(`${config.public.qydhaapiBase}/auth/refresh-token`, {
-        //       method: 'POST',
-        //       headers: {
-        //         Authorization: `Bearer ${token}`, // Send the expired token if required for refresh.
-        //       },
-        //       body:{
-        //         RefreshToken:authStore.user?.refreshToken,
-        //         JwtToken: token
-        //       }
-        //     });
-
-        //     console.log(response)
-        //     authStore.user =response.data
-        //     console.log('Token refreshed successfully.');
-
-        //   } catch (error) {
-        //     console.error('Failed to refresh token:', error);
-        //     authStore.user=null
-        //     navigateTo("/login");
-        //   }
-        // }
-
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${authStore.user?.jwtToken}`,
-          "x-info":JSON.stringify( ClientInfoStore.clientInfo),
-          "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
-        };
-      } else {
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${config.public.qydhaToken}`,
-          "x-info": JSON.stringify(ClientInfoStore.clientInfo),
-          "X-Timestamp": Math.floor(Date.now() / 1000).toString(),
-        };
+      const timestamp = Math.floor(Date.now() / 1000).toString();
+      try {
+        const token = authStore.user?.jwtToken;
+        if (token) {
+          options.headers = {
+            ...options.headers,
+            Authorization: `Bearer ${token}`,
+            "x-info": JSON.stringify(ClientInfoStore.clientInfo ?? {}),
+            // lower-case to avoid any case-matching quirks in some environments
+            "x-timestamp": timestamp,
+          };
+          return;
+        }
+      } catch (e) {
+        // fallthrough to anonymous headers below
       }
+      options.headers = {
+        ...options.headers,
+        Authorization: `Bearer ${config.public.qydhaToken}`,
+        "x-info": JSON.stringify(ClientInfoStore.clientInfo ?? {}),
+        "x-timestamp": timestamp,
+      };
     },
     onResponseError: (error) => {
       if (error.response.status == 403 || error.response.status == 401) {

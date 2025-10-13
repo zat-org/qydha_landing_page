@@ -9,7 +9,7 @@ export const useUsers = () => {
     const roleFilter = ref()
 
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{
+      await useLazyAsyncData<{
         data: { currentPage: number, hasNext: boolean, hasPrevious: boolean, items: User[], pageSize: number, totalCount: number, totalPages: number }, message: string
       }>(
         'getAllUsers',
