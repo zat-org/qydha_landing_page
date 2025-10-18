@@ -244,7 +244,7 @@ const promocols = [
   {
     accessorKey: 'usedAt', header: 'استخدم في ',
     cell: ({ row }: { row: any }) => {
-      return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString() : 'لم يستخدم'
+      return row.original!.usedAt ? new Date(row.original.usedAt).toLocaleDateString('ar-EG', { day: 'numeric', month: 'numeric', year: 'numeric' }) : 'لم يستخدم'
     }
   },
 ]
