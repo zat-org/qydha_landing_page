@@ -5,7 +5,7 @@
       content: 'min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5  ',
     }" >
   <!-- <UFormField :label="props.label" :name="props.name" :required="props.required"  :help="lat!=0 && lng!=0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'" > -->
-    <UButton  @click="show = true" :color="model.lat!=0 && model.lng!=0 ? 'primary' : 'neutral'" variant="soft" icon="i-heroicons-map-pin" label="اختر موقع البطولة" />
+    <UButton  @click="show = true" :color="model.latitude!=0 && model.longitude!=0 ? 'primary' : 'neutral'" variant="soft" icon="i-heroicons-map-pin" label="اختر موقع البطولة" />
    <!-- </UFormField> -->
    
     <template #body>
@@ -21,57 +21,64 @@
 </template>
 
 <script lang="ts" setup>
-
-const L = await import('leaflet');
-await import('leaflet/dist/leaflet.css');
-
-
-const MyIcon = L.icon({
-  iconUrl: '/images/location.png',
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32]
-});
-
 const show = ref(false);
 const map = ref();
+let L: any = null;
+let MyIcon: any = null;
 
 interface LocationObject {
-  lat: number;
-  lng: number;
+  latitude: number;
+  longitude: number;
 }
 
 
 const model = defineModel<LocationObject>({
   required: true,
   default: () => ({
-    lat: 0,
-    lng: 0
+    latitude: 0,
+    longitude: 0
   })
 });
 
 // const lat = ref(props.modelValue.lat);
 // const lng = ref(props.modelValue.lng);
 
+const initializeLeaflet = async () => {
+  if (typeof window !== 'undefined' && !L) {
+    L = await import('leaflet');
+    await import('leaflet/dist/leaflet.css');
+    
+    MyIcon = L.icon({
+      iconUrl: '/images/location.png',
+      iconSize: [32, 32],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+  }
+};
 
 const getLocation = async () => {
-  if (navigator.geolocation) {
+  if (typeof window === 'undefined') return;
+  
+  await initializeLeaflet();
+  
+  if (navigator.geolocation && L) {
     navigator.geolocation.getCurrentPosition(async (position) => {
-      if (!(model.value.lat && model.value.lng)) {
-        model.value.lat = position.coords.latitude;
-        model.value.lng = position.coords.longitude;
+      if (!(model.value.latitude && model.value.longitude)) {
+        model.value.latitude = position.coords.latitude;
+        model.value.longitude = position.coords.longitude;
       }
 
 
       map.value = L.map("map", { attributionControl: false }).setView(
-        [model.value.lat, model.value.lng],
+        [model.value.latitude, model.value.longitude],
         9
       ).on('click', onClick);
 
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
       }).addTo(map.value);
-      L.marker([model.value.lat, model.value.lng], {icon: MyIcon})
+      L.marker([model.value.latitude, model.value.longitude], {icon: MyIcon})
         .addTo(map.value)
        
     });
@@ -81,18 +88,23 @@ const getLocation = async () => {
 // onMounted(() => {
 //   getLocation();
 // });
-watch(show, (newVal) => {
-  if (newVal) {
-    getLocation();
-  }
-  else{
-    if (map.value) {
-      map.value.remove();
-      map.value = undefined;
+if (process.client) {
+  watch(show, (newVal) => {
+    if (newVal) {
+      getLocation();
     }
-  }
-});
+    else{
+      if (map.value) {
+        map.value.remove();
+        map.value = undefined;
+      }
+    }
+  });
+}
+
 const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
+  if (!L || !map.value || typeof window === 'undefined') return;
+  
   map.value.eachLayer((layer: any) => {
     if (layer instanceof L.Marker) {
       map.value.removeLayer(layer);
@@ -103,16 +115,18 @@ const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
   L.marker([latlng.lat, latlng.lng], {  icon: MyIcon })
     .addTo(map.value)
 
-  model.value.lat = latlng.lat;
-  model.value.lng = latlng.lng;
+  model.value.latitude = latlng.lat;
+  model.value.longitude = latlng.lng;
 }
 
-onUnmounted(() => {
-  if (map.value) {
-    map.value.remove();
-    map.value = undefined;
-  }
-});
+if (process.client) {
+  onUnmounted(() => {
+    if (map.value) {
+      map.value.remove();
+      map.value = undefined;
+    }
+  });
+}
 </script>
 
 <style></style>

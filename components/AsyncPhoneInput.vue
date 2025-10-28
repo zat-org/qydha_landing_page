@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <vue-tel-input v-bind="$attrs" :validCharactersOnly="true" :autoFormat="false" mode="international"
+    <VueTelInput v-bind="$attrs" :validCharactersOnly="true" :autoFormat="false" mode="international"
       :dropdownOptions="{
         showDialCodeInSelection: true,
         showFlags: true,
@@ -17,7 +17,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { defineAsyncComponent } from 'vue';
 
 const VueTelInput = defineAsyncComponent(() =>
@@ -28,17 +27,10 @@ const VueTelInput = defineAsyncComponent(() =>
   })
 );
 
-// const
-defineProps<{
-  modelValue: string
-}>();
+// Use defineModel for proper v-model handling
+const modelValue = defineModel<string>({ default: '' });
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>();
-
-// Track the selected country
-const selectedCountry = ref<{ dialCode: string } | null>(null);
+// const output = 
 
 // Convert Arabic-Indic and Persian numerals to Latin numerals
 function convertArabicToLatinNumerals(input: string): string {
@@ -57,10 +49,11 @@ function convertArabicToLatinNumerals(input: string): string {
   if (converted !== input) {
     console.log('AsyncPhoneInput: Converted Arabic/Persian numerals to Latin:', input, '->', converted);
   }
-  
+
   return converted;
 }
 
+const selectedCountry=ref()
 function onInput(val: string) {
   // Convert Arabic numerals to Latin numerals first
   const convertedVal = convertArabicToLatinNumerals(val);
@@ -68,19 +61,28 @@ function onInput(val: string) {
   if (!convertedVal.startsWith('+') && selectedCountry.value) {
     console.log("not start with +");
     console.log(`+${selectedCountry.value.dialCode}${convertedVal}`)
-    emit('update:modelValue', `+${selectedCountry.value.dialCode}${convertedVal}`);
+    modelValue.value =`+${selectedCountry.value.dialCode}${convertedVal}`;
   } else {
     console.log("start with +");
-    emit('update:modelValue', convertedVal);
+    console.log(selectedCountry.value.dialCode)
+    modelValue.value =`${convertedVal}`;
+
+    // emit('update:modelValue', convertedVal);
   }
 }
 
+
 function onCountryChanged(country: any) {
   selectedCountry.value = country;
-  // When country changes, update the phone number with new dial code
+  
+  // DON'T reset the value here if it already exists and starts with +
+  // Only set country code if the current value is empty or doesn't have a country code
   if (selectedCountry.value) {
-    // Clear the input and set only the new country code
-    emit('update:modelValue', `+${selectedCountry.value.dialCode}`);
+    if (!modelValue.value || (!modelValue.value.startsWith('+') && modelValue.value.length === 0)) {
+      // Only set to country code if there's no existing value
+      modelValue.value = `+${selectedCountry.value.dialCode}`;
+    }
+    // Otherwise, keep the existing value - vue-tel-input already has the correct country selected
   }
 }
 

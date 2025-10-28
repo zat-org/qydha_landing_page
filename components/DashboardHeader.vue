@@ -9,7 +9,8 @@
       class="mr-2 block lg:hidden relative hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200">
     </UButton>
 
-    <UNavigationMenu :items="links" class=" hidden lg:block  " />
+    <UNavigationMenu :items="links"  class=" hidden lg:flex     "  content-orientation="vertical"/>
+
     <NuxtLink to="/" class="flex items-center absolute left-1/2 -translate-x-1/2">
       <img src="@/assets/images/qydha-logo.svg" class="w-16 h-auto" alt="Qydha Logo" />
     </NuxtLink>
@@ -39,9 +40,12 @@ const authstore = useMyAuthStore();
 const links = computed(() => {
   const result: any[] = [];
 
-  if (userStore.isSuperAdmin) {
+  if (userStore.isSuperAdmin || userStore.isStaffAdmin ||  userStore.isOrganizer  ) {
 
-    result.push({ label: "البطولات", to: "/tournament", });
+    result.push({ label: "البطولات", to: "/tournament", children:[
+      {label:"الطلبات"  ,to:'/tournament/request'}
+
+    ]});
   }
 
   if (userStore.isStreamer) {

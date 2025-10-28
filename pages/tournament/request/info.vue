@@ -12,10 +12,10 @@
           </p>
         </div>
         <div class="flex gap-3">
-          <UButton to="/tournament" icon="i-heroicons-arrow-left" variant="ghost" size="lg">
-            قائمة البطولات
+          <UButton to="/tournament/requests" icon="i-heroicons-arrow-left" variant="ghost" size="lg">
+            قائمة طلبات  البطولات
           </UButton>
-          <UButton to="/tournament/add" icon="i-heroicons-plus" size="lg">
+          <UButton to="/tournament/request/add" icon="i-heroicons-plus" size="lg">
             إنشاء بطولة
           </UButton>
         </div>
@@ -440,7 +440,7 @@
 // Set page meta
 definePageMeta({
   middleware: ['auth', 'role'],
-  requiredRoles: ['StaffAdmin', 'SuperAdmin'],
+  requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
 });
 useHead({
   title:'دليل إنشاء البطولة',

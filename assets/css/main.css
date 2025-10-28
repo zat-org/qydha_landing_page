@@ -57,3 +57,10 @@
 .dark .vue-tel-input .vti__dropdown-item:hover {
   background: #374151;
 }
+
+/* Vue DatePicker Dark Theme Customization */
+.dp__theme_dark {
+  --dp-background-color: #1E2939!important;
+ 
+}
+

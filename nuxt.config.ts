@@ -13,17 +13,7 @@ const LogoURL =
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: true,
-  modules: [
-    "@nuxt/ui",
-    "@pinia/nuxt",
-    "pinia-plugin-persistedstate/nuxt",
-    "nuxt-aos",
-    "@unlok-co/nuxt-stripe",
-    "@nuxtjs/seo",
-    "@nuxtjs/robots",
-    "nuxt-og-image",
-    "@nuxtjs/sitemap",
-  ],
+  modules: ["@nuxt/ui", "@pinia/nuxt", "pinia-plugin-persistedstate/nuxt", "nuxt-aos", "@unlok-co/nuxt-stripe", "@nuxtjs/seo", "@nuxtjs/robots", "nuxt-og-image", "@nuxtjs/sitemap", "@nuxt/image"],
 
   // //
 
@@ -81,6 +71,8 @@ export default defineNuxtConfig({
     public: {
       qydhaToken: process.env.QydhaToken,
       apiBase: "/api",
+      // apiBase: process.env.QydhaApiBase,
+
       logo: LogoURL,
       title: Title,
       description: Description,

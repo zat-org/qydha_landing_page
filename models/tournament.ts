@@ -17,10 +17,7 @@ export interface ITournamentCreate {
 
 }
 
-
-
 export interface ITournamentUpdate {
-
     name: string,
     description: string,
     city: string,
@@ -34,8 +31,6 @@ export interface ITournamentUpdate {
     endAt: string | Date,
 
 }
-
-
 
 export interface ITournament extends  ITournamentCreate {
     // name: string,
@@ -75,5 +70,17 @@ export interface ITournamentDetailed extends ITournament {
     requesterPrivilege :{ privilege:Privilege, permissions: string[]|null }
     
 }
+
+
+
+/////// 
+export enum TournamentState{
+    
+    Pending ="Pending",
+    Approved ="Approved",
+    Rejected ="Rejected",
+    Canceled ="Canceled"
+}
+
 
 

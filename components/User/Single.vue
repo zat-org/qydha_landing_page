@@ -148,6 +148,9 @@ import { getPaginationRowModel } from '@tanstack/vue-table'
 const router = useRouter()
 const props = defineProps<{ id: string }>()
 const userApi = useUsers()
+// const getRolesReq =userApi.getUsersRoles()
+
+
 const getREQ = await userApi.getSingleUser()
 const updateREQ = await userApi.updateUser()
 const toast = useToast()
@@ -210,6 +213,7 @@ const rolesOption = [
   { label: 'ادمن', value: 'SuperAdmin', disabled: true },
   { label: 'استف', value: 'StaffAdmin', disabled: false },
   { label: 'استريمر', value: 'Streamer', disabled: false },
+  { label: 'منظم بطوله ', value: 'Organizer', disabled: false},
   { label: 'مستخدم ', value: 'User', disabled: true },
 ]
 

@@ -16,7 +16,7 @@
     </div>
 
     <!-- UForm wrapper for validation -->
-    <UForm :schema="localSchema" :state="modelValue" ref="formRef" class="space-y-6">
+    <UForm :schema="localSchema" :state="model" ref="formRef" class="space-y-6">
       <!-- Add Rule Section -->
       <div class="flex flex-col md:flex-row gap-3 px-2">
        <UFormField name="Rules" label="قوانين البطولة" class="grow"  >
@@ -31,14 +31,14 @@
       </div>
 
       <!-- Hidden field for validation purposes -->
-      <UFormField name="Roles"  class="hidden">
-        <UInput :model-value="modelValue.Roles.join(',')" class="hidden" />
+      <UFormField name="rules"  class="hidden">
+        <UInput :model-value="model?.rules.join(',')" class="hidden" />
       </UFormField>
 
       <!-- Rules List -->
-      <div v-if="modelValue.Roles.length > 0" class="space-y-3">
+      <div v-if=" model?.rules && model?.rules.length > 0" class="space-y-3">
         <TransitionGroup name="list">
-          <div v-for="(rule, index) in modelValue.Roles" :key="index"
+          <div v-for="(rule, index) in model.rules" :key="index"
             class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-primary-300 dark:hover:border-primary-600 transition-colors group">
             <span
               class="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-full font-medium">
@@ -76,14 +76,7 @@
 <script lang="ts" setup>
 import { object, array, string } from "yup";
 
-const props = defineProps<{
-  modelValue: {
-    Roles: string[];
-  };
-}>();
-
-const emit = defineEmits(["update:modelValue"]);
-
+const model = defineModel<{ rules: string[] }>({ default: () => ({ rules: [] }) })
 // Enhanced validation state management
 const isValid = ref(false);
 const errors = ref<Record<string, string>>({});
@@ -94,7 +87,7 @@ const formRef = ref<HTMLFormElement | null>(null);
 
 // Move schema to component level for better encapsulation
 const localSchema = object({
-  Roles: array()
+  rules: array()
     .of(string())
 });
 
@@ -145,7 +138,7 @@ const addRule = async () => {
 
   isAdding.value = true;
   try {
-    props.modelValue.Roles.push(newRule.value.trim());
+    model.value.rules.push(newRule.value.trim());
     newRule.value = "";
     ruleError.value = "";
   } finally {
@@ -160,7 +153,7 @@ const startEdit = (index: number, rule: string) => {
 
 const updateRule = (index: number) => {
   if (editingRule.value?.trim()) {
-    props.modelValue.Roles[index] = editingRule.value.trim();
+    model.value.rules[index] = editingRule.value.trim();
   }
   cancelEdit();
 };
@@ -171,7 +164,7 @@ const cancelEdit = () => {
 };
 
 const deleteRule = (index: number) => {
-  props.modelValue.Roles.splice(index, 1);
+  model.value.rules.splice(index, 1);
 };
 </script>
 

@@ -8,20 +8,15 @@
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
           <div class="flex gap-3">
-            <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/add/info"
+            <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/request/info"
               label="دليل انشاء البطولة" class="px-6" />
-            <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/add"
+            <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
               label="إضافة بطولة جديدة" class="px-6" />
           </div>
         </div>
+        <slot name="filters">
 
-        <div class="flex flex-col md:flex-row gap-4 items-center">
-          <UInput v-model="searchQuery" icon="i-heroicons-magnifying-glass" placeholder="البحث عن بطولة..."
-            class="md:w-64" />
-
-          <USelectMenu :items="options" class="w-full md:w-auto" multiple value-key="value" label-key="label"
-            placeholder="تصفية حسب الحالة" v-model="stateQ" />
-        </div>
+        </slot>
       </div>
     </template>
 

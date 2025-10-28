@@ -61,7 +61,13 @@ export const useUsers = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ }
   }
-
-  return { getAllUsers, updateUser, getSingleUser }
+  const getUsersRoles = async()=>{
+    const { data, pending, error, refresh, status, execute } = await useAsyncData(
+      'getUserRoles',
+      ()=>$api(`/users/roles/`)
+    )
+    return { data, pending, error, refresh, status }
+  }
+  return { getAllUsers, updateUser, getSingleUser ,getUsersRoles }
 }
 

@@ -1,0 +1,366 @@
+<template>
+ 
+  <div class="w-full mx-auto p-4 flex flex-col flex-1 "  >
+    <!-- Loading State -->
+    <div v-if="pending" class="flex justify-center items-center h-64">
+      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-primary-500" />
+    </div>
+
+    <!-- Error State -->
+    <UAlert v-else-if="status === 'error'" color="error" variant="soft" icon="i-heroicons-exclamation-triangle">
+      <template #title>خطأ في تحميل البيانات</template>
+      <template #description>حدث خطأ أثناء تحميل بيانات طلب البطولة</template>
+    </UAlert>
+
+    <!-- Tournament Request Card -->
+    <UCard v-else-if="data"  :ui="{root:'flex flex-col max-h-[calc(100vh-100px)] ',body:'flex-1 overflow-y-auto'}">
+      <!-- Header -->
+      <template #header>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+
+            
+          <div class="flex items-center gap-4">
+            <UButton 
+              to="/tournament/request"
+              icon="i-heroicons-arrow-left"
+              variant="ghost"
+              size="sm"
+              class="mr-2 flex-shrink-0"
+            >
+              العودة
+            </UButton>
+            <UAvatar 
+              size="3xl" 
+              :src="data.logoUrl" 
+              :text="data.title[0]" 
+              class="ring-2 ring-primary-200 dark:ring-primary-800"
+            />
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ data.title }}</h1>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {{ formatDate(data.createdAt) }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row gap-2">
+            <!-- <UBadge 
+              :color="getStateColor(data.state)" 
+              variant="subtle" 
+              size="lg"
+              class="text-sm font-medium"
+            >
+              {{ getStateLabel(data.state) }}
+            </UBadge> -->
+            <UBadge 
+              :color="data.type === 'Public' ? 'info' : 'success'" 
+              variant="outline" 
+              size="xl"
+              class="text-sm font-medium"
+            >
+              {{ data.type === 'Public' ? 'عامة' : 'خاصة' }}
+            </UBadge>
+          </div>
+        </div>
+      </template>
+
+      <!-- Body -->
+      <div class="space-y-6">
+        <!-- Description -->
+        <div v-if="data.description">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">الوصف</h3>
+          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">{{ data.description }}</p>
+        </div>
+
+        <!-- Tournament Details Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Basic Info -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">معلومات البطولة</h3>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تاريخ البداية</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.startAt,false) }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تاريخ النهاية</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.endAt,false) }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">عدد الفرق</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.teamsCount }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">عدد الطاولات</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.tablesCount }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">إضافة اللاعبين من قيدها</span>
+                <UBadge :color="data.isAddPlayersByQydha ? 'success' : 'error'" variant="subtle" size="lg">
+                  {{ data.isAddPlayersByQydha ? 'نعم' : 'لا' }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact & Location -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">معلومات التواصل والموقع</h3>
+            
+            <div class="space-y-3">
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">رقم الهاتف</span>
+                <div class="flex items-center gap-2">
+                  <span class="text-sm text-gray-900 dark:text-gray-100" dir="ltr">{{ data.contactPhone }}</span>
+                  <div class="flex gap-1">
+                    <UBadge v-if="data.isContactPhoneCall" color="success" variant="subtle" size="lg">مكالمة</UBadge>
+                    <UBadge v-if="data.isContactPhoneWhatsapp" color="success" variant="subtle" size="lg">واتساب</UBadge>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex justify-between items-start py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">وصف الموقع</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100 text-right">{{ data.locationDescription }}</span>
+              </div>
+              
+              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">الإحداثيات</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                  <!-- {{ data.location.latitude }}, {{ data.location.longitude }} -->
+                  <UButton
+                    variant="soft"
+                    color="primary"
+                    size="xs"
+                    icon="i-heroicons-map"
+                    class="ml-2"
+                    target="blank"
+                    :to="'https://www.google.com/maps?q='+data.location.latitude+','+data.location.longitude"
+                  >
+                    عرض على الخريطة
+                  </UButton>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sponsors -->
+        <div v-if="data.sponsorsUrls && data.sponsorsUrls.length > 0" class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">الرعاة</h3>
+          <div class="flex gap-4">
+            <div v-for="(sponsor, index) in data.sponsorsUrls" :key="index" class="relative">
+              <img 
+                :src="sponsor" 
+                :alt="`راعي ${index + 1}`"
+                class="w-fit h-24 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Prizes -->
+        <div v-if="data.prizes && data.prizes.length > 0" class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">الجوائز</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <UCard v-for="(prize, index) in data.prizes" :key="index" class="p-4">
+              <div class="space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-medium text-gray-900 dark:text-gray-100">المركز {{ getPrizePosition(prize.type) }}</span>
+                  <div class="flex gap-2">
+                    <UBadge v-if="prize.isFinancial" color="success" variant="subtle" size="lg">مالية</UBadge>
+                    <UBadge v-if="prize.isNonFinancial" color="info" variant="subtle" size="lg">غير مالية</UBadge>
+                  </div>
+                </div>
+                
+                <div v-if="prize.isFinancial && prize.financialPrizeAmount > 0" class="text-sm text-gray-600 dark:text-gray-400">
+                  {{ prize.financialPrizeAmount }} {{ getCurrencyLabel(prize.financialPrizeCurrency) }}
+                </div>
+                
+                <div v-if="prize.isNonFinancial && prize.nonFinancialPrizes.length > 0" class="text-sm text-gray-600 dark:text-gray-400">
+                  <div v-for="nonFinancialPrize in prize.nonFinancialPrizes" :key="nonFinancialPrize" class="mb-1">
+                    • {{ nonFinancialPrize }}
+                  </div>
+                </div>
+              </div>
+            </UCard>
+          </div>
+        </div>
+
+        <!-- Rules -->
+        <div v-if="data.rules && data.rules.length > 0" class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">قوانين البطولة</h3>
+          <div class="space-y-2">
+            <div v-for="(rule, index) in data.rules" :key="index" class="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+              <span class="text-primary-600 dark:text-primary-400 font-bold text-sm">{{ index + 1 }}.</span>
+              <span class="text-gray-700 dark:text-gray-300 text-sm">{{ rule }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Approval Info -->
+        <div v-if="data.approvedByUserName" class="space-y-4">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">معلومات الموافقة</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تم الموافقة بواسطة</span>
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.approvedByUserName }}</span>
+            </div>
+            <div v-if="data.approvedAt" class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تاريخ الموافقة</span>
+              <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.approvedAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <template #footer>
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div class="text-sm text-gray-500 dark:text-gray-400">
+            <span>تم الإنشاء في: {{ formatDate(data.createdAt) }}</span>
+          </div>
+          
+          <UButtonGroup v-if="userStore.isStaffAdmin || userStore.isSuperAdmin">
+            <!-- <UButton 
+              v-if="data.state === TournamentState.Pending"
+              color="success" 
+              icon="i-heroicons-check"
+              @click="handleApprove"
+              :loading="approvePending"
+            >
+              موافقة
+            </UButton> -->
+            <!-- <UButton 
+              v-if="data.state === TournamentState.Pending"
+              color="error" 
+              icon="i-heroicons-x-mark"
+              @click="handleReject"
+              :loading="rejectPending"
+            >
+              رفض
+            </UButton> -->
+            <UButton 
+              color="primary" 
+              icon="i-heroicons-pencil"
+              variant="outline"
+              @click="handleEdit"
+            >
+              تعديل
+            </UButton>
+          </UButtonGroup>
+        </div>
+      </template>
+    </UCard>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useMyAuthStore } from '~/store/Auth';
+import { TournamentPrizeType, TournamentPrizeCurrency  } from '~/models/tournamentRequest';
+import { TournamentState } from '~/models/tournament';
+
+const props = defineProps<{id:string}>()
+const { 
+  AdminGetSingleTournamentRequest, 
+  AdminApproveRequest, 
+  AdminRejectRequest,
+  getTournamnetStateOptions,
+  getTournamentPrizeCurrency
+} = useTournamentRequest()
+
+const userStore = useMyAuthStore()
+const { data:res, status, pending } = AdminGetSingleTournamentRequest(props.id)
+const data =computed(()=>{
+
+    if(res.value?.data) return res.value.data
+})
+// Approval/Rejection handlers
+const { fetchREQ: approveRequest, pending: approvePending } = AdminApproveRequest()
+const { fetchREQ: rejectRequest, pending: rejectPending } = AdminRejectRequest()
+
+const handleApprove = async () => {
+  await approveRequest(props.id)
+  if (status.value === 'success') {
+    // Refresh data or show success message
+    await refreshNuxtData(`AdminGetSingleTournamentRequest-${props.id}`)
+  }
+}
+
+const handleReject = async () => {
+  await rejectRequest(props.id)
+  if (status.value === 'success') {
+    // Refresh data or show success message
+    await refreshNuxtData(`AdminGetSingleTournamentRequest-${props.id}`)
+  }
+}
+
+const handleEdit = () => {
+  // Navigate to edit page or open modal
+  navigateTo(`/tournament/request/${props.id}/update/`)
+}
+
+// Helper functions
+const formatDate = (dateString: string,time:boolean=true) => {
+
+  return new Date(dateString).toLocaleDateString('ar-EG', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: !time ? undefined :'2-digit',
+    minute: !time?undefined:'2-digit'
+  })
+}
+
+const getStateLabel = (state: TournamentState) => {
+  const stateLabels: Record<TournamentState, string> = {
+    [TournamentState.Pending]: "جاري المراجعة",
+    [TournamentState.Approved]: "تم الموافقة",
+    [TournamentState.Rejected]: "تم الرفض",
+    [TournamentState.Canceled]: "تم الإلغاء",
+  }
+  return stateLabels[state]
+}
+
+const getStateColor = (state: TournamentState) => {
+  const stateColors: Record<TournamentState, string> = {
+    [TournamentState.Pending]: "yellow",
+    [TournamentState.Approved]: "green",
+    [TournamentState.Rejected]: "red",
+    [TournamentState.Canceled]: "gray",
+  }
+  return stateColors[state]
+}
+
+const getPrizePosition = (type: TournamentPrizeType) => {
+  const positions: Record<TournamentPrizeType, string> = {
+    [TournamentPrizeType.one]: "الأول",
+    [TournamentPrizeType.two]: "الثاني",
+    [TournamentPrizeType.three]: "الثالث",
+    [TournamentPrizeType.four]: "الرابع",
+  }
+  return positions[type]
+}
+
+const getCurrencyLabel = (currency: TournamentPrizeCurrency) => {
+  const currencyLabels: Record<TournamentPrizeCurrency, string> = {
+    [TournamentPrizeCurrency.USD]: 'دولار أمريكي (USD)',
+    [TournamentPrizeCurrency.EGP]: "جنيه مصري (EGP)",
+    [TournamentPrizeCurrency.SAR]: 'ريال سعودي (SAR)',
+    [TournamentPrizeCurrency.AED]: 'درهم إماراتي (AED)',
+    [TournamentPrizeCurrency.EUR]: 'يورو (EUR)',
+    [TournamentPrizeCurrency.JOD]: 'دينار أردني (JOD)',
+    [TournamentPrizeCurrency.KWD]: 'دينار كويتي (KWD)',
+    [TournamentPrizeCurrency.TRY]: 'ليرة تركية (TRY)',
+    [TournamentPrizeCurrency.GBP]: 'جنيه إسترليني (GBP)'
+  }
+  return currencyLabels[currency]
+}
+</script>
+
+<style scoped></style>

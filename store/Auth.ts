@@ -31,6 +31,9 @@ export const useMyAuthStore = defineStore(
     const isStreamer = computed(() => {
       return roles.value?.includes("Streamer");
     });
+    const isOrganizer = computed(() => {
+      return roles.value?.includes("Organizer");
+    });
 
     return {
       logedin,
@@ -41,6 +44,7 @@ export const useMyAuthStore = defineStore(
       isSuperAdmin,
       isStaffAdmin,
       isStreamer,
+      isOrganizer,
       BalootBoardSettings,
       HandBoardSettings,
     };
