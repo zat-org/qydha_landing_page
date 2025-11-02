@@ -1,26 +1,9 @@
+import type { TournamentType } from "./tournamenetType";
 import type { TournamentState } from "./tournament";
+import type { TournamentPrize } from "./tournamentPrize";
 
-export enum TournamentType {
-  public = "Public",
-  private = "Private",
-}
-export enum TournamentPrizeType {
-  one = "One",
-  two = "Two",
-  three = "Three",
-  four = "Four",
-}
-export enum TournamentPrizeCurrency {
-  USD = "USD",
-  EGP = "EGP",
-  SAR = "SAR",
-  AED = "AED",
-  EUR = "EUR",
-  JOD = "JOD",
-  KWD = "KWD",
-  TRY = "TRY",
-  GBP = "GBP",
-}
+
+
 export enum TournamentRequestState {
   Pending = "Pending",
   Approved = "Approved",
@@ -32,7 +15,7 @@ export enum TournamentRequsetFormType {
   Update = "Update",
 }
 
-export interface GetTournamentParams {
+export interface GetTournamentRequestParams {
   searchToken?: string | null | undefined;
   type?: TournamentType | null | undefined;
   state?: TournamentRequestState | null | undefined;
@@ -40,14 +23,7 @@ export interface GetTournamentParams {
   pageSize: number;
 }
 
-export interface TournamentPrize {
-  isFinancial: boolean;
-  isNonFinancial: boolean;
-  type: TournamentPrizeType;
-  financialPrizeAmount: number;
-  financialPrizeCurrency: TournamentPrizeCurrency;
-  nonFinancialPrizes: string[];
-}
+
 
 export interface TournamentCreationRequest {
   title: string;
@@ -113,7 +89,7 @@ export interface TournamentRequest {
   createdByUserName: string | null;
   createdByUserId: string;
 }
-export interface getTournamentResponse {
+export interface getTournamentRequestResponse {
   data: {
     items: TournamentRequest[];
     currentPage: number;
@@ -152,4 +128,8 @@ export interface DetailTournamentRequest {
   approvedByUserId: string | null;
   approvedByUserName: string | null;
   approvedAt: string | null;
+  state: TournamentRequestState;
+  joinRequestStartAt: string;
+  joinRequestEndAt: string;
+  joinRequestMaxCount: number;
 }

@@ -58,7 +58,10 @@
 </template>
 
 <script setup lang="ts">
-import { TournamentPrizeCurrency, TournamentPrizeType, TournamentType, type TournamentCreationRequest, type UpdateTournamentCreationRequest } from '~/models/tournamentRequest';
+import { TournamentPrizeCurrency, TournamentPrizeType } from '~/models/tournamentPrize'
+import { TournamentType } from '~/models/tournamenetType'
+
+import { type TournamentCreationRequest, type UpdateTournamentCreationRequest } from '~/models/tournamentRequest';
 import { useMyAuthStore } from '~/store/Auth';
 
 // Type definitions for form refs
@@ -149,6 +152,9 @@ const assignData = () => {
         formData.prizes = data.prizes
         formData.rules = data.rules
         formData.remainingSponsorsUrls = data.sponsorsUrls
+        formData.joinRequestEndAt = data.joinRequestEndAt
+        formData.joinRequestMaxCount = data.joinRequestMaxCount
+        formData.joinRequestStartAt = data.joinRequestStartAt
 
 
     } else {
@@ -209,7 +215,40 @@ const formRefs = computed(() => [
 ]);
 
 const updateReq = updateTournamentRequest(id)
+const getStepForField = (error: any): number => {
+    if (!error || typeof error !== 'object') return 0;
 
+    // Fields in Step 0 (TourInfo - معلومات البطولة)
+    const step0Fields = [
+        'title', 'description', 'logo', 'contactPhone',
+        'isContactPhoneCall', 'isContactPhoneWhatsapp',
+        'locationDescription', 'location', 'type',
+        'tournamentPrivatePassword', 'sponsors'
+    ];
+
+    // Fields in Step 1 (TourDetail - تفاصيل البطولة)
+    const step1Fields = [
+        'startAt', 'endAt', 'joinRequestStartAt',
+        'joinRequestEndAt', 'joinRequestMaxCount',
+        'isAddPlayersByQydha', 'prizes', 'teamsCount',
+        'tablesCount'
+    ];
+
+    // Fields in Step 2 (RulesForm - قوانين البطولة)
+    const step2Fields = ['rules'];
+
+    // Check which field has an error
+    const errorKeys = Object.keys(error);
+
+    for (const key of errorKeys) {
+        if (step0Fields.includes(key)) return 0;
+        if (step1Fields.includes(key)) return 1;
+        if (step2Fields.includes(key)) return 2;
+    }
+
+    // Default: if we have errors but can't match them, go to step 0
+    return 0;
+};
 const validation = useMultiStepFormValidation(formRefs as any, {
     totalSteps: steps.length,
     steps,
@@ -226,7 +265,8 @@ const validation = useMultiStepFormValidation(formRefs as any, {
             console.log(unref(updateReq.data))
             navigateTo("/tournament")
         } else {
-            console.log(unref(updateReq.error))
+            // console.log(unref(updateReq.error))
+            console.log(getStepForField(unref(updateReq.error)))
         }
 
         // await new Promise((resolve) => setTimeout(resolve, 2000));

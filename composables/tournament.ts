@@ -1,132 +1,203 @@
-import type { ITournament, ITournamentCreate, ITournamentDetailed, ITournamentUpdate } from "~/models/tournament";
+import {
+  type GetTournamentParams,
+  type Tournament,
+  OrderByStartAtDirection,
+  type ITournamentUpdate,
+  type getTournamentResponse,
+  TournamentState,
+  type DetailTournament,
+  type TournamentUpdate,
+} from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 
 export const useTournament = () => {
-  const userStore = useMyAuthStore()
+  const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
-  const getAllTournament = async () => {
-    const padg = ref<number>()
-    const state = ref<string []>([])
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<
-      {
-        mnessage: string,
-        data: {
-          items: ITournament[],
-          currentPage: number,
-          hasNext: boolean,
-          hasPrevious: boolean,
-          pageSize: number,
-          totalCount: number,
-          totalPages: number,
-        }
-      }>(
-        'getAllTournament',
-        () => $api('/tournaments/dashboard', { query: { states: state.value, PageNumber: padg.value, PageSize: '10' } }), { immediate: false }
-      );
-    const fetchREQ = async (padge: number = 1, _state: string [] =[]) => {
-      state.value = _state
-      padg.value = padge
-      await execute()
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  const createTournament = async () => {
-    let body = reactive<ITournamentCreate>({
-      name: "",
-      description: "",
-      city: "",
-      location: { longitude: 0, latitude: 0 },
-      prizes: [],
-      prizesCurrency: "",
-      startAt: new Date(),
-      endAt: new Date(),
-      ownerId: ""
-    })
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'createTournament ',
-      () => $api('/tournaments', { method: "post", body: body }), { immediate: false }
-    );
-    const fetchREQ = async (_data: ITournamentCreate) => {
-      // body = _data
-      Object.assign(body, _data)
-      // console.log('before',body)
-      body.endAt = new Date(_data.endAt).toISOString().split('T')[0] as string
-      body.startAt = new Date(_data.startAt).toISOString().split('T')[0] as string
-      // console.log('after',body)
-      await execute()
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  const getTourById = async () => {
+  const tournamentStateLabel: Record<TournamentState, string> = {
+    [TournamentState.Upcoming]: "القادمة",
+    [TournamentState.Running]: "الجارية",
+    [TournamentState.Finished]: "المنتهية",
+  };
+  const tournamentStateColor: Record<
+    TournamentState,
+    "warning" | "success" | "neutral"
+  > = {
+    [TournamentState.Upcoming]: "warning",
+    [TournamentState.Running]: "success",
+    [TournamentState.Finished]: "neutral",
+  };
+  const TournamentOrderStartAt: Record<OrderByStartAtDirection, string> = {
+    [OrderByStartAtDirection.ASC]: "من الاقدم الي الاحدث",
+    [OrderByStartAtDirection.DESC]: "من الاحدث الي الاقدم ",
+  };
 
-    const ID = ref<number>()
-    const { data, pending, error, refresh, execute, status
-    } = await useAsyncData<{ data: ITournamentDetailed, message: string }>(
-      'getTourById',
-      () => $api(`/tournaments/${ID.value}/dashboard`), { immediate: false }
-    );
-    const fetchREQ = async (_id: number) => {
-      ID.value = _id
-      await execute()
-      if (status.value == "success" && data.value && data.value.data) {
-        userStore.privilege = data.value.data.requesterPrivilege.privilege
-        userStore.permissions = data.value.data.requesterPrivilege.permissions ?? []
+  const getTournamnetStateOptions = () => {
+    const options = [
+      // { label: "الكل", value: null, color: null },
+      ...Object.values(TournamentState).map((value) => ({
+        label: tournamentStateLabel[value],
+        color: tournamentStateColor[value],
+        value,
+      })),
+    ];
+    return options;
+  };
+  const getTournamnetOrderStartAtOptions = () => {
+    const options = [
+      ...Object.values(OrderByStartAtDirection).map((value) => ({
+        label: TournamentOrderStartAt[value],
+        value,
+      })),
+    ];
+    return options;
+  };
+
+  const getAllTournament = async (params: Ref<GetTournamentParams>) => {
+    const param = ref(unref(params));
+    watch(
+      [() => param.value.States, () => param.value.OrderByStartAtDirection],
+      (newValue, oldValue) => {
+        param.value.PageNumber = 1;
       }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  const updateTour = async () => {
-    const tour_id = ref()
-    const newTour = ref<ITournamentUpdate>()
-
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'updateTour',
-      () => $api(`/tournaments/${tour_id.value}`, {
-        method: "PUT", body: newTour.value
-      }), { immediate: false }
     );
 
-    const fetchREQ = async (_tour_id: string, _new_tour: ITournamentUpdate) => {
-      tour_id.value = _tour_id
-      newTour.value = _new_tour
-      newTour.value.endAt = new Date(_new_tour.endAt).toISOString().split('T')[0] as string
-      newTour.value.startAt = new Date(_new_tour.startAt).toISOString().split('T')[0] as string
-      console.log(newTour.value.endAt, newTour.value.startAt)
-      await execute()
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  const updatTourQydhaAndOwner = async () => {
+    const { data, pending, error, refresh, status } =
+      await useLazyAsyncData<getTournamentResponse>(
+        "getAllTournament",
+        () => $api("/tournaments/dashboard", { query: unref(param) }),
+        { watch: [unref(param)], server: false }
+      );
 
-    const ID = ref<number>()
-    const BODY = reactive<{ showInQydha: boolean, ownerId: string }>({ showInQydha: false, ownerId: "" })
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'updatTourQydhaAndOwner ',
-      () => $api(`tournaments/${ID.value}/admin`, { method: "PUT", body: BODY }), { immediate: false }
+    return { data, pending, error, refresh, status };
+  };
+  const getSingelTournament = async (tournamentId: string) => {
+    return await useLazyAsyncData<{ data: DetailTournament }>(
+      `getSingelTournament-${tournamentId}`,
+      () => {
+        return $api(`/tournaments/${tournamentId}/dashboard`, {});
+      },
+      { server: false }
     );
-    const fetchREQ = async (_showQydha: boolean, _ownerId: string, _id: number) => {
-      ID.value = _id
-      BODY.showInQydha = _showQydha;
-      BODY.ownerId = _ownerId
-      await execute()
+  };
+  const updateTournament = async (tournamentId: string) => {
+    const body = ref<FormData>();
 
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  const updateTourLogo = async () => {
-    const tour_id = ref()
-    const body = ref<FormData>(new FormData())
-    const { data, pending, error, refresh, execute, status } = await useAsyncData(
-      'updateTourLogo',
-      () => $api(`tournaments/${tour_id.value}/logo`, { body: body.value, method: "PATCH" }), { immediate: false }
-    );
-    const fetchREQ = async (_tour_id: string, _logo: File) => {
-      tour_id.value = _tour_id
-      body.value.append("image", _logo)
+    const { data, pending, error, refresh, status, execute } =
+      await useAsyncData(
+        `updateTournament-${tournamentId}`,
+        () =>
+          $api(`/tournaments/${tournamentId}/admin`, {
+            method: "PUT",
+            body: unref(body),
+          }),
+        { immediate: false }
+      );
+
+    const fetchREQ = async (_body: TournamentUpdate) => {
+      body.value = new FormData();
+      body.value.append("title", _body.title);
+      body.value.append("description", _body.description);
+      body.value.append("contactPhone", _body.contactPhone);
+      body.value.append("startAt", _body.startAt.split("T")[0]);
+      body.value.append("endAt", _body.endAt.split("T")[0]);
+      body.value.append("type", _body.tournamentType);
+      body.value.append("locationDescription", _body.locationDescription);
+      body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
+      body.value.append(
+        "isContactPhoneWhatsapp",
+        String(_body.isContactPhoneWhatsapp)
+      );
+      body.value.append("showInQydha", String(_body.showInQydha));
+      body.value.append("addPlayersByQydha", String(_body.addPlayersByQydha));
+      body.value.append("teamsCount", String(_body.teamsCount));
+      body.value.append("tablesCount", String(_body.tablesCount));
+      if (_body.addPlayersByQydha) {
+        if (_body.joinRequestStartAt) {
+          console.log();
+          body.value.append(
+            "joinRequestStartAt",
+            _body.joinRequestStartAt.split("T")[0]
+          );
+        }
+        if (_body.joinRequestEndAt) {
+          body.value.append(
+            "joinRequestEndAt",
+            _body.joinRequestEndAt.split("T")[0]
+          );
+        }
+        if (_body.joinRequestMaxCount) {
+          body.value.append(
+            "joinRequestMaxCount",
+            String(_body.joinRequestMaxCount)
+          );
+        }
+      }
+      if (_body.tournamentPrivatePassword) {
+        body.value.append(
+          "tournamentPrivatePassword",
+          _body.tournamentPrivatePassword
+        );
+      }
+
+      body.value.append("location", JSON.stringify(_body.location));
+      if (_body.logo) body.value.append("logo", _body.logo);
+
+      body.value.append(
+        "remainingSponsorsUrls",
+        JSON.stringify(_body.remainingSponsorsUrls)
+      );
+      _body.sponsors.forEach((sponsor, index) => {
+        body.value!.append(`sponsors[${index}]`, sponsor);
+      });
+      body.value.append("prizes", JSON.stringify(_body.prizes));
+      if(_body.rules.length > 0){
+        body.value!.append("rules", JSON.stringify(_body.rules));
+
+      }else{
+        body.value!.append("rules", "[]");
+      }
+
       await execute();
-      refreshNuxtData("getTourById")
-    }
-    return { data, pending, error, refresh, fetchREQ, status }
-  }
-  return { getAllTournament, createTournament, getTourById, updatTourQydhaAndOwner, updateTourLogo, updateTour }
-}
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  };
+  // const updatTourQydhaAndOwner = async () => {
+
+  //   const ID = ref<number>()
+  //   const BODY = reactive<{ showInQydha: boolean, ownerId: string }>({ showInQydha: false, ownerId: "" })
+  //   const { data, pending, error, refresh, status, execute } = await useAsyncData(
+  //     'updatTourQydhaAndOwner ',
+  //     () => $api(`tournaments/${ID.value}/admin`, { method: "PUT", body: BODY }), { immediate: false }
+  //   );
+  //   const fetchREQ = async (_showQydha: boolean, _ownerId: string, _id: number) => {
+  //     ID.value = _id
+  //     BODY.showInQydha = _showQydha;
+  //     BODY.ownerId = _ownerId
+  //     await execute()
+
+  //   }
+  //   return { data, pending, error, refresh, status, fetchREQ }
+  // }
+  // const updateTourLogo = async () => {
+  //   const tour_id = ref()
+  //   const body = ref<FormData>(new FormData())
+  //   const { data, pending, error, refresh, execute, status } = await useAsyncData(
+  //     'updateTourLogo',
+  //     () => $api(`tournaments/${tour_id.value}/logo`, { body: body.value, method: "PATCH" }), { immediate: false }
+  //   );
+  //   const fetchREQ = async (_tour_id: string, _logo: File) => {
+  //     tour_id.value = _tour_id
+  //     body.value.append("image", _logo)
+  //     await execute();
+  //     refreshNuxtData("getTourById")
+  //   }
+  //   return { data, pending, error, refresh, fetchREQ, status }
+  // }
+  return {
+    getAllTournament,
+    getSingelTournament,
+    updateTournament,
+    getTournamnetStateOptions,
+    getTournamnetOrderStartAtOptions,
+  };
+};

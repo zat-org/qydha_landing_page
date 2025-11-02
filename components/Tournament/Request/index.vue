@@ -7,18 +7,17 @@
             <h1 class="text-3xl font-bold"> طلبات البطولات </h1>
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
-          <div class="flex gap-3">
-            <UButton  variant="outline" color="primary" icon="i-heroicons-information-circle"
+          <div class="flex gap-3" v-if="userStore.isOrganizer">
+            <UButton variant="outline" color="primary" icon="i-heroicons-information-circle"
               to="/tournament/request/info" label="دليل انشاء البطولة" class="px-6" />
-            <UButton  variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
+            <UButton variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
               label="إضافة بطولة جديدة" class="px-6" />
           </div>
         </div>
 
         <div class="flex flex-col md:flex-row gap-4 items-center w-full ">
-          <UFormField label="كلمة مفتاحية " class="flex-2">
-            <UInput v-model="filters.searchToken" placeholder="البحث عن بطولة..."
-               />
+          <UFormField label="بحث " class="flex-2">
+            <UInput v-model="filters.searchToken" placeholder=" العنوان | الوصف ..." />
           </UFormField>
           <UFormField label="الحالة " class="flex-1">
             <USelect :items="stateOptions" class="w-full " value-key="value" label-key="label"
@@ -39,16 +38,16 @@
 
 
     <div class="  flex flex-col flex-1  ">
-      <Loading v-if="pending && !unref(data) " />
+      <Loading v-if="pending" class="mt-10" />
       <component v-else :is="userStore.isStaffAdmin || userStore.isSuperAdmin
         ? TournamentAdminRequestTable
         : TournamentOranizerRequestTable" />
-   
-      <UPagination class="mx-auto" v-if="data && data.data.totalPages > 1" v-model:page="filters.pageNumber" 
-        :total="data.data.totalCount" /> 
-        
-      </div>
-      <!-- :page-count="data.data.totalPages" -->
+
+      <UPagination class="mx-auto mt-auto" v-if="data && data.data.totalPages > 1" v-model:page="filters.pageNumber"
+        :total="data.data.totalCount" />
+
+    </div>
+    <!-- :page-count="data.data.totalPages" -->
   </UCard>
 </template>
 
@@ -61,10 +60,10 @@ const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 import TournamentAdminRequestTable from "~/components/Tournament/admin/Request/Table.vue";
 import TournamentOranizerRequestTable from "~/components/Tournament/organizer/Request/Table.vue";
-import type { GetTournamentParams } from "~/models/tournamentRequest";
+import type { GetTournamentRequestParams } from "~/models/tournamentRequest";
 
 
-const filters = ref<GetTournamentParams>({
+const filters = ref<GetTournamentRequestParams>({
   type: undefined,
   searchToken: undefined,
   state: undefined,

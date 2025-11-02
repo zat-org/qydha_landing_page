@@ -20,25 +20,28 @@
                 :to="'/user/' + row.original.createdByUserId" :disabled="!row.original.createdByUserId" />
         </template>
         <template #state-cell="{ getValue }">
-            <p :class="'w-fit px-4 py-2 rounded font-semibold text-sm transation-colors   ' +getState(getValue() as string)?.color " >
-                {{ getState(getValue() as string)?.label ?? getValue() }}
-            </p>
+            <UBadge :label="getState(getValue() as string)?.label ?? getValue()" size="xl"
+                :color="getState(getValue() as string)?.color" variant="outline" />
+
         </template>
         <template #type-cell="{ getValue }">
-            <p :class="'w-fit px-4 py-2 rounded font-semibold text-sm transation-colors   ' +getType(getValue() as string)?.color " >
-                {{ getType(getValue() as string)?.label ?? getValue() }}
-            </p>
+            <UBadge :label="getType(getValue() as string)?.label ?? getValue()" size="xl"
+                :color="getType(getValue() as string)?.color" variant="outline" />
+
         </template>
 
-        <template #actions-cell="{row}">
+        <template #actions-cell="{ row }">
             <!-- if state is pending ==> reject - approve  -->
             <!-- if state is approve => can  reject it  ask  -->
             <!-- if state is rejected it  => can  approve it    ask  -->
-            <UButtonGroup >
-                <UButton   icon="i-lucide-eye"   :to="'/tournament/request/'+row.original.id" />
-                <UButton  v-if="row.original.state == TournamentRequestState.Pending"  icon="i-lucide-check" color="success" @click="handelApprove(row.original.id)" />
-                <UButton  v-if="row.original.state == TournamentRequestState.Pending"  icon="i-lucide-x" color="error" @click="handelReject(row.original.id)"/>
-                <UButton  v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-edit-2" color="warning" :to="'/tournament/request/'+row.original.id+'/update'" />
+            <UButtonGroup>
+                <UButton icon="i-lucide-eye" :to="'/tournament/request/' + row.original.id" />
+                <UButton v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-check"
+                    color="success" @click="handelApprove(row.original.id)" />
+                <UButton v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-x" color="error"
+                    @click="handelReject(row.original.id)" />
+                <UButton v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-edit-2"
+                    color="warning" :to="'/tournament/request/' + row.original.id + '/update'" />
             </UButtonGroup>
         </template>
 
@@ -94,23 +97,25 @@
         </pre> -->
 </template>
 <script setup lang="ts">
-import {  } from '~/models/tournament';
-import  {type getTournamentResponse ,TournamentRequestState} from '~/models/tournamentRequest';
-const { data: res } = useNuxtData<getTournamentResponse>('AdminTourReqests')
+import { } from '~/models/tournament';
+import { type getTournamentRequestResponse, TournamentRequestState } from '~/models/tournamentRequest';
+const { data: res } = useNuxtData<getTournamentRequestResponse>('AdminTourReqests')
 const rows = computed(() => {
     return unref(res)?.data.items ?? []
 })
-const { getTournamentTypeOptions, getTournamnetStateOptions  ,AdminApproveRequest,AdminRejectRequest} = useTournamentRequest()
+const { getTournamentTypeOptions, getTournamnetStateOptions, AdminApproveRequest, AdminRejectRequest } = useTournamentRequest()
 const stateOptions = getTournamnetStateOptions()
 const typeOptions = getTournamentTypeOptions()
 const approveReq = AdminApproveRequest()
 const rejectReq = AdminRejectRequest()
 
-const getState = (value: string) => {
-    return stateOptions.find(op => op.value == value)
+const getState = (value: string): any => {
+    const result = stateOptions.find(op => op.value == value)
+    if (!result) return { label: "", value: TournamentRequestState.Pending, color: "warn" }
+    return result
 }
 
-const getType = (value: string) => {
+const getType = (value: string): any => {
     return typeOptions.find(op => op.value == value)
 
 }
@@ -133,20 +138,20 @@ const cols = computed(() => {
             header: "مالك البطوله "
         },
         {
-            id:'actions',
-            header:'#'
+            id: 'actions',
+            header: '#'
         }
     ]
     return result;
 });
 
-const handelApprove =async(id:string)=>{
-   await  approveReq.fetchREQ(id)
+const handelApprove = async (id: string) => {
+    await approveReq.fetchREQ(id)
 }
 
 
-const handelReject =async(id:string)=>{
-   await  rejectReq.fetchREQ(id)
+const handelReject = async (id: string) => {
+    await rejectReq.fetchREQ(id)
 }
 
 </script>

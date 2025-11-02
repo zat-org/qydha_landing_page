@@ -34,7 +34,7 @@
         </label>
         <div class="flex items-center gap-2">
           <UIcon name="i-heroicons-clock" class="text-gray-500" />
-          <span class="font-medium">{{ formatDate(lastLogin) }}</span>
+          <span class="font-medium">{{ formatDate(lastLogin!) }}</span>
         </div>
       </div>
     </div>
@@ -50,12 +50,5 @@ const props = defineProps<{
 }>()
 
 // Methods
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'غير محدد'
-  return new Date(dateString).toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
+
 </script> 

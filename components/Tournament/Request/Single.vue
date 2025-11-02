@@ -3,7 +3,8 @@
   <div class="w-full mx-auto p-4 flex flex-col flex-1 "  >
     <!-- Loading State -->
     <div v-if="pending" class="flex justify-center items-center h-64">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-primary-500" />
+      <Loading />
+      <!-- <UIcon name="i-heroicons-arrow-path" class="animate-spin text-2xl text-primary-500" /> -->
     </div>
 
     <!-- Error State -->
@@ -38,20 +39,21 @@
             <div>
               <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ data.title }}</h1>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {{ formatDate(data.createdAt) }}
+                {{ formatDateTime(data.createdAt) }}
               </p>
             </div>
           </div>
           
           <div class="flex flex-col sm:flex-row gap-2">
-            <!-- <UBadge 
-              :color="getStateColor(data.state)" 
+            <UBadge 
+              v-if="currentState"
+              :color="getStateColor(currentState)" 
               variant="subtle" 
               size="lg"
               class="text-sm font-medium"
             >
-              {{ getStateLabel(data.state) }}
-            </UBadge> -->
+              {{ getStateLabel().find(op=>op.value==currentState)?.label }}
+            </UBadge>
             <UBadge 
               :color="data.type === 'Public' ? 'info' : 'success'" 
               variant="outline" 
@@ -78,33 +80,49 @@
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">معلومات البطولة</h3>
             
-            <div class="space-y-3">
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <div class="space-y-1.5">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تاريخ البداية</span>
-                <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.startAt,false) }}</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100 truncate">{{ formatDate(data.startAt) }}</span>
               </div>
               
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">تاريخ النهاية</span>
-                <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.endAt,false) }}</span>
+                <span class="text-sm text-gray-900 dark:text-gray-100 truncate">{{ formatDate(data.endAt) }}</span>
               </div>
               
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">عدد الفرق</span>
                 <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.teamsCount }}</span>
               </div>
               
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">عدد الطاولات</span>
                 <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.tablesCount }}</span>
               </div>
               
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">إضافة اللاعبين من قيدها</span>
-                <UBadge :color="data.isAddPlayersByQydha ? 'success' : 'error'" variant="subtle" size="lg">
-                  {{ data.isAddPlayersByQydha ? 'نعم' : 'لا' }}
-                </UBadge>
+                <div>
+                  <UBadge :color="data.isAddPlayersByQydha ? 'success' : 'error'" variant="subtle" size="lg">
+                    {{ data.isAddPlayersByQydha ? 'نعم' : 'لا' }}
+                  </UBadge>
+                </div>
               </div>
+              <template v-if="data.isAddPlayersByQydha">
+                <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700" v-if="data.joinRequestStartAt">
+                  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">بداية استقبال طلبات الانضمام</span>
+                  <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.joinRequestStartAt) }}</span>
+                </div>
+                <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700" v-if="data.joinRequestEndAt">
+                  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">نهاية استقبال طلبات الانضمام</span>
+                  <span class="text-sm text-gray-900 dark:text-gray-100">{{ formatDate(data.joinRequestEndAt) }}</span>
+                </div>
+                <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700" v-if="data.joinRequestMaxCount">
+                  <span class="text-sm font-medium text-gray-600 dark:text-gray-400">الحد الأقصى لطلبات الانضمام</span>
+                  <span class="text-sm text-gray-900 dark:text-gray-100">{{ data.joinRequestMaxCount }}</span>
+                </div>
+              </template>
             </div>
           </div>
 
@@ -112,8 +130,8 @@
           <div class="space-y-4">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">معلومات التواصل والموقع</h3>
             
-            <div class="space-y-3">
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+            <div class="space-y-1.5">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">رقم الهاتف</span>
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-gray-900 dark:text-gray-100" dir="ltr">{{ data.contactPhone }}</span>
@@ -124,15 +142,14 @@
                 </div>
               </div>
               
-              <div class="flex justify-between items-start py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-start py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">وصف الموقع</span>
                 <span class="text-sm text-gray-900 dark:text-gray-100 text-right">{{ data.locationDescription }}</span>
               </div>
               
-              <div class="flex justify-between items-center py-2 border-b border-gray-200 dark:border-gray-700">
+              <div class="grid grid-cols-[auto_1fr] gap-x-4 items-center py-1.5 border-b border-gray-200 dark:border-gray-700">
                 <span class="text-sm font-medium text-gray-600 dark:text-gray-400">الإحداثيات</span>
                 <span class="text-sm text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                  <!-- {{ data.location.latitude }}, {{ data.location.longitude }} -->
                   <UButton
                     variant="soft"
                     color="primary"
@@ -223,28 +240,45 @@
       <template #footer>
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
           <div class="text-sm text-gray-500 dark:text-gray-400">
-            <span>تم الإنشاء في: {{ formatDate(data.createdAt) }}</span>
+            <span>تم الإنشاء في: {{ formatDateTime(data.createdAt) }}</span>
           </div>
           
-          <UButtonGroup v-if="userStore.isStaffAdmin || userStore.isSuperAdmin">
-            <!-- <UButton 
-              v-if="data.state === TournamentState.Pending"
+          <UButtonGroup v-if="(userStore.isStaffAdmin || userStore.isSuperAdmin ) && currentState === TournamentRequestState.Pending">
+            <UButton 
               color="success" 
               icon="i-heroicons-check"
               @click="handleApprove"
-              :loading="approvePending"
+              :loading="approveStatus =='pending'"
             >
               موافقة
-            </UButton> -->
-            <!-- <UButton 
-              v-if="data.state === TournamentState.Pending"
+            </UButton>
+            <UButton 
               color="error" 
               icon="i-heroicons-x-mark"
               @click="handleReject"
-              :loading="rejectPending"
+              :loading="rejectStatus=='pending'"
             >
               رفض
-            </UButton> -->
+            </UButton>
+            <UButton 
+              color="primary" 
+              icon="i-heroicons-pencil"
+              variant="outline"
+              @click="handleEdit"
+            >
+              تعديل
+            </UButton>
+          </UButtonGroup>
+          <UButtonGroup v-if="userStore.isOrganizer && currentState === TournamentRequestState.Pending">
+            <UButton 
+              color="error" 
+              icon="i-lucide-circle-x"
+              @click="handleCancel"
+              :loading="approveStatus =='pending'"
+            >
+              الغاء
+            </UButton>
+            
             <UButton 
               color="primary" 
               icon="i-heroicons-pencil"
@@ -262,80 +296,93 @@
 
 <script setup lang="ts">
 import { useMyAuthStore } from '~/store/Auth';
-import { TournamentPrizeType, TournamentPrizeCurrency  } from '~/models/tournamentRequest';
-import { TournamentState } from '~/models/tournament';
+import { TournamentPrizeType, TournamentPrizeCurrency  } from '~/models/tournamentPrize';
+import { TournamentRequestState } from '~/models/tournamentRequest';
+import {formatDateTime,formatDate} from'~/utils/formatDate'
 
 const props = defineProps<{id:string}>()
 const { 
   AdminGetSingleTournamentRequest, 
+  OrganizerGetSingleTournamentRequest,
+  OrganizerCancelRequest,
   AdminApproveRequest, 
   AdminRejectRequest,
-  getTournamnetStateOptions,
+  getTournamnetStateOptions:getStateLabel,
+  getStateColor,
   getTournamentPrizeCurrency
 } = useTournamentRequest()
 
 const userStore = useMyAuthStore()
-const { data:res, status, pending } = AdminGetSingleTournamentRequest(props.id)
+const apiFetch = computed(()=>{
+  if(userStore.isStaffAdmin || userStore.isSuperAdmin){
+    return AdminGetSingleTournamentRequest
+  }else {
+    return OrganizerGetSingleTournamentRequest
+  }
+})
+const { data:res, status, pending } = apiFetch.value(props.id)
 const data =computed(()=>{
-
     if(res.value?.data) return res.value.data
 })
+const currentState = computed(()=>{
+  if(!data.value) return undefined
+  // prefer new status if backend provides it, else fallback to state
+  // @ts-ignore
+  return (data.value.status ?? data.value.state) as TournamentRequestState
+})
 // Approval/Rejection handlers
-const { fetchREQ: approveRequest, pending: approvePending } = AdminApproveRequest()
-const { fetchREQ: rejectRequest, pending: rejectPending } = AdminRejectRequest()
+const { fetchREQ: approveRequest, status: approveStatus } = AdminApproveRequest()
+const { fetchREQ: rejectRequest, status: rejectStatus } = AdminRejectRequest()
+const { fetchREQ: cancelRequest, status: cancelStatus } = OrganizerCancelRequest()
+
 
 const handleApprove = async () => {
-  await approveRequest(props.id)
+  if(!data.value)return 
+  await approveRequest(data.value.id)
   if (status.value === 'success') {
     // Refresh data or show success message
-    await refreshNuxtData(`AdminGetSingleTournamentRequest-${props.id}`)
+    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
   }
 }
 
 const handleReject = async () => {
-  await rejectRequest(props.id)
-  if (status.value === 'success') {
+  if(!data.value)return 
+  await rejectRequest(data.value.id)
+  if (status.value === 'success' ) {
     // Refresh data or show success message
-    await refreshNuxtData(`AdminGetSingleTournamentRequest-${props.id}`)
+    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
   }
 }
+const handleCancel = async () => {
+  if(!data.value)return 
+  await cancelRequest(data.value.id)
+  if (status.value === 'success' ) {
+    // Refresh data or show success message
+    await refreshNuxtData(`OrganizerGetSingleTournamentRequest-${data.value.id}`)
+    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
+
+  }
+}
+
 
 const handleEdit = () => {
   // Navigate to edit page or open modal
   navigateTo(`/tournament/request/${props.id}/update/`)
 }
 
-// Helper functions
-const formatDate = (dateString: string,time:boolean=true) => {
 
-  return new Date(dateString).toLocaleDateString('ar-EG', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: !time ? undefined :'2-digit',
-    minute: !time?undefined:'2-digit'
-  })
-}
 
-const getStateLabel = (state: TournamentState) => {
-  const stateLabels: Record<TournamentState, string> = {
-    [TournamentState.Pending]: "جاري المراجعة",
-    [TournamentState.Approved]: "تم الموافقة",
-    [TournamentState.Rejected]: "تم الرفض",
-    [TournamentState.Canceled]: "تم الإلغاء",
-  }
-  return stateLabels[state]
-}
+// const getStateLabel = (state: TournamentRequestState) => {
+//   const stateLabels: Record<TournamentState, string> = {
+//     [TournamentState.Pending]: "جاري المراجعة",
+//     [TournamentState.Approved]: "تم الموافقة",
+//     [TournamentState.Rejected]: "تم الرفض",
+//     [TournamentState.Canceled]: "تم الإلغاء",
+//   }
+//   return stateLabels[state]
+// }
 
-const getStateColor = (state: TournamentState) => {
-  const stateColors: Record<TournamentState, string> = {
-    [TournamentState.Pending]: "yellow",
-    [TournamentState.Approved]: "green",
-    [TournamentState.Rejected]: "red",
-    [TournamentState.Canceled]: "gray",
-  }
-  return stateColors[state]
-}
+
 
 const getPrizePosition = (type: TournamentPrizeType) => {
   const positions: Record<TournamentPrizeType, string> = {

@@ -121,7 +121,7 @@
 
 <script lang="ts" setup>
 import { object, string, number, boolean, array, mixed } from "yup";
-import { TournamentType } from "~/models/tournamentRequest";
+import { TournamentType } from "~/models/tournamenetType";
 
 const props = defineProps<{
   modelValue: {

@@ -48,8 +48,8 @@
 
                 <template #checkInAt-cell="{ row }">
                     <div class="text-sm">
-                        <p>{{ formatDate(row.original.checkInAt) }}</p>
-                        <p class="text-gray-500">{{ formatTime(row.original.checkInAt) }}</p>
+                        <p>{{ formatDateTime(row.original.checkInAt) }}</p>
+                        <p class="text-gray-500">{{ formatDateTime(row.original.checkInAt) }}</p>
                     </div>
                 </template>
 
@@ -138,6 +138,7 @@ const props = defineProps<Props>();
 // Composables
 const groupApi = useGroup();
 import { useMyAuthStore } from "~/store/Auth";
+import {formatDate,formatTime} from '~/utils/formatDate'
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
@@ -151,6 +152,7 @@ const showAddModal = ref(false);
 const showMessageModal = ref(false);
 const selectedGroup = ref<Group & { teamCount: number } | null>(null);
 const sendingMessage = ref(false);
+
 
 // Message form
 const messageForm = ref({
@@ -322,16 +324,6 @@ const getTeamCountColor = (count: number) => {
     return 'error';
 };
 
-const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA');
-};
-
-const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('ar-SA', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-};
 
 // Watch for tournament ID changes
 watch(() => props.tournamentId, async (newId) => {

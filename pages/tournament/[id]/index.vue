@@ -6,11 +6,10 @@
 import { useMyAuthStore } from '~/store/Auth';
 
 const route = useRoute();
-const id = +route.params.id;
+const id = route.params.id.toString();
 
 onMounted(() => {
   const userStore = useMyAuthStore();
-  
   console.log(userStore.logedin);
   const layout = userStore.logedin ? 'default' : 'tournament';
   setPageLayout(layout);

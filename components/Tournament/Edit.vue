@@ -1,223 +1,282 @@
 <template>
-  <UCard  >
-    <template #footer>
-      <div class="flex justify-between items-center">
-        <UButton
-          type="submit"
-          label="تعديل"
-          color="primary"
-          @click="UpdateForm?.submit()"
-        />
+    <Loading v-if="getReq.status.value == 'pending'" />
+    <UCard v-else-if="getReq.status.value == 'success'" :ui="{
+        body: 'p-1 sm:p-1',
+        header: 'p-1 sm:p-1',
+        footer: 'p-1 sm:p-1',
 
-        <UButton
-          type="button"
-          class="ml-auto mr-[10px]"
-          v-if="isAdmin"
-          label=" تعديل الصور والمالك "
-          color="primary"
-          @click="openUpdateModal"
-        />
+    }">
+        <template #header>
+            <div class="flex justify-around  items-center w-full">
+                <div class=" flex-1 flex  gap-2">
+                    <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost"
+                        class="flex-1">
+                        العودة
+                    </UButton>
+                    <!-- <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle"
+                        variant="ghost">
+                        دليل انشاء البطولة
+                    </UButton> -->
+                </div>
+                <UStepper size="sm"
+                    :items="[...validation.enhancedSteps.value].map(step => ({ ...step, color: step.color.value }))"
+                    class="flex-4 " v-model="currentStepValue" />
 
-        <UButton
-          type="button"
-          label="عودة"
-          color="error"
-          @click="navigateTo('/tournament')"
-        />
-      </div>
-    </template>
+            </div>
+        </template>
 
-    <UForm :state="state" :schema="schema" @submit="onSubmit" ref="UpdateForm">
-      <div class="flex flex-col gap-2">
-        <UFormField name="name" label="الاسم">
-          <UInput v-model="state.name" />
-        </UFormField>
-        <UFormField name="description" label="الوصف">
-          <UTextarea v-model="state.description" />
-        </UFormField>
+        <template #default>
+            <div class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
+                <div class="h-full">
+                    <KeepAlive>
+                        <TournamentFormTourForm ref="tourForm" v-show="currentStepValue === 0" v-model="formData" />
+                    </KeepAlive>
+                    <KeepAlive>
+                        <TournamentFormTourDetailForm ref="detailForm" v-show="currentStepValue === 1"
+                            v-model="formData" />
+                    </KeepAlive>
+                    <KeepAlive>
+                        <TournamentFormRulesForm ref="rulesForm" v-show="currentStepValue === 2" v-model="formData" />
+                    </KeepAlive>
+                </div>
+            </div>
 
-        <!-- dates -->
-        <div class="flex gap-2">
-          <UFormField name="startAt" label="تبداء" class="grow">
-            <VueDatePicker
-              v-model="state.startAt"
-              :enable-time-picker="false"
-              dir="ltr"
-              position="right"
-            />
-          </UFormField>
+        </template>
+        <template #footer>
+            <div class="flex justify-between items-center px-6">
+                <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
+                <UButton v-if="canGoNext" color="primary" @click="validation.validateAndNext()" label="التالي"
+                    size="xl" />
+                <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit"
+                    size="xl">
+                    إرسال
+                </UButton>
+            </div>
+        </template>
+    </UCard>
 
-          <UFormField name="endAt" label="تنتهي" class="grow">
-            <VueDatePicker
-              v-model="state.endAt"
-              :enable-time-picker="false"
-              dir="ltr"
-              position="right"
-            />
-          </UFormField>
-        </div>
-
-        <div class="flex gap-2">
-          <!-- 
-          <UFormField class="grow" name="ownerId" label="المالك" v-if="roles?.includes('SuperAdmin')">
-            <UInputMenu v-model="state.ownerId" :options="users" :search="search" option-attribute="username"
-              value-attribute="id" :loading="allUsersREQ.status.value == 'pending'" />
-          </UFormField> -->
-
-          <UFormField class="grow" name="city" label="المدينة">
-            <UButtonGroup size="sm" orientation="horizontal" class="flex">
-              <UInput v-model="state.city" class="grow" />
-
-              <UButton
-                label="اختر الموقع"
-                :color="
-                  state.location.latitude && state.location.longitude
-                    ? 'success'
-                    : 'error'
-                "
-                @click="getLocation"
-              />
-            </UButtonGroup>
-          </UFormField>
-        </div>
-
-        <!-- prizes -->
-        <div class="flex flex-col gap-5">
-          <div class="flex items-end gap-2">
-            <UFormField
-              name="prizesCurrency"
-              label="عملة المكافئة"
-              class="grow"
-            >
-              <UButtonGroup size="sm" orientation="horizontal">
-                <UInput v-model="state.prizesCurrency" />
-                <UButton
-                  icon="ic:baseline-plus"
-                  @click="state.prizes.push('')"
-                  label="اضافة مركز"
-                />
-              </UButtonGroup>
-            </UFormField>
-          </div>
-          <div
-            class="flex justify-start items-start flex-wrap flex-grow-0 basis-[100px] overflow-y-auto"
-          >
-            <UFormField
-              v-for="(p, index) in state.prizes"
-              :name="'prizes[' + index + ']'"
-              :label="'المركز' + (index + 1)"
-            >
-              <UButtonGroup orientation="horizontal" class="flex w-[150px]">
-                <UBadge :label="index + 1" color="primary" />
-                <UInput v-model="state.prizes[index]" class="grow" />
-                <UButton
-                  color="error"
-                  icon="material-symbols:close"
-                  @click="state.prizes.splice(index, 1)"
-                ></UButton>
-              </UButtonGroup>
-            </UFormField>
-          </div>
-        </div>
-      </div>
-    </UForm>
-  </UCard>
 </template>
 
-<script lang="ts" setup>
-import "leaflet/dist/leaflet.css";
-import VueDatePicker from "@vuepic/vue-datepicker";
-import "@vuepic/vue-datepicker/dist/main.css";
+<script setup lang="ts">
+import { TournamentPrizeCurrency, TournamentPrizeType } from '~/models/tournamentPrize'
+import { TournamentType } from '~/models/tournamenetType'
 
-import { object, string, number, array } from "yup";
-import type { ITournament, ITournamentUpdate } from "~/models/tournament";
-import { MapInputModal } from "#components";
-import { useMyAuthStore } from "~/store/Auth";
-import EditModal from "./EditModal.vue";
+import { type TournamentCreationRequest, type UpdateTournamentCreationRequest } from '~/models/tournamentRequest';
+import { useMyAuthStore } from '~/store/Auth';
+import type { TournamentUpdate } from '~/models/tournament';
 
-const UpdateForm = ref<HTMLFormElement>();
+// Type definitions for form refs
+interface FormStepRef {
+    validate: () => Promise<boolean>;
+    isValid: Ref<boolean>;
+    errors: Ref<Record<string, string>>;
+    isValidating: Ref<boolean>;
+}
 
-const props = defineProps<{ tournament: ITournament }>();
-const overlay = useOverlay();
+// Template refs
+const tourForm = useTemplateRef<FormStepRef>("tourForm");
+const detailForm = useTemplateRef<FormStepRef>("detailForm");
+const rulesForm = useTemplateRef<FormStepRef>("rulesForm");
 
-const state = reactive<ITournamentUpdate>({
-  name: props.tournament.name,
-  description: props.tournament.description,
-  city: props.tournament.city,
-  location: { longitude: 0, latitude: 0 },
-  prizes: props.tournament.prizes,
-  prizesCurrency: props.tournament.prizesCurrency,
-  startAt: props.tournament.startAt,
-  endAt: props.tournament.endAt,
-  // ownerId: props.tournament.owner.id
+const authStore = useMyAuthStore()
+const { getSingelTournament ,updateTournament} = useTournament()
+// get from data by index  api 
+const route = useRoute()
+const id = route.params.id.toString()
+
+const formData = reactive<TournamentUpdate>({
+    title: "",
+    description: "",
+    logo: undefined,
+    remainingSponsorsUrls: [],
+    contactPhone: '',
+    isContactPhoneCall: true,
+    isContactPhoneWhatsapp: false,
+    sponsors: [],
+    startAt: '',
+    endAt: '',
+    tournamentType: TournamentType.public,
+    addPlayersByQydha: false,
+    // addPlayesrByQydha: false,
+    teamsCount: 16,
+    tablesCount: 8,
+    tournamentPrivatePassword: "",
+    locationDescription: "",
+    location: { latitude: 0, longitude: 0 },
+    prizes: [
+        {
+            isFinancial: true,
+            isNonFinancial: false,
+            type: TournamentPrizeType.one,
+            financialPrizeAmount: 100,
+            financialPrizeCurrency: TournamentPrizeCurrency.SAR,
+            nonFinancialPrizes: [],
+        }
+    ],
+    showInQydha: false,
+    joinRequestStartAt: undefined,
+    joinRequestEndAt: undefined,
+    joinRequestMaxCount: undefined,
+    rules: [],
+    // rules: [],
+    // TournamentDates: [{ date: "", startTime: "", endTime: "" }],
+    // connectionPhoneNumberForPlayers: "",
+    // Sponsered: false,
+    // TournamentStartEnrolmmentDate: "",
+    // TournamentEndEnrolmmentDate: "",
+    // TournametPrizeOption: 1,
+    // TeamSelectionMode: "auto",
+    // TournamentDaysNumber: 1,
+    // RefreeCount: 0,
+    // RefreeNeed: false,
+    // StatisticsNeed: false,
+    // SakkaOptions: [],
 });
-const schema = object({
-  name: string().required("برجاء ادخال الاسم"),
-  description: string().required("برجاء ادخال الوصف"),
-  city: string().required("برجاء ادخال المدينة"),
-  location: object({ longitude: number(), latitude: number() }),
-  prizes: array().of(string().required("برجاء ادخال قيمة الجائزة")),
-  prizesCurrency: string().required("برجاء ادخال عملة الجائزة"),
-  startAt: string()
-    .required("برجاء ادخال تاريخ البداية")
-    .test(
-      "is-valid-range",
-      "تاريخ البداية يجب أن يكون قبل تاريخ الانتهاء",
-      function (value) {
-        const { endAt } = this.parent;
-        return !endAt || new Date(value) <= new Date(endAt);
-      }
-    ),
-  endAt: string().required("برجاء ادخال تاريخ الانتهاء"),
-  // ownerId: string().required("برجاء ادخال مالك البطولة")
-});
+const assignData = () => {
+    const data = getReq.data.value?.data.tournament ?? null
+    if (unref(getReq.status) == 'success' && data) {
+        formData.title = data.title
+        formData.description = data.description
+        formData.contactPhone = data.contactPhone
+        formData.isContactPhoneCall = data.isContactPhoneCall
+        formData.isContactPhoneWhatsapp = data.isContactPhoneWhatsapp
+        formData.startAt = data.startAt
+        formData.endAt = data.endAt
+        formData.tournamentType = data.tournamentType as TournamentType
+        formData.addPlayersByQydha = data.addPlayersByQydha
+        formData.teamsCount = data.expectedTeamsCount
+        formData.tablesCount = data.expectedTablesCount
+        formData.tournamentPrivatePassword = data.tournamentPrivatePassword ?? undefined
+        formData.locationDescription = data.locationDescription
+        formData.location = data.location
+        formData.prizes = data.prizes
+        // formData.rules = data.rules
+        formData.remainingSponsorsUrls = data.sponsors
+        formData.joinRequestEndAt = data.joinRequestEndAt ?? undefined
+        formData.joinRequestMaxCount = data.joinRequestMaxCount ?? undefined
+        formData.joinRequestStartAt = data.joinRequestStartAt ?? undefined
+        formData.showInQydha = data.showInQydha
 
-const userStore = useMyAuthStore();
-const roles = computed(() => {
-  if (userStore.user) {
-    return userStore.user.user.roles;
-  }
-});
+    } else {
+        // navigateTo('/tournament/request')
+    }
+}
+const toast = useToast()
+const getReq = await getSingelTournament(id)
+if (getReq.status.value == "error") {
+    toast.add({ title: 'حدث خطاء في جلب بينات البطوله ' })
+    navigateTo('/tournamnent')
+}  
+watch(() => getReq.status.value, () => {
+    if (getReq.status.value == "success") {
+        assignData()
+    }
+})
 
-const isAdmin = computed(() => {
-  return userStore.user?.user.roles.includes("SuperAdmin") ||
-    userStore.user?.user.roles.includes("StaffAdmin")
-});
-
-const tournamentApi = useTournament();
-const updateREQ = await tournamentApi.updateTour();
-const userApi = useUsers();
-const allUsersREQ = await userApi.getAllUsers();
-await allUsersREQ.fetchREQ("");
-const users = computed(() => {
-  return allUsersREQ.data.value?.data.items;
-});
-
-const onSubmit = async () => {
-  await updateREQ.fetchREQ(props.tournament.id.toString(), state);
-  if (updateREQ.status.value == "success") {
-    return navigateTo("/tournament");
-  } else if (updateREQ.status.value == "error") {
-    console.log(updateREQ.error.value);
-  }
-};
-
-const openUpdateModal = () => {
-  overlay.create(EditModal, { props: { tour: props.tournament } }).open();
-};
-
-const getLocation = () => {
-  overlay.create(MapInputModal, {
-    props: {
-      lat: state.location.latitude,
-      log: state.location.longitude,
-    onSuccess(lat: number, log: number) {
-      state.location.latitude = lat;
-      state.location.longitude = log;
-      },
+// Step definitions
+const steps = [
+    {
+        id: 0,
+        title: "معلومات البطولة",
+        // description: "معلومات البطولة",
+        slot: "TourInfo",
+        icon: "i-heroicons-trophy",
     },
-  }).open();
+    {
+        id: 1,
+        title: "تفاصيل البطولة",
+        // description: "تفاصيل البطولة",
+        slot: "TourDetail",
+        icon: "i-heroicons-clipboard-document-list",
+    },
+    {
+        id: 2,
+        title: "قوانين البطولة",
+        // description: "قوانين البطولة",
+        slot: "TourRules",
+        icon: "i-heroicons-scale",
+    },
+];
+
+// Centralized validation setup
+const formRefs = computed(() => [
+    tourForm.value,
+    detailForm.value,
+    rulesForm.value,
+]);
+
+const getStepForField = (error: any): number => {
+    if (!error || typeof error !== 'object') return 0;
+
+    // Fields in Step 0 (TourInfo - معلومات البطولة)
+    const step0Fields = [
+        'title', 'description', 'logo', 'contactPhone',
+        'isContactPhoneCall', 'isContactPhoneWhatsapp',
+        'locationDescription', 'location', 'type',
+        'tournamentPrivatePassword', 'sponsors'
+    ];
+
+    // Fields in Step 1 (TourDetail - تفاصيل البطولة)
+    const step1Fields = [
+        'startAt', 'endAt', 'joinRequestStartAt',
+        'joinRequestEndAt', 'joinRequestMaxCount',
+        'isAddPlayersByQydha', 'prizes', 'teamsCount',
+        'tablesCount'
+    ];
+
+    // Fields in Step 2 (RulesForm - قوانين البطولة)
+    const step2Fields = ['rules'];
+
+    // Check which field has an error
+    const errorKeys = Object.keys(error);
+
+    for (const key of errorKeys) {
+        if (step0Fields.includes(key)) return 0;
+        if (step1Fields.includes(key)) return 1;
+        if (step2Fields.includes(key)) return 2;
+    }
+
+    // Default: if we have errors but can't match them, go to step 0
+    return 0;
 };
+
+const updateReq = await updateTournament(id)
+const validation = useMultiStepFormValidation(formRefs as any, {
+    totalSteps: steps.length,
+    steps,
+    onStepChange: (stepId) => {
+        console.log(`Navigated to step ${stepId}`);
+    },
+    onValidationError: (stepId, errors) => {
+        console.log(`Validation errors in step ${stepId}:`, errors);
+    },
+    onFormSubmit: async () => {
+        // Here you would typically send the data to your API
+        await updateReq.fetchREQ(formData)
+        if (updateReq.status.value == 'success') {
+            console.log(unref(updateReq.data))
+            navigateTo("/tournament")
+        } else if(updateReq.status.value == 'error') {
+            // console.log(unref(updateReq.error))
+            console.log(getStepForField(unref(updateReq.error)))
+        }
+
+        console.log('Form submitted successfully!', formData);
+    },
+});
+
+
+const currentStepValue = computed(() => validation.currentStep.value);
+const totalStepsValue = computed(() => validation.enhancedSteps.value.length);
+const isSubmittingValue = computed(() => validation.isSubmitting.value);
+const canGoBack = computed(() => currentStepValue.value >= 1);
+const canGoNext = computed(() => currentStepValue.value < totalStepsValue.value - 1);
+const isLastStep = computed(() => currentStepValue.value == totalStepsValue.value - 1);
+
+const handelSubmit = () => {
+    validation.submitForm()
+}
+
 </script>
 
 <style scoped></style>

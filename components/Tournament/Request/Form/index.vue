@@ -2,7 +2,7 @@
     <Suspense>
     <component :is="FormComponent" />
     <template #fallback>
-        <loading />
+        <loading class="mt-10" />
     </template>
     </Suspense>
 </template>

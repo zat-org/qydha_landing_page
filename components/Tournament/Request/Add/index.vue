@@ -56,7 +56,10 @@
 </template>
 
 <script setup lang="ts">
-import { TournamentPrizeCurrency, TournamentPrizeType, TournamentType, type TournamentCreationRequest } from '~/models/tournamentRequest';
+import { type TournamentCreationRequest } from '~/models/tournamentRequest';
+// import { TournamentType } from '~/models/tournamenetType';
+import { TournamentType } from '~/models/tournamenetType';
+import { TournamentPrizeCurrency, TournamentPrizeType } from '~/models/tournamentPrize';
 
 // Type definitions for form refs
 interface FormStepRef {
@@ -205,6 +208,7 @@ const validation = useMultiStepFormValidation(formRefs as any, {
             navigateTo("/tournament/request")
         }else{
             console.log(unref(addREq.error))
+            console.log(getStepForField(unref(addREq.error)))
             toast.add({title:'eror in validation '})
         }
 

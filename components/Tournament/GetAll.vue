@@ -7,21 +7,77 @@
             <h1 class="text-3xl font-bold">البطولات</h1>
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
-          <div class="flex gap-3">
+          <!-- <div class="flex gap-3">
             <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/request/info"
               label="دليل انشاء البطولة" class="px-6" />
             <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
               label="إضافة بطولة جديدة" class="px-6" />
-          </div>
+          </div> -->
         </div>
-        <slot name="filters">
-
-        </slot>
+        <div class="flex flex-col md:flex-row gap-4 items-center w-full ">
+          <UFormField label="الحالة " class="flex-1">
+            <USelect :items="stateOptions" class="w-full " value-key="value" label-key="label"
+              placeholder="تصفية حسب الحالة" multiple v-model="filters.States" />
+          </UFormField>
+          <UFormField label="ترتيب بتاريخ  البطولة " class="flex-1">
+            <USelect :items="OrderStartAtOptions" class="w-full " value-key="value" label-key="label"
+              placeholder="ترتيب بتاريخ  البطولة " v-model="filters.OrderByStartAtDirection" />
+          </UFormField>
+        </div>
       </div>
     </template>
 
     <div class="  flex flex-col flex-1  ">
-      <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
+      <Loading v-if="getReq.status.value == 'pending'" />
+
+      <UTable v-else-if="getReq.status.value == 'success'" :data="data" class="flex-1" :columns="cols">
+        <template #title-cell="{ row }">
+          <div class="flex gap-2 items-center">
+            <ClientOnly>
+              <UAvatar size="2xl" :src="row.original.logoUrl" :text="row.original.title[0]" />
+            </ClientOnly>
+            <span>{{ row.original.title }} </span>
+          </div>
+        </template>
+        <template #startAt-cell="{ row }">
+          <span>
+            {{ formatDate(row.original.startAt) }}
+          </span>
+          :
+          <span>
+            {{ formatDate(row.original.endAt) }}
+          </span>
+        </template>
+        <template #contactPhone-cell="{ row }">
+          <span dir="ltr">
+            {{ row.original.contactPhone }}
+          </span>
+        </template>
+        <template #state-cell="{ row }">
+          <UBadge :label="getState(row.original.state).label" :color="getState(row.original.state).color"
+            variant="outline" size="xl" />
+        </template>
+        <template #showInQydha-cell="{ row }">
+          <UBadge :label="row.original.showInQydha ? 'ظاهر' : 'غير ظاهر'"
+            :color="row.original.showInQydha ? 'success' : 'neutral'" variant="outline" size="xl" />
+        </template>
+        <template #actions-cell="{ row }">
+          <UButtonGroup>
+            <!-- view single -->
+            <UButton icon="i-lucide-eye" :to="`/tournament/${row.original.id}`" variant="outline"/>
+            <!-- edit -->
+            <UButton   v-if="userStore.isStaffAdmin || userStore.isSuperAdmin"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
+
+            <UDropdownMenu 
+            v-if="userStore.isOrganizer" 
+            :items="[{label:'طلبات الانضمام',to:`/tournament/${row.original.id}/Joinrequest`}]"  >
+              <UButton icon="i-lucide-menu"  variant="outline" />
+            </UDropdownMenu>
+
+          </UButtonGroup>
+        </template>
+      </UTable>
+      <!-- <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-12 px-4">
             <UIcon name="i-heroicons-inbox" class="text-4xl text-gray-400 mb-2" />
@@ -74,33 +130,33 @@
             </UButton>
           </UDropdownMenu>
 
-          <!-- <UButton color="primary" variant="solid" label="المجموعات"  :to="`/tournament/${row.original.id}/group`" /> -->
          </UButtonGroup>
       
         </template>
-      </UTable>
+      </UTable> -->
 
-      <UPagination class="mx-auto" v-if="totalPages > 1" v-model="currentPage" :page-count="totalPages"
-        :total="totalItems" />
+      <!-- <UPagination class="mx-auto" v-if="totalPages > 1" v-model="currentPage" :page-count="totalPages"
+        :total="totalItems" /> -->
     </div>
   </UCard>
 </template>
 
 <script lang="ts" setup>
-import type { ITournament } from "~/models/tournament";
-
-const stateQ = ref<string[]>(["Upcoming", "Running", "Finished", "Review"]);
-const searchQuery = ref('');
-const loading = ref(false);
-const currentPage = ref(1);
-const totalPages = ref(5); // Example value
-const totalItems = ref(100); // Example value
-
-const ownerQ = ref();
-const nameQ = ref();
-const QydhaQ = ref(false);
-
+import { OrderByStartAtDirection, TournamentState, type GetTournamentParams } from "~/models/tournament";
+const { getAllTournament, getTournamnetStateOptions, getTournamnetOrderStartAtOptions } = useTournament();
 import { useMyAuthStore } from "~/store/Auth";
+const toast = useToast()
+
+const filters = ref<GetTournamentParams>({
+  PageNumber: 1,
+  PageSize: 10,
+  OrderByStartAtDirection: OrderByStartAtDirection.ASC
+})
+
+const dropdownItems= [
+  {}
+]
+
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
@@ -109,129 +165,54 @@ const isAdmin = computed(() => {
     user.value?.user.roles.includes('StaffAdmin')
 });
 
-const options = [
-  { label: "القادمة", value: "Upcoming" },
-  { label: "الجارية", value: "Running" },
-  { label: "المنتهية", value: "Finished" },
-  { label: "قيد المراجعة", value: "Review" },
 
-];
 
-const tourApi = useTournament();
 
-const tournaments = computed(() => {
-  return [
-    {
-      id: '1',
-      name: 'بطولة الرياض للهجن',
-      city: 'الرياض',
-      showInQydha: true,
-      state: 'Review',
-      numberOfTeamRegistered: 10,
-    },
-    {
-      id: '2',
-      name: 'سباق الهجن الكبير',
-      city: 'جدة',
-      showInQydha: false,
-      state: 'Running',
-      numberOfTeamRegistered: 10,
-    },
-    {
-      id: '3',
-      name: 'بطولة المدينة السنوية',
-      city: 'المدينة المنورة',
-      showInQydha: true,
-      state: 'Finished',
-      numberOfTeamRegistered: 10,
-    },
-    {
-      id: '4',
-      name: 'سباق الطائف للهجن',
-      city: 'الطائف',
-      showInQydha: true,
-      state: 'Upcoming',
-      numberOfTeamRegistered: 10,
-    }
-  ];
-});
+const getReq = await getAllTournament(filters)
+const stateOptions = getTournamnetStateOptions()
+const OrderStartAtOptions = getTournamnetOrderStartAtOptions()
+const data = computed(() => {
 
-const filteredRows = computed(() => {
-  let results = tournaments.value ?? [];
-
-  if (searchQuery.value) {
-    results = results.filter(tournament =>
-      tournament.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      tournament.city.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
+  if (unref(getReq.status) == 'success' && getReq.data.value) {
+    return getReq.data.value.data.items
+  }
+  if (unref(getReq.status) == 'error') {
+    toast.add({ title: " حدث خطاء في جلب بينات البطولات ", color: 'error' })
+    return []
   }
 
-  if (stateQ.value.length) {
-    results = results.filter(tournament =>
-      stateQ.value.includes(tournament.state)
-    );
+})
+const cols = [
+  {
+    accessorKey: "title",
+    header: "الاسم"
+  },
+  {
+    accessorKey: "startAt",
+    header: "التاريخ"
+  },
+  {
+    accessorKey: "contactPhone",
+    header: "الهاتف "
+  },
+  {
+    accessorKey: "state",
+    header: "الحالة "
+  },
+  {
+    accessorKey: "showInQydha",
+    header: "الظهور علي قيدها  "
+  }
+  , {
+    id: 'actions',
+    header: "#"
   }
 
-  return results;
-});
-
-const cols = computed(() => {
-  const result: any[] = [
-    {
-      accessorKey: "name",
-      header: "الاسم",
-    },
-    {
-      accessorKey: "numberOfTeamRegistered",
-      header: "عدد الفرق المسجلة"
-    }
-
-
-  ]
-
-  if (isAdmin.value) {
-    result.push(
-
-      {
-        accessorKey: "state",
-        header: "الحالة"
-      },
-      {
-        accessorKey: "showInQydha",
-        header: "قيدها"
-      },
-      { id: "links", header: "الروابط" }
-
-
-    )
-  }
-  return result;
-});
-
-const getStateColor = (state: string) => {
-  switch (state) {
-    case 'Upcoming': return 'blue';
-    case 'Running': return 'green';
-    case 'Finished': return 'gray';
-    default: return 'gray';
-  }
+]
+const getState = (state: TournamentState): any => {
+  return stateOptions.find(op => op.value == state)
 }
 
-const getStateLabel = (state: string) => {
-  switch (state) {
-    case 'Upcoming': return 'قادمة';
-    case 'Running': return 'جارية';
-    case 'Finished': return 'منتهية';
-    case 'Review': return 'قيد المراجعة';
-    default: return state;
-  }
-}
-
-import type { TableRow } from '@nuxt/ui'
-
-const select = (row: TableRow<any>) => {
-  navigateTo(`/tournament/${row.original.id}`);
-};
 </script>
 
 <style></style>

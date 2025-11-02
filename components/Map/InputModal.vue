@@ -9,8 +9,11 @@
    <!-- </UFormField> -->
    
     <template #body>
+
       <div class=" w-full h-full">
-        <div id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0" ></div>
+      <Loading  v-show="!map"/>
+        <div   id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0" ></div>
+      
       </div>
     </template>
     <template #footer>

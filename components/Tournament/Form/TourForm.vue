@@ -78,11 +78,11 @@
       :help="modelValue.location.latitude != 0 && modelValue.location.longitude != 0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'">
       <MapInputModal v-model="modelValue.location" name="location" label="مكان البطولة" required />
       </UFormField>
-    <UFormField label="نوع البطولة" name="type" required>
-        <USelect v-model="modelValue.type" :items="TournamentTypeOptions" placeholder="اختر نوع البطولة" />
+    <UFormField label="نوع البطولة" name="tournamentType" required>
+        <USelect v-model="modelValue.tournamentType" :items="TournamentTypeOptions" placeholder="اختر نوع البطولة" />
       </UFormField>
     <UFormField label="رمز السري البطولة " name="tournamentPrivatePassword"
-        v-if="modelValue.type == TournamentType.private" required>
+        v-if="modelValue.tournamentType == TournamentType.private" required>
         <UInput v-model="modelValue.tournamentPrivatePassword" placeholder="أدخل  الرمز السري للبطولة " />
       </UFormField>
 
@@ -126,7 +126,7 @@
 <script lang="ts" setup>
 import { object, string, number, boolean, array, mixed } from "yup";
 import { TournamentType } from "~/models/tournamenetType";
-import type { DetailTournamentRequest } from "~/models/tournamentRequest";
+import type { DetailTournament } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 
 const props = defineProps<{
@@ -139,7 +139,7 @@ const props = defineProps<{
     isContactPhoneWhatsapp: boolean;
     isContactPhoneCall: boolean;
     sponsors: File[];
-    type: TournamentType;
+    tournamentType: TournamentType;
     tournamentPrivatePassword?: string;
     locationDescription: string;
     // isAddPlayersByQydha:boolean
@@ -158,7 +158,7 @@ const localSchema = object({
   title: string().required("اسم البطولة مطلوب"),
   description: string().required("وصف البطولة مطلوب"),
   logo: mixed(),
-  type: string().required("نوع البطولة مطلوب"),
+  tournamentType: string().required("نوع البطولة مطلوب"),
   tournamentPrivatePassword: string().when('type', {
     is: TournamentType.private,
     then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"),
@@ -218,23 +218,19 @@ defineExpose({
 const route =useRoute()
 const id= route.params.id.toString()
 const authStore = useMyAuthStore()
-const adminData =useNuxtData<{data:DetailTournamentRequest}>(`AdminGetSingleTournamentRequest-${id}`)
-const organizerData =useNuxtData<{data:DetailTournamentRequest}>(`OrganizerGetSingleTournamentRequest-${id}`)
+
+const adminData =useNuxtData<{data:DetailTournament}>(`getSingelTournament-${id}`)
 
 const SelectedRequest = computed(()=>{
-  if (authStore.isStaffAdmin || authStore.isSuperAdmin){
     return  unref(adminData.data.value?.data)
-  }else{
-    return unref(organizerData.data.value?.data)
-  }
 })
 
 
 const logoImageUrl = ref<string>();
 
 watch(SelectedRequest,()=>{
-  if(SelectedRequest.value?.logoUrl){
-  logoImageUrl.value = SelectedRequest.value?.logoUrl;
+  if(SelectedRequest.value?.tournament.logoUrl){
+  logoImageUrl.value = SelectedRequest.value.tournament.logoUrl;
 }
 },{immediate:true})
 
@@ -269,8 +265,8 @@ const onLogoChange = (event: Event) => {
 const SponsorInput = ref<any>()
 const SponsorsUrl = ref<string[]>([]);
 watch(SelectedRequest,()=>{
-  if(SelectedRequest.value?.sponsorsUrls && SelectedRequest.value?.sponsorsUrls.length>0){
-    SponsorsUrl.value = SelectedRequest.value?.sponsorsUrls
+  if(SelectedRequest.value?.tournament.sponsors && SelectedRequest.value?.tournament.sponsors.length>0){
+    SponsorsUrl.value = SelectedRequest.value?.tournament.sponsors
   sponsersAvilabel.value= true
 
 }

@@ -1,52 +1,57 @@
-import { TournamentState } from "~/models/tournament";
 import {
-  TournamentPrizeCurrency,
-  TournamentType,
+
   type DetailTournamentRequest,
-  type GetTournamentParams,
-  type getTournamentResponse,
+  type GetTournamentRequestParams,
+  type getTournamentRequestResponse,
   type TournamentCreationRequest,
   type TournamentRequest,
   type UpdateTournamentCreationRequest,
+  TournamentRequestState
 } from "~/models/tournamentRequest";
+import {
+  TournamentPrizeCurrency,
+} from "~/models/tournamentPrize";
+import {
+  TournamentType,
+} from "~/models/tournamenetType";
+
 import { useMyAuthStore } from "~/store/Auth";
-const tournamentStateLabels: Record<TournamentState, string> = {
-  [TournamentState.Pending]: "جاري المراجعة",
-  [TournamentState.Approved]: "تم الموافقة ",
-  [TournamentState.Rejected]: "تم الرفض",
-  [TournamentState.Canceled]: "تم الالغاء",
+const tournamentStateLabels: Record<TournamentRequestState, string> = {
+  [TournamentRequestState.Pending]: "جاري المراجعة",
+  [TournamentRequestState.Approved]: "تم الموافقة ",
+  [TournamentRequestState.Rejected]: "تم الرفض",
+  [TournamentRequestState.Canceled]: "تم الالغاء",
 };
-const tournamentStateColors: Record<TournamentState, string> = {
-  [TournamentState.Pending]:
-    "dark:text-yellow-100 dark:bg-yellow-800 text-yellow-800 bg-yellow-100", // Tailwind yellow for pending
-  [TournamentState.Approved]:
-    "dark:text-green-100 dark:bg-green-800 text-green-800 bg-green-100", // Tailwind green for approved
-  [TournamentState.Rejected]:
-    "dark:text-red-100 dark:bg-red-800 text-red-800 bg-red-100", // Tailwind red for rejected
-  [TournamentState.Canceled]:
-    "dark:text-gray-100 dark:bg-gray-800 text-gray-800 bg-gray-100", // Tailwind gray for canceled
+const tournamentStateColors: Record<TournamentRequestState,'warning'|'success'|'error'|'neutral'> = {
+  [TournamentRequestState.Pending]:"warning", // Tailwind yellow for pending
+  [TournamentRequestState.Approved]:"success", // Tailwind green for approved
+  [TournamentRequestState.Rejected]:"error", // Tailwind red for rejected
+  [TournamentRequestState.Canceled]:"neutral", // Tailwind gray for canceled
 };
+
+const getStateColor = (state: TournamentRequestState) => {
+  return tournamentStateColors[state]
+}
 const tournamentTypeLabels: Record<TournamentType, string> = {
   [TournamentType.public]: "عامة",
   [TournamentType.private]: "خاصة ",
 };
 
-const tournamentTypeColors: Record<TournamentType, string> = {
-  [TournamentType.public]:
-    "dark:text-blue-100 dark:bg-blue-800 text-blue-800 bg-blue-100",
-  [TournamentType.private]:
-    "dark:text-gray-100 dark:bg-gray-800 text-gray-800 bg-gray-100",
+
+const tournamentTypeColors: Record<TournamentType, 'info'|'neutral'> = {
+  [TournamentType.public]:"info",
+  [TournamentType.private]:"neutral",
 };
 const tournamentprizeCurrencyLable: Record<TournamentPrizeCurrency, string> = {
-  [TournamentPrizeCurrency.USD]: "دولار أمريكي (USD)",
-  [TournamentPrizeCurrency.EGP]: "جنيه مصري (EGP)",
-  [TournamentPrizeCurrency.SAR]: "ريال سعودي (SAR)",
-  [TournamentPrizeCurrency.AED]: "درهم إماراتي (AED)",
-  [TournamentPrizeCurrency.EUR]: "يورو (EUR)",
-  [TournamentPrizeCurrency.JOD]: "دينار أردني (JOD)",
-  [TournamentPrizeCurrency.KWD]: "دينار كويتي (KWD)",
-  [TournamentPrizeCurrency.TRY]: "ليرة تركية (TRY)",
-  [TournamentPrizeCurrency.GBP]: "جنيه إسترليني (GBP)",
+  [TournamentPrizeCurrency.USD]: "دولار أمريكي ",
+  [TournamentPrizeCurrency.EGP]: "جنيه مصري ",
+  [TournamentPrizeCurrency.SAR]: "ريال سعودي ",
+  [TournamentPrizeCurrency.AED]: "درهم إماراتي ",
+  [TournamentPrizeCurrency.EUR]: "يورو ",
+  [TournamentPrizeCurrency.JOD]: "دينار أردني ",
+  [TournamentPrizeCurrency.KWD]: "دينار كويتي ",
+  [TournamentPrizeCurrency.TRY]: "ليرة تركية ",
+  [TournamentPrizeCurrency.GBP]: "جنيه إسترليني ",
 };
 
 export const useTournamentRequest = () => {
@@ -122,10 +127,13 @@ export const useTournamentRequest = () => {
     return { data, status, fetchREQ, pending, error };
   };
   //Organizer
-  const OrganizerGetTournamentRequests = (params: Ref<GetTournamentParams>) => {
+  const OrganizerGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
     const param = ref(params.value);
+    watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
+      param.value.pageNumber=1
+    })
 
-    const { data, status, pending } = useAsyncData<getTournamentResponse>(
+    const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
       "OrganizerTourReqests",
       () => $api("tournaments/creation-request/me", { params: unref(param) }),
       {
@@ -147,8 +155,8 @@ export const useTournamentRequest = () => {
     const { data, status, execute, pending } = useAsyncData(
       "OrganizerCancelRequest",
       () =>
-        $api(`/tournaments/creation-request/${unref(id)}/cancel`, {
-          method: "patch",
+        $api(`/tournaments/creation-request/me/${unref(id)}/cancel`, {
+          method: "patch",  
         }),
       { immediate: false }
     );
@@ -164,10 +172,13 @@ export const useTournamentRequest = () => {
     return { data, status, pending, fetchREQ };
   };
   // admin
-  const AdminGetTournamentRequests = (params: Ref<GetTournamentParams>) => {
+  const AdminGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
     const param = ref(params.value);
+    watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
+      param.value.pageNumber=1
+    })
 
-    const { data, status, pending } = useAsyncData<getTournamentResponse>(
+    const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
       "AdminTourReqests",
       () => $api("tournaments/creation-request", { params: unref(param) }),
       {
@@ -305,7 +316,7 @@ export const useTournamentRequest = () => {
   const getTournamnetStateOptions = () => {
     const options = [
       { label: "الكل", value: null, color: null },
-      ...Object.values(TournamentState).map((value) => ({
+      ...Object.values(TournamentRequestState).map((value) => ({
         label: tournamentStateLabels[value],
         color: tournamentStateColors[value],
         value,
@@ -348,5 +359,6 @@ export const useTournamentRequest = () => {
     getTournamnetStateOptions,
     getTournamentTypeOptions,
     getTournamentPrizeCurrency,
+    getStateColor
   };
 };

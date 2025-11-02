@@ -82,14 +82,7 @@ const props = defineProps<{
 }>()
 
 // Methods
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'غير محدد'
-  return new Date(dateString).toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
+
 
 const getTournamentStatusColor = (status: string) => {
   switch (status) {

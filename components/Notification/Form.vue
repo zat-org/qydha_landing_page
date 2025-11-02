@@ -129,16 +129,31 @@ const schema = object({
   user: string(),
 });
 // screen name options
+// TournamentDetailsScreen -> /tournament-details/:id
+// JoinTournamentScreen -> /join-tournament/:id
 const screenOptions = [
   { label: "البلوت", value: "/baloot-game" },
   { label: "الهند", value: "/hand-game" },
-  { label: "  الاعدادات الفرق", value: "/team-settings" },
-  { label: "تعديل البرفيل", value: "/edit-profile" },
+  { label: "المكتبة", value: "/library" },
+  { label: "كتاب البلوت", value: "/baloot-book" },
+  { label: "المحادثات المباشرة", value: "/live-chat" },
+  { label: " الاشعارات", value: "/notifications" },
+  { label: " الاشعارات", value: "/notifications" },
+  { label: "اشيف الالعاب", value: "/games-archive" },
+  { label: "تعديل المستخدم ", value: "/edit-profile" },
   { label: "الاعدادات", value: "/app-settings" },
+  { label: "اعدادات المستخدم", value: "/user-settings" },
+  { label: "  الاعدادات اللاعبين", value: "/players-settings" },
   { label: "مسح المستخدم", value: "/delete-user" },
   { label: "تغيير كلمة المرور", value: "/change-password" },
+  { label: "نسي  كلمة المرور", value: "/forget-password" },
+  { label: "تعيين كلمة المرور جديدة ", value: "/set-new-password" },
   { label: "عنا", value: "/about-us" },
   { label: "قوانين الخصوصية", value: "/privacy-policy" },
+  { label: "الشروط والاحكام", value: "/terms" },
+  { label: "البطولات", value: "/tournaments-tab" },
+  { label: " طلبات الانضمام للبطولات  ", value: "/tournament-user-requests" },
+  { label: " دعوات الانضمام للبطولات  ", value: "/tournament-invitations" },
 ];
 // tab names options
 const tabOptions = [

@@ -180,12 +180,12 @@ const promoCount = computed(() => userData.value?.promoCodes?.length || 0)
 const purchaseCount = computed(() => userData.value?.purchases?.length || 0)
 const influncerCount = computed(() => userData.value?.influencerCodes?.length || 0)
 
-const formatDateTime = (iso?: string) => {
-  if (!iso) return '—'
-  const d = new Date(iso)
-  if (Number.isNaN(d.getTime())) return '—'
-  return d.toLocaleString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
-}
+// const formatDateTime = (iso?: string) => {
+//   if (!iso) return '—'
+//   const d = new Date(iso)
+//   if (Number.isNaN(d.getTime())) return '—'
+//   return d.toLocaleString('ar-EG', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+// }
 const formattedCreatedOn = computed(() => formatDateTime(userData.value?.user.createdOn))
 const formattedLastLogin = computed(() => formatDateTime(userData.value?.user.lastLogin))
 

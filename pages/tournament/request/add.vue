@@ -9,7 +9,7 @@ import { TournamentRequsetFormType } from '~/models/tournamentRequest';
 
   const mode = TournamentRequsetFormType.Add
   definePageMeta({ middleware: ['auth','role'],
-    requiredRoles: ['StaffAdmin', 'SuperAdmin',"Organizer"],
+    requiredRoles: ["Organizer"],
    });
    useHead({
     title:'إضافة بطولة',

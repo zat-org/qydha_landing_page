@@ -41,9 +41,18 @@ export default defineNuxtPlugin(() => {
       };
     },
     onResponseError: (error) => {
-      if (error.response.status == 403 || error.response.status == 401) {
+      if ( error.response.status == 401) {
         user.value = null;
         navigateTo("/");
+      }else if (error.response.status == 403) {
+        // navigateTo("/unauthorized");
+        const toast  = useToast()
+        toast.add({
+          title: "ليس لديك صلاحيات الوصول لهذه الصفحة",
+          color: "error",
+          icon: "i-heroicons-exclamation-triangle",
+        });
+
       }
     },
   });

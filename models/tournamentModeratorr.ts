@@ -11,6 +11,12 @@ export interface IModerator {
     permissions: string[]
 }
 
+export interface TournamentModerator {
+
+    user: MinUser
+    permissions: string[]
+}
+
 export interface IModeratorUpdate {
 
     permissions: string[]

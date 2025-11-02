@@ -1,5 +1,5 @@
 <template>
-  <TournamentRequest :tournamentId="id"/>
+  <TournamentJoiningRequest :tournamentId="id"/>
 </template>
 
 <script lang="ts" setup>
@@ -8,8 +8,9 @@ const id = route.params.id.toString();
 
 definePageMeta({ 
   middleware: ['auth','role'],
-  requiredRoles: ['StaffAdmin', 'SuperAdmin'],
+  requiredRoles: ['Organizer'],
 });
+
 useHead({
   title:' طلبات البطولة',
   meta:[

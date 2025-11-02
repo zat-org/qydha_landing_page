@@ -7,10 +7,14 @@
         <!-- Tournament Prize Section -->
         <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-6 " ref="form">
             <TournamentRequestFormTourDetailFormEnrollmentDates v-model="model" />
-            <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
-                <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
+            <UFormField label="العرض في قيدها  " name="showInQydha" size="xl">
+                <USwitch v-model="modelValue.showInQydha" size="xl" />
             </UFormField>
-           <template v-if="modelValue.isAddPlayersByQydha">
+            <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
+                <USwitch v-model="modelValue.addPlayersByQydha" size="xl" />
+            </UFormField>
+           <template v-if="modelValue.addPlayersByQydha">
+
                <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
                    <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
                </UFormField>
@@ -106,7 +110,7 @@
 </template>
 
 <script lang="ts" setup>
-import { object, string, number, boolean, array, mixed } from "yup";
+import { object, string, number, boolean, array } from "yup";
 import type { TournamentPrizeType } from "~/models/tournamentPrize";
 
 const model = defineModel<{
@@ -122,10 +126,11 @@ const model = defineModel<{
     }[]
     teamsCount: number;
     tablesCount: number;
-    isAddPlayersByQydha: boolean;
+    addPlayersByQydha: boolean;
     joinRequestEndAt?: string;
     joinRequestStartAt?: string;
     joinRequestMaxCount?: number;
+    showInQydha:boolean;
 
     // TournametPrizeOption: number;
     // TournametPrize: { money: number, items: string[], position: number, isMoney: boolean, isItem: boolean, currency: string }[];
@@ -197,7 +202,7 @@ const localSchema = object({
                     const tournamentStartDate = new Date(tournamentStart);
                     return requestStartDate < tournamentStartDate;
                 }),
-            otherwise: (schema) =>schema.notRequired()
+            otherwise: (schema) => schema.notRequired()
         }),
     
     joinRequestEndAt: string()
@@ -349,7 +354,7 @@ const validate = async (): Promise<boolean> => {
         isValid.value = true;
         return true;
     } catch (error: any) {
-        console.log(form.value?.getErrors());
+        // console.log(form.value?.getErrors());
         return false;
     } finally {
         isValidating.value = false;
@@ -464,8 +469,65 @@ const validatePositiveNumber = (event: Event) => {
 }
 
 // Helper function to revalidate a field
+const revalidateField = (fieldName: string) => {
+    if (form.value) {
+        // Use nextTick to ensure the value has been updated
+        nextTick(() => {
+            // Clear any existing errors for the field
+            form.value?.setErrors([{name:fieldName, message:''}]);
+            // Force validation by validating the entire form and catching errors
+            form.value?.validate().catch(() => {
+                // Validation errors are now updated
+            });
+        });
+    }
+};
+
+// Watch for changes to startAt and revalidate dependent fields
+watch(() => model.value.startAt, () => {
+    if (form.value) {
+        // Revalidate joinRequestStartAt when startAt changes
+        if (model.value.joinRequestStartAt) {
+            revalidateField('joinRequestStartAt');
+        }
+        // Revalidate joinRequestEndAt when startAt changes
+        if (model.value.joinRequestEndAt) {
+            revalidateField('joinRequestEndAt');
+        }
+    }
+});
+
+// Watch for changes to joinRequestStartAt and revalidate dependent fields
+watch(() => model.value.joinRequestStartAt, () => {
+    if (form.value) {
+        // Revalidate joinRequestEndAt when joinRequestStartAt changes
+        if (model.value.joinRequestEndAt) {
+            revalidateField('joinRequestEndAt');
+        }
+    }
+});
+watch(() => model.value.joinRequestEndAt, () => {
+    if (form.value) {
+        // Revalidate joinRequestEndAt when joinRequestStartAt changes
+        if (model.value.joinRequestEndAt) {
+            revalidateField('joinRequestEndAt');
+        }
+    }
+});
 
 // Watch for changes to endAt and revalidate dependent fields
+watch(() => model.value.endAt, () => {
+    if (form.value) {
+        // Revalidate joinRequestStartAt when endAt changes (it must be before startAt)
+        if (model.value.joinRequestStartAt) {
+            revalidateField('joinRequestStartAt');
+        }
+        // Revalidate joinRequestEndAt when endAt changes
+        if (model.value.joinRequestEndAt) {
+            revalidateField('joinRequestEndAt');
+        }
+    }
+});
 
 // Enhanced sakka options using the composable
 // const updateSakkaOptions = () => {

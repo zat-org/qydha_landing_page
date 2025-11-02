@@ -196,7 +196,7 @@
 
 <script lang="ts" setup>
 import { useMyAuthStore } from '~/store/Auth'
-
+import {formatDate} from '~/utils/formatDate' 
 // Props
 const props = defineProps<{
   id?: string
@@ -375,14 +375,14 @@ const canEdit = computed(() => {
 })
 
 // Methods
-const formatDate = (dateString: string | undefined) => {
-  if (!dateString) return 'غير محدد'
-  return new Date(dateString).toLocaleDateString('ar-SA', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
+// const formatDate = (dateString: string | undefined) => {
+//   if (!dateString) return 'غير محدد'
+//   return new Date(dateString).toLocaleDateString('ar-SA', {
+//     year: 'numeric',
+//     month: 'long',
+//     day: 'numeric'
+//   })
+// }
 
 const viewDocument = (document: any) => {
   selectedDocument.value = document
