@@ -1,5 +1,7 @@
+import { ConsoleLogger } from "@microsoft/signalr/dist/esm/Utils";
 import  {
  type GetTournamentJoinRequestParams,
+ type GetTournamentJoinRequestResponse,
  type TournamentJoinRequest,
   TournamentJoinRequestState,
   TournamentJoinRequestType,
@@ -39,7 +41,7 @@ export const useTournamentJoinRequest = () => {
   ) => {
     const param = ref(params);
     return useAsyncData<{
-      data: TournamentJoinRequest[];
+      data: GetTournamentJoinRequestResponse;
       message: string;
     }>(
       "getTournamentJoinRequests",
@@ -55,9 +57,10 @@ export const useTournamentJoinRequest = () => {
       "ApproveJoinRequest",
       () =>
         $api(`/tournaments/join-request/${joinRequestId}/approve`, {
-          method: "post",
+          method: "patch",
           onResponse: (response: any) => {
-            if (response.status === 200) {
+            console.log(response.isOk)
+            if (response.isOk) {
               refreshNuxtData("getTournamentJoinRequests");
             }
           },
@@ -71,9 +74,9 @@ export const useTournamentJoinRequest = () => {
       "RejectJoinRequest",
       () =>
         $api(`/tournaments/join-request/${joinRequestId}/reject`, {
-          method: "post",
+          method: "patch",
           onResponse: (response: any) => {
-            if (response.status.isOk) {
+            if (response.isOk) {
               refreshNuxtData("getTournamentJoinRequests");
             }
           },

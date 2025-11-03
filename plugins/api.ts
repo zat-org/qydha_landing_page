@@ -52,6 +52,8 @@ export default defineNuxtPlugin(() => {
           color: "error",
           icon: "i-heroicons-exclamation-triangle",
         });
+        const router = useRouter()
+        router.back()
 
       }
     },

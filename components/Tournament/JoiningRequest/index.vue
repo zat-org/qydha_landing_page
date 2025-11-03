@@ -24,7 +24,6 @@
       </div>
     </template>
 
-    <div class="space-y-6">
       <!-- Loading State -->
 
 
@@ -38,82 +37,39 @@
       </div> -->
 
       <!-- Requests Table -->
-      <div>
-        <UTable :data="[]" :columns="columns" class="w-full">
-          <!-- Team Name Column -->
-          <template #name-cell="{ row }">
-            <div class="flex items-center space-x-3 space-x-reverse">
-              <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                  <UIcon name="i-heroicons-user-group" class="w-5 h-5 text-blue-600" />
-                </div>
-              </div>
-              <!-- <div>
-                <div class="text-sm font-medium text-gray-900">{{ row.original.name }}</div>
-                <div class="text-sm text-gray-500">رقم الفريق: {{ row.original.id }}</div>
-              </div> -->
-            </div>
+      <div class="flex flex-col gap-4 items-center  h-full  flex-1">
+        <Loading v-if="getRequest.status.value == 'pending'" />
+        <UTable v-else :data="data" class="w-full" :columns="cols">
+          <template #type-cell="{ row }">
+            <UBadge :label="getType(row.original.type).label" :color="getType(row.original.type).color" variant="outline" />
           </template>
-
-          <!-- Status Column -->
-          <template #status-cell="{ row }">
-            <!-- <UBadge :color="getStatusColor(row.original.status)"
-              :variant="row.original.status === 'Pending' ? 'soft' : 'subtle'">
-              {{ getStatusText(row.original.status) }}
-            </UBadge> -->
+          <template #state-cell="{ row }">
+            <UBadge :label="getState(row.original.state).label" :color="getState(row.original.state).color" variant="outline" />
           </template>
-
-          <!-- Members Column -->
-          <template #members-cell="{ row }">
-            <!-- <div class="text-sm">
-              <div class="font-medium text-gray-900">{{ row.original.players?.length || 0 }} أعضاء</div>
-              <div class="text-gray-500">
-                <template v-if="row.original.players && row.original.players.length > 0">
-                  {{row.original.players.slice(0, 2).map((p: IPlayer) => p.name).join('، ')}}
-                  <span v-if="row.original.players.length > 2">، و{{ row.original.players.length - 2 }} آخرين</span>
-                </template>
-                <span v-else>لا يوجد أعضاء</span>
-              </div>
-            </div> -->
+          <template #owner-cell="{ row }">
+            <span>{{ row.original.ownerUserName }}</span>
           </template>
-
-
-          <!-- Actions Column -->
+          <template #teammate-cell="{ row }">
+            <span>{{ row.original.type === 'Team' ? (row.original.teammateUserName || '-') : '-' }}</span>
+          </template>
+          <template #teamName-cell="{ row }">
+            <span>{{ row.original.type === 'Team' ? (row.original.teamName || '-') : '-' }}</span>
+          </template>
+          <template #createdAt-cell="{ row }">
+            <span>{{ formatDate(row.original.createdAt as string) }}</span>
+          </template>
           <template #actions-cell="{ row }">
-            <!-- <div class="flex gap-2 justify-end">
-              <template v-if="row.original.status === 'Pending'">
-                <UButton color="success" variant="solid" size="xs" :loading="acceptingTeam === row.original.id"
-                  @click="acceptTeam(row.original.id)">
-                  <UIcon name="i-heroicons-check" class="w-3 h-3" />
-                </UButton>
-                <UButton color="error" variant="solid" size="xs" :loading="refusingTeam === row.original.id"
-                  @click="refuseTeam(row.original.id)">
-                  <UIcon name="i-heroicons-x-mark" class="w-3 h-3" />
-                </UButton>
-              </template>
-
-              <template v-else-if="row.original.status === 'Approved'">
-                <UButton color="error" variant="outline" size="xs" :loading="refusingTeam === row.original.id"
-                  @click="refuseTeam(row.original.id)">
-                  <UIcon name="i-heroicons-x-mark" class="w-3 h-3" />
-                </UButton>
-              </template>
-
-              <template v-else-if="row.original.status === 'Rejected'">
-                <UButton color="success" variant="outline" size="xs" :loading="acceptingTeam === row.original.id"
-                  @click="acceptTeam(row.original.id)">
-                  <UIcon name="i-heroicons-check" class="w-3 h-3" />
-                </UButton>
-              </template>
-
-              <UButton color="neutral" variant="ghost" size="xs" @click="viewTeamDetails(row.original)">
-                <UIcon name="i-heroicons-eye" class="w-3 h-3" />
-              </UButton>
-            </div> -->
+            <UButtonGroup>
+              <UButton v-if="canAct(row.original.state)" color="success" variant="outline" icon="i-lucide-check" :loading="actionLoadingId === row.original.id && actionType==='approve'"
+                @click="onApprove(row.original.id)"></UButton>
+              <UButton v-if="canAct(row.original.state)" color="error" variant="outline" icon="i-lucide-x" :loading="actionLoadingId === row.original.id && actionType==='reject'"
+                @click="onReject(row.original.id)"></UButton>
+            </UButtonGroup>
           </template>
         </UTable>
+        
+        <UPagination  class="mt-auto" v-model="params.pageNumber" :total="getRequest.data.value?.data.totalCount ?? 0" :page-size="params.pageSize" />
       </div>
-    </div>
 
    
 
@@ -154,7 +110,7 @@
 
 <script lang="ts" setup>
 import { useTournamentJoinRequest } from '~/composables/TournamentJoinRequest';
-import type { GetTournamentJoinRequestParams } from '~/models/TournamentJoinRequest';
+import  { type GetTournamentJoinRequestParams, TournamentJoinRequestState } from '~/models/TournamentJoinRequest';
 
 // Props
 interface Props {
@@ -171,51 +127,63 @@ const params = ref<GetTournamentJoinRequestParams>({
 const toast = useToast()
 const { getTournamentJoinRequests, ApproveJoinRequest, RejectJoinRequest ,getTournamentJoinRequestStateOptions,getTournamentJoinRequestTypeOptions} = useTournamentJoinRequest()
 const getRequest = getTournamentJoinRequests(props.tournamentId, params)
+const data = computed(() => getRequest.data.value?.data.items ?? [])
+// Helpers
+type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+const stateOptions = getTournamentJoinRequestStateOptions()
+const typeOptions = getTournamentJoinRequestTypeOptions()
+const getState = (state: any) => {
+  const found = stateOptions.find((o:any) => o.value === state)
+  return found ? { label: found.label, color: (found.color ?? 'neutral') as BadgeColor } : { label: state, color: 'neutral' as BadgeColor }
+}
+const getType = (type: any) => {
+  const found = typeOptions.find((o:any) => o.value === type)
+  return found ? { label: found.label, color: (found.color ?? 'neutral') as BadgeColor } : { label: type, color: 'neutral' as BadgeColor }
+}
+
+// Action handling
+const actionLoadingId = ref<string | null>(null)
+const actionType = ref<'approve' | 'reject' | null>(null)
+const canAct = (state: TournamentJoinRequestState) => [TournamentJoinRequestState.WaitingApproval].includes(state)
+const onApprove = async (id: any) => {
+  actionLoadingId.value = id
+  actionType.value = 'approve'
+  try {
+    const req = await ApproveJoinRequest(id)
+    await req.execute()
+    toast.add({ title: 'تمت الموافقة على الطلب', color: 'success' })
+  } catch (e) {
+    toast.add({ title: 'فشل قبول الطلب', color: 'error' })
+  } finally {
+    actionLoadingId.value = null
+    actionType.value = null
+  }
+}
+const onReject = async (id: any) => {
+  actionLoadingId.value = id
+  actionType.value = 'reject'
+  try {
+    const req = await RejectJoinRequest(id)
+    await req.execute()
+    toast.add({ title: 'تم رفض الطلب', color: 'success' })
+  } catch (e) {
+    toast.add({ title: 'فشل رفض الطلب', color: 'error' })
+  } finally {
+    actionLoadingId.value = null
+    actionType.value = null
+  }
+}
 
 // Table Columns
-const columns = [
-  {
-    accessorKey: 'name',
-    header: 'اسم الفريق',
-    sortable: true
-  },
-  {
-    accessorKey: 'status',
-    header: 'الحالة',
-    sortable: true
-  },
-  {
-    accessorKey: 'members',
-    header: 'الأعضاء',
-    sortable: false
-  },
-
-  {
-    accessorKey: 'actions',
-    header: 'الإجراءات',
-    sortable: false
-  }
+const cols = [
+  { accessorKey: 'teamName', header: 'الفريق' },
+  { accessorKey: 'owner', header: 'المالك' },
+  { accessorKey: 'teammate', header: 'الزميل' },
+  { accessorKey: 'type', header: 'النوع' },
+  { accessorKey: 'state', header: 'الحالة' },
+  { accessorKey: 'createdAt', header: 'تاريخ الطلب' },
+  { id: 'actions', header: '#' }
 ]
-
-const playerColumns = [
-  {
-    accessorKey: 'name',
-    header: 'الاسم',
-    sortable: true
-  },
-  {
-    accessorKey: 'contact',
-    header: 'الاتصال',
-    sortable: false
-  },
-  {
-    accessorKey: 'status',
-    header: 'الحالة',
-    sortable: true
-  }
-]
-
-
 
 </script>
 

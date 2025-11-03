@@ -24,8 +24,8 @@
   
             <UBadge v-for="role in row.original.roles" variant="outline"
               :icon="new Date(row.original.expireDate).getTime() > new Date().getTime() && role == 'User' ? 'i-heroicons-star-16-solid' : ''"
-              :label="role == 'User' ? 'مستخدم' : role == 'Streamer' ? 'استريمر' : (role as string).includes('Staff') ? 'استف' : 'ادمن'"
-              :color="role == 'User' ? 'neutral' : role == 'Streamer' ? 'error' : (role as string).includes('Admin') ? 'primary' : 'success'">
+              :label="userApi.getUserRoleLabel(role)"
+              :color="userApi.getUserRoleColor(role)">
             </UBadge>
           </div>
         </template>
@@ -44,6 +44,7 @@
 
 <script lang="ts" setup>
 import type { User } from "~/models/user";
+const userApi = useUsers()
 const UButton = resolveComponent('UButton')
 const UBadge = resolveComponent('UBadge')
 

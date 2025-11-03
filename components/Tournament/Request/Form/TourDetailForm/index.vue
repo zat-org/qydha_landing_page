@@ -6,22 +6,60 @@
     }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
         <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-6 " ref="form">
-            <TournamentRequestFormTourDetailFormEnrollmentDates v-model="model" />
+            <!-- Timeline representation for key dates -->
+            <div class="space-y-3">
+                <div class="text-sm text-gray-700 dark:text-gray-200 font-medium">المخطط الزمني لاختيار التواريخ</div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <!-- Join Request Start -->
+                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
+                        <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt"   />
+                        </UFormField>
+                    </div>
+                    <!-- Join Request End -->
+                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                      <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
+                        <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt" />
+                      </UFormField>
+                    </div>
+                    <!-- Tournament Start -->
+                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="بداية البطولة" name="startAt">
+                            <AsyncDatePicker v-model="model.startAt" :min-date="new Date()" />
+                        </UFormField>
+                    </div>
+                    <!-- Tournament End -->
+                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="نهاية البطولة" name="endAt">
+                            <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
+                        </UFormField>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <TournamentRequestFormTourDetailFormEnrollmentDates v-model="model" /> -->
+            <!-- <UFormField label="بداية  البطولة" name="startAt">
+                <AsyncDatePicker v-model="model.startAt" :min-date="new Date()" />
+            </UFormField>
+            <UFormField label="نهاية البطولة" name="endAt">
+                <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
+            </UFormField> -->
             <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
                 <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
             </UFormField>
-           <template v-if="modelValue.isAddPlayersByQydha">
-               <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
-                   <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
-               </UFormField>
-               <UFormField label="انتهاء تقديم طلبات الانضمام" name="joinRequestEndAt">
-                   <AsyncDatePicker v-model="model.joinRequestEndAt":min-date="model.joinRequestStartAt"  :max-date="model.startAt"  />
-               </UFormField>
-               <UFormField label=" اقصي عدد اللاعبين  " name="joinRequestMaxCount">
-                   <UInput type="number" v-model="model.joinRequestMaxCount" />
-               </UFormField>
-           </template>
-            
+            <template v-if="modelValue.isAddPlayersByQydha">
+                <!-- <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
+                    <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
+                </UFormField>
+                <UFormField label="انتهاء تقديم طلبات الانضمام" name="joinRequestEndAt">
+                    <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
+                        :max-date="model.startAt" />
+                </UFormField> -->
+                <UFormField label=" اقصي عدد اللاعبين  " name="joinRequestMaxCount">
+                    <UInput type="number" v-model="model.joinRequestMaxCount" />
+                </UFormField>
+            </template>
+
             <TournamentRequestFormTourDetailFormPrizeManagement v-model="model" />
 
 
@@ -140,6 +178,8 @@ const model = defineModel<{
 
 
 
+// Computed min/max bounds for timeline pickers (same rules as form fields)
+
 // Enhanced validation state management
 const isValid = ref(false);
 const errors = ref<Record<string, string>>({});
@@ -157,6 +197,15 @@ const localSchema = object({
             if (!value) return true; // Let required validation handle empty values
             const date = new Date(value);
             return !isNaN(date.getTime());
+        })
+        .test('start-after-today', 'تاريخ بداية البطولة يجب أن يكون بعد تاريخ اليوم', function (value) {
+            if (!value) return true;
+            const date = new Date(value);
+            const today = new Date();
+            // Set time portion of both to zero for date-only comparison
+            date.setHours(0,0,0,0);
+            today.setHours(0,0,0,0);
+            return date > today;
         }),
 
     endAt: string()
@@ -197,9 +246,9 @@ const localSchema = object({
                     const tournamentStartDate = new Date(tournamentStart);
                     return requestStartDate < tournamentStartDate;
                 }),
-            otherwise: (schema) =>schema.notRequired()
+            otherwise: (schema) => schema.notRequired()
         }),
-    
+
     joinRequestEndAt: string()
         .when('isAddPlayersByQydha', {
             is: true,
@@ -226,7 +275,7 @@ const localSchema = object({
                 }),
             otherwise: (schema) => schema.notRequired()
         }),
-    
+
     joinRequestMaxCount: number()
         .when('isAddPlayersByQydha', {
             is: true,
@@ -237,7 +286,7 @@ const localSchema = object({
                 .integer("عدد اللاعبين المطلوب يجب أن يكون رقماً صحيحاً"),
             otherwise: (schema) => schema.notRequired()
         }),
-    
+
     prizes: array()
         .min(1, "يجب إضافة جائزة واحدة على الأقل")
         .of(
