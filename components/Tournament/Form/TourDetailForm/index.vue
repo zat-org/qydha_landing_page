@@ -6,25 +6,43 @@
     }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
         <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-6 " ref="form">
-            <TournamentRequestFormTourDetailFormEnrollmentDates v-model="model" />
+            <!-- <TournamentRequestFormTourDetailFormEnrollmentDates v-model="model" /> -->
+            <div class="space-y-3">
+                <div class="text-sm text-gray-700 dark:text-gray-200 font-medium">المخطط الزمني لاختيار التواريخ</div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <!-- Join Request Start -->
+                    <div v-if="modelValue.addPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
+                        <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt"   />
+                        </UFormField>
+                    </div>
+                    <!-- Join Request End -->
+                    <div v-if="modelValue.addPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                      <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
+                        <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt" />
+                      </UFormField>
+                    </div>
+                    <!-- Tournament Start -->
+                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="بداية البطولة" name="startAt">
+                            <AsyncDatePicker v-model="model.startAt" :min-date="new Date()" />
+                        </UFormField>
+                    </div>
+                    <!-- Tournament End -->
+                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="نهاية البطولة" name="endAt">
+                            <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
+                        </UFormField>
+                    </div>
+                </div>
+            </div>
             <UFormField label="العرض في قيدها  " name="showInQydha" size="xl">
                 <USwitch v-model="modelValue.showInQydha" size="xl" />
             </UFormField>
             <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
                 <USwitch v-model="modelValue.addPlayersByQydha" size="xl" />
             </UFormField>
-           <template v-if="modelValue.addPlayersByQydha">
-
-               <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
-                   <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
-               </UFormField>
-               <UFormField label="انتهاء تقديم طلبات الانضمام" name="joinRequestEndAt">
-                   <AsyncDatePicker v-model="model.joinRequestEndAt":min-date="model.joinRequestStartAt"  :max-date="model.startAt"  />
-               </UFormField>
-               <UFormField label=" اقصي عدد اللاعبين  " name="joinRequestMaxCount">
-                   <UInput type="number" v-model="model.joinRequestMaxCount" />
-               </UFormField>
-           </template>
+      
             
             <TournamentRequestFormTourDetailFormPrizeManagement v-model="model" />
 

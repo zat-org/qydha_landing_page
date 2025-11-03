@@ -9,6 +9,7 @@ import {
   type TournamentUpdate,
 } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
+import { useMyTournamentStore } from "~/store/tournament";
 
 export const useTournament = () => {
   const userStore = useMyAuthStore();
@@ -67,6 +68,13 @@ export const useTournament = () => {
         () => $api("/tournaments/dashboard", { query: unref(param) }),
         { watch: [unref(param)], server: false }
       );
+      watch(status,()=>{
+        if (status.value == 'success') {
+          const tournaments = data.value?.data.items as Tournament[]
+          useMyTournamentStore().setSelectedTournament(tournaments)
+        }
+      },{immediate:true})
+    
 
     return { data, pending, error, refresh, status };
   };
@@ -74,7 +82,7 @@ export const useTournament = () => {
     return await useLazyAsyncData<{ data: DetailTournament }>(
       `getSingelTournament-${tournamentId}`,
       () => {
-        return $api(`/tournaments/${tournamentId}/dashboard`, {});
+        return $api(`/tournaments/${tournamentId}/dashboard`);
       },
       { server: false }
     );

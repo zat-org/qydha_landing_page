@@ -38,7 +38,14 @@
 
       <!-- Requests Table -->
       <div class="flex flex-col gap-4 items-center  h-full  flex-1">
-        <Loading v-if="getRequest.status.value == 'pending'" />
+        <CLientOnly>
+        <UAlert v-if="!actionAvilabel && status == 'success'"  color="warning" variant="subtle" icon="i-heroicons-exclamation-triangle">
+          <template #description>
+            <p>لا يمكنك القيام بهذا الإجراء في هذا الوقت لان البطولة لم تبدأ بعد او لم ينتهي الوقت للانضمام</p>
+          </template>
+        </UAlert>
+        </ClientOnly>
+        <Loading v-if="getRequest.status.value == 'pending'"   />
         <UTable v-else :data="data" class="w-full" :columns="cols">
           <template #type-cell="{ row }">
             <UBadge :label="getType(row.original.type).label" :color="getType(row.original.type).color" variant="outline" />
@@ -61,9 +68,9 @@
           <template #actions-cell="{ row }">
             <UButtonGroup>
               <UButton v-if="canAct(row.original.state)" color="success" variant="outline" icon="i-lucide-check" :loading="actionLoadingId === row.original.id && actionType==='approve'"
-                @click="onApprove(row.original.id)"></UButton>
+                @click="onApprove(row.original.id)" :disabled="!actionAvilabel"></UButton>
               <UButton v-if="canAct(row.original.state)" color="error" variant="outline" icon="i-lucide-x" :loading="actionLoadingId === row.original.id && actionType==='reject'"
-                @click="onReject(row.original.id)"></UButton>
+                @click="onReject(row.original.id)" :disabled="!actionAvilabel"></UButton>
             </UButtonGroup>
           </template>
         </UTable>
@@ -110,7 +117,9 @@
 
 <script lang="ts" setup>
 import { useTournamentJoinRequest } from '~/composables/TournamentJoinRequest';
+import type { DetailTournament } from '~/models/tournament';
 import  { type GetTournamentJoinRequestParams, TournamentJoinRequestState } from '~/models/TournamentJoinRequest';
+import { useMyTournamentStore } from '~/store/tournament';
 
 // Props
 interface Props {
@@ -123,6 +132,18 @@ const params = ref<GetTournamentJoinRequestParams>({
   pageNumber: 1,
   pageSize: 10
 })
+// get data from single tournament wit usenuxt data
+const id = useRoute().params.id.toString()
+const TOURAPI = useTournament()
+const { data:tournament ,status} = await TOURAPI.getSingelTournament(id)
+const actionAvilabel = computed(()=>{
+  const beforestartdate  = new Date(tournament.value?.data.tournament.startAt ?? '') >  new Date()
+  const afterJoinEnd = new Date(tournament.value?.data.tournament.joinRequestEndAt ?? '') < new Date()
+  if(beforestartdate && afterJoinEnd) return true
+  return false
+})
+// const  selectedtournamnet  = useMyTournamentStore().getTournamentById(id)
+
 // Composables
 const toast = useToast()
 const { getTournamentJoinRequests, ApproveJoinRequest, RejectJoinRequest ,getTournamentJoinRequestStateOptions,getTournamentJoinRequestTypeOptions} = useTournamentJoinRequest()

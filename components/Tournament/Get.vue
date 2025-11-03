@@ -109,7 +109,7 @@
         </div>
       </div>
 
-      <UDivider label="الجوائز" />
+      <!-- <UDivider label="الجوائز" /> -->
       <div class="px-5">
         <div v-if="tour.tournament?.prizes?.length" class="grid grid-cols-1  md:grid-cols-2 gap-3">
           <div v-for="(prize, index) in tour.tournament.prizes" :key="index"

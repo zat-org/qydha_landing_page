@@ -77,7 +77,7 @@
           </UButtonGroup>
         </template>
       </UTable>
-      <UPagination v-model:page="page" :page-count="10" :total="totalItems" class="mx-auto" />
+      <UPagination v-model:page="filters.PageNumber" :page-count="getReq.data.value?.data.totalPages" :total="getReq.data.value?.data.totalCount" class="mx-auto" />
       <!-- <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-12 px-4">
