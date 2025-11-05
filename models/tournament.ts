@@ -107,8 +107,6 @@ export interface DetailTournament {
     joinRequestStartAt?: string;
     joinRequestEndAt?: string;
     joinRequestMaxCount: null;
-    // TODO SOlve Redanadant
-    // addPlayesrByQydha: boolean;
     addPlayersByQydha: boolean;
     expectedTeamsCount: number;
     expectedTablesCount: number;
@@ -116,6 +114,7 @@ export interface DetailTournament {
     isContactPhoneWhatsapp: boolean;
     isContactPhoneCall: boolean;
     tournamentType: TournamentType;
+    tournamentRules: string[];
     sponsors: string[];
     tournamentPrivatePassword: null | string;
   };

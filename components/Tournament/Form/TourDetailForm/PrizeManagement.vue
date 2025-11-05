@@ -29,7 +29,7 @@
             @update:model-value="updatePrizeMoney(index, $event)" />
         </UFormField>
         <UFormField v-show="prize.isFinancial" :label="`العملة`" :name="`prizes[${index}].financialPrizeCurrency`">
-          <CurrencyInput v-model="prize.financialPrizeCurrency" />
+          <CurrencyInput v-model="prize.financialPrizeCurrency as  TournamentPrizeCurrency" />
         </UFormField>
         <!-- Items Prize Section -->
         <UFormField v-show="prize.isNonFinancial" :label="`الجوائز العينية`" :name="`prizes[${index}].nonFinancialPrizes`">
@@ -44,7 +44,7 @@
             </div>
 
             <!-- Items Tags -->
-            <div v-if="prize.nonFinancialPrizes.length > 0" class="flex flex-wrap gap-1.5">
+            <div v-if="prize.nonFinancialPrizes" class="flex flex-wrap gap-1.5">
               <span v-for="(item, itemIndex) in prize.nonFinancialPrizes" :key="itemIndex"
                 class="inline-flex items-center gap-1 px-2 py-1 bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 rounded-md text-xs font-medium border border-primary-200 dark:border-primary-700 hover:border-primary-300 dark:hover:border-primary-600 transition-all duration-200">
                 {{ item }}
@@ -61,8 +61,8 @@
 </template>
 
 <script setup lang="ts">
-import { TournamentPrizeType } from '~/models/tournamentPrize';
-
+import { TournamentPrizeType , TournamentPrizeCurrency } from '~/models/tournamentPrize';
+// import { TournamentPrizeCurrency } from '~/models/tournamentPrizeCurrency';
 interface Prize {
   isFinancial: boolean,
   isNonFinancial: boolean,

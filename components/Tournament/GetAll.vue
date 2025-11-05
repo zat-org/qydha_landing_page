@@ -34,7 +34,7 @@
         <template #title-cell="{ row }">
           <div class="flex gap-2 items-center">
             <ClientOnly>
-              <UAvatar size="2xl" :src="row.original.logoUrl" :text="row.original.title[0]" />
+              <UAvatar size="2xl" :src="row.original.logoUrl" :text="row.original.title" />
             </ClientOnly>
             <span>{{ row.original.title }} </span>
           </div>

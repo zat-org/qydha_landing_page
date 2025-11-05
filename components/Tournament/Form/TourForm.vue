@@ -21,7 +21,7 @@
 
 
     <UFormField label="شعار البطولة" name="logo" required>
-        <input type="file" ref="fileInput" class="hidden" accept="image/*" @change="onLogoChange" />
+        <input type="file" ref="fileInput" class="hidden" accept=".png,.jpg,.jpeg" @change="onLogoChange" />
         <!-- show logo -->
         <div class="flex flex-col items-center gap-4">
           <div
@@ -96,8 +96,7 @@
           إضافة راعي
         </UButton>
 
-        <input ref="SponsorInput" type="file" name="sponsor" class="hidden" @input="onSponsorsChange($event)"
-          accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml" />
+        <input ref="SponsorInput" type="file"  accept=".png,.jpg,.jpeg" name="sponsor" class="hidden" @input="onSponsorsChange($event)"/>
       </div>
       <div v-if="sponsersAvilabel"
         class="sponsors-gallery p-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 h-28 md:h-40">

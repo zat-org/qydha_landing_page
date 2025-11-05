@@ -4,7 +4,7 @@
     <div v-else-if="tour" class="flex flex-col space-y-8 mt-2">
       <div class="flex flex-col md:flex-row items-center gap-8 px-5">
         <div class="relative w-[150px] h-[150px] rounded-lg overflow-hidden shadow-2xl">
-          <UAvatar :src="tour.tournament?.logoUrl" :text="tour.tournament.title[0]"
+          <UAvatar :src="tour.tournament?.logoUrl" :text="tour.tournament.title"
             class="w-full h-full object-cover rounded-lg shadow-lg" alt="Tournament Logo" />
         </div>
 
@@ -130,8 +130,19 @@
         <p v-else class="text-gray-500 italic">لا توجد جوائز</p>
       </div>
 
+      <div v-if="tour.tournament?.tournamentRules?.length" class="px-5">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 mt-6">قواعد البطولة</h3>
+        <div class="space-y-2">
+          <div v-for="(rule, index) in tour.tournament.tournamentRules" :key="index"
+            class="flex items-start gap-3 p-3 rounded-md bg-gray-50 dark:bg-gray-800">
+            <UIcon name="i-mdi-check-circle" class="text-primary mt-0.5 flex-shrink-0" />
+            <p class="text-gray-700 dark:text-gray-300">{{ rule }}</p>
+          </div>
+        </div>
+      </div>
+
       <div v-if="tour.tournament?.moderators?.length" class="px-5">
-        <UDivider label="المديرون" />
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 mt-6">المديرون</h3>
         <div class="flex flex-wrap gap-4 pt-2">
           <div v-for="(m, i) in tour.tournament.moderators" :key="i" class="flex items-center gap-2">
             <UAvatar :src="m.user.avatarUrl || undefined" :alt="m.user.username" size="sm" />
@@ -158,6 +169,8 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-5">
         <UButton v-for="(button, index) in adminButtons" :key="index" :to="button.to" :label="button.label"
           :icon="button.icon" size="lg" class="w-full" variant="soft" />
+        
+
       </div>
 
     </div>

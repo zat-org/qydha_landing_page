@@ -8,7 +8,7 @@ const id = route.params.id.toString();
 
 definePageMeta({ 
   middleware: ['auth','role'],
-  requiredRoles: ['Organizer'],
+  requiredRoles: ['Organizer','StaffAdmin', 'SuperAdmin'],
 });
 
 useHead({

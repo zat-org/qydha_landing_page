@@ -239,7 +239,7 @@ const resetBoard = async () => {
         },
         leftPlayer: { top: 100, left: 0 },
         rightPlayer: { top: 100, right: 0 },
-        bottomPlayer: { bottom: 0, left: 100 },
+        bottomPlayer: { bottom: 0, left: 0 },
         detailScore: {
             color: "#000000",
             fontSize: 70
@@ -263,7 +263,7 @@ watch(
         try {
             const body = {
                 boardId: props.boardID,
-                portrait: state      
+                portrait: n      
             }
            await  updateREQ.fetchREQ(body)
         } catch (error: any) {
