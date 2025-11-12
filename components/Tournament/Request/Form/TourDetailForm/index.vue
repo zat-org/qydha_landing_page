@@ -25,7 +25,7 @@
                     <!-- Tournament Start -->
                     <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية البطولة" name="startAt">
-                            <AsyncDatePicker v-model="model.startAt" :min-date="new Date()" />
+                            <AsyncDatePicker v-model="model.startAt" :min-date="minstartDate" />
                         </UFormField>
                     </div>
                     <!-- Tournament End -->
@@ -44,8 +44,11 @@
             <UFormField label="نهاية البطولة" name="endAt">
                 <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
             </UFormField> -->
-            <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
-                <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
+            <UFormField  name="isAddPlayersByQydha" size="xl">
+                <div class="flex  gap-4">
+                    <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
+                    <label> قبول الطلبات النضمام من قيدها </label>
+                </div>
             </UFormField>
             <template v-if="modelValue.isAddPlayersByQydha">
                 <!-- <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
@@ -185,6 +188,13 @@ const isValid = ref(false);
 const errors = ref<Record<string, string>>({});
 const isValidating = ref(false);
 
+const minstartDate = computed(() => {
+    // console.log(new Date(model.value.joinRequestEndAt as string  ))
+    // console.log()
+   const date = new Date(model.value.joinRequestEndAt as string ?? undefined );
+   console.log(date)
+    return date;
+});
 // Add form ref for Nuxt UI validation
 const form = useTemplateRef("form");
 

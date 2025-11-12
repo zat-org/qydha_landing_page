@@ -11,7 +11,8 @@
     <div v-for="(prize, index) in model.prizes" :key="index"
       class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-primary-300 dark:hover:border-primary-400 transition-all duration-200 shadow-sm">
       <!-- Prize Header -->
-      <div class="flex items-center gap-2 mb-3">
+       <UFormField :label="`المركز ${index + 1}`" :name="`prizes[${index}]`">
+      <div class="flex items-center gap-2 mb-3">  
         <span
           class="text-sm font-semibold text-gray-800 dark:text-gray-200 bg-primary-500 rounded-full flex items-center justify-center p-2 w-fit">
           المركز {{ index + 1 }}
@@ -19,7 +20,7 @@
         <UCheckbox size="xl" v-model="prize.isFinancial" label="جائزة مالية" />
         <UCheckbox size="xl" v-model="prize.isNonFinancial" label="جائزة عينية" />
       </div>
-
+      </UFormField>
       <!-- Prize Content -->
       <div class="flex flex-col gap-3">
         <!-- Money Prize Section -->

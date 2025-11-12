@@ -5,6 +5,7 @@ import  {
  type TournamentJoinRequest,
   TournamentJoinRequestState,
   TournamentJoinRequestType,
+  type AcceptedTeam,
 } from "~/models/TournamentJoinRequest";
 
 const TournamentJoinRequestTypeLabel :Record<TournamentJoinRequestType,string>={
@@ -108,5 +109,30 @@ export const useTournamentJoinRequest = () => {
     ];
     return options;
   };
-  return { getTournamentJoinRequests, ApproveJoinRequest, RejectJoinRequest, getTournamentJoinRequestStateOptions, getTournamentJoinRequestTypeOptions };
+
+  const submitAcceptedTeams = async (tournamentId: string, acceptedTeams: AcceptedTeam[]) => {
+    return await useAsyncData<{ data: boolean; message: string }>(
+      "submitAcceptedTeams",
+      () =>
+        $api(`/tournaments/${tournamentId}/join-requests/submit`, {
+          method: "post",
+          body: acceptedTeams,
+          onResponse: (response: any) => {
+            if (response.isOk) {
+              refreshNuxtData("getTournamentJoinRequests");
+            }
+          },
+        }),
+      { immediate: false }
+    );
+  };
+
+  return { 
+    getTournamentJoinRequests, 
+    ApproveJoinRequest, 
+    RejectJoinRequest, 
+    getTournamentJoinRequestStateOptions, 
+    getTournamentJoinRequestTypeOptions,
+    submitAcceptedTeams,
+  };
 };

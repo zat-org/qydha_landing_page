@@ -85,8 +85,11 @@
       </UFormField>
 
       <div class="flex items-center justify-between">
-        <UFormField label=" هل يوجد الرعاة" name="Sponsered">
-          <USwitch v-model="sponsersAvilabel" size="lg" />
+        <UFormField label=" " name="Sponsered">
+          <div class="flex items-center gap-2">
+            <USwitch v-model="sponsersAvilabel" size="lg" />
+            <label for="Sponsered"> هل يوجد الرعاة </label>
+          </div>
         </UFormField>
 
         <UButton v-if="sponsersAvilabel" @click="AddSponser()" color="primary" variant="soft" icon="i-heroicons-plus"

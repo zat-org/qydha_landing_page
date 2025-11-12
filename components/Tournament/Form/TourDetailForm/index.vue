@@ -25,7 +25,7 @@
                     <!-- Tournament Start -->
                     <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية البطولة" name="startAt">
-                            <AsyncDatePicker v-model="model.startAt" :min-date="new Date()" />
+                            <AsyncDatePicker v-model="model.startAt" :min-date="minstartDate" />
                         </UFormField>
                     </div>
                     <!-- Tournament End -->
@@ -162,6 +162,13 @@ const model = defineModel<{
 }>({ required: true })
 
 
+const minstartDate = computed(() => {
+    // console.log(new Date(model.value.joinRequestEndAt as string  ))
+    // console.log()
+   const date = new Date(model.value.joinRequestEndAt as string ?? undefined );
+   console.log(date)
+    return date;
+});
 
 // Enhanced validation state management
 const isValid = ref(false);

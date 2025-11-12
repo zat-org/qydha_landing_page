@@ -25,7 +25,7 @@
         </template>
 
         <template #default>
-            <div class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
+            <div ref="scrollContainer" class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
                 <div class="h-full">
                     <KeepAlive>
                         <TournamentRequestUpdateTourForm ref="tourForm" v-show="currentStepValue === 0"
@@ -76,6 +76,7 @@ interface FormStepRef {
 const tourForm = useTemplateRef<FormStepRef>("tourForm");
 const detailForm = useTemplateRef<FormStepRef>("detailForm");
 const rulesForm = useTemplateRef<FormStepRef>("rulesForm");
+const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");
 const { updateTournamentRequest } = useTournamentRequest()
 
 const authStore = useMyAuthStore()
@@ -276,6 +277,9 @@ const validation = useMultiStepFormValidation(formRefs as any, {
 
 
 const currentStepValue = computed(() => validation.currentStep.value);
+watch(currentStepValue, () => {
+    scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+});
 const totalStepsValue = computed(() => validation.enhancedSteps.value.length);
 const isSubmittingValue = computed(() => validation.isSubmitting.value);
 const canGoBack = computed(() => currentStepValue.value >= 1);

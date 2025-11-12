@@ -15,17 +15,62 @@ export enum TournamentJoinRequestState {
   WaitingApproval = "WaitingApproval",
   Withdrawn = "Withdrawn",
 }
-export interface TournamentJoinRequest {
+// team join request 
+// single join request 
+export interface TeamJoinRequest {
   id: string;
   ownerId: string;
   ownerUserName: string;
-  type: TournamentJoinRequestType;
-  teammateId: string | null;
-  teammateUserName: string | null;
-  teamName: string | null;
+  type: TournamentJoinRequestType.Team;
+  teammateUserName: string;
+  teammateId: string;
+  teamName: string ;
   createdAt: Date|string;
   state: TournamentJoinRequestState;
 }
+export interface SingleJoinRequest {
+  id: string;
+  ownerId: string;
+  ownerUserName: string;
+  type: TournamentJoinRequestType.Single;
+  state: TournamentJoinRequestState;
+  createdAt: Date|string;
+}
+
+export type TournamentJoinRequest = TeamJoinRequest | SingleJoinRequest;
+
+
+
+
+export interface  AcceptedTeamFromSingle {
+  id: string;
+  ownerId: string;
+  ownerUserName: string;
+  type: TournamentJoinRequestType.Team;
+  teammateUserName: string;
+  teammateId: string;
+  teamName: string ;
+  createdAt: Date|string;
+  state: TournamentJoinRequestState;
+  originalType: TournamentJoinRequestType.Single;
+  mergedFromIds: string[];
+}
+export interface AcceptedTeamFromTeam {
+  id: string;
+  ownerId: string;
+  ownerUserName: string;
+  type: TournamentJoinRequestType.Team;
+  teammateUserName: string;
+  teammateId: string;
+  teamName: string ;
+  createdAt: Date|string;
+  state: TournamentJoinRequestState;
+  originalType: TournamentJoinRequestType.Team;
+}
+
+export type AcceptedTeam = AcceptedTeamFromSingle | AcceptedTeamFromTeam;
+
+
 export interface GetTournamentJoinRequestResponse {
   items: TournamentJoinRequest[];
   currentPage: number;
