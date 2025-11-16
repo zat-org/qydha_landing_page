@@ -5,7 +5,13 @@
         footer: 'px-2 py-1 sm:p-1',
     }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
-        <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-6 " ref="form">
+        <UForm 
+            :schema="localSchema" 
+            :state="model" 
+            class="flex flex-col space-y-6" 
+            ref="form"
+            :validate-on="['blur', 'change']"
+        >
             <!-- Timeline representation for key dates -->
             <div class="space-y-3">
                 <div class="text-sm text-gray-700 dark:text-gray-200 font-medium">المخطط الزمني لاختيار التواريخ</div>
@@ -13,25 +19,42 @@
                     <!-- Join Request Start -->
                     <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
-                        <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt"   />
+                        <AsyncDatePicker 
+                            v-model="model.joinRequestStartAt" 
+                            :max-date="model.startAt"
+                            @update:model-value="onDateChange('joinRequestStartAt')"
+                        />
                         </UFormField>
                     </div>
                     <!-- Join Request End -->
                     <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                       <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
-                        <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt" />
+                        <AsyncDatePicker 
+                            v-model="model.joinRequestEndAt" 
+                            :min-date="model.joinRequestStartAt" 
+                            :max-date="model.startAt"
+                            @update:model-value="onDateChange('joinRequestEndAt')"
+                        />
                       </UFormField>
                     </div>
                     <!-- Tournament Start -->
                     <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية البطولة" name="startAt">
-                            <AsyncDatePicker v-model="model.startAt" :min-date="minstartDate" />
+                            <AsyncDatePicker 
+                                v-model="model.startAt" 
+                                :min-date="minstartDate"
+                                @update:model-value="onDateChange('startAt')"
+                            />
                         </UFormField>
                     </div>
                     <!-- Tournament End -->
                     <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="نهاية البطولة" name="endAt">
-                            <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
+                            <AsyncDatePicker 
+                                v-model="model.endAt" 
+                                :min-date="model.startAt"
+                                @update:model-value="onDateChange('endAt')"
+                            />
                         </UFormField>
                     </div>
                 </div>
@@ -77,7 +100,7 @@
             </UFormField>
 
             <UFormField label=" عدد الطاولات" name="tablesCount"
-                :hint="`افضل عدد طاولات لادارة الفرق  ${BestNumberofTables} طاولات `">
+               >
                 <UInput v-model="model.tablesCount" type="number" placeholder="0" />
             </UFormField>
 
@@ -191,16 +214,20 @@ const isValidating = ref(false);
 const minstartDate = computed(() => {
     // console.log(new Date(model.value.joinRequestEndAt as string  ))
     // console.log()
-   const date = new Date(model.value.joinRequestEndAt as string ?? undefined );
-   console.log(date)
+   const joinRequestEndDate = new Date(model.value.joinRequestEndAt as string ?? undefined);
+   const today = new Date();
+   // Take the max between joinRequestEndDate and today
+   const date = joinRequestEndDate > today ? joinRequestEndDate : today;
     return date;
 });
 // Add form ref for Nuxt UI validation
 const form = useTemplateRef("form");
 
+// Provide form ref to child components
+provide('formRef', form);
+
 
 const localSchema = object({
-
     startAt: string()
         .required("تاريخ بداية  البطولة مطلوب")
         .test('start-date-valid', 'تاريخ بداية  البطولة  غير صحيح', function (value) {
@@ -396,10 +423,30 @@ const localSchema = object({
 });
 
 
+// Handler to validate date fields when they change
+const onDateChange = async (fieldName: string) => {
+    // Wait for reactivity to update
+    await nextTick();
+    
+    // Clear the error for this field if it exists, then re-validate
+    // This will trigger validation which will clear errors if the field is now valid
+    form.value?.clear(fieldName);
+    
+    // Wait a bit more for the clear to take effect, then validate
+    await nextTick();
+    
+    // The form will automatically re-validate due to validate-on="['blur', 'change']"
+    // But we can also manually trigger validation for the entire form
+    try {
+        await form.value?.validate();
+    } catch (error) {
+        // Some fields are invalid, errors will be shown
+    }
+};
+
 const validate = async (): Promise<boolean> => {
     isValidating.value = true;
     errors.value = {};
-
     try {
         // Use Nuxt UI form validation
         await form.value?.validate();

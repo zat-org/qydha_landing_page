@@ -84,7 +84,7 @@ export const useTournament = () => {
       () => {
         return $api(`/tournaments/${tournamentId}/dashboard`);
       },
-      { server: false }
+      
     );
   };
   const updateTournament = async (tournamentId: string) => {

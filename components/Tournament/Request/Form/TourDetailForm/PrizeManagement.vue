@@ -30,15 +30,20 @@
             @update:model-value="updatePrizeMoney(index, $event)" />
         </UFormField>
         <UFormField v-show="prize.isFinancial" :label="`العملة`" :name="`prizes[${index}].financialPrizeCurrency`">
-          <CurrencyInput v-model="prize.financialPrizeCurrency" />
+          <CurrencyInput v-model="prize.financialPrizeCurrency as any" />
         </UFormField>
         <!-- Items Prize Section -->
         <UFormField v-show="prize.isNonFinancial" :label="`الجوائز العينية`" :name="`prizes[${index}].nonFinancialPrizes`">
           <div class="space-y-2">
             <!-- Add Item Input -->
             <div class="flex gap-2">
-              <UInput v-model="newItems[index]" placeholder="جائزة عينية" @keyup.enter="addItem(index, newItems[index])"
-                class="hover:border-primary-300 dark:hover:border-primary-400" />
+              <UInput 
+                v-model="newItems[index]" 
+                placeholder="جائزة عينية" 
+                @keyup.enter="addItem(index, newItems[index])"
+                @focus="onInputFocus(index)"
+                class="hover:border-primary-300 dark:hover:border-primary-400" 
+              />
               <UButton @click="addItem(index, newItems[index])" color="primary" variant="solid" size="sm"
                 class="px-3 py-2 rounded-lg font-medium hover:scale-105 transition-all duration-200"
                 :disabled="!newItems[index]?.trim()" icon="i-heroicons-plus" />
@@ -79,6 +84,8 @@ interface PrizeData {
 
 const model = defineModel<PrizeData>({ required: true })
 
+// Inject parent form reference
+const parentForm = inject('formRef', null) as any;
 
 // Local state for new items input
 const newItems = ref<string[]>([]);
@@ -127,14 +134,77 @@ const updatePrizeMoney = (index: number, value: number) => {
 
 };
 
-const addItem = (index: number, value: string) => {
-  if (!value?.trim()) return;
-  model.value.prizes[index].nonFinancialPrizes.push(value.trim());
-  newItems.value[index] = "";
+// Clear error when user starts typing
+const onInputFocus = (index: number) => {
+  if (parentForm?.value) {
+    const fieldPath = `prizes[${index}].nonFinancialPrizes`;
+    parentForm.value.clear?.(fieldPath);
+  }
 };
 
-const removeItem = (index: number, itemIndex: number) => {
+const addItem = async (index: number, value: string) => {
+  if (!value?.trim()) return;
+  
+  // Add the item to the array
+  model.value.prizes[index].nonFinancialPrizes.push(value.trim());
+  newItems.value[index] = "";
+  
+  // Wait for Vue reactivity to update
+  await nextTick();
+  
+  // Force reactivity update by creating a new array reference
+  // This ensures the form validation detects the change and triggers re-validation
+  const prizes = [...model.value.prizes];
+  prizes[index] = {
+    ...prizes[index],
+    nonFinancialPrizes: [...prizes[index].nonFinancialPrizes]
+  };
+  model.value.prizes = prizes;
+  
+  // Wait for reactivity, then clear error and re-validate
+  await nextTick();
+  
+  // Clear and re-validate the field
+  if (parentForm?.value) {
+    const fieldPath = `prizes[${index}].nonFinancialPrizes`;
+    parentForm.value.clear?.(fieldPath);
+    
+    await nextTick();
+    try {
+      await parentForm.value.validate?.();
+    } catch (error) {
+      // Validation will show errors if validation fails
+    }
+  }
+};
+
+const removeItem = async (index: number, itemIndex: number) => {
   model.value.prizes[index].nonFinancialPrizes.splice(itemIndex, 1);
+  
+  // Wait for Vue reactivity to update
+  await nextTick();
+  
+  // Force reactivity update to trigger form validation
+  const prizes = [...model.value.prizes];
+  prizes[index] = {
+    ...prizes[index],
+    nonFinancialPrizes: [...prizes[index].nonFinancialPrizes]
+  };
+  model.value.prizes = prizes;
+  
+  // Clear error and re-validate if array becomes empty
+  await nextTick();
+  if (parentForm?.value) {
+    const fieldPath = `prizes[${index}].nonFinancialPrizes`;
+    parentForm.value.clear?.(fieldPath);
+    
+    await nextTick();
+    try {
+      await parentForm.value.validate?.();
+    } catch (error) {
+      // Validation will show errors if validation fails
+    }
+  }
 };
 
 </script>

@@ -36,11 +36,17 @@
                     </div>
                 </div>
             </div>
-            <UFormField label="العرض في قيدها  " name="showInQydha" size="xl">
-                <USwitch v-model="modelValue.showInQydha" size="xl" />
+            <UFormField name="showInQydha" size="xl">
+                <div class="flex items-center gap-4">
+                    <USwitch v-model="model.showInQydha" size="xl" />
+                    <label> العرض في قيدها </label>
+                </div>
             </UFormField>
-            <UFormField label="قبول الطلبات النضمام من قيدها " name="isAddPlayersByQydha" size="xl">
-                <USwitch v-model="modelValue.addPlayersByQydha" size="xl" />
+            <UFormField  name="AddPlayersByQydha" size="xl">
+                <div class="flex items-center gap-4">   
+                    <USwitch v-model="modelValue.addPlayersByQydha" size="xl" />
+                    <label> قبول الطلبات النضمام من قيدها </label>
+                </div>
             </UFormField>
       
             
@@ -58,7 +64,7 @@
             </UFormField>
 
             <UFormField label=" عدد الطاولات" name="tablesCount"
-                :hint="`افضل عدد طاولات لادارة الفرق  ${BestNumberofTables} طاولات `">
+            >
                 <UInput v-model="model.tablesCount" type="number" placeholder="0" />
             </UFormField>
 
@@ -161,7 +167,6 @@ const model = defineModel<{
     // TeamSelectionMode: string;
 }>({ required: true })
 
-
 const minstartDate = computed(() => {
     // console.log(new Date(model.value.joinRequestEndAt as string  ))
     // console.log()
@@ -177,6 +182,7 @@ const isValidating = ref(false);
 
 // Add form ref for Nuxt UI validation
 const form = useTemplateRef("form");
+provide('formRef', form);
 
 
 const localSchema = object({
@@ -211,7 +217,7 @@ const localSchema = object({
         }),
 
     joinRequestStartAt: string()
-        .when('isAddPlayersByQydha', {
+        .when('addPlayersByQydha', {
             is: true,
             then: (schema) => schema
                 .required("تاريخ بداية تقديم طلبات الانضمام مطلوب")
@@ -231,7 +237,7 @@ const localSchema = object({
         }),
     
     joinRequestEndAt: string()
-        .when('isAddPlayersByQydha', {
+        .when('addPlayersByQydha', {
             is: true,
             then: (schema) => schema
                 .required("تاريخ نهاية تقديم طلبات الانضمام مطلوب")
@@ -258,7 +264,7 @@ const localSchema = object({
         }),
     
     joinRequestMaxCount: number()
-        .when('isAddPlayersByQydha', {
+        .when('addPlayersByQydha', {
             is: true,
             then: (schema) => schema
                 .required("عدد اللاعبين المطلوب مطلوب")
@@ -311,7 +317,7 @@ const localSchema = object({
         .min(2, "يجب أن يكون عدد الفرق على الأقل 2")
         .integer("عدد الفرق يجب أن يكون رقماً صحيحاً"),
     tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
-    isAddPlayersByQydha: boolean()
+    addPlayersByQydha: boolean()
     // RefreeNeed: boolean().required("احصائيات البطولة مطلوبة"),
     // RefreeCount: number().when('RefreeNeed', {
     //     is: true,

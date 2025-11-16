@@ -28,6 +28,13 @@ const VueDatePicker = defineAsyncComponent(() =>
 // Use defineModel for v-model binding instead of props/emits
 const model = defineModel<string|Date>();
 
+// Define emits for change and input events
+const emit = defineEmits<{
+  'update:modelValue': [value: string | Date | null]
+  'change': [value: Date | null]
+  'input': [value: Date | null]
+}>();
+
 // Computed property to handle conversion between Date and ISO string
 const internalDate = computed({
   get: () => {
@@ -36,9 +43,15 @@ const internalDate = computed({
   },
   set: (value: Date | null) => {
     if (value) {
-      model.value = toISOStringWithTimezone(value) as any;
+      const isoString = toISOStringWithTimezone(value);
+      model.value = isoString as any;
+      // Emit change and input events for form validation
+      emit('change', value);
+      emit('input', value);
     } else {
       model.value = null as any;
+      emit('change', null);
+      emit('input', null);
     }
   }
 });

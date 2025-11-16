@@ -37,7 +37,7 @@
             <!-- Add Item Input -->
             <div class="flex gap-2">
               <UInput v-model="newItems[index]" placeholder="جائزة عينية" @keyup.enter="addItem(index, newItems[index])"
-                class="hover:border-primary-300 dark:hover:border-primary-400" />
+                class="hover:border-primary-300 dark:hover:border-primary-400" @focus="onInputFocus(index)" />
               <UButton @click="addItem(index, newItems[index])" color="primary" variant="solid" size="sm"
                 class="px-3 py-2 rounded-lg font-medium hover:scale-105 transition-all duration-200"
                 :disabled="!newItems[index]?.trim()" icon="i-heroicons-plus" />
@@ -76,6 +76,7 @@ interface PrizeData {
   prizes: Prize[];
 }
 
+const parentForm = inject('formRef', null) as any;
 const model = defineModel<PrizeData>({ required: true })
 
 
@@ -134,6 +135,13 @@ const addItem = (index: number, value: string) => {
 
 const removeItem = (index: number, itemIndex: number) => {
   model.value.prizes[index].nonFinancialPrizes.splice(itemIndex, 1);
+};
+
+const onInputFocus = (index: number) => {
+  if (parentForm?.value) {
+    const fieldPath = `prizes[${index}].nonFinancialPrizes`;
+    parentForm.value.clear?.(fieldPath);
+  }
 };
 
 </script>

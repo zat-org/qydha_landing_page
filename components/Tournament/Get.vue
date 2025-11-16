@@ -18,7 +18,7 @@
             <UBadge v-if="tour.tournament?.tournamentType"
               :color="getType(tour.tournament.tournamentType)?.color ?? 'primary'" variant="soft" size="xl">
               {{ getType(tour.tournament.tournamentType)?.label }}</UBadge>
-            <UBadge v-if="tour.tournament?.showInQydha" color="success" variant="soft" size="xl">ظاهر في قيضه</UBadge>
+            <UBadge v-if="tour.tournament?.showInQydha" color="success" variant="soft" size="xl">ظاهر في قيدها </UBadge>
           </div>
 
           <p class="text-gray-600 dark:text-gray-300 leading-relaxed" v-if="tour.tournament?.description">
@@ -57,11 +57,11 @@
 
             <div class="flex items-center gap-2">
               <UIcon name="i-mdi-table" class="text-gray-500" />
-              <p>عدد الطاولات المتوقعة: {{ tour.tournament?.expectedTablesCount }}</p>
+              <p>عدد الطاولات : {{ tour.tournament?.expectedTablesCount }}</p>
             </div>
             <div class="flex items-center gap-2">
               <UIcon name="i-mdi-account-group" class="text-gray-500" />
-              <p>عدد الفرق المتوقع: {{ tour.tournament?.expectedTeamsCount }}</p>
+              <p>عدد الفرق : {{ tour.tournament?.expectedTeamsCount }}</p>
             </div>
 
             <div class="flex items-center gap-2" v-if="tour.tournament?.contactPhone">
