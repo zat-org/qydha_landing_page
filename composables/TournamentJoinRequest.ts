@@ -252,7 +252,7 @@ const AutoCompleteJoinRequest =()=>{
       ()=>["submitAcceptedTeams",unref(tournamentId)].toString(),
       () =>
         $api(`/tournaments/${unref(tournamentId)}/join-request/submit`, {
-          method: "patch",
+          method: "post",
         }),
       { immediate: false }
     );  

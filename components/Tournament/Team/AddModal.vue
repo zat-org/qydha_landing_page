@@ -1,9 +1,10 @@
 <template>
   <UModal prevent-close>
-    <UCard>
+
       <template #header>
         اضافة فريق جديد
       </template>
+      <template #body>
       <UForm :state="state" :schema="schema" ref="teamForm" @submit="onSubmit">
         <UFormField name="name" label="اسم الفريق">
           <UInput v-model="state.name" />
@@ -38,6 +39,7 @@
 
         </div>
       </UForm>
+      </template>
       <template #footer>
         <div class="flex justify-between items-center ">
           <UButton label="اضافة" @click="teamForm?.submit()" />
@@ -45,7 +47,7 @@
         </div>
 
       </template>
-    </UCard>
+    
   </UModal>
 </template>
 

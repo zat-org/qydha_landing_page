@@ -10,9 +10,11 @@
     ]"
   >
   <UApp >   
-    <NuxtLayout >
+    <div  class="w-full h-full flex flex-col flex-1" data-vaul-drawer-wrapper>
+      <NuxtLayout >
         <NuxtPage  />
       </NuxtLayout>
+    </div>
     </UApp>
   </div>
 </template>

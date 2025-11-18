@@ -1,30 +1,47 @@
 <template>
-  <UCard :ui="{ base: 'flex flex-col h-full ', body: { base: 'grow flex flex-col  justify-between' } }">
+  <div v-if="!tour">
+    <div class="flex items-center justify-center h-full">
+      <UProgress indeterminate />
+    </div>
+  </div>
+  <UCard v-else :ui="{ root: 'flex flex-col h-full ', body: 'grow flex flex-col  justify-between' }">
     <template #header>
-      <p>
-        {{ getTourREQ.data.value?.data.name }}
-        /
-        الفرق
-      </p>
+      <div class="flex items-center justify-between">
+        <p>
+          {{ tour.title }}
+          /
+          الفرق
+        </p>
+        <div class="flex items-center justify-start gap-2">
+          <UButton 
+              label="إضافة فريق" 
+              icon="i-heroicons-plus" 
+              color="primary" 
+              @click="openDrawer"
+            />
+        
+        </div>
+      </div>
     </template>
 
-    <UTable :data="teams"  :ui="{ td: { padding: ' py-1 px-2' }, th: { padding: ' py-1 px-2' } }">
-      <template #players-data="{ row }">
+    <UTable :data="teams" :columns="columns">
+      <template #players-cell="{ row }">
         <div class="flex  justify-start items-start gap-2 ">
-          <UBadge v-for="player of row.players" size="lg" color="gray">
-            <div class="flex items-center justify-between  gap-2">
+          <div v-for="player of row.original.players" class="flex items-center justify-between  gap-2">
+            <div class="flex items-center justify-between  gap-2 bg-gray-100 dark:bg-gray-800 px-4  py-2 rounded-md">
               <p>{{ player.name }}</p>
-              <IconDelete class="text-2xl text-red-500  cursor-pointer " @click="removePlayer(row, player.id)" />
+              <!-- <UIcon name="i-lucide-x" class="text-2xl text-red-500  cursor-pointer "
+                @click="removePlayer(row.original, Number(player.id))" /> -->
             </div>
-          </UBadge>
+          </div>
 
         </div>
       </template>
-      <template #actions-data="{ row }">
+      <template #actions-cell="{ row }">
         <UButtonGroup>
-          <UButton icon="material-symbols:delete" color="red" @click="deleteTeam(row)" />
-          <UButton icon="material-symbols:settings" color="yellow" @click="openUpdateModal(row)" />
-          <UButton @click="openAddPlayerModal(row.id)">
+          <UButton icon="material-symbols:delete" color="error" @click="deleteTeam(row.original)" />
+          <UButton icon="material-symbols:settings" color="warning" @click="openUpdateModal(row.original)" />
+          <UButton @click="openAddPlayerModal(row.original.id)">
             <template #leading>
               <IconAddUser class="text-xl" />
             </template>
@@ -32,15 +49,31 @@
         </UButtonGroup>
       </template>
     </UTable>
-    <UPagination v-model="page"  :page-count="10" :total="total" class="mx-auto" />
+    <UPagination v-model:page="page" :page-count="10" :total="total" class="mx-auto" />
     <template #footer>
       <div class="flex justify-between items-center ">
-        <UButton label="اضافة" @click="openAddModal" />
-        <UButton label="عودة " color="red" @click="navigateTo('/tournament/' + tour_id)" />
+        <UButton label="عودة " color="error" @click="navigateTo('/tournament/' + tour_id)" />
       </div>
     </template>
 
   </UCard>
+
+  <UDrawer 
+            v-model:open="isDrawerOpen" 
+            direction="left"
+            :handle="false" 
+            title="إضافة فريق جديد" 
+            description="إضافة فريق جديد"
+            class="drawer-responsive"
+          >
+            <template #content>
+              <div class="flex-1 p-3 sm:p-4 md:p-6 min-h-0">
+                  <TournamentTeamForm ref="teamForm" @close="closeDrawer"  />
+              </div>
+            </template>
+          </UDrawer>
+  <!-- Drawer for Team Form -->
+
 </template>
 
 <script lang="ts" setup>
@@ -53,60 +86,125 @@ const route = useRoute()
 const overlay = useOverlay()
 const tour_id = route.params.id.toString()
 
-const openAddModal = () => {
-  overlay.create(AddModal).open()
-}
+const getTourREQ = await useTournament().getSingelTournament(tour_id)
 
-const getTourREQ = await useTournament().getTourById()
-await getTourREQ.fetchREQ(+tour_id)
-if (getTourREQ.status.value == "error") {
-  navigateTo('/tournament')
-}
+const tour = computed(() => {
+ if (getTourREQ.data.value)
+    return getTourREQ.data.value.data.tournament
+})
 
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams()
 await getTeamsREQ.fetchREQ(tour_id)
 
-const page  = ref(getTeamsREQ.data.value?.data.currentPage!)
+const page = ref(getTeamsREQ.data.value?.data.currentPage!)
 const total = ref(getTeamsREQ.data.value?.data.totalCount!)
+
+const isDrawerOpen = ref(false)
+const teamForm = ref()
+
+const openDrawer = () => {
+  isDrawerOpen.value = true
+}
+
+const closeDrawer = () => {
+  isDrawerOpen.value = false
+  // Refresh teams list after adding a team
+  getTeamsREQ.fetchREQ(tour_id, page.value)
+  total.value = getTeamsREQ.data.value?.data.totalCount!
+}
+
+const openAddModal = () => {
+  overlay.create(AddModal).open()
+}
 
 const teams = computed(() => {
   if (getTeamsREQ.data.value)
     return getTeamsREQ.data.value.data.items
 })
 
-watch (page ,async(newValue,oldvalue)=>{
-    await getTeamsREQ.fetchREQ(tour_id,page.value)
-    total.value = getTeamsREQ.data.value?.data.totalCount!
-  })
+watch(page, async (newValue, oldvalue) => {
+  await getTeamsREQ.fetchREQ(tour_id, page.value)
+  total.value = getTeamsREQ.data.value?.data.totalCount!
+})
 const columns = [
-  { label: 'الاسم', key: 'name' },
-  { label: 'الاعبين', key: 'players' },
-  { label: '#', key: 'actions' },
+  { header: 'الاسم', accessorKey: 'name' },
+  { header: 'الاعبين', accessorKey: 'players' },
+  { header: '#', id: 'actions' },
 ]
 
 const delteTeamREQ = await useTourrnamentTeam().deleteTourTeam()
 const deleteTeam = async (row: ITeam) => {
-  const selectedteam = teams.value?.find(t=>t.id == row.id)
-  if (selectedteam){
+  const selectedteam = teams.value?.find(t => t.id == row.id)
+  if (selectedteam) {
     await delteTeamREQ.fetchREQ(tour_id, selectedteam.id.toString())
   }
 }
 
 const openUpdateModal = (row: ITeam) => {
-  overlay.create(UpdateModal, { props: { team: row } }).open()
+  // overlay.create(UpdateModal, { props: { team: row } }).open()
 }
 
 
 
 const openAddPlayerModal = (team_id: number) => {
-  overlay.create(AddPlayerModal, { props: { team_id: team_id.toString() } }).open()
+  // overlay.create(AddPlayerModal, { props: { team_id: team_id.toString() } }).open()
 }
 
 
 const deleteREQ = await useTourrnamentTeam().removePlayerFromTeam()
-const removePlayer = async (row: ITeam, player_id: number) => {
+const removePlayer = async (row: ITeam, player_id: number | string) => {
   await deleteREQ.fetchREQ(row.tournamentId.toString(), row.id.toString(), player_id.toString())
 }
+
 </script>
 
-<style></style>
+<style scoped>
+/* Responsive drawer styles */
+:deep(.drawer-responsive) {
+  width: 100%;
+  max-height: 100vh;
+  height: 100%;
+}
+
+/* Ensure drawer content takes full height and is scrollable */
+:deep(.drawer-responsive [data-content]) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  :deep(.drawer-responsive) {
+    width: 24rem; /* sm:w-96 */
+    max-height: 100vh;
+  }
+}
+
+@media (min-width: 768px) {
+  :deep(.drawer-responsive) {
+    width: 500px; /* md:w-[500px] */
+  }
+}
+
+@media (min-width: 1024px) {
+  :deep(.drawer-responsive) {
+    width: 600px; /* lg:w-[600px] */
+  }
+}
+
+@media (min-width: 1280px) {
+  :deep(.drawer-responsive) {
+    width: 700px; /* xl:w-[700px] */
+  }
+}
+
+/* Make drawer full width on mobile */
+@media (max-width: 639px) {
+  :deep(.drawer-responsive) {
+    width: 100% !important;
+    max-height: 90vh;
+  }
+}
+</style>

@@ -173,6 +173,14 @@
 
       </div>
 
+      
+      <p>
+        المجموعات 
+      </p>
+      <p>
+        tabs for evry group in tournament
+      </p>
+
     </div>
 
     <template #footer>
@@ -213,13 +221,12 @@ const canEdit = computed(() => {
 });
 
 const adminButtons = computed(() => [
-  // { label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' },
   { label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' },
+  { label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' },
+  { label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' },
   // { label: 'ادارة المديرين', to: `/tournament/${props.id}/moderator`, icon: 'i-mdi-account-cog' },
-  // { label: 'ادارة الفرق', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' },
   // { label: 'ادارة اللاعبين', to: `/tournament/${props.id}/player`, icon: 'i-mdi-account' },
   // { label: 'ادارة الطاولات ', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' },
-
   // { label: 'ادارة المجموعات', to: '', icon: 'i-mdi-group' }
 ]);
 

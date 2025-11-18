@@ -11,31 +11,6 @@ function normalizeHeaders(
   }
   return normalized;
 }
-
-function convertMultipartToFormData(multipartData: any[]): FormData {
-  const formData = new FormData();
-  
-  for (const item of multipartData) {
-    if (item.data && item.name) {
-      // Handle file uploads
-      if (item.filename) {
-        const blob = new Blob([item.data], { type: item.type || 'application/octet-stream' });
-        formData.append(item.name, blob, item.filename);
-      } else {
-        // Handle regular form fields
-        formData.append(item.name, item.data.toString());
-      }
-    }
-  }
-  
-  return formData;
-}
-
-// Alternative: Pass multipart data directly without conversion
-function createMultipartBody(multipartData: any[]): any {
-  // Return the multipart data as-is for $fetch to handle
-  return multipartData;
-}
 export default defineEventHandler(async (event) => {
   // خُد الـ path بعد /api
   const config = useRuntimeConfig();
@@ -69,17 +44,52 @@ export default defineEventHandler(async (event) => {
   // Handle body based on method and content type
   if (!["GET", "HEAD"].includes(method!)) {
     if (headers['content-type']?.includes('multipart/form-data')) {
-      // For multipart requests, read the raw body to preserve the original format
+      // Parse multipart form data using H3's built-in parser
       try {
-        body = await readRawBody(event);
-        // Keep the original content-type header with boundary
-        // Don't modify headers for multipart requests
+        const formData = await readMultipartFormData(event);
+        
+        if (formData && formData.length > 0) {
+          // Reconstruct FormData for forwarding
+          const forwardedFormData = new FormData();
+          
+          for (const part of formData) {
+            if (!part.name) continue; // Skip parts without a name
+            
+            const partName = part.name; // Type guard
+            
+            if (part.filename) {
+              // Handle file uploads - convert Buffer to Uint8Array for Blob
+              const uint8Array = new Uint8Array(part.data);
+              const blob = new Blob([uint8Array], { 
+                type: part.type || 'application/octet-stream' 
+              });
+              forwardedFormData.append(partName, blob, part.filename);
+            } else {
+              // Handle regular form fields - convert buffer to string
+              const value = part.data.toString('utf-8');
+              forwardedFormData.append(partName, value);
+            }
+          }
+          
+          body = forwardedFormData;
+          // Remove Content-Type header - let $fetch set it with correct boundary
+          delete processedHeaders['content-type'];
+        } else {
+          // If parsing returns null/empty, fallback to raw body
+          console.warn('Multipart parsing returned empty, using raw body');
+          body = await readRawBody(event);
+        }
       } catch (error) {
-        console.error('Error reading multipart form data:', error);
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Invalid multipart form data'
-        });
+        console.error('Error parsing multipart form data:', error);
+        // Fallback: try to read raw body and forward as-is
+        try {
+          body = await readRawBody(event);
+        } catch (rawError) {
+          throw createError({
+            statusCode: 400,
+            statusMessage: 'Invalid multipart form data'
+          });
+        }
       }
     } else {
       body = await readBody(event);

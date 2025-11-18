@@ -25,6 +25,9 @@ export default defineNuxtConfig({
         lang: "ar",
         dir: "rtl",
       },
+      // rootAttrs: {
+      //   'data-vaul-drawer-wrapper': ''  
+      // },
       title: Title,
       meta: [
         { name: "image", property: "og:image", content: LogoURL },

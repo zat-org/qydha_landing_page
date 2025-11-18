@@ -117,10 +117,12 @@ export const useTournamentRequest = () => {
         body.value.append(`sponsors[${index}]`, sponsor);
       });
       body.value.append("prizes", JSON.stringify(_body.prizes));
-      _body.rules.forEach((rule, index) => {
-        console.log(`Rule ${index}:`, rule);
-        body.value.append(`rules[${index}]`, rule);
-      });
+      if (_body.rules.length > 0) {
+        body.value!.append(`rules`, JSON.stringify(_body.rules));
+      }else{
+        body.value!.append("rules", "[]");
+      }
+
 
       await execute();
     };
