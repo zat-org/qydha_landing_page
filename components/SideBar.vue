@@ -19,7 +19,16 @@ const links = computed(() => {
     label: "البطولات", to: "/tournament",
     onSelect: () => {
       emit("close");
-    }
+    },
+    children:[
+      {
+        label: "الطلبات", to: "/tournament/request",
+        onSelect: () => {
+          emit("close");
+        }
+      }
+      
+    ]
   });
 if( userStore.roles?.includes("SuperAdmin")){
   result[0].push({
