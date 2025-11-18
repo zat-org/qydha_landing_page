@@ -16,7 +16,7 @@ const userStore = useMyAuthStore();
 const links = computed(() => {
   const result: any[][] = [[], [], [], []];
   result[3].push({
-    label: "البطولات", to: "/tournament", disabled: true,
+    label: "البطولات", to: "/tournament",
     onSelect: () => {
       emit("close");
     }

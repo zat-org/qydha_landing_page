@@ -191,11 +191,7 @@ const cols = [
   {
     accessorKey: "startAt",
     header: "التاريخ"
-  },
-  {
-    accessorKey: "contactPhone",
-    header: "الهاتف "
-  },
+  },  
   {
     accessorKey: "state",
     header: "الحالة "

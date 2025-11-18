@@ -246,24 +246,28 @@ const AutoCompleteJoinRequest =()=>{
     return getTournamentJoinRequestTypeOptions().find(op => op.value == value)
   }
 
-  const submitAcceptedTeams = async (
-    tournamentId: string,
-    acceptedTeams: AcceptedTeam[]
-  ) => {
-    return await useAsyncData<{ data: boolean; message: string }>(
-      "submitAcceptedTeams",
+  const submitAcceptedTeams = async ( ) => {
+    const tournamentId = ref()
+    const result = await useAsyncData<{ data: boolean; message: string }>(
+      ()=>["submitAcceptedTeams",unref(tournamentId)].toString(),
       () =>
-        $api(`/tournaments/${tournamentId}/join-requests/submit`, {
-          method: "post",
-          body: acceptedTeams,
-          onResponse: (response: any) => {
-            if (response.isOk) {
-              refreshNuxtData("getTournamentJoinRequests");
-            }
-          },
+        $api(`/tournaments/${unref(tournamentId)}/join-request/submit`, {
+          method: "patch",
         }),
       { immediate: false }
-    );
+    );  
+
+    const fetchREQ = async (_tournamentId: string) => {
+      tournamentId.value = _tournamentId
+      await result.execute()
+      if (result.status.value == "success") {
+        toast.add({ title: "تم التسليم بنجاح", color: "success" })
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
+      }
+    }
+    
+
+    return { result, fetchREQ }
   };
 
   return {

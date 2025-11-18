@@ -172,7 +172,7 @@ const canAction = computed(() => {
     }
   }
   return false
-})
+})  
 const canAcceptMore = computed(() => {
   if (canAction.value) {
     return acceptedteamsNumber.value + Math.floor(acceptedsinglesNumber.value / 2) < expectedTeamsCount.value
@@ -197,15 +197,15 @@ const tabItems = [
   { label: 'الطلبات الفردية المقبولة', slot: 'accepted-singles' as const },
   { label: 'الفرق المقبولة', slot: 'accepted-teams' as const },
 ]
-const { AutoCompleteJoinRequest } = useTournamentJoinRequest()
+const { AutoCompleteJoinRequest ,submitAcceptedTeams} = useTournamentJoinRequest()
 const autoComplteReq = AutoCompleteJoinRequest()
 const onAutoComplete = async () => {
   await autoComplteReq.fetchReq(id)
 }
 
-
+const submitAcceptedTeamsReq = await submitAcceptedTeams()
 const onSubmit = async () => {
-
+   await submitAcceptedTeamsReq.fetchREQ(id)
 }
 
 </script>
