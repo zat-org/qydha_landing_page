@@ -2,13 +2,13 @@
   <UCard :ui="{ root: 'w-full space-y-2 p-1' }">
     <UForm :schema="schema" :state="state" ref="addPlayerForm" @submit="onSubmit">
       <UFormField name="playerId" label="اختر لاعب">
+          <!-- :disabled="pending || getAllPlayers.pending.value" -->
         <USelectMenu 
           v-model="state.playerId" 
           v-model:search-term="searchTerm"
           :items="players" 
           value-key="id" 
           label-key="name"
-          :disabled="pending || getAllPlayers.pending.value"
           :loading="getAllPlayers.pending.value"
           placeholder="اختر لاعب من القائمة"
           searchable

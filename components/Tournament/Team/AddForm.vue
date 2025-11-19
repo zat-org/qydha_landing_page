@@ -102,6 +102,7 @@ const teamForm = ref<any>()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const emit = defineEmits(['close'])
+const toast = useToast()
 const state = reactive<ITeamCreate>({
     name: "", players: [
         { name: '', phone: '', email: '', qydhaUsername: '' },
@@ -155,7 +156,13 @@ const pending = computed(() => addTeamREQ.status.value == "pending")
 const onSubmit = async () => {
     await addTeamREQ.fetchREQ(tour_id, state)
     if (addTeamREQ.status.value == "success") {
-        emit('close')
+        // emit('close')
+        toast.add({
+            title: "تم اضافة الفريق بنجاح",
+            color: "success",
+            icon: "material-symbols:check",
+        })
+        teamForm.value?.reset()   
     }
     if (addTeamREQ.status.value == "error" && addTeamREQ.error.value) {
         if (addTeamREQ.error.value.statusCode == 404) {

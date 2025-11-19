@@ -81,7 +81,7 @@
     <!-- Submit Button -->
     <div class="mt-6 flex justify-end">
       <!-- :loading="isSubmitting" -->
-      <UButton color="success" size="lg" :disabled="!canSubmit" @click="onSubmit">
+      <UButton color="success" size="lg" :loading="submitAcceptedTeamsReq.result.status.value=='pending'" :disabled="!canSubmit" @click="onSubmit">
         إرسال الفرق المقبولة
       </UButton>
     </div>
@@ -165,7 +165,7 @@ const canAction = computed(() => {
     console.log("isAfterEndJoin", isAfterEndJoin)
     console.log("isBeforeStart", isBeforeStart)
     //  
-    if (isAfterEndJoin && isBeforeStart) {
+    if (isAfterEndJoin ) {
       return true
     } else {
       return false
