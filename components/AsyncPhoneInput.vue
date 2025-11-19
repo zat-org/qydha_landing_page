@@ -47,7 +47,7 @@ function convertArabicToLatinNumerals(input: string): string {
   
   // Log when conversion happens for debugging
   if (converted !== input) {
-    console.log('AsyncPhoneInput: Converted Arabic/Persian numerals to Latin:', input, '->', converted);
+    // console.log('AsyncPhoneInput: Converted Arabic/Persian numerals to Latin:', input, '->', converted);
   }
 
   return converted;
@@ -59,12 +59,12 @@ function onInput(val: string) {
   const convertedVal = convertArabicToLatinNumerals(val);
 
   if (!convertedVal.startsWith('+') && selectedCountry.value) {
-    console.log("not start with +");
-    console.log(`+${selectedCountry.value.dialCode}${convertedVal}`)
+    // console.log("not start with +");
+    // console.log(`+${selectedCountry.value.dialCode}${convertedVal}`)
     modelValue.value =`+${selectedCountry.value.dialCode}${convertedVal}`;
   } else {
-    console.log("start with +");
-    console.log(selectedCountry.value.dialCode)
+    // console.log("start with +");
+    // console.log(selectedCountry.value.dialCode)
     modelValue.value =`${convertedVal}`;
 
     // emit('update:modelValue', convertedVal);

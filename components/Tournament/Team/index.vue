@@ -17,7 +17,7 @@
               label="إضافة فريق" 
               icon="i-heroicons-plus" 
               color="primary" 
-              @click="openDrawer"
+              @click="openDrawer('add')"
             />
         
         </div>
@@ -30,8 +30,9 @@
           <div v-for="player of row.original.players" class="flex items-center justify-between  gap-2">
             <div class="flex items-center justify-between  gap-2 bg-gray-100 dark:bg-gray-800 px-4  py-2 rounded-md">
               <p>{{ player.name }}</p>
-              <!-- <UIcon name="i-lucide-x" class="text-2xl text-red-500  cursor-pointer "
-                @click="removePlayer(row.original, Number(player.id))" /> -->
+
+              <UIcon name="i-lucide-x" class="text-2xl text-red-500  cursor-pointer "
+                @click="removePlayer(row.original,player.id)" />
             </div>
           </div>
 
@@ -41,7 +42,7 @@
         <UButtonGroup>
           <UButton icon="material-symbols:delete" color="error" @click="deleteTeam(row.original)" />
           <UButton icon="material-symbols:settings" color="warning" @click="openUpdateModal(row.original)" />
-          <UButton @click="openAddPlayerModal(row.original.id)">
+          <UButton @click="openAddPlayerModal(row.original.id)" v-if="row.original.players.length < 2">
             <template #leading>
               <IconAddUser class="text-xl" />
             </template>
@@ -58,32 +59,45 @@
 
   </UCard>
 
+  <!-- Single Drawer with Dynamic Content -->
   <UDrawer 
-            v-model:open="isDrawerOpen" 
-            direction="left"
-            :handle="false" 
-            title="إضافة فريق جديد" 
-            description="إضافة فريق جديد"
-            class="drawer-responsive"
-          >
-            <template #content>
-              <div class="flex-1 p-3 sm:p-4 md:p-6 min-h-0">
-                  <TournamentTeamForm ref="teamForm" @close="closeDrawer"  />
-              </div>
-            </template>
-          </UDrawer>
-  <!-- Drawer for Team Form -->
-
+    v-model:open="isDrawerOpen" 
+    direction="left"
+    :handle="false" 
+    :title="drawerConfig.title" 
+    :description="drawerConfig.description"
+    class="drawer-responsive"
+  >
+    <template #content>
+      <div class="flex-1 p-3 sm:p-4 md:p-6 min-h-0 min-w-96 ">
+        <!-- Dynamic content based on drawer mode -->
+        <TournamentTeamAddForm 
+          v-if="drawerMode === 'add'" 
+          ref="teamForm" 
+          @close="closeDrawer" 
+        />
+        <TournamentTeamUpdateForm 
+          v-else-if="drawerMode === 'update'" 
+          :team="selectedTeam!"
+          ref="updateForm" 
+          @close="closeDrawer" 
+        />
+        <TournamentTeamAddPlayerForm 
+          v-else-if="drawerMode === 'addPlayer'" 
+          :teamId="selectedTeamId!.toString()"
+          ref="addPlayerForm" 
+          @close="closeDrawer" 
+        />
+      </div>
+    </template>
+  </UDrawer>
 </template>
 
 <script lang="ts" setup>
+import { KeepAlive } from 'vue';
 import type { IPlayer, ITeam } from '~/models/tournamentTeam';
-import AddModal from './AddModal.vue';
-import UpdateModal from './UpdateModal.vue';
-import AddPlayerModal from './AddPlayerModal.vue';
 
 const route = useRoute()
-const overlay = useOverlay()
 const tour_id = route.params.id.toString()
 
 const getTourREQ = await useTournament().getSingelTournament(tour_id)
@@ -99,22 +113,63 @@ await getTeamsREQ.fetchREQ(tour_id)
 const page = ref(getTeamsREQ.data.value?.data.currentPage!)
 const total = ref(getTeamsREQ.data.value?.data.totalCount!)
 
+// Drawer state management
 const isDrawerOpen = ref(false)
+const drawerMode = ref<'add' | 'update' | 'addPlayer' | null>(null)
+const selectedTeam = ref<ITeam | null>(null)
+const selectedTeamId = ref<number | null>(null)
 const teamForm = ref()
+const updateForm = ref()
+const addPlayerForm = ref()
 
-const openDrawer = () => {
+// Drawer configuration based on mode
+const drawerConfig = computed(() => {
+  switch (drawerMode.value) {
+    case 'add':
+      return {
+        title: 'إضافة فريق جديد',
+        description: 'إضافة فريق جديد'
+      }
+    case 'update':
+      return {
+        title: 'تعديل الفريق',
+        description: 'تعديل بيانات الفريق'
+      }
+    case 'addPlayer':
+      return {
+        title: 'إضافة لاعب للفريق',
+        description: 'إضافة لاعب جديد للفريق'
+      }
+    default:
+      return {
+        title: '',
+        description: ''
+      }
+  }
+})
+
+// Open drawer with different modes
+const openDrawer = (mode: 'add' | 'update' | 'addPlayer', data?: any) => {
+  drawerMode.value = mode
+  
+  if (mode === 'update' && data) {
+    selectedTeam.value = data
+  } else if (mode === 'addPlayer' && data) {
+    selectedTeamId.value = data
+  }
+  
   isDrawerOpen.value = true
 }
 
 const closeDrawer = () => {
   isDrawerOpen.value = false
-  // Refresh teams list after adding a team
-  getTeamsREQ.fetchREQ(tour_id, page.value)
-  total.value = getTeamsREQ.data.value?.data.totalCount!
-}
-
-const openAddModal = () => {
-  overlay.create(AddModal).open()
+  drawerMode.value = null
+  selectedTeam.value = null
+  selectedTeamId.value = null
+  
+  // Refresh teams list after any operation
+  // getTeamsREQ.fetchREQ(tour_id, page.value)
+  // total.value = getTeamsREQ.data.value?.data.totalCount!
 }
 
 const teams = computed(() => {
@@ -126,6 +181,7 @@ watch(page, async (newValue, oldvalue) => {
   await getTeamsREQ.fetchREQ(tour_id, page.value)
   total.value = getTeamsREQ.data.value?.data.totalCount!
 })
+
 const columns = [
   { header: 'الاسم', accessorKey: 'name' },
   { header: 'الاعبين', accessorKey: 'players' },
@@ -137,23 +193,24 @@ const deleteTeam = async (row: ITeam) => {
   const selectedteam = teams.value?.find(t => t.id == row.id)
   if (selectedteam) {
     await delteTeamREQ.fetchREQ(tour_id, selectedteam.id.toString())
+    // Refresh teams list after deletion
+    getTeamsREQ.fetchREQ(tour_id, page.value)
+    total.value = getTeamsREQ.data.value?.data.totalCount!
   }
 }
 
 const openUpdateModal = (row: ITeam) => {
-  // overlay.create(UpdateModal, { props: { team: row } }).open()
+  openDrawer('update', row)
 }
-
-
 
 const openAddPlayerModal = (team_id: number) => {
-  // overlay.create(AddPlayerModal, { props: { team_id: team_id.toString() } }).open()
+  openDrawer('addPlayer', team_id)
 }
 
-
 const deleteREQ = await useTourrnamentTeam().removePlayerFromTeam()
-const removePlayer = async (row: ITeam, player_id: number | string) => {
-  await deleteREQ.fetchREQ(row.tournamentId.toString(), row.id.toString(), player_id.toString())
+const removePlayer = async (row: ITeam, player_id:  string) => {
+  await deleteREQ.fetchREQ(tour_id, row.id.toString(), player_id)
+  // Refresh teams list after removing player
 }
 
 </script>

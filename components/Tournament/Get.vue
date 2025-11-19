@@ -220,15 +220,6 @@ const canEdit = computed(() => {
     permissions.value.includes('ModifyTournamentData')
 });
 
-const adminButtons = computed(() => [
-  { label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' },
-  { label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' },
-  { label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' },
-  // { label: 'ادارة المديرين', to: `/tournament/${props.id}/moderator`, icon: 'i-mdi-account-cog' },
-  // { label: 'ادارة اللاعبين', to: `/tournament/${props.id}/player`, icon: 'i-mdi-account' },
-  // { label: 'ادارة الطاولات ', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' },
-  // { label: 'ادارة المجموعات', to: '', icon: 'i-mdi-group' }
-]);
 
 const props = defineProps<{ id: string }>();
 const { getSingelTournament, getTournamnetStateOptions } = useTournament();
@@ -255,6 +246,18 @@ const getCurrency =(value:TournamentPrizeCurrency)=>{
  if (result) return result
 }
 
+
+
+const adminButtons = computed(() => {
+const result =  [] 
+if (tour.value?.tournament?.addPlayersByQydha ) {
+  result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })
+}else{
+  result.push({ label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' })
+}
+result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' })
+return result
+});
 
 
 </script>

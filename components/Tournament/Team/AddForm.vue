@@ -159,18 +159,22 @@ const onSubmit = async () => {
     }
     if (addTeamREQ.status.value == "error" && addTeamREQ.error.value) {
         if (addTeamREQ.error.value.statusCode == 404) {
-            let errorPlayer = state.players.find(p => {
-                console.log(addTeamREQ.error.value?.data?.message)
-                return p.qydhaUsername.toLowerCase() == addTeamREQ.error.value?.data?.message.split(":")[1].trim().toLowerCase()
+            let errorPlayerIndex = state.players.findIndex(p => {
+                console.log(p.qydhaUsername.toLowerCase())
+                console.log((addTeamREQ.error.value?.data as any)?.data?.message.split(":")[1].trim().toLowerCase())
+                // console.log((addTeamREQ.error.value?.data as any)?.data?.message)
+                const result = p.qydhaUsername.toLowerCase() == (addTeamREQ.error.value?.data as any)?.data?.message.split(":")[1].trim().toLowerCase()
+                console.log(result)
+                return result
             })
-            teamForm.value?.setErrors([{ path: 'players', message: `برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب ${errorPlayer?.name} ` }])
+            teamForm.value?.setErrors([{ name: 'players[' + errorPlayerIndex + '].qydhaUsername', message: `برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب` }])
         }
         else if (addTeamREQ.error.value.statusCode == 400) {
             if (addTeamREQ.error.value.data?.code == "CannotConnectSameUserToManyPlayers") {
 
-                teamForm.value?.setErrors([{ path: 'players', message: `لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب` }])
+                teamForm.value?.setErrors([{ name: 'players', message: `لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب` }])
             } else if (addTeamREQ.error.value.data?.code == "UserAlreadyExistInTournamentAsPlayerError") {
-                teamForm.value?.setErrors([{ path: 'players', message: `احد الاعبين موجود بالفعل في البطولة` }])
+                teamForm.value?.setErrors([{ name: 'players', message: `احد الاعبين موجود بالفعل في البطولة` }])
 
             }
         }

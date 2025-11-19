@@ -194,7 +194,7 @@ export const useTourrnamentTeam = () => {
     const playerId = ref();
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData(
-        "addPlayerToTeam",
+        ()=>["addPlayerToTeam",tourId.value,teamId.value,playerId.value].join("-"),
         () =>
           $api(
             `/tournaments/${tourId.value}/teams/${teamId.value}/players/${playerId.value}`,
@@ -225,7 +225,7 @@ export const useTourrnamentTeam = () => {
     const playerId = ref();
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData(
-        "addPlayerToTeam",
+        ()=>["removePlayerToTeam",tourId.value,teamId.value,playerId.value].join("-"),
         () =>
           $api(
             `/tournaments/${tourId.value}/teams/${teamId.value}/players/${playerId.value}`,
