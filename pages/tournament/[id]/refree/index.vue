@@ -6,7 +6,7 @@
 
 <script lang="ts" setup>
 definePageMeta({ middleware: ['auth','role'],
-  requiredRoles: ['StaffAdmin', 'SuperAdmin'],
+  requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
  });
  useHead({
   title:' الحكام في البطولة',

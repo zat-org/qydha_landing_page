@@ -240,7 +240,7 @@ const onLogoChange = (event: Event) => {
 // sponsors
 const SponsorInput = ref<any>()
 const SponsorsUrl = ref<string[]>([]);
-const Sponsors = ref<File[]>([]);
+// const Sponsors = ref<File[]>([]);
 
 const AddSponser = () => {
   SponsorInput.value?.click()

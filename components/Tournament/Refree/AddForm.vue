@@ -1,5 +1,4 @@
 <template>
-  <UModal prevent-close>
 
     <UCard>
       <template #header>
@@ -8,12 +7,17 @@
       <UForm :state="state" :schema="schema" ref="refreeForm" @submit="onSubmit">
 
         <UFormField label="اسم الحكم " name="username">
-          <USelect 
+          <USelectMenu 
           clear-search-on-close
            v-model="state.username"
+           v-model:search-term="searchTerm"
            :loading="getusers.status.value=='pending'"
             v-if="authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')"
-            :options="Users" :searchable="search" option-attribute="username" value-attribute="username" />
+            :items="Users"  
+            label-key="username" 
+            value-key="username"
+            searchable
+            placeholder="ابحث عن حكم..." />
 
           <UInput v-model="state.username" v-else />
 
@@ -21,25 +25,27 @@
       </UForm>
       <template #footer>
         <div class="flex justify-between">
-          <UButton label="اغلاق" color="red" @click="emit('close')" />
+          <UButton label="اغلاق" color="error" @click="emit('close')" />
           <UButton label="اضافة" @click="refreeForm?.submit()" />
         </div>
-
       </template>
     </UCard>
 
-  </UModal>
 </template>
 
 <script lang="ts" setup>
 import { object, string } from "yup"
+import { refDebounced } from '@vueuse/core'
+
 const emit = defineEmits(['close'])
 const route = useRoute()
 const tour_id = route.params.id.toString()
+const toast = useToast()
 const refreeAddREQ = await useTournamentRefree().addTourRefree()
 import { useMyAuthStore } from "~/store/Auth";
 const refreeForm = ref()
 const getusers = await useUsers().getAllUsers()
+
 const authStore = useMyAuthStore()
 
 if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
@@ -51,10 +57,16 @@ const Users = computed(() => {
     return getusers.data.value?.data.items
   }
 })
-const search = async (q: string) => {
-  await getusers.fetchREQ(q)
-  return Users.value!
-}
+
+const searchTerm = ref("")
+const searchTermDebounced = refDebounced(searchTerm, 500)
+
+// Watch for changes in the debounced search term and trigger backend search
+watch(searchTermDebounced, async (newSearchTerm) => {
+  if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
+    await getusers.fetchREQ(newSearchTerm || "")
+  }
+})
 
 
 const schema = object({
@@ -68,10 +80,22 @@ const onSubmit = async () => {
 
   if (refreeAddREQ.status.value == "success") {
     emit('close')
+    toast.add({
+      title: "تم اضافة الحكم بنجاح",
+      color: "success",
+      icon: "material-symbols:check",
+    })
   }
 
-  else if (refreeAddREQ.status.value == "error" && refreeAddREQ.error.value?.statusCode == 404) {
-    refreeForm.value!.setErrors([{ message: 'هذا المستخدم غير موجود ', path: 'username' }])
+  else if (refreeAddREQ.status.value == "error" ) {
+  if (refreeAddREQ.error.value?.statusCode == 404) {
+    refreeForm.value!.setErrors([{ message: 'هذا المستخدم غير موجود ', name: 'username' }])
+  } else if (refreeAddREQ.error.value?.statusCode == 400) {
+    refreeForm.value!.setErrors([{ message: 'هذا المستخدم موجود بالفعل في البطولة ', name: 'username' }])
+  } else if (refreeAddREQ.error.value?.statusCode == 403) {
+    refreeForm.value!.setErrors([{ message: 'ليس لديك صلاحية لاضافة الحكم ', name: 'username' }])
+  
+  }
   }
 }
 

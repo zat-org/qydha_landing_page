@@ -115,12 +115,9 @@
         </div>
       </div>
     </UForm>
-<pre>
-
-
-</pre>
-
+    
   </UCard>
+  
 </template>
 
 <script lang="ts" setup>
@@ -142,6 +139,7 @@ const props = defineProps<{
     type: TournamentType;
     tournamentPrivatePassword?: string;
     locationDescription: string;
+    remainingSponsorsUrls: string[];
     // isAddPlayersByQydha:boolean
   }
 }>();
@@ -266,21 +264,47 @@ const onLogoChange = (event: Event) => {
 };
 
 // sponsors
-const SponsorInput = ref<any>()
-const SponsorsUrl = ref<string[]>([]);
-watch(SelectedRequest,()=>{
-  if(SelectedRequest.value?.sponsorsUrls && SelectedRequest.value?.sponsorsUrls.length>0){
-    SponsorsUrl.value = SelectedRequest.value?.sponsorsUrls
-  sponsersAvilabel.value= true
-
+// Track sponsor items with their type (existing URL or new file)
+interface SponsorItem {
+  type: 'existing' | 'new';
+  url: string;
+  fileIndex?: number; // index in sponsors array (only for new items)
+  urlIndex?: number; // index in remainingSponsorsUrls (only for existing items)
 }
-},{immediate:true})
 
-const Sponsors = ref<File[]>([]);
+const SponsorInput = ref<any>()
+const sponsorItems = ref<SponsorItem[]>([]);
+
+// Computed property to get display URLs
+const SponsorsUrl = computed(() => {
+  return sponsorItems.value.map(item => item.url);
+});
+
+// Initialize from existing data
+watch(SelectedRequest, () => {
+  if (SelectedRequest.value?.sponsorsUrls && SelectedRequest.value?.sponsorsUrls.length > 0) {
+    // Initialize remainingSponsorsUrls from existing data
+    props.modelValue.remainingSponsorsUrls = [...SelectedRequest.value.sponsorsUrls];
+    
+    // Initialize sponsorItems with existing URLs
+    sponsorItems.value = SelectedRequest.value.sponsorsUrls.map((url, index) => ({
+      type: 'existing',
+      url,
+      urlIndex: index
+    }));
+    
+    sponsersAvilabel.value = true;
+  } else {
+    // Reset if no existing sponsors
+    props.modelValue.remainingSponsorsUrls = [];
+    sponsorItems.value = [];
+  }
+}, { immediate: true });
 
 const AddSponser = () => {
   SponsorInput.value?.click()
 }
+
 const onSponsorsChange = (event: Event) => {
   console.log("change");
   const target = event.target as HTMLInputElement;
@@ -291,17 +315,57 @@ const onSponsorsChange = (event: Event) => {
     const reader = new FileReader();
     
     reader.onload = (e) => {
-      SponsorsUrl.value.push(e.target?.result as string);
-      props.modelValue.sponsors.push(file)
+      const previewUrl = e.target?.result as string;
+      
+      // Add to sponsors array
+      props.modelValue.sponsors.push(file);
+      const fileIndex = props.modelValue.sponsors.length - 1;
+      
+      // Add to sponsorItems as new item
+      sponsorItems.value.push({
+        type: 'new',
+        url: previewUrl,
+        fileIndex: fileIndex
+      });
     };
     reader.readAsDataURL(file);
+    
+    // Reset input to allow selecting the same file again
+    target.value = '';
   }
 }
 
-const removeSponsors =(index:number)=>{
-  SponsorsUrl.value.splice(index, 1)
-  props.modelValue.sponsors.splice(index,1)
-
+const removeSponsors = (index: number) => {
+  const item = sponsorItems.value[index];
+  
+  if (item.type === 'existing') {
+    // Remove from remainingSponsorsUrls
+    if (item.urlIndex !== undefined) {
+      props.modelValue.remainingSponsorsUrls.splice(item.urlIndex, 1);
+      
+      // Update urlIndex for remaining existing items
+      sponsorItems.value.forEach((sponsorItem) => {
+        if (sponsorItem.type === 'existing' && sponsorItem.urlIndex !== undefined && sponsorItem.urlIndex > item.urlIndex!) {
+          sponsorItem.urlIndex! -= 1;
+        }
+      });
+    }
+  } else if (item.type === 'new') {
+    // Remove from sponsors array
+    if (item.fileIndex !== undefined) {
+      props.modelValue.sponsors.splice(item.fileIndex, 1);
+      
+      // Update fileIndex for remaining new items
+      sponsorItems.value.forEach((sponsorItem) => {
+        if (sponsorItem.type === 'new' && sponsorItem.fileIndex !== undefined && sponsorItem.fileIndex > item.fileIndex!) {
+          sponsorItem.fileIndex! -= 1;
+        }
+      });
+    }
+  }
+  
+  // Remove from display array
+  sponsorItems.value.splice(index, 1);
 }
 // tournament type
 const TournamentTypeOptions = [
