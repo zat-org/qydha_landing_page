@@ -12,7 +12,6 @@ export default defineEventHandler((event) => {
   if (url.startsWith("/_nuxt") || url.startsWith("/__nuxt") || url.startsWith("/api/_nuxt_icon")) {
     return;
   }
-
   // ✅ Or skip static/public files and image proxy
   if (url.startsWith("/_ipx") || url.startsWith("/_content") || url.startsWith("/favicon") || url.startsWith("/api/images")) {
     return;
