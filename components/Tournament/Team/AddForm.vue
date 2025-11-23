@@ -98,7 +98,7 @@
 <script lang="ts" setup>
 import { array, object, string } from 'yup';
 import type { ITeamCreate } from '~/models/tournamentTeam';
-const teamForm = ref<any>()
+const teamForm = useTemplateRef('teamForm')
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const emit = defineEmits(['close'])
@@ -167,13 +167,19 @@ const onSubmit = async () => {
     await addTeamREQ.fetchREQ(tour_id, state)
     if (addTeamREQ.status.value == "success") {
         // emit('close')
-        teamForm.value?.reset()   
+        Object.assign(state, {
+            name: "",
+            players: [
+                { name: '', phone: '', email: '', qydhaUsername: '' },
+                { name: '', phone: '', email: '', qydhaUsername: '' }
+            ]
+        })
         toast.add({
             title: "تم اضافة الفريق بنجاح",
             color: "success",
             icon: "material-symbols:check",
         })
-    }
+      }
     if (addTeamREQ.status.value == "error" && addTeamREQ.error.value) {
         if (addTeamREQ.error.value.statusCode == 404) {
             let errorPlayerIndex = state.players.findIndex(p => {
@@ -187,10 +193,11 @@ const onSubmit = async () => {
             teamForm.value?.setErrors([{ name: 'players[' + errorPlayerIndex + '].qydhaUsername', message: `برجاء التاكد من اسم الاعب فيدها الخاص ب الاعب` }])
         }
         else if (addTeamREQ.error.value.statusCode == 400) {
-            if (addTeamREQ.error.value.data?.code == "CannotConnectSameUserToManyPlayers") {
+            const error = (addTeamREQ.error.value.data as any).data
+            if (error.code == "CannotConnectSameUserToManyPlayers") {
 
                 teamForm.value?.setErrors([{ name: 'players', message: `لا يمكن استخدام نفس المستخدم من قيدها في اكثر من لاعب` }])
-            } else if (addTeamREQ.error.value.data?.code == "UserAlreadyExistInTournamentAsPlayerError") {
+            } else if (error.code == "UserAlreadyExistInTournamentAsPlayerError") {
                 teamForm.value?.setErrors([{ name: 'players', message: `احد الاعبين موجود بالفعل في البطولة` }])
 
             }

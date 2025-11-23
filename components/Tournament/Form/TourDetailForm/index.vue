@@ -48,7 +48,19 @@
                     <label> قبول الطلبات النضمام من قيدها </label>
                 </div>
             </UFormField>
-      
+
+            <template v-if="modelValue.addPlayersByQydha">
+                <!-- <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
+                    <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
+                </UFormField>
+                <UFormField label="انتهاء تقديم طلبات الانضمام" name="joinRequestEndAt">
+                    <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
+                        :max-date="model.startAt" />
+                </UFormField> -->
+                <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount">
+                    <UInput type="number" v-model="model.joinRequestMaxCount" />
+                </UFormField>
+            </template>
             
             <TournamentRequestFormTourDetailFormPrizeManagement v-model="model" />
 
@@ -267,10 +279,10 @@ const localSchema = object({
         .when('addPlayersByQydha', {
             is: true,
             then: (schema) => schema
-                .required("عدد اللاعبين المطلوب مطلوب")
-                .typeError("عدد اللاعبين المطلوب يجب أن يكون رقماً")
-                .min(1, "عدد اللاعبين المطلوب يجب أن يكون أكثر من 0")
-                .integer("عدد اللاعبين المطلوب يجب أن يكون رقماً صحيحاً"),
+                .required("عدد طلبات الانضمام المطلوب مطلوب")
+                .typeError("عدد طلبات الانضمام المطلوب يجب أن يكون رقماً")
+                .min(1, "عدد طلبات الانضمام المطلوب يجب أن يكون أكثر من 0")
+                .integer("عدد طلبات الانضمام المطلوب يجب أن يكون رقماً صحيحاً"),
             otherwise: (schema) => schema.notRequired()
         }),
     

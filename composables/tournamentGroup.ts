@@ -6,7 +6,7 @@ const addTeamsToFinalGroup=()=>{
  const tournamentId = ref()
   const result =useAsyncData(
     ()=>['addTeamsToFinalGroup',tournamentId.value].join('-'),
-    ()=>$api(`/tournaments/${tournamentId.value}/groups/final`,{method:'post'}))
+    ()=>$api(`/tournaments/${tournamentId.value}/groups/final`,{method:'post'}),{immediate:false})
     const fetchREQ = async (tournament_id: string) => {
       tournamentId.value = tournament_id
       await result.execute()
