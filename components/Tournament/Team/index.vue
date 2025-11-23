@@ -91,8 +91,8 @@ const route = useRoute()
 const tour_id = route.params.id.toString()
 const toast = useToast()
 const { files, open: openExcelDialog, reset, onCancel, onChange } = useFileDialog({
-  accept: '.xlsx,.xls', // Set to accept only image files
-  directory: false, // Select directories instead of files if set true
+  accept: '.xlsx,.xls,.csv',
+  directory: false, 
 })
 
 const importTeamsFromExcelREQ = await useTourrnamentTeam().imprtTeamsFromExcel()
