@@ -89,4 +89,29 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
+  image: {
+    // Allow external domains for image optimization
+    domains: ['storage.googleapis.com'],
+    alias: {
+      googleStorage: 'https://storage.googleapis.com'
+    },
+    // Use IPX provider for better compatibility with external images
+    provider: 'ipx'
+  },
+  nitro: {
+    // Allow fetching from external domains
+    routeRules: {
+      '/_ipx/**': {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'GET',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      }
+    },
+    // Enable external image fetching
+    experimental: {
+      wasm: true
+    }
+  }
 });

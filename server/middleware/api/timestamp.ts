@@ -13,8 +13,8 @@ export default defineEventHandler((event) => {
     return;
   }
 
-  // ✅ Or skip static/public files
-  if (url.startsWith("/_ipx") || url.startsWith("/_content") || url.startsWith("/favicon")) {
+  // ✅ Or skip static/public files and image proxy
+  if (url.startsWith("/_ipx") || url.startsWith("/_content") || url.startsWith("/favicon") || url.startsWith("/api/images")) {
     return;
   }
 
