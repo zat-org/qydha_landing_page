@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, ref } from 'vue';
 
 const VueTelInput = defineAsyncComponent(() =>
   import('vue-tel-input').then(m => {
@@ -29,8 +29,6 @@ const VueTelInput = defineAsyncComponent(() =>
 
 // Use defineModel for proper v-model handling
 const modelValue = defineModel<string>({ default: '' });
-
-// const output = 
 
 // Convert Arabic-Indic and Persian numerals to Latin numerals
 function convertArabicToLatinNumerals(input: string): string {
@@ -53,36 +51,94 @@ function convertArabicToLatinNumerals(input: string): string {
   return converted;
 }
 
-const selectedCountry=ref()
+// Extract phone number without dial code
+function extractPhoneNumber(phoneValue: string): string {
+  if (!phoneValue || !phoneValue.startsWith('+')) {
+    return phoneValue;
+  }
+  
+  // Find the first space or extract everything after +
+  // vue-tel-input typically formats as +123 4567890
+  const spaceIndex = phoneValue.indexOf(' ');
+  if (spaceIndex > 0) {
+    return phoneValue.substring(spaceIndex + 1);
+  }
+  
+  // If no space, try to extract by finding where dial code ends
+  // This is a fallback - we'll use the current selectedCountry to determine
+  return phoneValue;
+}
+
+const selectedCountry = ref()
 function onInput(val: string) {
+  // console.log("on input",val)
   // Convert Arabic numerals to Latin numerals first
   const convertedVal = convertArabicToLatinNumerals(val);
 
   if (!convertedVal.startsWith('+') && selectedCountry.value) {
     // console.log("not start with +");
     // console.log(`+${selectedCountry.value.dialCode}${convertedVal}`)
-    modelValue.value =`+${selectedCountry.value.dialCode}${convertedVal}`;
+    modelValue.value = `+${selectedCountry.value.dialCode}${convertedVal}`;
   } else {
     // console.log("start with +");
     // console.log(selectedCountry.value.dialCode)
-    modelValue.value =`${convertedVal}`;
+    modelValue.value = `${convertedVal}`;
 
     // emit('update:modelValue', convertedVal);
   }
 }
 
-
 function onCountryChanged(country: any) {
+  // console.log("country changed",country)  
+  const previousCountry = selectedCountry.value;
   selectedCountry.value = country;
-  
-  // DON'T reset the value here if it already exists and starts with +
-  // Only set country code if the current value is empty or doesn't have a country code
   if (selectedCountry.value) {
-    if (!modelValue.value || (!modelValue.value.startsWith('+') && modelValue.value.length === 0)) {
-      // Only set to country code if there's no existing value
-      modelValue.value = `+${selectedCountry.value.dialCode}`;
+    if (!previousCountry) {
+
+      // console.log(modelValue)
+    //  modelValue.value = `+${modelValue.value}`
+      return 
     }
-    // Otherwise, keep the existing value - vue-tel-input already has the correct country selected
+
+    const newDialCode = `+${selectedCountry.value.dialCode}`; 
+    if (!modelValue.value || modelValue.value.length === 0) {
+      // If no value, set to new country code
+      modelValue.value = newDialCode;
+    } else if (modelValue.value.startsWith('+')) {
+      // If there's an existing value with a dial code, replace the dial code
+      // Extract the phone number part (everything after the dial code)
+      let phoneNumber = modelValue.value;
+      
+      // Remove old dial code if we had a previous country
+      if (previousCountry) {
+        const oldDialCode = `+${previousCountry.dialCode}`;
+        if (phoneNumber.startsWith(oldDialCode)) {
+          phoneNumber = phoneNumber.substring(oldDialCode.length).trim();
+        }
+      } else {
+        // Try to extract by finding the first space or by removing common dial codes
+        const spaceIndex = phoneNumber.indexOf(' ');
+        if (spaceIndex > 0) {
+          phoneNumber = phoneNumber.substring(spaceIndex + 1);
+        } else {
+          // If no space, try to remove any leading + and digits that might be a dial code
+          // This is a fallback - remove everything up to first non-digit after +
+          const match = phoneNumber.match(/^\+\d{1,4}(.*)$/);
+          if (match && match[1]) {
+            phoneNumber = match[1];
+          } else {
+            // If we can't extract, just use the new dial code
+            phoneNumber = '';
+          }
+        }
+      }
+      
+      // Combine new dial code with phone number
+      modelValue.value = phoneNumber ? `${newDialCode}${phoneNumber}` : newDialCode;
+    } else {
+      // If value doesn't start with +, prepend new dial code
+      modelValue.value = `${newDialCode}${modelValue.value}`;
+    }
   }
 }
 

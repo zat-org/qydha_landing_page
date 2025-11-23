@@ -173,6 +173,7 @@ watch(() => getReq.status.value, () => {
     }
 })
 
+const router = useRouter()
 // Step definitions
 const steps = [
     {
@@ -255,7 +256,8 @@ const validation = useMultiStepFormValidation(formRefs as any, {
         await updateReq.fetchREQ(formData)
         if (updateReq.status.value == 'success') {
             console.log(unref(updateReq.data))
-            navigateTo("/tournament")
+            router.back()
+            // navigateTo("/tournament")
         } else if(updateReq.status.value == 'error') {
             // console.log(unref(updateReq.error))
             console.log(getStepForField(unref(updateReq.error)))

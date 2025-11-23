@@ -30,7 +30,7 @@
     <div class="  flex flex-col flex-1  ">
       <Loading v-if="getReq.status.value == 'pending'" />
 
-      <UTable v-else-if="getReq.status.value == 'success'" :data="data" class="flex-1" :columns="cols">
+      <UTable v-else-if="getReq.status.value == 'success'" :data="data" class="flex-1" :columns="cols"   @select="onSelect">
         <template #title-cell="{ row }">
           <div class="flex gap-2 items-center">
             <ClientOnly>
@@ -64,15 +64,14 @@
         <template #actions-cell="{ row }">
           <UButtonGroup>
             <!-- view single -->
-            <UButton icon="i-lucide-eye" :to="`/tournament/${row.original.id}`" variant="outline"/>
+            <!-- <UButton icon="i-lucide-eye" :to="`/tournament/${row.original.id}`" variant="outline"/> -->
             <!-- edit -->
-            <UButton   v-if="userStore.isStaffAdmin || userStore.isSuperAdmin"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
-
-            <UDropdownMenu 
+            <UButton   v-if="isAdmin"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
+            <!-- <UDropdownMenu 
             v-if="userStore.isOrganizer" 
             :items="[{label:'طلبات الانضمام',to:`/tournament/${row.original.id}/Joinrequest`}]"  >
               <UButton icon="i-lucide-menu"  variant="outline" />
-            </UDropdownMenu>
+            </UDropdownMenu> -->
 
           </UButtonGroup>
         </template>
@@ -143,7 +142,8 @@
 </template>
 
 <script lang="ts" setup>
-import { OrderByStartAtDirection, TournamentState, type GetTournamentParams } from "~/models/tournament";
+import type { TableRow } from "@nuxt/ui";
+import { OrderByStartAtDirection, TournamentState, type GetTournamentParams, type Tournament } from "~/models/tournament";
 const { getAllTournament, getTournamnetStateOptions, getTournamnetOrderStartAtOptions } = useTournament();
 import { useMyAuthStore } from "~/store/Auth";
 const toast = useToast()
@@ -157,6 +157,14 @@ const filters = ref<GetTournamentParams>({
 const dropdownItems= [
   {}
 ]
+
+function onSelect(row: TableRow<Tournament>, e?: Event) {
+  /* If you decide to also select the column you can do this  */
+  // row.toggleSelected(!row.getIsSelected())
+
+  // console.log(e)
+  navigateTo(`/tournament/${row.original.id}`)
+}
 
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);

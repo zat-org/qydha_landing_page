@@ -250,6 +250,28 @@ export const useTourrnamentTeam = () => {
     return { data, pending, error, refresh, status, fetchREQ };
   };
 
+  const imprtTeamsFromExcel = async () => {
+    const tourId = ref();
+    const body = ref(new FormData())
+    // const file = ref<File>();
+    const result =
+      await useAsyncData(
+        "imprtTeamsFromExcel",
+        () => $api(`/tournaments/${tourId.value}/teams/import`, { method: "post", body: body.value }),
+        {immediate:false},
+      );
+      const fetchREQ = async (tour_id: string, file: File) => {
+        tourId.value = tour_id;
+        body.value = new FormData()
+        body.value.append("file", file)
+        await result.execute();
+        if (result.status.value == "success") {
+          refreshNuxtData("getAllTourTeams");
+        }
+      }
+      return { result, fetchREQ };
+  };
+
   return {
     getAllTourTeams,
     addTourTeam,
@@ -260,5 +282,6 @@ export const useTourrnamentTeam = () => {
     refuseTourTeam,
     addPlayerToTeam,
     removePlayerFromTeam,
+    imprtTeamsFromExcel,
   };
 };

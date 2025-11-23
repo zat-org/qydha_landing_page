@@ -134,7 +134,17 @@ const schema = object({
 watch(
     () => state.players.map(p => p.name), 
     (newNames) => {
-        state.name = newNames.join(" | ");
+        const processedNames = newNames.map(name => {
+            if (!name) return '';
+            const words = name.trim().split(/\s+/).filter(word => word.length > 0);
+            if (words.length >= 3) {
+                // Take first name and last name
+                return `${words[0]} ${words[words.length - 1]}`;
+            }
+            // Use full name if less than 3 words
+            return name.trim();
+        }).filter(name => name.length > 0);
+        state.name = processedNames.join(" | ");
     }
 )
 
@@ -157,12 +167,12 @@ const onSubmit = async () => {
     await addTeamREQ.fetchREQ(tour_id, state)
     if (addTeamREQ.status.value == "success") {
         // emit('close')
+        teamForm.value?.reset()   
         toast.add({
             title: "تم اضافة الفريق بنجاح",
             color: "success",
             icon: "material-symbols:check",
         })
-        teamForm.value?.reset()   
     }
     if (addTeamREQ.status.value == "error" && addTeamREQ.error.value) {
         if (addTeamREQ.error.value.statusCode == 404) {

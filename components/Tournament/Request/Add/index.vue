@@ -93,7 +93,7 @@ const formData = reactive<TournamentCreationRequest>({
     isAddPlayersByQydha: true,
     joinRequestEndAt:"",
     joinRequestStartAt:"",
-    joinRequestMaxCount:0,
+    joinRequestMaxCount:100,
     teamsCount: 16,
     tablesCount: 8,
     tournamentPrivatePassword: "",

@@ -8,9 +8,9 @@
       </div>
     </template>
       <template #footer >
-        <div class="flex justify-between items-center">
-          <UButton color="error" label="cancel" @click="emit('close')" />
-          <UButton  color="success" label="ok" @click="onSuccess" />
+        <div class="flex justify-between items-center w-full">
+          <UButton  color="success" label="تأكيد" @click="emit('close',true)" />
+          <UButton color="error" label="الغاء " @click="emit('close',false)" />
 
         </div>
       </template>
@@ -22,10 +22,6 @@
 const props= defineProps<{message:string}>()
 const emit = defineEmits(['success','close'])
 
-function onSuccess() {
-  emit('success')
-  emit('close')
-}
 
 </script>
 

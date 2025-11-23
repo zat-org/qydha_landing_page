@@ -67,7 +67,7 @@
             <div class="flex items-center gap-2" v-if="tour.tournament?.contactPhone">
               <UIcon name="i-mdi-phone" class="text-gray-500" />
               <div class="flex items-center gap-2">
-                <p>
+                <p dir="ltr">
                   {{ tour.tournament?.contactPhone }}
                 </p>
                 <UBadge v-if="tour.tournament?.isContactPhoneCall" variant="soft" size="xl">اتصال</UBadge>
@@ -96,13 +96,12 @@
           </div>
 
           <div v-if="tour.tournament?.owner" class="flex items-center gap-3 pt-2">
-            <UAvatar :src="tour.tournament.owner.avatarUrl || undefined"
-            class="w-[75px] h-[75px]"
+            <UAvatar :src="tour.tournament.owner.avatarUrl || undefined" class="w-[75px] h-[75px]"
               :alt="tour.tournament.owner.username || tour.tournament.owner.name || 'Owner'" size="xl" />
-            <div >
+            <div>
               <p class="font-medium">مالك البطوله</p>
               <p class="text-gray-600 dark:text-gray-300">
-                {{ tour.tournament.owner.name ||tour.tournament.owner.username }}
+                {{ tour.tournament.owner.name || tour.tournament.owner.username }}
               </p>
             </div>
           </div>
@@ -118,7 +117,8 @@
               <div class="flex justify-between w-full ">
                 <p class="font-semibold">المركز {{ index + 1 }}</p>
                 <p v-if="prize.isFinancial">
-                  {{ prize.financialPrizeAmount.toLocaleString() }} {{ getCurrency(prize.financialPrizeCurrency)?.label ?? 'ريال' }}
+                  {{ prize.financialPrizeAmount.toLocaleString() }} {{ getCurrency(prize.financialPrizeCurrency)?.label
+                  ?? 'ريال' }}
                 </p>
               </div>
               <div v-if="prize.isNonFinancial && prize.nonFinancialPrizes?.length" class="flex flex-wrap gap-2">
@@ -156,26 +156,17 @@
         </div>
       </div>
 
-      <!-- <div v-if="tour.requesterPrivilege" class="px-5">
-        <UDivider label="صلاحياتي في هذه البطولة" />
-        <div class="flex flex-wrap gap-2 pt-2">
-          <UBadge color="primary" variant="soft">{{ tour.requesterPrivilege.privilege }}</UBadge>
-          <UBadge v-for="(perm, i) in tour.requesterPrivilege.permissions" :key="i" variant="soft">{{ perm }}</UBadge>
-        </div>
-      </div> -->
-
       
-      <!-- v-if="userStore.isOrganizer"  -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-5">
         <UButton v-for="(button, index) in adminButtons" :key="index" :to="button.to" :label="button.label"
           :icon="button.icon" size="lg" class="w-full" variant="soft" />
-        
+
 
       </div>
 
-      
+
       <p>
-        المجموعات 
+        المجموعات
       </p>
       <p>
         tabs for evry group in tournament
@@ -185,7 +176,8 @@
 
     <template #footer>
       <div class="flex flex-wrap gap-4 justify-between items-center">
-        <UButton label="عودة" color="neutral" variant="soft" icon="i-mdi-arrow-left" @click="navigateTo('/tournament')" />
+        <UButton label="عودة" color="neutral" variant="soft" icon="i-mdi-arrow-left"
+          @click="navigateTo('/tournament')" />
 
         <div class="flex gap-3">
           <UButton v-if="isAdmin && canEdit" color="warning" label="تعديل" icon="i-mdi-pencil"
@@ -205,7 +197,6 @@ import Loading from "../loading.vue";
 import type { TournamentState } from "~/models/tournament";
 import type { TournamentType } from "~/models/tournamenetType";
 import type { TournamentPrizeCurrency } from "~/models/tournamentPrize";
-
 const userStore = useMyAuthStore();
 const isAdmin = computed(() => {
   return userStore.user?.user.roles.includes("SuperAdmin") ||
@@ -223,9 +214,11 @@ const canEdit = computed(() => {
 
 const props = defineProps<{ id: string }>();
 const { getSingelTournament, getTournamnetStateOptions } = useTournament();
-const { getTournamentTypeOptions , getTournamentPrizeCurrency } = useTournamentRequest()
+const { getTournamentTypeOptions, getTournamentPrizeCurrency } = useTournamentRequest()
 
 const getREQ = await getSingelTournament(props.id);
+const getgroupREQ = useTournamentGroup().getTournamnetGroups(props.id);
+
 // const qydhaToggle = await tourApi.updatTourQydhaAndOwner();
 
 const pending = computed(() => getREQ.pending.value);
@@ -241,22 +234,22 @@ const getType = (value: TournamentType) => {
   if (result) return result
 }
 const currencies = getTournamentPrizeCurrency()
-const getCurrency =(value:TournamentPrizeCurrency)=>{
- const result = currencies.find(cur=>cur.value==value)
- if (result) return result
+const getCurrency = (value: TournamentPrizeCurrency) => {
+  const result = currencies.find(cur => cur.value == value)
+  if (result) return result
 }
 
 
 
 const adminButtons = computed(() => {
-const result =  [] 
-if (tour.value?.tournament?.addPlayersByQydha ) {
-  result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })
-}else{
+  const result = []
+  if (tour.value?.tournament?.addPlayersByQydha) {
+    result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })
+  }
   result.push({ label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' })
-}
-result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' })
-return result
+  result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' })
+  result.push({ label: 'ادارة المجموعات', to: `/tournament/${props.id}/group`, icon: 'i-mdi-user-group' })
+  return result
 });
 
 

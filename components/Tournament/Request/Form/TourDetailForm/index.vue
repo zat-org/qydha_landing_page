@@ -21,6 +21,7 @@
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
                         <AsyncDatePicker 
                             v-model="model.joinRequestStartAt" 
+                            :min-date="new Date()"
                             :max-date="model.startAt"
                             @update:model-value="onDateChange('joinRequestStartAt')"
                         />
@@ -81,7 +82,7 @@
                     <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
                         :max-date="model.startAt" />
                 </UFormField> -->
-                <UFormField label=" اقصي عدد اللاعبين  " name="joinRequestMaxCount">
+                <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount">
                     <UInput type="number" v-model="model.joinRequestMaxCount" />
                 </UFormField>
             </template>
@@ -317,10 +318,10 @@ const localSchema = object({
         .when('isAddPlayersByQydha', {
             is: true,
             then: (schema) => schema
-                .required("عدد اللاعبين المطلوب مطلوب")
-                .typeError("عدد اللاعبين المطلوب يجب أن يكون رقماً")
-                .min(1, "عدد اللاعبين المطلوب يجب أن يكون أكثر من 0")
-                .integer("عدد اللاعبين المطلوب يجب أن يكون رقماً صحيحاً"),
+                .required("عدد طلبات الانضمام المطلوب مطلوب")
+                .typeError("عدد طلبات الانضمام المطلوب يجب أن يكون رقماً")
+                .min(1, "عدد طلبات الانضمام المطلوب يجب أن يكون أكثر من 0")
+                .integer("عدد طلبات الانضمام المطلوب يجب أن يكون رقماً صحيحاً"),
             otherwise: (schema) => schema.notRequired()
         }),
 

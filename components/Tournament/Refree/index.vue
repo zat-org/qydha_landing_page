@@ -1,6 +1,7 @@
 <template>
   <UCard v-if="tour" :ui="{ root: 'flex flex-col h-full ' }">
     <template #header>
+      <div class="flex items-center justify-between">
       <p>
         <span class="text-2xl ">
           {{ tour.title }}
@@ -10,6 +11,9 @@
           الحكام
         </span>
       </p>
+      <UButton label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
+
+      </div>
     </template>
 
     <UTable :data="refrees" :columns="cols" >
@@ -20,7 +24,6 @@
     <template #footer>
       <div class="flex justify-between items-center">
 
-        <UButton label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
         <UButton label="عودة " color="error" @click="navigateTo('/tournament/'+tour_id)" />
       </div>
     </template>
