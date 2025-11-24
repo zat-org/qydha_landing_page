@@ -155,7 +155,7 @@ const localSchema = object({
   description: string().required("وصف البطولة مطلوب"),
   logo: mixed(),
   tournamentType: string().required("نوع البطولة مطلوب"),
-  tournamentPrivatePassword: string().when('type', {
+  tournamentPrivatePassword: string().when('tournamentType', {
     is: TournamentType.private,
     then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"),
     otherwise: (schema) => schema.notRequired(),

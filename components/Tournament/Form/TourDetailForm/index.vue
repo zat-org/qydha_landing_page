@@ -13,7 +13,7 @@
                     <!-- Join Request Start -->
                     <div v-if="modelValue.addPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
-                        <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt"   />
+                        <AsyncDatePicker v-model="model.joinRequestStartAt" :min-date="new Date()" :max-date="model.startAt"/>
                         </UFormField>
                     </div>
                     <!-- Join Request End -->
