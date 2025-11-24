@@ -272,9 +272,9 @@
           <UButtonGroup v-if="userStore.isOrganizer && currentState === TournamentRequestState.Pending">
             <UButton 
               color="error" 
-              icon="i-lucide-circle-x"
+              icon="i-heroicons-x-mark"
               @click="handleCancel"
-              :loading="approveStatus =='pending'"
+              :loading="cancelStatus =='pending'"
             >
               الغاء
             </UButton>

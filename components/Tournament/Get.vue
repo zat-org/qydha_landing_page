@@ -165,13 +165,6 @@
       </div>
 
 
-      <p>
-        المجموعات
-      </p>
-      <p>
-        tabs for evry group in tournament
-      </p>
-
     </div>
 
     <template #footer>
@@ -243,12 +236,15 @@ const getCurrency = (value: TournamentPrizeCurrency) => {
 
 const adminButtons = computed(() => {
   const result = []
+  
   if (tour.value?.tournament?.addPlayersByQydha) {
-    result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })
+    result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })  
   }
   result.push({ label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' })
   result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' })
   result.push({ label: 'ادارة المجموعات', to: `/tournament/${props.id}/group`, icon: 'i-mdi-user-group' })
+  result.push({ label: 'ادارة الطاولات', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' })
+
   return result
 });
 

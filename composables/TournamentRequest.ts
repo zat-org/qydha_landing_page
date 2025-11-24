@@ -193,7 +193,7 @@ export const useTournamentRequest = () => {
   const AdminApproveRequest = () => {
     const id = ref();
     const { data, status, execute, pending } = useAsyncData(
-      "AdminApproveRequest",
+      ()=>['AdminApproveRequest',id.value].join('-'),
       () =>
         $api(`/tournaments/creation-request/${unref(id)}/approve`, {
           method: "patch",
@@ -212,7 +212,7 @@ export const useTournamentRequest = () => {
   const AdminRejectRequest = () => {
     const id = ref();
     const { data, status, execute, pending } = useAsyncData(
-      "AdminRejectRequest",
+      ()=>['AdminRejectRequest',id.value].join('-'),
       () =>
         $api(`/tournaments/creation-request/${unref(id)}/reject`, {
           method: "patch",
