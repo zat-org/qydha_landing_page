@@ -41,7 +41,7 @@ const params = ref<GetTournamentJoinRequestParams>({
     state: TournamentJoinRequestState.InConsideration,
     type: TournamentJoinRequestType.Single,
     pageNumber: 1,
-    pageSize: 10
+    pageSize: 9
 })
 
 

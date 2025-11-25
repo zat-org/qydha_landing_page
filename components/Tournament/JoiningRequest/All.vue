@@ -60,7 +60,7 @@ const params = ref<GetTournamentJoinRequestParams>({
     state: TournamentJoinRequestState.WaitingApproval,
     type: null,
     pageNumber: 1,
-    pageSize: 10
+    pageSize: 9
 })
 
 const { getTournamentJoinRequests,

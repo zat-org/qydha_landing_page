@@ -29,8 +29,23 @@
 
     <div class="  flex flex-col flex-1  ">
       <Loading v-if="getReq.status.value == 'pending'" />
-
-      <UTable v-else-if="getReq.status.value == 'success'" :data="data" class="flex-1" :columns="cols"   @select="onSelect">
+      
+      <div v-else-if="getReq.status.value == 'success' && (!data || data.length === 0)" class="flex flex-col items-center justify-center py-12 px-4 min-h-[400px]">
+        <UIcon name="i-heroicons-inbox" class="text-6xl text-gray-400 mb-4" />
+        <h3 class="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">لا توجد بطولات متاحة</h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6">ابدأ بإنشاء بطولة جديدة</p>
+        <UButton 
+          to="/tournament/request/add" 
+          icon="i-heroicons-plus" 
+          size="lg" 
+          color="primary"
+          class="px-6"
+        >
+          إضافة طلب بطولة جديدة
+        </UButton>
+      </div>
+      
+      <UTable v-else-if="getReq.status.value == 'success' && data && data.length > 0" :data="data" class="flex-1" :columns="cols"   @select="onSelect">
         <template #title-cell="{ row }">
           <div class="flex gap-2 items-center">
             <ClientOnly>
@@ -76,7 +91,7 @@
           </UButtonGroup>
         </template>
       </UTable>
-      <UPagination v-model:page="filters.PageNumber" :page-count="getReq.data.value?.data.totalPages" :total="getReq.data.value?.data.totalCount" class="mx-auto" />
+      <UPagination v-if="getReq.status.value == 'success' && data && data.length > 0" v-model:page="filters.PageNumber" :page-count="getReq.data.value?.data.totalPages" :total="getReq.data.value?.data.totalCount" class="mx-auto" />
       <!-- <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
         <template #empty-state>
           <div class="flex flex-col items-center justify-center py-12 px-4">
@@ -150,7 +165,7 @@ const toast = useToast()
 
 const filters = ref<GetTournamentParams>({
   PageNumber: 1,
-  PageSize: 10,
+  PageSize: 9,
   OrderByStartAtDirection: OrderByStartAtDirection.ASC
 })
 

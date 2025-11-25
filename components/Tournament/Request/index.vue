@@ -68,7 +68,7 @@ const filters = ref<GetTournamentRequestParams>({
   searchToken: undefined,
   state: undefined,
   pageNumber: 1,
-  pageSize: 10
+  pageSize: 9
 })
 
 const isAdmin = computed(() => {

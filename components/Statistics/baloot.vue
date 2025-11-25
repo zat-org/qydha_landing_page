@@ -294,7 +294,7 @@ watch(selectedCountry, () => {
 })
 const pagination = ref({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 9
 })
 const columns = [
     {

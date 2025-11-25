@@ -22,7 +22,7 @@ export const useCardCode = () => {
         $api("/card-codes/groups", {
           query: {
             pageNumber: currentPage.value,
-            pageSize: 10,
+            pageSize: 9,
           },
         }),
       { watch: [currentPage] }

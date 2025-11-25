@@ -12,7 +12,7 @@
           </p>
         </div>
         <div class="flex gap-3">
-          <UButton to="/tournament/requests" icon="i-heroicons-arrow-left" variant="ghost" size="lg">
+          <UButton to="/tournament/request" icon="i-heroicons-arrow-left" variant="ghost" size="lg">
             قائمة طلبات  البطولات
           </UButton>
           <UButton to="/tournament/request/add" icon="i-heroicons-plus" size="lg">
@@ -112,7 +112,7 @@
               <div class="flex-1">
                 <h4 class="font-semibold text-lg mb-2">رقم التواصل</h4>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">رقم هاتف للتواصل مع اللاعبين + خيارات واتساب/مكالمة</p>
-                <UBadge color="error" variant="soft" size="sm">مطلوب (10 أرقام على الأقل)</UBadge>
+                <UBadge color="error" variant="soft" size="sm">مطلوب </UBadge>
               </div>
             </div>
           </div>
@@ -196,15 +196,26 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 min-h-[120px] border border-gray-200 dark:border-gray-700">
-              <h5 class="font-semibold text-lg mb-2">بداية التسجيل</h5>
+              <h5 class="font-semibold text-lg mb-2">بداية التسجيل (اختياري)</h5>
               <p class="text-gray-600 dark:text-gray-400 mb-4">تاريخ فتح التسجيل للاعبين</p>
               <UBadge color="error" variant="soft" size="sm">مطلوب</UBadge>
             </div>
             <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 min-h-[120px] border border-gray-200 dark:border-gray-700">
-              <h5 class="font-semibold text-lg mb-2">نهاية التسجيل</h5>
+              <h5 class="font-semibold text-lg mb-2">نهاية التسجيل (اختياري)</h5>
               <p class="text-gray-600 dark:text-gray-400 mb-4">تاريخ إغلاق التسجيل (يجب أن يكون بعد تاريخ البداية)</p>
               <UBadge color="error" variant="soft" size="sm">مطلوب</UBadge>
             </div>
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 min-h-[120px] border border-gray-200 dark:border-gray-700">
+              <h5 class="font-semibold text-lg mb-2">بداية البطولة</h5>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">تاريخ بدء البطولة</p>
+              <UBadge color="error" variant="soft" size="sm">مطلوب</UBadge>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 min-h-[120px] border border-gray-200 dark:border-gray-700">
+              <h5 class="font-semibold text-lg mb-2">نهاية البطولة</h5>
+              <p class="text-gray-600 dark:text-gray-400 mb-4">تاريخ نهاية البطولة</p>
+              <UBadge color="error" variant="soft" size="sm">مطلوب</UBadge>
+            </div>
+            
           </div>
         </UCard>
 
@@ -267,16 +278,12 @@
               <p class="text-gray-600 dark:text-gray-400 mb-4">عدد الطاولات المتاحة للمباريات</p>
               <UBadge color="error" variant="soft" size="sm">مطلوب (أقل حد: طاولة واحدة)</UBadge>
             </div>
-            <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 min-h-[140px] border border-gray-200 dark:border-gray-700">
-              <h5 class="font-semibold text-lg mb-2">توزيع الفرق</h5>
-              <p class="text-gray-600 dark:text-gray-400 mb-4">أوتوماتيكي أو يدوي</p>
-              <UBadge color="error" variant="soft" size="sm">مطلوب</UBadge>
-            </div>
+            
           </div>
         </UCard>
 
         <!-- Tournament Schedule -->
-        <UCard>
+        <!-- <UCard>
           <template #header>
             <div class="flex items-center">
               <UIcon name="i-heroicons-clock" class="w-5 h-5 text-gray-700 dark:text-gray-300 ml-2" />
@@ -303,10 +310,10 @@
 
             <UBadge color="error" variant="soft" size="sm">مطلوب - يوم واحد على الأقل مع أوقات محددة</UBadge>
           </div>
-        </UCard>
+        </UCard> -->
 
         <!-- Game Management -->
-        <UCard>
+        <!-- <UCard>
           <template #header>
             <div class="flex items-center">
               <UIcon name="i-heroicons-clipboard-document-check" class="w-5 h-5 text-gray-700 dark:text-gray-300 ml-2" />
@@ -326,10 +333,10 @@
               <UBadge color="neutral" variant="soft" size="sm">اختياري</UBadge>
             </div>
           </div>
-        </UCard>
+        </UCard> -->
 
         <!-- Automatic Settings -->
-        <UAlert color="info" variant="soft" title="الإعدادات التلقائية"
+        <!-- <UAlert color="info" variant="soft" title="الإعدادات التلقائية"
           description="سيتم إنشاء هذه الإعدادات تلقائياً بناءً على عدد الفرق:">
           <template #icon>
             <UIcon name="i-heroicons-cog-6-tooth" />
@@ -342,7 +349,7 @@
               <li>الوقت المطلوب للبطولة</li>
             </ul>
           </template>
-        </UAlert>
+        </UAlert> -->
       </div>
     </UCard>
 
@@ -382,7 +389,7 @@
     </UCard>
 
     <!-- Quick Tips -->
-    <UCard class="mb-16">
+    <!-- <UCard class="mb-16">
       <template #header>
         <div class="flex items-center">
           <UIcon name="i-heroicons-light-bulb" class="w-6 h-6 text-gray-700 dark:text-gray-300 ml-2" />
@@ -422,11 +429,11 @@
             </template>
           </UAlert>
         </div>
-    </UCard>
+    </UCard> -->
 
     <!-- Action Buttons -->
     <div class="flex justify-center gap-4">
-      <UButton to="/tournament/add" size="xl" icon="i-heroicons-plus" class="px-8 py-4">
+      <UButton to="/tournament/request/add" size="xl" icon="i-heroicons-plus" class="px-8 py-4">
         ابدأ إنشاء البطولة
       </UButton>
       <UButton to="/tournament" variant="outline" size="xl" icon="i-heroicons-list-bullet" class="px-8 py-4">

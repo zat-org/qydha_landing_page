@@ -42,7 +42,7 @@ import { formatDate } from '~/utils/formatDate';
 
 const params= ref({
     pageNumber: 1,
-    pageSize: 10
+    pageSize: 9
 })
 
 const id = useRoute().params.id.toString()
