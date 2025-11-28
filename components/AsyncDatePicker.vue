@@ -43,8 +43,9 @@ const internalDate = computed({
   },
   set: (value: Date | null) => {
     if (value) {
-      const isoString = toISOStringWithTimezone(value);
-      model.value = isoString as any;
+      // Convert to UTC ISO string
+      const utcIsoString = value.toISOString();
+      model.value = utcIsoString as any;
       // Emit change and input events for form validation
       emit('change', value);
       emit('input', value);
@@ -55,25 +56,6 @@ const internalDate = computed({
     }
   }
 });
-
-function toISOStringWithTimezone(date:Date) {
-  const pad = (num:any) => String(num).padStart(2, "0");
-
-  const year = date.getFullYear();
-  const month = pad(date.getMonth() + 1);
-  const day = pad(date.getDate());
-  const hours = pad(date.getHours());
-  const minutes = pad(date.getMinutes());
-  const seconds = pad(date.getSeconds());
-
-  // timezone offset in minutes
-  const offset = -date.getTimezoneOffset();
-  const sign = offset >= 0 ? "+" : "-";
-  const offsetHours = pad(Math.floor(Math.abs(offset) / 60));
-  const offsetMinutes = pad(Math.abs(offset) % 60);
-
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}${sign}${offsetHours}:${offsetMinutes}`;
-}
 
 const format = (date: Date) => {
   const day = date.getDate();
