@@ -157,6 +157,8 @@ const formRefs = computed(() => [
 ]);
 const toast = useToast()
 const getStepForField = (error: any): number => {
+    console.log("Hello")
+    console.log(error)
     if (!error || typeof error !== 'object') return 0;
     
     // Fields in Step 0 (TourInfo - معلومات البطولة)
@@ -179,7 +181,7 @@ const getStepForField = (error: any): number => {
     const step2Fields = ['rules'];
     
     // Check which field has an error
-    const errorKeys = Object.keys(error);
+    const errorKeys = Object.keys(error.errors);
     
     for (const key of errorKeys) {
         if (step0Fields.includes(key)) return 0;
@@ -209,8 +211,11 @@ const validation = useMultiStepFormValidation(formRefs as any, {
             navigateTo("/tournament/request")
         }else{
             console.log(unref(addREq.error))
-            console.log(getStepForField(unref(addREq.error)))
-            toast.add({title:'eror in validation '})
+            console.log(getStepForField((addREq.error.value?.data as any).data ))
+            const targetTab = getStepForField((addREq.error.value?.data as any).data )
+            validation.goToStep(targetTab)
+            
+            toast.add({title:`خطاء في بيانات  ${Object.keys((addREq.error.value?.data as any).data .errors).join(", ")}`})
         }
 
     },

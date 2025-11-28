@@ -225,18 +225,18 @@ export const useMultiStepFormValidation = (
             isSubmitting.value = true;
             try {
                 await onFormSubmit();
-                useToast().add({
-                    title: "تم بنجاح",
-                    description: "تم إرسال النموذج بنجاح",
-                    color: "success",
-                });
+                // useToast().add({
+                //     title: "تم بنجاح",
+                //     description: "تم إرسال النموذج بنجاح",
+                //     color: "success",
+                // });
                 return true;
             } catch (error) {
-                useToast().add({
-                    title: "خطأ",
-                    description: "حدث خطأ أثناء إرسال النموذج",
-                    color: "error",
-                });
+                // useToast().add({
+                //     title: "خطأ",
+                //     description: "حدث خطأ أثناء إرسال النموذج",
+                //     color: "error",
+                // });
                 return false;
             } finally {
                 isSubmitting.value = false;

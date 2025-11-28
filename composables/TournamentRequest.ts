@@ -77,8 +77,8 @@ export const useTournamentRequest = () => {
       body.value.append("title", _body.title);
       body.value.append("description", _body.description);
       body.value.append("contactPhone", _body.contactPhone);
-      body.value.append("startAt", _body.startAt.split("T")[0]);
-      body.value.append("endAt", _body.endAt.split("T")[0]);
+      body.value.append("startAt", _body.startAt);
+      body.value.append("endAt", _body.endAt);
       body.value.append("type", _body.type);
       body.value.append("locationDescription", _body.locationDescription);
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
@@ -94,10 +94,10 @@ export const useTournamentRequest = () => {
       body.value.append("tablesCount", String(_body.tablesCount));
       if (_body.isAddPlayersByQydha) {
         if (_body.joinRequestStartAt) {
-          body.value.append("joinRequestStartAt", _body.joinRequestStartAt.split("T")[0]);
+          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
         }
         if (_body.joinRequestEndAt) {
-          body.value.append("joinRequestEndAt", _body.joinRequestEndAt.split("T")[0]);
+          body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
         }
         if (_body.joinRequestMaxCount) {
           body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));
@@ -254,8 +254,8 @@ export const useTournamentRequest = () => {
       body.value.append("title", _body.title);
       body.value.append("description", _body.description);
       body.value.append("contactPhone", _body.contactPhone);
-      body.value.append("startAt", _body.startAt.split('T')[0]);
-      body.value.append("endAt", _body.endAt.split('T')[0]);
+      body.value.append("startAt", _body.startAt);
+      body.value.append("endAt", _body.endAt);
       body.value.append("type", _body.type);
       body.value.append("locationDescription", _body.locationDescription);
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
@@ -272,10 +272,10 @@ export const useTournamentRequest = () => {
       if (_body.isAddPlayersByQydha) {
         if (_body.joinRequestStartAt) {
           console.log()
-          body.value.append("joinRequestStartAt", _body.joinRequestStartAt.split('T')[0]);
+          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
         }
         if (_body.joinRequestEndAt) {
-          body.value.append("joinRequestEndAt", _body.joinRequestEndAt.split('T')[0]);
+          body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
         }
         if (_body.joinRequestMaxCount) {
           body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));

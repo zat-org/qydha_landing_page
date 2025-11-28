@@ -106,8 +106,8 @@ export const useTournament = () => {
       body.value.append("title", _body.title);
       body.value.append("description", _body.description);
       body.value.append("contactPhone", _body.contactPhone);
-      body.value.append("startAt", _body.startAt.split("T")[0]);
-      body.value.append("endAt", _body.endAt.split("T")[0]);
+      body.value.append("startAt", _body.startAt);
+      body.value.append("endAt", _body.endAt);
       body.value.append("type", _body.tournamentType);
       body.value.append("locationDescription", _body.locationDescription);
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
@@ -124,13 +124,13 @@ export const useTournament = () => {
           console.log();
           body.value.append(
             "joinRequestStartAt",
-            _body.joinRequestStartAt.split("T")[0]
+            _body.joinRequestStartAt
           );
         }
         if (_body.joinRequestEndAt) {
           body.value.append(
             "joinRequestEndAt",
-            _body.joinRequestEndAt.split("T")[0]
+            _body.joinRequestEndAt
           );
         }
         if (_body.joinRequestMaxCount) {

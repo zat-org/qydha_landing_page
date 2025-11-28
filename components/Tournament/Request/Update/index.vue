@@ -217,6 +217,8 @@ const formRefs = computed(() => [
 
 const updateReq = updateTournamentRequest(id)
 const getStepForField = (error: any): number => {
+    console.log("Hello")
+    console.log(error)
     if (!error || typeof error !== 'object') return 0;
 
     // Fields in Step 0 (TourInfo - معلومات البطولة)
@@ -267,7 +269,8 @@ const validation = useMultiStepFormValidation(formRefs as any, {
             navigateTo("/tournament")
         } else {
             // console.log(unref(updateReq.error))
-            console.log(getStepForField(unref(updateReq.error)))
+            console.log(updateReq.error.value)
+            console.log(getStepForField(unref((updateReq.error as any).data)))
         }
 
         // await new Promise((resolve) => setTimeout(resolve, 2000));
