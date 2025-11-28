@@ -1,53 +1,48 @@
 <template>
 
-  <UModal>
-    
-      <template #header>
+  <UModal class="h-[80vh]" title="تعديل المباراة" description="تعديل المباراة">
 
-      </template>
-      <template #body >
-        <UForm :state="state" :scheam="schema" @submit="onSubmit" class="flex flex-col gap-5">
-          <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }">
-            <UInputMenu v-model="state.refereeId" :options="Refres" value-attribute="id" option-attribute="username"
-              :search-attributes="['username']" :popper="{placement:'left-end'}" />
-          </UFormField>
-          <UFormField label="الطاولة" name="tableId">
-            <UInputMenu v-model="state.tableId" :options="Tables" value-attribute="id" option-attribute="name"
-              :search-attributes="['name']"  :popper="{placement:'left-end'}"/>
-          </UFormField>
-          <UFormField name="startAt" label="تبداء" class="grow">
-            <VueDatePicker v-model="state.startAt" :enable-time-picker="false" dir="ltr" position="right" />
-          </UFormField>
+    <template #body>
+      <UForm :state="state" :scheam="schema" @submit="onSubmit" class="flex flex-col gap-5 " ref="form">
+        <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }" class="w-full">
+          <UInputMenu v-model="state.refereeId" :items="Refres" label-key="username" value-key="id"
+            :search-attributes="['username']" class="w-full" />
+        </UFormField>
+        <UFormField label="الطاولة" name="tableId" class="w-full">
+          <UInputMenu v-model="state.tableId" :items="Tables" label-key="name" value-key="id"
+            :search-attributes="['name']" :popper="{ placement: 'left-end' }" class="w-full" />
+        </UFormField>
+        <UFormField name="startAt" label="تبداء" class="grow">
+          <AsyncDatePicker v-model="state.startAt" :enable-time-picker="false" dir="ltr" position="right" />
+        </UFormField>
 
-          <UFormField name="roundName" label="اسم الجولة">
-            <UInput v-model="state.roundName" />
-          </UFormField>
+        <UFormField name="roundName" label="اسم الجولة">
+          <UInput v-model="state.roundName" />
+        </UFormField>
 
-          <UButton label="حفظ" type="submit" class="w-1/2 mx-auto" block />
-        </UForm>
-      </template>
-      <template #footer>
-        <div v-if="match.themTeamId && match.usTeamId">
+      </UForm>
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center w-full" v-if="match.themTeamId && match.usTeamId">
+        <UButton label="حفظ" @click="form?.submit()" :loading="updateREQ.status.value == 'pending'" />
 
-          <UDropdown :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
-            v-if="match.state.toLowerCase() == 'created'" :ui="{ width: 'w-[300px]' }">
-            <UButton color="error" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
-          </UDropdown>
-          <UButton v-else-if="privilege == Privilege.Admin || privilege == Privilege.Owner" color="error"
-            label="اعادة الضبط" @click="onReset" />
-        </div>
+        <UDropdownMenu :items="withdrawItems" :popper="{ placement: 'bottom-end' }"
+          v-if="match.state.toLowerCase() == 'created'" :ui="{ content: 'w-[300px]' }">
+          <UButton color="error" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
+        </UDropdownMenu>
+        <UButton v-else-if="privilege == Privilege.Admin || privilege == Privilege.Owner" color="error"
+          label="اعادة الضبط" @click="onReset" />
+      </div>
 
-      </template>
-   
+    </template>
+
   </UModal>
 
 </template>
 <script lang="ts" setup>
 // refre and table 
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 
-
+const form = useTemplateRef('form')
 import { object, string } from "yup"
 import type { Match } from "~/models/group";
 import type { IMatchUpdate } from "~/models/match";
@@ -66,8 +61,9 @@ const toast = useToast()
 const tour_id = route.params.id.toString()
 const tableREQ = await getTables()
 const refresREQ = await getRefres()
-tableREQ.fetchREQ(tour_id)
-refresREQ.fetchREQ(tour_id)
+await Promise.all([tableREQ.fetchREQ(tour_id), refresREQ.fetchREQ(tour_id)])
+// tableREQ.fetchREQ(tour_id)
+// refresREQ.fetchREQ(tour_id)
 const Tables = computed(() => {
   if (tableREQ.status.value == "success" && tableREQ.data.value) {
     return tableREQ.data.value.data
@@ -94,7 +90,7 @@ const schema = object({
 const state = reactive<IMatchUpdate>({
   refereeId: props.match.referee ? props.match.referee.id : undefined,
   tableId: props.match.tableId ?? undefined,
-  startAt:new Date( props.match.startAt),
+  startAt: new Date(props.match.startAt),
   roundName: props.match.roundName,
   isMarked: props.match.isMarked
 })
@@ -104,7 +100,8 @@ const updateREQ = await updateMatch()
 const onSubmit = async () => {
   state.startAt = new Date(state.startAt).toISOString()
   console.log(state.startAt)
-  await updateREQ.fetchREQ(tour_id, props.match.id.toString(), state)
+  console.log(tour_id, props.match.id, state)
+  await updateREQ.fetchREQ(tour_id, props.match.id, state)
   if (updateREQ.status.value == "success") {
     toast.add({ title: "update done" })
     emit('close')
@@ -114,6 +111,7 @@ const onSubmit = async () => {
 // withdraw dropdown 
 const MatchStateREQ = await updateMatchState()
 const withdrawUS = async () => {
+  console.log(props.match.qydhaGameId)
   await MatchStateREQ.fetchWithdrawREQ(props.match.qydhaGameId, "Us")
   if (MatchStateREQ.status.value == "success") {
     emit('close')
@@ -137,7 +135,7 @@ const onReset = async () => {
     emit('close')
   }
 }
-const withdrawItems = [[{ label: ` انسحاب  ${props.match.usTeamName}`, click: withdrawUS }, { label: ` انسحاب  ${props.match.themTeamName}`, click: withdrawThem }, { label: 'انسحاب كلا الفريقين', click: withdrawBoth }]]
+const withdrawItems = [[{ label: ` انسحاب  ${props.match.usTeamName}`, onSelect: () => withdrawUS() }, { label: ` انسحاب  ${props.match.themTeamName}`, onSelect: () => withdrawThem() }, { label: 'انسحاب كلا الفريقين', onSelect: () => withdrawBoth() }]]
 
 
 </script>

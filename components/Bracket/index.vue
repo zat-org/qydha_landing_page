@@ -7,9 +7,7 @@
           <MatchNode v-bind="matchProps" />
         </template>
       </VueFlow>
-      <pre dir="ltr">
-        {{ OrderedNodes }}
-      </pre>
+      
     </ClientOnly>
   </template>
   
@@ -24,15 +22,21 @@
   const MatchNode = defineAsyncComponent(() => import('../Bracket/MatchNode.vue'));
   
   const props = defineProps<{ group: Group }>();
-  const direction = computed(() => props.group.type.toLowerCase() == 'final' ? "LRC" : "LR");
+
   const tourStore = useMyTournamentStore();
   const { layoutFromMatchesTree } = useLayout();
   
-  const { matchesTree, loserMatches } = storeToRefs(tourStore);
+  const { matchesTree, loserMatches ,games} = storeToRefs(tourStore);
+  console.log(games.value)
+
+
+  const direction = computed(() => {
+    console.log('group',props.group)
+    return props.group.type.toLowerCase() == 'final' && games.value.length > 32 ? "LRC" : "LR"
+}  );
+
   const OrderedNodes = computed(() => {
     if (!matchesTree.value || !loserMatches.value) return undefined;
-    console.log('match tree',matchesTree.value)
-    console.log('loser matches',loserMatches.value)
     return layoutFromMatchesTree(matchesTree.value, loserMatches.value, direction.value);
   });
   

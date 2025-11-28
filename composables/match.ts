@@ -45,7 +45,7 @@ export const useMatch = () => {
     const match_id = ref()
     const body = ref<IMatchUpdate>()
     const { data, pending, error, refresh, execute, status } = await useAsyncData(
-      'updateMatch',  
+      ()=> `updateMatch-${tour_id.value}-${match_id.value}`,  
       () => $api(`tournaments/${tour_id.value}/matches/${match_id.value}`, { body: body.value, method: "PUT" }), { immediate: false }
     );
     const fetchREQ = async (_tour_id: string, _match_id: string, _data: IMatchUpdate) => {
@@ -73,7 +73,7 @@ export const useMatch = () => {
         triggeredAt: new Date().toISOString()
       }])
     const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'updateMatchState',
+      ()=> `updateMatchState-${qydha_id.value}`,
       () => $api(`/baloot-games/${qydha_id.value}/events`,{method:"POST",body:body}), { immediate: false }
     );
     const fetchRestREQ = async (_qydha_id: string) => {
@@ -85,7 +85,10 @@ export const useMatch = () => {
       }
 
     }
+
     const fetchWithdrawREQ = async (_qydha_id: string,_withdraw_side:string) => {
+      console.log(`updateMatchState-${qydha_id.value}`)
+      console.log(_withdraw_side)
       qydha_id.value = _qydha_id;
       body[0].WithdrawSide =_withdraw_side
       body[0].eventName="WithdrawGameEvent"

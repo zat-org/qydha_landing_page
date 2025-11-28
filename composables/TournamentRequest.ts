@@ -63,8 +63,8 @@ export const useTournamentRequest = () => {
     const { data, status, execute, pending, error } = useAsyncData(
       "Crearetrequest",
       () =>
-        $api("/tournaments/creation-request", {
-          method: "post",
+        $api("/tournaments/creation-request",
+           {  method: "post",
           body: body.value,
         }),
       { immediate: false }
