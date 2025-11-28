@@ -13,7 +13,18 @@ const LogoURL =
 const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: true,
-  modules: ["@nuxt/ui", "@pinia/nuxt", "pinia-plugin-persistedstate/nuxt", "nuxt-aos", "@unlok-co/nuxt-stripe", "@nuxtjs/seo", "@nuxtjs/robots", "nuxt-og-image", "@nuxtjs/sitemap", "@nuxt/image"],
+  modules: [
+    "@nuxt/ui",
+    "@pinia/nuxt",
+    "pinia-plugin-persistedstate/nuxt",
+    "nuxt-aos",
+    "@unlok-co/nuxt-stripe",
+    "@nuxtjs/seo",
+    "@nuxtjs/robots",
+    "nuxt-og-image",
+    "@nuxtjs/sitemap",
+    "@nuxt/image",
+  ],
 
   // //
 
@@ -26,7 +37,7 @@ export default defineNuxtConfig({
         dir: "rtl",
       },
       // rootAttrs: {
-      //   'data-vaul-drawer-wrapper': ''  
+      //   'data-vaul-drawer-wrapper': ''
       // },
       title: Title,
       meta: [
@@ -71,7 +82,9 @@ export default defineNuxtConfig({
     // Private keys (only available on server-side)
     // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     qydhaapiBase: process.env.QydhaApiBase,
+    
     public: {
+      qydhaapiBase: process.env.QydhaApiBase,
       qydhaToken: process.env.QydhaToken,
       apiBase: "/api",
       // apiBase: process.env.QydhaApiBase,
@@ -91,7 +104,7 @@ export default defineNuxtConfig({
   },
 
   image: {
-    domains: ['storage.googleapis.com'],
-    provider: 'none', 
-  }
+    domains: ["storage.googleapis.com"],
+    provider: "none",
+  },
 });

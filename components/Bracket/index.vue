@@ -7,6 +7,9 @@
           <MatchNode v-bind="matchProps" />
         </template>
       </VueFlow>
+      <pre dir="ltr">
+        {{ OrderedNodes }}
+      </pre>
     </ClientOnly>
   </template>
   
@@ -28,6 +31,8 @@
   const { matchesTree, loserMatches } = storeToRefs(tourStore);
   const OrderedNodes = computed(() => {
     if (!matchesTree.value || !loserMatches.value) return undefined;
+    console.log('match tree',matchesTree.value)
+    console.log('loser matches',loserMatches.value)
     return layoutFromMatchesTree(matchesTree.value, loserMatches.value, direction.value);
   });
   

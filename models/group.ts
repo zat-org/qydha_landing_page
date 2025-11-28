@@ -1,28 +1,28 @@
 export interface Group {
-  id: number;
+  id: string;
   name: string;
   checkInAt: string;
   startPlayAt: string;
   type: string;
 }
 export interface Team {
-  groupId: number;
-  id: number;
+  groupId: string;
+  id: string;
   name: string;
   state: string;
 }
 
 export interface Match {
-  groupId: number;
-  id: number;
+  groupId: string;
+  id: string;
   level: number;
   name: string;
-  matchQualifyThemTeamId: null | number;
+  matchQualifyThemTeamId: null | string;
   matchQualifyThemTeamName: null |string;
   matchQualifyThemTeam: undefined | Match;
   matchQualifyThemTeamFrom: string | null;
 
-  matchQualifyUsTeamId: null | number;
+  matchQualifyUsTeamId: null | string;
   matchQualifyUsTeamName: null | string;
   matchQualifyUsTeam: undefined | Match;
   matchQualifyUsTeamFrom: string | null;
@@ -34,11 +34,11 @@ export interface Match {
   state: string;
   tableName: string;
   tableId: string;
-  usTeamId: number;
+  usTeamId: string;
   usTeamName: string;
   isMarked:boolean ;
   roundName:string
-  themTeamId: number;
+  themTeamId: string;
   themTeamName: string;
 
   winner: string | null;

@@ -66,7 +66,6 @@ export const useTournamentRequest = () => {
         $api("/tournaments/creation-request", {
           method: "post",
           body: body.value,
-          //   headers: { "Content-Type": "multipart/form-data" },
         }),
       { immediate: false }
     );

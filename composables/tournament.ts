@@ -71,7 +71,7 @@ export const useTournament = () => {
       watch(status,()=>{
         if (status.value == 'success') {
           const tournaments = data.value?.data.items as Tournament[]
-          useMyTournamentStore().setSelectedTournament(tournaments)
+          // useMyTournamentStore().setSelectedTournament(tournaments)
         }
       },{immediate:true})
     

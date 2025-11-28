@@ -7,11 +7,11 @@
       <div :class="firstTeamClasses"
         class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 rounded rounded-b-none border border-gray-500 dark:border-gray-600 h-[22px] w-full">
 
-        <div class="border-e-2 w-[30px] h-full border-gray-900 dark:border-gray-400 text-center flex justify-center items-center bg-gray-300 dark:bg-gray-700">
-          <p class="dark:text-gray-200">
+        <!-- <div class="border-e-2 w-[30px] h-full border-gray-900 dark:border-gray-400 text-center flex justify-center items-center bg-gray-300 dark:bg-gray-700">
+           <p class="dark:text-gray-200">
             {{ firstTeamId }}
-          </p>
-        </div>
+          </p> 
+        </div> -->
 
         <p v-if="data.match.usTeamId" class="grow text-center dark:text-gray-200" :class="firstTeamNameClasses">
           {{ data.match.usTeamName }}
@@ -26,12 +26,11 @@
 
       <div :class="secondTeamClasses"
         class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-center h-[22px] w-full">
-
+<!-- 
         <div class="border-e-2 w-[30px] h-full border-gray-900 dark:border-gray-400 text-center flex justify-center items-center bg-gray-300 dark:bg-gray-700">
-          <p class="dark:text-gray-200">
+           <p class="dark:text-gray-200">
             {{ secondTeamId }}
-          </p>
-        </div>
+          </p>  </div> -->
 
         <p v-if="data.match.themTeamName" class="grow text-center dark:text-gray-200" :class="secondTeamNameClasses">
           {{ data.match.themTeamName }}

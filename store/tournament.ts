@@ -47,11 +47,11 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		if (!match) return undefined;
 		if (match.matchQualifyThemTeamId)
 			match.matchQualifyThemTeam = matches.find(
-				(m) => +m.id == match.matchQualifyThemTeamId
+				(m) => m.id == match.matchQualifyThemTeamId
 			);
 		if (match.matchQualifyUsTeamId)
 			match.matchQualifyUsTeam = matches.find(
-				(m) => +m.id == match.matchQualifyUsTeamId
+				(m) => m.id == match.matchQualifyUsTeamId
 			);
 		populateChildren(match.matchQualifyThemTeam, matches);
 		populateChildren(match.matchQualifyUsTeam, matches);
@@ -64,7 +64,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 	const selectedGroup = computed(() => {
 		if (tournament.value.length == 0) return null;
 		const groupIdStr = route.query.group as string;
-		const groupId = Number(groupIdStr);
+		const groupId =groupIdStr;
 		if (!groupId)
 			return tournament.value.find(d => d.data.type == "final") ??
 				tournament.value[tournament.value.length - 1];
@@ -96,9 +96,10 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 
 		let g = tournament.value.find(g => g.data.id == selectedGroup.value?.data.id);
 		if (g == null) return;
+		console.log(matchesREQ.data.value.data)
 		g.matches = matchesREQ.data.value.data;
 
-		connection.value  = await initWebsocket(+tournamentId);
+		connection.value  = await initWebsocket(tournamentId);
 	}
 	const fetchGame = async (id: string) => {
 		const gameApi = useMatch()
@@ -122,13 +123,13 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		}
 		console.log("MatchStateChanged")
 	}
-	const handleBracketChanged = (GroupId: number, groupMatches: string) => {
+	const handleBracketChanged = (GroupId: string, groupMatches: string) => {
 		let g = tournament.value.find(g => g.data.id == GroupId);
 		if (g == null) return;
 		g.matches = JSON.parse(groupMatches);
 		console.log("TournamentBracketChanged")
 	}
-	const initWebsocket = async (tournamentId: number) => {
+	const initWebsocket = async (tournamentId: string) => {
 		const config = useRuntimeConfig();
 		const connection = new signalR.HubConnectionBuilder()
 			.withUrl(`${config.public.qydhaapiBase}/tournaments-hub`, {
@@ -140,7 +141,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 			await connection.start();
 			await connection.invoke("AddToTournamentGroup", tournamentId);
 		} catch (error) {
-			console.log(error)
+			console.log("errror",error)
 		}
 		connection.on("MatchStateChanged", handleMatchStateChanged)
 		connection.on("TournamentBracketChanged", handleBracketChanged)

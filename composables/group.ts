@@ -55,7 +55,7 @@ export const useGroup = () => {
       { immediate: false }
     );
 
-    const fetchREQ = async (_tour_id: string, _group_id: number) => {
+    const fetchREQ = async (_tour_id: string, _group_id: string) => {
       group_id.value = _group_id;
       tour_id.value = _tour_id;
       await execute();

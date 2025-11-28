@@ -9,7 +9,7 @@ export const useMatch = () => {
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData<{ data: {state:IMatchData,statistics:IMathStat}, message: string }>(
         "getMatchData",
-        () => $qaydhaapi(`baloot-games/${game_id.value}/data`),
+        () => $api(`baloot-games/${game_id.value}/data`),
         {
           immediate: false,
         }
@@ -28,7 +28,7 @@ export const useMatch = () => {
     const { data, pending, error, refresh, status, execute } =
       await useAsyncData<{ message: string, data: IMathStat }>(
         "getMatchStatstics",
-        () => $qaydhaapi(`baloot-games/${game_id.value}/statistics`),
+        () => $api(`baloot-games/${game_id.value}/statistics`),
         {
           immediate: false,
         }
