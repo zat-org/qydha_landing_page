@@ -32,7 +32,7 @@
 
   const direction = computed(() => {
     console.log('group',props.group)
-    return props.group.type.toLowerCase() == 'final' && games.value.length > 32 ? "LRC" : "LR"
+    return( props.group.type.toLowerCase() == 'final' || games.value.length > 32 || (loserMatches.value?.length && loserMatches.value.length > 0))   ? "LRC" : "LR"
 }  );
 
   const OrderedNodes = computed(() => {

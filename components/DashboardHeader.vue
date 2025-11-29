@@ -11,9 +11,9 @@
 
     <UNavigationMenu :items="links"  class=" hidden lg:flex     "  content-orientation="vertical"/>
 
-    <NuxtLink to="/" class="flex items-center absolute left-1/2 -translate-x-1/2">
+    <!-- <NuxtLink to="/" class="flex items-center absolute left-1/2 -translate-x-1/2">
       <img src="@/assets/images/qydha-logo.svg" class="w-16 h-auto" alt="Qydha Logo" />
-    </NuxtLink>
+    </NuxtLink> -->
 
     <div class="flex items-center gap-2">
       <UDropdownMenu v-if="authstore.logedin" :items="items" :popper="{ placement: 'bottom-start' }">

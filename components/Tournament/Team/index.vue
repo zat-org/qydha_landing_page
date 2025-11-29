@@ -11,6 +11,7 @@
           {{ tour.title }}
           /
           الفرق
+          ({{ teamsNumber }})
         </p>
         <div class="flex items-center justify-start gap-2">
           <UButton label="قبول ملف Excel" icon="i-heroicons-document-arrow-up" color="success"
@@ -57,7 +58,7 @@
     <UPagination v-model:page="page" :page-count="10" :total="total" class="mx-auto" />
     <template #footer>
       <div class="flex justify-between items-center ">
-        <UButton label="إضافة فريق إلى المجموعة النهائية" color="primary" @click="()=>addTeamToFinalGroup()" />
+        <!-- <UButton label="إضافة فريق إلى المجموعة النهائية" color="primary" @click="()=>addTeamToFinalGroup()" /> -->
         <UButton label="عودة " color="error" @click="navigateTo('/tournament/' + tour_id)" />
       </div>
     </template>
@@ -195,6 +196,9 @@ const teams = computed(() => {
   if (getTeamsREQ.data.value)
     return getTeamsREQ.data.value.data.items
 })
+const teamsNumber = computed(() => {
+  return getTeamsREQ.data.value?.data.totalCount!
+})
 
 watch(page, async (newValue, oldvalue) => {
   await getTeamsREQ.fetchREQ(tour_id, page.value)
@@ -247,20 +251,20 @@ const removePlayer = async (row: ITeam, player_id: string) => {
   }
 }
 
-const addTeamToFinalGroupREQ =  useTournamentGroup().addTeamsToFinalGroup()
-const addTeamToFinalGroup = async () => {
-  const instance = ConfiemationModal.open({ message: `هل أنت متأكد من إضافة الفريق إلى المجموعة النهائية؟ لن تستطيع اضافة فرق  اخري ` })
-  if (await instance.result) {
-    await addTeamToFinalGroupREQ.fetchREQ(tour_id)
-    if (addTeamToFinalGroupREQ.result.status.value == "success") {
-      toast.add({ title: "تم اضافة الفرق إلى المجموعة النهائية بنجاح", color: "success" })
-    } else {
-      const error = (addTeamToFinalGroupREQ.result.error.value?.data as any).data.message
-      console.log(error)
-      toast.add({ title: error, color: "error" })
-    }
-  }
-}
+// const addTeamToFinalGroupREQ =  useTournamentGroup().addTeamsToFinalGroup()
+// const addTeamToFinalGroup = async () => {
+//   const instance = ConfiemationModal.open({ message: `هل أنت متأكد من إضافة الفريق إلى المجموعة النهائية؟ لن تستطيع اضافة فرق  اخري ` })
+//   if (await instance.result) {
+//     await addTeamToFinalGroupREQ.fetchREQ(tour_id)
+//     if (addTeamToFinalGroupREQ.result.status.value == "success") {
+//       toast.add({ title: "تم اضافة الفرق إلى المجموعة النهائية بنجاح", color: "success" })
+//     } else {
+//       const error = (addTeamToFinalGroupREQ.result.error.value?.data as any).data.message
+//       console.log(error)
+//       toast.add({ title: error, color: "error" })
+//     }
+//   }
+// }
 </script>
 
 <style scoped></style>

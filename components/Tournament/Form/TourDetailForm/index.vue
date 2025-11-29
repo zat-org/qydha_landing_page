@@ -182,8 +182,11 @@ const model = defineModel<{
 const minstartDate = computed(() => {
     // console.log(new Date(model.value.joinRequestEndAt as string  ))
     // console.log()
-   const date = new Date(model.value.joinRequestEndAt as string ?? undefined );
-   console.log(date)
+    if (model.value.joinRequestEndAt == undefined) {
+        return new Date();
+    }
+    return null
+   const date = new Date(model.value.joinRequestEndAt as string );
     return date;
 });
 

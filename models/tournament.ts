@@ -117,6 +117,10 @@ export interface DetailTournament {
     tournamentRules: string[];
     sponsors: string[];
     tournamentPrivatePassword: null | string;
+    hasQualificationsStage: boolean;
+
+
+
   };
   requesterPrivilege: {
     privilege: string;

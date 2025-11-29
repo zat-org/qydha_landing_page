@@ -9,8 +9,8 @@
     </template>
       <template #footer >
         <div class="flex justify-between items-center w-full">
-          <UButton  color="success" label="تأكيد" @click="emit('close',true)" />
-          <UButton color="error" label="الغاء " @click="emit('close',false)" />
+          <UButton  color="success" label="تأكيد" @click="emit('close',true)"  size="xl"/>
+          <UButton color="error" label="الغاء " @click="emit('close',false)"  size="xl"/>
 
         </div>
       </template>

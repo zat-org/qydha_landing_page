@@ -7,6 +7,7 @@
       v-model="internalDate"
     :format="format"
       :dark="isDark"
+      class="z-100"
     />
   </ClientOnly>
 </template>

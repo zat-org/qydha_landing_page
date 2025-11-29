@@ -1,4 +1,4 @@
-import type { Group, Match, Team } from "~/models/group";
+import type { CreateMatch, DetailGroup, Group, Match, RoundGroupDetails, Team } from "~/models/group";
 import type { Node, Edge } from "@vue-flow/core";
 import { useMyAuthStore } from "~/store/Auth";
 import type { Privilege } from "~/models/user";
@@ -37,6 +37,18 @@ export const useGroup = () => {
     }
     return { data, pending, error, refresh, status, fetchREQ };
   };
+  const getGroupDetails = async (tour_id: string, group_id: string) => {
+    return  await useAsyncData<{ message: string; data: DetailGroup }>(
+      ()=>["getGroupDetails",tour_id,group_id].join('-'),
+      () => $api(`tournaments/${tour_id}/groups/${group_id}`)
+    );
+  }
+  const getRoundsGroupDetails = async (tour_id: string, group_id: string) => {
+    return  await useAsyncData<{ message: string; data: RoundGroupDetails }>(
+      ()=>["getRoundsGroupDetails",tour_id,group_id].join('-'),
+      () => $api(`tournaments/${tour_id}/groups/${group_id}/rounds`)
+    );
+  }
 
   const getGroupMatches = async () => {
     const tour_id = ref()
@@ -70,5 +82,59 @@ export const useGroup = () => {
     };
   };
 
-  return { getGroups, getGroupMatches };
+  const addAvailableTeamsToFinalGroup=async()=>{
+    const tour_id = ref()
+    const result = await useAsyncData<{ message: string; data: Match[] }>(
+      ()=>["addAvailableTeamsToFinalGroup",tour_id.value].join('-'),
+      () => $api(`tournaments/${tour_id.value}/groups/final/teams-links`,{method:'post',}), { immediate: false }
+    );
+    const fetchREQ = async (_tour_id: string) => {
+      tour_id.value = _tour_id
+      await result.execute()
+    }
+    return { result, fetchREQ }
+  }
+
+
+  const ceateMatchesForGroup=()=>{
+    const tour_id = ref()
+    const group_id = ref();
+    const body = ref<CreateMatch>()
+    const result =  useAsyncData<{ message: string; data: Match[] }>(
+      ()=>["ceateMatchesForGroup",tour_id.value,group_id.value].join('-'),
+      () => $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`,{method:'post',body: body.value}), { immediate: false }
+    );
+    const fetchREQ = async (_tour_id: string, _group_id: string, _body: CreateMatch) => {
+      tour_id.value = _tour_id;
+      group_id.value = _group_id;
+      body.value = _body;
+      await result.execute();
+  }
+    return { result, fetchREQ };
+}
+
+
+  const unlinkTeamFromGroup = async () => {
+    const tourId = ref(); 
+    const groupId = ref();
+    const body = ref<{ teamsId: string[] }>({ teamsId: [] });
+    const result=
+      await useAsyncData(
+        "unlinkTeam",
+        () => $api(`/tournaments/${tourId.value}/groups/${groupId.value}/teams-links`, { method: "delete" ,body: body.value}),
+        { immediate: false }
+      );
+    const fetchREQ = async (tour_id: string, group_id: string, teams_id: string[]) => {
+      tourId.value = tour_id;
+      groupId.value = group_id;
+      body.value.teamsId = teams_id;
+      await result.execute();
+      if (result.status.value == "success") {
+        refreshNuxtData(["getGroupDetails",tour_id,group_id].join('-'));
+      }
+    };
+    return { result, fetchREQ };
+  };
+
+  return { getGroups, getGroupMatches  ,addAvailableTeamsToFinalGroup,getGroupDetails,unlinkTeamFromGroup,ceateMatchesForGroup ,getRoundsGroupDetails};
 };

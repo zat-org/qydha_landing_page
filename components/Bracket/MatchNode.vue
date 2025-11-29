@@ -1,11 +1,11 @@
 <template>
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
-    <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded transition-colors duration-200" 
+    <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md" 
       :class="matchContainerClasses">
       
       <div :class="firstTeamClasses"
-        class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 rounded rounded-b-none border border-gray-500 dark:border-gray-600 h-[22px] w-full">
+        class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 rounded-t-md rounded-b-none border border-gray-500 dark:border-gray-600 h-[22px] w-full transition-all duration-200">
 
         <!-- <div class="border-e-2 w-[30px] h-full border-gray-900 dark:border-gray-400 text-center flex justify-center items-center bg-gray-300 dark:bg-gray-700">
            <p class="dark:text-gray-200">
@@ -13,71 +13,93 @@
           </p> 
         </div> -->
 
-        <p v-if="data.match.usTeamId" class="grow text-center dark:text-gray-200" :class="firstTeamNameClasses">
+        <p v-if="data.match.usTeamId" class="grow text-center dark:text-gray-200 font-medium px-1 truncate" :class="firstTeamNameClasses">
           {{ data.match.usTeamName }}
         </p>
-        <p class="grow text-center text-gray-600 dark:text-gray-400" v-else-if="!data.match.usTeamId && data.match.state !== 'Ended'">
+        <p class="grow text-center text-gray-600 dark:text-gray-400 text-[10px] px-1" v-else-if="!data.match.usTeamId && data.match.state !== 'Ended'">
           لم يحدد بعد
         </p>
-        <p class="grow text-center text-red-500 dark:text-red-400" v-else-if="!data.match.usTeamId && data.match.state === 'Ended'">
+        <p class="grow text-center text-red-500 dark:text-red-400 text-[10px] px-1" v-else-if="!data.match.usTeamId && data.match.state === 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
 
       <div :class="secondTeamClasses"
-        class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 border border-gray-500 dark:border-gray-600 text-center h-[22px] w-full">
+        class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 border border-gray-500 dark:border-gray-600 border-t-0 text-center h-[22px] w-full transition-all duration-200">
 <!-- 
         <div class="border-e-2 w-[30px] h-full border-gray-900 dark:border-gray-400 text-center flex justify-center items-center bg-gray-300 dark:bg-gray-700">
            <p class="dark:text-gray-200">
             {{ secondTeamId }}
           </p>  </div> -->
 
-        <p v-if="data.match.themTeamName" class="grow text-center dark:text-gray-200" :class="secondTeamNameClasses">
+        <p v-if="data.match.themTeamName" class="grow text-center dark:text-gray-200 font-medium px-1 truncate" :class="secondTeamNameClasses">
           {{ data.match.themTeamName }}
         </p>
-        <p class="grow text-center text-gray-600 dark:text-gray-400" v-else-if="!data.match.themTeamId && data.match.state != 'Ended'">
+        <p class="grow text-center text-gray-600 dark:text-gray-400 text-[10px] px-1" v-else-if="!data.match.themTeamId && data.match.state != 'Ended'">
           لم يحدد بعد
         </p>
-        <p class="grow text-center text-red-500 dark:text-red-400" v-else-if="!data.match.themTeamId && data.match.state == 'Ended'">
+        <p class="grow text-center text-red-500 dark:text-red-400 text-[10px] px-1" v-else-if="!data.match.themTeamId && data.match.state == 'Ended'">
           انسحب كلا الفريقين
         </p>
       </div>
 
-      <div class="flex justify-between text-center h-7 gap-1">
-        <div class="flex items-center bg-gray-300 dark:bg-gray-700 rounded rounded-t-none border border-gray-500 dark:border-gray-600 px-2 hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors duration-200">
-          <IconSleepGame v-if="isMatchCreatedOrPaused" class="text-gray-700 dark:text-gray-300" />
-          <IconRunningGame v-if="isMatchRunning" class="text-green-600 dark:text-green-400 animate-pulse" />
-          <IconEndedGame v-if="isMatchEnded" class="text-red-600 dark:text-red-400" />
-        </div>
+      <div class="flex justify-between items-center text-center h-7 gap-1">
+        <!-- Status icon with enhanced styling -->
+        <UTooltip :text="matchStatusText" :disabled="!matchStatusText">
+          <div class="flex items-center justify-center bg-gray-300 dark:bg-gray-700 rounded-bl-md rounded-br-none rounded-t-none border border-gray-500 dark:border-gray-600 border-t-0 px-2 min-w-[32px] hover:bg-gray-400 dark:hover:bg-gray-600 transition-all duration-200 group">
+            <IconSleepGame v-if="isMatchCreatedOrPaused" class="text-gray-700 dark:text-gray-300 text-base group-hover:scale-110 transition-transform" />
+            <IconRunningGame v-if="isMatchRunning" class="text-green-600 dark:text-green-400 animate-pulse text-base group-hover:scale-110 transition-transform" />
+            <IconEndedGame v-if="isMatchEnded" class="text-red-600 dark:text-red-400 text-base group-hover:scale-110 transition-transform" />
+          </div>
+        </UTooltip>
 
-        <!-- Action buttons with hover effects -->
-        <div class="flex gap-1">
-          <button v-if="showInfoButton" 
-            class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-            @click="onclick">
-            <IconInfo class="text-xl text-green-500 dark:text-green-400" />
-          </button>
+        <!-- Action buttons with enhanced hover effects -->
+        <div class="flex gap-0.5 items-center">
+          <UTooltip v-if="showInfoButton" text="معلومات المباراة">
+            <button 
+              class="p-1 rounded-md hover:bg-green-100 dark:hover:bg-green-900/30 hover:scale-110 active:scale-95 transition-all duration-200"
+              @click="onclick">
+              <IconInfo class="text-base text-green-500 dark:text-green-400" />
+            </button>
+          </UTooltip>
 
-          <button v-if="hasAdminPrivileges"
-            class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
-            @click="onEdit">
-            <IconSetting class="text-xl text-yellow-500 dark:text-yellow-400" />
-          </button>
+          <UTooltip v-if="hasAdminPrivileges" text="تعديل المباراة">
+            <button 
+              class="p-1 rounded-md hover:bg-yellow-100 dark:hover:bg-yellow-900/30 hover:scale-110 active:scale-95 transition-all duration-200"
+              @click="onEdit">
+              <IconSetting class="text-base text-yellow-500 dark:text-yellow-400" />
+            </button>
+          </UTooltip>
 
           <UTooltip v-if="showRefereeIcon"
-            :text="data.match.referee?.username">
-            <button class="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200">
-              <IconRefree class="text-xl text-blue-500 dark:text-blue-400" />
+            :text="`الحكم: ${data.match.referee?.username}`">
+            <button class="p-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:scale-110 active:scale-95 transition-all duration-200">
+              <IconRefree class="text-base text-blue-500 dark:text-blue-400" />
             </button>
           </UTooltip>
         </div>
 
-        <!-- Match info with hover effects -->
-        <div class="flex items-center bg-gray-300 dark:bg-gray-700 rounded rounded-t-none border border-gray-500 dark:border-gray-600 px-2 hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer"
-          @click="copyClibboard">
-          <IconTable class="text-xl mr-1" />
-          <p class="dark:text-gray-200">{{ data.match.tableName }}</p>
-        </div>
+        <!-- Match info with enhanced compact layout -->
+        <UTooltip :text="matchInfoTooltip" :disabled="!matchInfoTooltip">
+          <div class="flex items-center n gap-1 bg-gray-300 dark:bg-gray-700 rounded-br-md rounded-bl-none rounded-t-none border border-gray-500 dark:border-gray-600 border-t-0 px-2 hover:bg-gray-400 dark:hover:bg-gray-600 active:bg-gray-500 dark:active:bg-gray-500 transition-all duration-200 cursor-pointer flex-1 min-w-0 group"
+            @click="copyClibboard">
+            <IconTable class="text-sm flex-shrink-0 flex justify-between  text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200 transition-colors" />
+            <div class="flex items-center gap-1 min-w-0 flex-1 overflow-hidden">
+              <p v-if="data.match.tableName" class="dark:text-gray-200 text-[10px] font-medium truncate">{{ data.match.tableName }}</p>
+              
+              <template v-if="data.match.roundName">
+                <span v-if="data.match.tableName" class="text-[8px] text-gray-400 dark:text-gray-500 flex-shrink-0 mx-0.5">•</span>
+                <p class="text-[10px] dark:text-gray-300 text-gray-600 truncate font-medium">{{ data.match.roundName }}</p>
+                <span class="text-[9px] text-gray-500 dark:text-gray-400 flex-shrink-0 font-semibold">:جولة</span>
+              </template>
+              
+              <template v-if="data.match.startAt">
+                <span v-if="(data.match.tableName || data.match.roundName)" class="text-[8px] text-gray-400 dark:text-gray-500 flex-shrink-0 mx-0.5">•</span>
+                <p class="text-[10px] dark:text-gray-300 text-gray-600 truncate font-medium">{{ compactDateTime }}</p>
+              </template>
+            </div>
+          </div>
+        </UTooltip>
       </div>
     </div>
     <Handle type="source" :position="Position.Right" style="opacity: 0" />
@@ -91,6 +113,7 @@ import type { Match } from "@/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "../Bracket/StatusModal.vue";
 import EditModal from "../Bracket/EditModal.vue";
+import { formatDateTime } from "@/utils/formatDate";
 
 const props = defineProps<{ data: { match: Match } }>();
 const useStore = useMyAuthStore()
@@ -169,6 +192,40 @@ const hasAdminPrivileges = computed(() =>
 const showRefereeIcon = computed(() => 
   hasAdminPrivileges.value && props.data.match.referee
 );
+
+// Match status text for tooltip
+const matchStatusText = computed(() => {
+  if (props.data.match.state === 'Running') return 'المباراة جارية';
+  if (props.data.match.state === 'Paused') return 'المباراة متوقفة';
+  if (props.data.match.state === 'Created') return 'المباراة جاهزة';
+  if (props.data.match.state === 'Ended') return 'المباراة انتهت';
+  return '';
+});
+
+// Compact date time format (shorter for UI)
+const compactDateTime = computed(() => {
+  if (!props.data.match.startAt) return '';
+  try {
+    const date = new Date(props.data.match.startAt);
+    // Format: DD/MM HH:MM (more compact)
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${day}/${month} ${hours}:${minutes}`;
+  } catch (error) {
+    return '';
+  }
+});
+
+// Full tooltip text for match info
+const matchInfoTooltip = computed(() => {
+  const parts = [];
+  if (props.data.match.tableName) parts.push(`الطاولة: ${props.data.match.tableName}`);
+  if (props.data.match.roundName) parts.push(`الجولة: ${props.data.match.roundName}`);
+  if (props.data.match.startAt) parts.push(`الوقت: ${formatDateTime(props.data.match.startAt)}`);
+  return parts.length > 0 ? parts.join(' | ') : '';
+});
 
 const onclick = () => {
   overlay.create(StatusModal, {
