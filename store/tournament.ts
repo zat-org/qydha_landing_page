@@ -76,10 +76,11 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		if(	!connection.value) return ;
 			connection.value.stop()
 	}
+	const groupsREQ =  groupApi.getGroups();
 	const initStore = async (tournamentId: string) => {
 		selectedTournamentId.value = tournamentId;
 
-		const groupsREQ = await groupApi.getGroups();
+		
 		await groupsREQ.fetchREQ(tournamentId);
 		if (groupsREQ.status.value == "error") {
 			console.log(groupsREQ.error)
@@ -148,5 +149,5 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 
 		return connection
 	}
-	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection }
+	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ}
 })

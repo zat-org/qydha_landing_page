@@ -95,7 +95,7 @@
               
               <template v-if="data.match.startAt">
                 <span v-if="(data.match.tableName || data.match.roundName)" class="text-[8px] text-gray-400 dark:text-gray-500 flex-shrink-0 mx-0.5">•</span>
-                <p class="text-[10px] dark:text-gray-300 text-gray-600 truncate font-medium">{{ compactDateTime }}</p>
+                <p class="text-[10px] dark:text-gray-300 text-gray-600 truncate font-medium">{{ formatDateTime(data.match.startAt) }}</p>
               </template>
             </div>
           </div>
@@ -113,7 +113,6 @@ import type { Match } from "@/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "../Bracket/StatusModal.vue";
 import EditModal from "../Bracket/EditModal.vue";
-import { formatDateTime } from "@/utils/formatDate";
 
 const props = defineProps<{ data: { match: Match } }>();
 const useStore = useMyAuthStore()

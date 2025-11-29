@@ -125,6 +125,14 @@
                         <template #table-cell="{ row }">
                             <span class="text-sm">{{ row.original.tableName ? row.original.tableName: 'لم يحدد بعد ' }}</span>
                         </template>
+                        <template #state-cell="{ row }">   
+                            <UBadge :color="getMatchStateColor(row.original.state)" variant="soft" size="sm">
+                                {{ getMatchStateLabel(row.original.state) }}
+                            </UBadge>
+                        </template>
+                        <template #startAt-cell="{ row }">
+                            <span class="text-sm">{{ formatDateTime(row.original.startAt) }}</span>
+                        </template>
                     </UTable>
                 </template>
             </UTable>

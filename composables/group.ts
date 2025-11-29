@@ -11,9 +11,9 @@ interface GraphData {
 export const useGroup = () => {
   const userStore = useMyAuthStore()
   const { $api } = useNuxtApp();
-  const getGroups = async () => {
+  const getGroups =  () => {
     const tourid = ref<string>()
-    const { data, pending, error, refresh, status, execute } = await
+    const { data, pending, error, refresh, status, execute } = 
       useAsyncData<{
         message: string,
         data: {
