@@ -50,7 +50,7 @@ export const useTournamentTable = () => {
     const tourId = ref()
     const tableId = ref()
     const { data, pending, error, refresh, status, execute } = useAsyncData(
-      ()=>['deleteTable',tourId.value,tableId.value].join('-'),
+      'deleteTable',
       () => $api(`/tournaments/${tourId.value}/tables/${tableId.value}`, { method: 'delete' }), { immediate: false }
     );
     const fetchREQ = async (tour_id: string, table_id: string) => {
@@ -69,7 +69,7 @@ export const useTournamentTable = () => {
     const tourId = ref()
     const tableId = ref()
     const { data, pending, error, refresh, status, execute } = useAsyncData(
-      ()=>['updateTable',tourId.value,tableId.value].join('-'),
+      'updateTable',
       () => {
         if (!tourId.value || !tableId.value) {
           throw new Error('Tournament ID and Table ID are required')

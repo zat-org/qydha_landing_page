@@ -67,7 +67,7 @@
           <UButton 
             color="warning" 
             icon="i-heroicons-pencil-square"
-            @click="openUpdateModal(row.original)"
+            @click="()=>openUpdateModal(row.original)"
             :loading="updateTableREQ.status.value === 'pending'"
           >
             تعديل
@@ -75,7 +75,7 @@
           <UButton 
             color="error" 
             icon="i-heroicons-trash"
-            @click="confirmDelete(row.original)"
+            @click="()=>confirmDelete(row.original)"
             :loading="deleteREQ.status.value === 'pending'"
           >
             حذف
