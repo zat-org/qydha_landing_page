@@ -14,10 +14,9 @@
         <UAccordion v-else :items="accordionItems"  class="w-full bg-gray-100 dark:bg-gray-800">
             <template v-for="(item, index) in accordionItems" :key="`slot-${index}`" v-slot:[item.slot] class="px-4">
                 <GroupDetails :group="groups[index]" v-if="groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created"  />
-                <RoundsGroupDetails :group="groups[index]" v-else-if="groups[index].state == GroupState.MatchesGenerated" />
+                <RoundsGroupDetails :group="groups[index]" v-else-if="groups[index].state == GroupState.MatchesGenerated || groups[index].state == GroupState.MatchesRunning" />
             </template>
         </UAccordion>
-
 
     </UCard>
 </template>

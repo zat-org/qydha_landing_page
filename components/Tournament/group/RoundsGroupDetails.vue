@@ -133,6 +133,9 @@
                         <template #startAt-cell="{ row }">
                             <span class="text-sm">{{ formatDateTime(row.original.startAt) }}</span>
                         </template>
+                        <template #referee-cell="{ row }">
+                            <span class="text-sm">{{ row.original.referee ? row.original.referee.username: 'لم يحدد بعد ' }}</span>
+                        </template>
                     </UTable>
                 </template>
             </UTable>

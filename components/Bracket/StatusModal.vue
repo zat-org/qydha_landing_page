@@ -10,13 +10,13 @@
             <thead>
               <tr class="h-12 bg-gray-200 dark:bg-slate-700 text-xs">
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.usTeamName }}
+                  {{ m.themTeamName }}
                 </th>
                 <th style="width: 20%">
                   <UIcon name="fxemoji:squaredvs" class="text-2xl" />
                 </th>
                 <th class="text-gray-900 dark:text-white ">
-                  {{ m.themTeamName }}
+                  {{ m.usTeamName }}
                 </th>
               </tr>
             </thead>
@@ -24,111 +24,111 @@
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.moshtaraSunCount }}
+                  {{ statusThem?.moshtaraSunCount }}
                 </td>
                 <td class="px-0 text-sm">مشترى صن</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusThem?.moshtaraSunCount }}
+                  {{ statusUs?.moshtaraSunCount }}
                 </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.moshtaraHokmCount }}
-                </td>
-                <td class="px-0 text-sm">مشترى حكم</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.moshtaraHokmCount }}
                 </td>
+                <td class="px-0 text-sm">مشترى حكم</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.moshtaraHokmCount }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.wonMoshtaraCount }}
-                </td>
-                <td class="px-0 text-sm">مشتريات ناجحة</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.wonMoshtaraCount }}
                 </td>
+                <td class="px-0 text-sm">مشتريات ناجحة</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.wonMoshtaraCount }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.lostMoshtaraCount }}
-                </td>
-                <td class="px-0 text-xs">مشتريات خسرانة</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.lostMoshtaraCount }}
                 </td>
+                <td class="px-0 text-xs">مشتريات خسرانة</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.lostMoshtaraCount }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.sra }}
-                </td>
-                <td class="px-0 text-sm">سرا</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.sra }}
                 </td>
+                <td class="px-0 text-sm">سرا</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                    {{ statusUs?.sra }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.baloot }}
-                </td>
-                <td class="px-0 text-sm">بلوت</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.baloot }}
                 </td>
+                <td class="px-0 text-sm">بلوت</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.baloot }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.khamsen }}
-                </td>
-                <td class="px-0 text-sm">خمسين</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.khamsen }}
                 </td>
+                <td class="px-0 text-sm">خمسين</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.khamsen }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.me2a }}
-                </td>
-                <td class="px-0 text-sm">مية</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.me2a }}
                 </td>
+                <td class="px-0 text-sm">مية</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.me2a }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.rob3ome2a }}
-                </td>
-                <td class="px-0 text-sm">أربعمية</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.rob3ome2a }}
                 </td>
+                <td class="px-0 text-sm">أربعمية</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                  {{ statusUs?.rob3ome2a }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
-                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.sunKaboot }}
-                </td>
-                <td class="px-0 text-xs">عدد الكبابيت صن</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
                   {{ statusThem?.sunKaboot }}
                 </td>
+                <td class="px-0 text-xs">عدد الكبابيت صن</td>
+                <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
+                    {{ statusUs?.sunKaboot }}
+                </td>
               </tr>
 
               <tr class="h-8 even:dark:bg-slate-500 odd:dark:bg-slate-600 even:bg-slate-50 odd:bg-slate-100">
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusUs?.hokmKaboot }}
+                  {{ statusThem?.hokmKaboot }}
                 </td>
                 <td class="px-0 text-xs">عدد الكبابيت حكم</td>
                 <td class="font-semibold text-md text-blue-950 dark:text-slate-50">
-                  {{ statusThem?.hokmKaboot }}
+                  {{ statusUs?.hokmKaboot }}
                 </td>
               </tr>
             </tbody>
@@ -147,11 +147,11 @@
                   'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
                 }">
                 <div class="text-sm font-medium dark:text-gray-200">
-                  <p>{{ m.usTeamName.split("|")[0] }}</p>
-                  <p>{{ m.usTeamName.split("|")[1] }}</p>
+                  <p>{{ m.themTeamName.split("|")[0] }}</p>
+                  <p>{{ m.themTeamName.split("|")[1] }}</p>
                 </div>
                 <span class="px-3 py-1 text-sm rounded-full bg-gray-200/80 dark:bg-gray-700">
-                  {{ game?.game.usGameScore }} صكة
+                  {{ game?.game.themGameScore }} صكة
                 </span>
               </div>
 
@@ -168,11 +168,11 @@
                   'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
                 }">
                 <div class="text-sm font-medium dark:text-gray-200">
-                  <p>{{ m.themTeamName.split("|")[0] }}</p>
-                  <p>{{ m.themTeamName.split("|")[1] }}</p>
+                  <p>{{ m.usTeamName.split("|")[0] }}</p>
+                  <p>{{ m.usTeamName.split("|")[1] }}</p>
                 </div>
                 <span class="px-3 py-1 text-sm rounded-full bg-gray-200/80 dark:bg-gray-700">
-                  {{ game?.game.themGameScore }} صكة
+                  {{ game?.game.usGameScore }} صكة
                 </span>
               </div>
             </div>
@@ -188,7 +188,7 @@
                       :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'"
                       class="text-sm"
                     >
-                      {{ sakka.usSakkaScore }}
+                      {{ sakka.themSakkaScore }}
                     </UBadge>
                     <span class="font-medium text-gray-700 dark:text-gray-300">
                       الصكة {{ index + 1 }}
@@ -197,7 +197,7 @@
                       :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'"
                       class="text-sm"
                     >
-                      {{ sakka.themSakkaScore }}
+                      {{ sakka.usSakkaScore }}
                     </UBadge>
                   </div>
                 </div>
@@ -207,8 +207,8 @@
                   <div v-for="mos in sakka.moshtaras" class="py-1">
                     <div v-if="mos.state != 'Running'" 
                       class="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400">
-                      <span>{{ mos.usAbnat }}</span>
                       <span>{{ mos.themAbnat }}</span>
+                      <span>{{ mos.usAbnat }}</span>
                     </div>
                   </div>
                 </div>
