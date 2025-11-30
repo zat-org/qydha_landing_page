@@ -15,11 +15,11 @@
         <div   id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0" ></div>
       
         <div class="flex justify-between items-center w-full p-2 gap-2">
-          <UFormField label="العرض" name="latitude">
-            <UInput type="text" v-model="model.latitude" label="العرض" />
+          <UFormField label="الطول" name="latitude">
+            <UInput type="number" v-model="model.latitude" label="الطول" />
           </UFormField>
-          <UFormField label="الطول" name="longitude">
-            <UInput type="text" v-model="model.longitude" label="الطول" />
+          <UFormField label="العرض" name="longitude">
+            <UInput type="number" v-model="model.longitude" label="العرض" />
           </UFormField>
           <UButton label="حفظ" @click="saveLocation" />
         </div>
