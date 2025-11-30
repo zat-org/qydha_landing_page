@@ -122,7 +122,7 @@
           v-if="match.state.toLowerCase() == 'created'" 
           :ui="{ content: 'w-[300px]' }"
         >
-          <UButton color="error" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
+          <UButton v-if="match.usTeamId &&match.themTeamId" color="error" label="انسحاب" trailing-icon="i-heroicons-chevron-down-20-solid" />
         </UDropdownMenu>
         <UButton 
           v-else 
@@ -300,7 +300,11 @@ const onReset = async () => {
     emit('close')
   }
 }
-const withdrawItems = [[{ label: ` انسحاب  ${props.match.usTeamName}`, onSelect: () => withdrawUS() }, { label: ` انسحاب  ${props.match.themTeamName}`, onSelect: () => withdrawThem() }, { label: 'انسحاب كلا الفريقين', onSelect: () => withdrawBoth() }]]
+const withdrawItems = [[
+  { label: ` انسحاب  ${props.match.usTeamName}`, onSelect: () => withdrawUS() },
+  { label: ` انسحاب  ${props.match.themTeamName}`, onSelect: () => withdrawThem() },
+  { label: 'انسحاب كلا الفريقين', onSelect: () => withdrawBoth() }
+]]
 
 
 </script>
