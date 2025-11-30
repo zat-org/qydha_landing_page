@@ -1,5 +1,5 @@
 <template>
-    <UDrawer v-model:open="open" direction="left" :handle="false" title="تعديل المباراة" description="تعديل المباراة">
+    <UDrawer  direction="left" :handle="false" title="تعديل المباراة" description="تعديل المباراة">
         <template #body>
             <div class="w-[500px] p-4">
                 <!-- Loading State -->
@@ -107,18 +107,23 @@
         
         <template #footer>
             <div class="flex justify-end gap-3" v-if="matchChoices">
-                <UButton 
-                    label="إلغاء" 
-                    color="neutral" 
-                    variant="soft" 
-                    @click="open = false" 
-                />
-                <UButton 
-                    label="حفظ" 
-                    @click="form?.submit()" 
-                    :loading="updateREQ.status.value === 'pending'" 
-                    :disabled="updateREQ.status.value === 'pending'"
-                />
+                <div class="flex justify-between items-center w-full">
+                    
+                    <UButton 
+                        label="حفظ" 
+                        color="primary" 
+                        variant="soft" 
+                        @click="form?.submit()" 
+                        :loading="updateREQ.status.value === 'pending'" 
+                        :disabled="updateREQ.status.value === 'pending'"
+                    />
+                    <UButton 
+                        label="إلغاء" 
+                        color="neutral" 
+                        variant="soft" 
+                        @click="emit('close')" 
+                    />
+                </div>
             </div>
         </template>
     </UDrawer>
@@ -131,10 +136,11 @@ import loading from "~/components/loading.vue";
 const route = useRoute();
 const tour_id = route.params.id.toString();
 const toast = useToast();
-
+const emit = defineEmits(['close']);
 // Use useState to get shared state
-const matchId = useState<string | null>('matchDrawer.matchId', () => null);
-const open = useState<boolean>('matchDrawer.open', () => false);
+const {matchId} = defineProps<{matchId: string}>();
+
+// defineExpose({open});
 
 const { updateMatch, getUpdateChoicesForMatch } = useMatch();
 
@@ -154,14 +160,17 @@ const schema = object({
 
 const form = useTemplateRef('form');
 
-// Reactive state for choices - will be initialized when matchId is available
-const choicesREQ = ref<ReturnType<typeof getUpdateChoicesForMatch> | null>(null);
+const choicesREQ = await  getUpdateChoicesForMatch(tour_id, matchId)
 
+if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
+    formState.refereeId = choicesREQ.data.value.data.selectedReferee?.id || undefined;
+    formState.tableId = choicesREQ.data.value.data.selectedTable?.id || undefined;
+    formState.isMarked = false; // You may need to get this from the match data
+}
 // Match choices data
 const matchChoices = computed<IUpdateChoicesForMatch | null>(() => {
-    const req = choicesREQ.value as any;
-    if (req && req.status?.value === "success" && req.data?.value?.data) {
-        return req.data.value.data || null;
+    if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
+        return choicesREQ.data.value.data || null;
     }
     return null;
 });
@@ -232,43 +241,43 @@ const selectedTableDisplay = computed(() => {
     return found?.name || formState.tableId;
 });
 
-// Watch for matchId changes and fetch choices when drawer opens
-watch([matchId, open], async ([newMatchId, isOpen]) => {
-    if (newMatchId && isOpen) {
-        // Fetch choices for the match
-        choicesREQ.value = getUpdateChoicesForMatch(tour_id, newMatchId);
+// // Watch for matchId changes and fetch choices when drawer opens
+// watch([matchId, open], async ([newMatchId, isOpen]) => {
+//     if (newMatchId && isOpen) {
+//         // Fetch choices for the match
+//         choicesREQ.value = getUpdateChoicesForMatch(tour_id, newMatchId);
         
-        // Wait for data to load, then initialize form
-        await nextTick();
-        // Wait a bit more for async data to load
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const choices = matchChoices.value;
-        if (choices) {
-            formState.refereeId = choices.selectedReferee?.id || undefined;
-            formState.tableId = choices.selectedTable?.id || undefined;
-            formState.isMarked = false; // You may need to get this from the match data
-        }
-    }
-}, { immediate: true });
+//         // Wait for data to load, then initialize form
+//         await nextTick();
+//         // Wait a bit more for async data to load
+//         await new Promise(resolve => setTimeout(resolve, 100));
+//         const choices = matchChoices.value;
+//         if (choices) {
+//             formState.refereeId = choices.selectedReferee?.id || undefined;
+//             formState.tableId = choices.selectedTable?.id || undefined;
+//             formState.isMarked = false; // You may need to get this from the match data
+//         }
+//     }
+// }, { immediate: true });
 
 // Update match function
 const updateREQ = await updateMatch();
 
 const onSubmit = async () => {
-    if (!matchId.value) {
+    if (!matchId) {
         toast.add({ title: "خطأ", description: "معرف المباراة غير موجود", color: "error" });
         return;
     }
 
-    await updateREQ.fetchREQ(tour_id, matchId.value, formState);
+    await updateREQ.fetchREQ(tour_id, matchId, formState);
     
     if (updateREQ.status.value === "success") {
         toast.add({ title: "تم التحديث بنجاح", color: "success" });
-        open.value = false;
-        // Refresh choices to get updated data
-        if (matchId.value) {
-            choicesREQ.value = getUpdateChoicesForMatch(tour_id, matchId.value);
-        }
+        emit('close')
+        // // Refresh choices to get updated data
+        // if (matchId) {
+        //     choicesREQ.value = getUpdateChoicesForMatch(tour_id, matchId);
+        // }
     } else if (updateREQ.error.value) {
         toast.add({ 
             title: "خطأ في التحديث", 
@@ -278,8 +287,5 @@ const onSubmit = async () => {
     }
 };
 
-defineExpose({
-    open
-});
 
 </script>

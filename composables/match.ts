@@ -1,3 +1,4 @@
+import type { Match } from "~/models/group";
 import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/models/match";
 import type { IMatchData, IMathStat } from "~/models/MatchStat";
 
@@ -43,7 +44,7 @@ export const useMatch = () => {
 
   const getUpdateChoicesForMatch = (tour_id: string, match_id: string) => {
     const result = useAsyncData<{ message: string, data: IUpdateChoicesForMatch }>(
-      ()=> `getUpdateChoicesForMatch-${tour_id}-${match_id}`,
+      `getUpdateChoicesForMatch-${tour_id}-${match_id}`,
       () => $api(`/tournaments/${tour_id}/matches/${match_id}/update-choices`)
     );
     return result;
@@ -53,7 +54,7 @@ export const useMatch = () => {
     const tour_id = ref()
     const match_id = ref()
     const body = ref<IMatchUpdate>()
-    const { data, pending, error, refresh, execute, status } = await useAsyncData(
+    const { data, pending, error, refresh, execute, status } = await useAsyncData<{message:string,data:Match}>(
       ()=> `updateMatch`,  
       () => $api(`tournaments/${tour_id.value}/matches/${match_id.value}`, { body: body.value, method: "PUT" }), { immediate: false }
     );
@@ -62,8 +63,9 @@ export const useMatch = () => {
       match_id.value = _match_id;
       body.value = _data
       await execute()
-      if (status.value == "success") {
-      
+      if (status.value == "success" && data.value?.data) {
+        refreshNuxtData(["getRoundsGroupDetails", tour_id.value, data.value?.data.groupId].join("-"))
+      // refreshNuxtData()
       }
     }
     return { data, pending, error, refresh, fetchREQ, status }

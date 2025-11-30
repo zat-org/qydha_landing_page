@@ -10,7 +10,7 @@
         </template>
 
         <!-- Loading State -->
-        <div v-if="rounGroupDetailsREQ.pending.value" class="flex justify-center items-center py-12">
+        <div v-if="rounGroupDetailsREQ.pending.value && rounGroupDetailsREQ.data.value?.data == null" class="flex justify-center items-center py-12">
             <loading />
         </div>
 
@@ -119,12 +119,17 @@
         :group-id="props.group.id"
     />
 
-    <UpdateMatchDrawer />
+    <!-- <UpdateMatchDrawer 
+    v-if="selectMatchId"
+     ref="updateMatchDrawer" 
+     :matchId="selectMatchId"
+    /> -->
 </template>
 
 <script lang="ts" setup>
 import type { Group, RoundGroupDetails, Match } from '~/models/group';
 import loading from '~/components/loading.vue';
+import {until} from '@vueuse/core'
 import type { TableColumn } from '@nuxt/ui';
 import UpdateRoundDrawer from './Round/UpdateRoundDrawer.vue';
 import UpdateMatchDrawer from './Match/UpdateMatchDrawer.vue';
@@ -223,12 +228,19 @@ const openUpdateRoundDrawer = (roundId: string) => {
     updateRoundDrawer.value.open = true;
    }
 }
-const openUpdateMatchDrawer = (matchId: string) => {
+const selectMatchId = ref<string | null>(null);
+// const updateMatchDrawer = useTemplateRef('updateMatchDrawer');
+const  overlay = useOverlay();
+const matchDrawer = overlay.create(UpdateMatchDrawer)
+const openUpdateMatchDrawer = async (matchId: string) => {
     // Use useState to set the matchId and open the drawer
-    const matchDrawerMatchId = useState<string | null>('matchDrawer.matchId', () => null);
-    const matchDrawerOpen = useState<boolean>('matchDrawer.open', () => false);
-    
-    matchDrawerMatchId.value = matchId;
-    matchDrawerOpen.value = true;
+    matchDrawer.open({
+        matchId: matchId
+    })
+    selectMatchId.value = matchId;
+    // await until(updateMatchDrawer).toBeTruthy();
+    // if(updateMatchDrawer.value) {
+        // updateMatchDrawer.value.open = true;
+    // }
 }
 </script>

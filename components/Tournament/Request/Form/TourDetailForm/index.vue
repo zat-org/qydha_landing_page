@@ -243,7 +243,7 @@ const localSchema = object({
             // Set time portion of both to zero for date-only comparison
             date.setHours(0,0,0,0);
             today.setHours(0,0,0,0);
-            return date > today;
+            return date >= today;
         }),
 
     endAt: string()
