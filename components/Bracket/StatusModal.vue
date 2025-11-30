@@ -1,5 +1,5 @@
 <template>
-  <UModal class="w-[500px]" title="الاحصائيات" description="الاحصائيات للمباراة">
+  <UModal class="nin-w-[1500px]" title="الاحصائيات" description="الاحصائيات للمباراة">
 
 
 
@@ -142,8 +142,8 @@
               <!-- Team 1 -->
               <div class="flex-1 flex flex-col gap-2 items-center p-4 rounded-xl border transition-colors duration-200" 
                 :class="{
-                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Us',
-                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Them',
+                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Them',
+                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Us',
                   'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
                 }">
                 <div class="text-sm font-medium dark:text-gray-200">
@@ -163,8 +163,8 @@
               <!-- Team 2 -->
               <div class="flex-1 flex flex-col gap-2 items-center p-4 rounded-xl border transition-colors duration-200"
                 :class="{
-                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Them',
-                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Us',
+                  'bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700': game?.game.winner == 'Us',
+                  'bg-red-100 dark:bg-red-900/30 border-red-300 dark:border-red-700': game?.game.winner == 'Them',
                   'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700': !game?.game.winner
                 }">
                 <div class="text-sm font-medium dark:text-gray-200">
@@ -185,7 +185,7 @@
                 <div class="bg-gray-50 dark:bg-gray-900 p-3 border-b border-gray-200 dark:border-gray-700">
                   <div class="flex justify-between items-center">
                     <UBadge 
-                      :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'"
+                      :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'"
                       class="text-sm"
                     >
                       {{ sakka.themSakkaScore }}
@@ -194,7 +194,7 @@
                       الصكة {{ index + 1 }}
                     </span>
                     <UBadge 
-                      :color="sakka.winner && sakka.winner == 'Them' ? 'success' : 'error'"
+                      :color="sakka.winner && sakka.winner == 'Us' ? 'success' : 'error'"
                       class="text-sm"
                     >
                       {{ sakka.usSakkaScore }}

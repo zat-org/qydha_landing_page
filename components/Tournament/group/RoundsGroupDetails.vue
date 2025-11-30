@@ -73,47 +73,9 @@
                     </UBadge>
                 </template>
 
-                <!-- Game Settings Summary -->
-                <!-- <template #gameSettings-cell="{ row }">
-                    <div class="flex flex-wrap gap-1">
-                        <UBadge 
-                            v-if="(row.original as RoundRow).round.gameSettings.isFlipped"
-                            color="success" 
-                            variant="soft" 
-                            size="xs"
-                        >
-                            مقلوب
-                        </UBadge>
-                        <UBadge 
-                            v-if="(row.original as RoundRow).round.gameSettings.isAdvancedRecording"
-                            color="info" 
-                            variant="soft" 
-                            size="xs"
-                        >
-                            متقدم
-                        </UBadge>
-                        <UBadge 
-                            v-if="(row.original as RoundRow).round.gameSettings.isSakkahMashdodahMode"
-                            color="warning" 
-                            variant="soft" 
-                            size="xs"
-                        >
-                            محصودة
-                        </UBadge>
-                        <UBadge 
-                            v-if="(row.original as RoundRow).round.gameSettings.isVoiceRecording"
-                            color="secondary" 
-                            variant="soft" 
-                            size="xs"
-                        >
-                            صوتي
-                        </UBadge>
-                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                            {{ (row.original as RoundRow).round.gameSettings.sakkasCount }} صكة
-                        </span>
-                    </div>
-                </template> -->
-
+                <template #actions-cell="{ row }">
+                    <UButton icon="i-heroicons-pencil" color="warning" variant="soft" size="sm" @click="openUpdateRoundDrawer(row.original.round.id)" />
+                </template>
                 <!-- Expanded Row Content (Matches) -->
                 <template #expanded="{ row }">
                     <UTable :data="row.original.round.matches" :columns="matchColumns" >
@@ -136,6 +98,9 @@
                         <template #referee-cell="{ row }">
                             <span class="text-sm">{{ row.original.referee ? row.original.referee.username: 'لم يحدد بعد ' }}</span>
                         </template>
+                        <template #actions-cell="{ row }">
+                            <UButton icon="i-heroicons-pencil" color="warning" variant="soft" size="sm" @click="openUpdateMatchDrawer(row.original.id)" />
+                        </template>
                     </UTable>
                 </template>
             </UTable>
@@ -147,12 +112,22 @@
             <p>لا توجد جولات في هذه المجموعة</p>
         </div>
     </UCard>
+    <UpdateRoundDrawer 
+        ref="updateRoundDrawer" 
+        :round="selectedRound" 
+        :tour-id="tour_id"
+        :group-id="props.group.id"
+    />
+
+    <UpdateMatchDrawer />
 </template>
 
 <script lang="ts" setup>
 import type { Group, RoundGroupDetails, Match } from '~/models/group';
 import loading from '~/components/loading.vue';
 import type { TableColumn } from '@nuxt/ui';
+import UpdateRoundDrawer from './Round/UpdateRoundDrawer.vue';
+import UpdateMatchDrawer from './Match/UpdateMatchDrawer.vue';
 import { h, resolveComponent } from 'vue';
 
 const route = useRoute();
@@ -228,6 +203,7 @@ const roundColumns: TableColumn<RoundRow>[] = [
     { accessorKey: 'name', header: 'اسم الجولة' },
     { accessorKey: 'startAt', header: 'تاريخ البدء' },
     { accessorKey: 'matchesCount', header: 'عدد المباريات' },
+    { accessorKey: 'actions', header: 'الإجراءات' },
 ];
 
 // Match table columns
@@ -236,6 +212,23 @@ const matchColumns: TableColumn<Match>[] = [
     { accessorKey: 'table', header: 'الطاولة' },
     { accessorKey: 'state', header: 'الحالة' },
     { accessorKey: 'startAt', header: 'وقت البدء' },
-    { accessorKey: 'referee', header: 'الحكم' }
+    { accessorKey: 'referee', header: 'الحكم' },
+    { accessorKey: 'actions', header: 'الإجراءات' }
 ];
+const selectedRound = ref<RoundGroupDetails['rounds'][0] | null>(null);
+const updateRoundDrawer = useTemplateRef('updateRoundDrawer');
+const openUpdateRoundDrawer = (roundId: string) => {
+    selectedRound.value = roundsGroupDetails.value?.rounds?.find(round => round.id === roundId) || null;
+   if (updateRoundDrawer.value) {
+    updateRoundDrawer.value.open = true;
+   }
+}
+const openUpdateMatchDrawer = (matchId: string) => {
+    // Use useState to set the matchId and open the drawer
+    const matchDrawerMatchId = useState<string | null>('matchDrawer.matchId', () => null);
+    const matchDrawerOpen = useState<boolean>('matchDrawer.open', () => false);
+    
+    matchDrawerMatchId.value = matchId;
+    matchDrawerOpen.value = true;
+}
 </script>

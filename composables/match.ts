@@ -1,4 +1,4 @@
-import type { IMatchUpdate } from "~/models/match";
+import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/models/match";
 import type { IMatchData, IMathStat } from "~/models/MatchStat";
 
 export const useMatch = () => {
@@ -40,12 +40,21 @@ export const useMatch = () => {
     return { data, pending, error, refresh, status, fetchREQ };
   };
 
+
+  const getUpdateChoicesForMatch = (tour_id: string, match_id: string) => {
+    const result = useAsyncData<{ message: string, data: IUpdateChoicesForMatch }>(
+      ()=> `getUpdateChoicesForMatch-${tour_id}-${match_id}`,
+      () => $api(`/tournaments/${tour_id}/matches/${match_id}/update-choices`)
+    );
+    return result;
+  }
+
   const updateMatch = async () => {
     const tour_id = ref()
     const match_id = ref()
     const body = ref<IMatchUpdate>()
     const { data, pending, error, refresh, execute, status } = await useAsyncData(
-      ()=> `updateMatch-${tour_id.value}-${match_id.value}`,  
+      ()=> `updateMatch`,  
       () => $api(`tournaments/${tour_id.value}/matches/${match_id.value}`, { body: body.value, method: "PUT" }), { immediate: false }
     );
     const fetchREQ = async (_tour_id: string, _match_id: string, _data: IMatchUpdate) => {
@@ -100,5 +109,5 @@ export const useMatch = () => {
     return { data, pending, error, refresh, status, fetchRestREQ, fetchWithdrawREQ }
 
   }
-  return { getMatchData, getMatchStatstics, updateMatch, updateMatchState };
+  return { getMatchData, getMatchStatstics, updateMatch, updateMatchState,getUpdateChoicesForMatch };
 };
