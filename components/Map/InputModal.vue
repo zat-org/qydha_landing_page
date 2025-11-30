@@ -14,7 +14,17 @@
       <Loading  v-show="!map"/>
         <div   id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0" ></div>
       
+        <div class="flex justify-between items-center w-full p-2 gap-2">
+          <UFormField label="العرض" name="latitude">
+            <UInput type="text" v-model="model.latitude" label="العرض" />
+          </UFormField>
+          <UFormField label="الطول" name="longitude">
+            <UInput type="text" v-model="model.longitude" label="الطول" />
+          </UFormField>
+          <UButton label="حفظ" @click="saveLocation" />
+        </div>
       </div>
+
     </template>
     <template #footer>
       <UButton @click="show = false; " color="primary" variant="soft" icon="i-heroicons-check" label="تأكيد" />
@@ -103,7 +113,30 @@ if (process.client) {
       }
     }
   });
+
+
+
+
 }
+
+const saveLocation = () => {
+  if (!L || !map.value || typeof window === 'undefined') return;  
+  map.value.eachLayer((layer: any) => {
+    if (layer instanceof L.Marker) {
+      map.value.removeLayer(layer);
+    }
+  });
+
+  // Add new marker at clicked location
+  L.marker([model.value.latitude, model.value.longitude], {  icon: MyIcon })
+    .addTo(map.value)
+  
+  // Zoom to marker location
+  map.value.setView([model.value.latitude, model.value.longitude], 10);
+
+}
+
+
 
 const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
   if (!L || !map.value || typeof window === 'undefined') return;
@@ -118,8 +151,14 @@ const onClick = ({latlng}: {latlng: {lat: number, lng: number}}) => {
   L.marker([latlng.lat, latlng.lng], {  icon: MyIcon })
     .addTo(map.value)
 
-  model.value.latitude = latlng.lat;
-  model.value.longitude = latlng.lng;
+  // Update model values - ensure reactivity
+  model.value = {
+    latitude: latlng.lat,
+    longitude: latlng.lng
+  };
+  
+  // Zoom to marker location
+  // map.value.setView([latlng.lat, latlng.lng], 15);
 }
 
 if (process.client) {
