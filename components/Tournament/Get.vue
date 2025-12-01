@@ -182,7 +182,7 @@
         />
       </div>
 
-      <div v-if="showStartTournamentButton" class="mt-4 px-5">
+      <div v-if="showStartTournamentButton &&   finalGroup?.state == GroupState.TeamsLinking" class="mt-4 px-5">
         <UButton
           label="بدء البطولة"
           icon="i-mdi-play"
@@ -206,6 +206,7 @@
 
           <UButton label="خريطة البطولة" :to="'/tournament/' + id + '/bracket'" icon="i-mdi-tournament" target="_blank"
             color="primary" />
+            <UButton label="أحصائيات  البطولة" icon="i-mdi-chart-box" size="lg" color="primary" variant="solid" :to="'/tournament/' + id + '/statistics'" target="_blank" />
         </div>
       </div>
     </template>

@@ -13,7 +13,8 @@ import { useMyTournamentStore } from "~/store/tournament";
 
 export const useTournament = () => {
   const userStore = useMyAuthStore();
-  const { $api } = useNuxtApp();
+  const toast=useToast();
+  const { $api ,$qaydhaapi} = useNuxtApp();
   const tournamentStateLabel: Record<TournamentState, string> = {
     [TournamentState.Upcoming]: "القادمة",
     [TournamentState.Running]: "الجارية",
@@ -103,6 +104,15 @@ export const useTournament = () => {
         };
       }
       await result.execute();
+      if (result.status.value == 'success') {
+        toast.add({
+          title: 'تم بدء تنظيم البطولة',
+          description: 'تم بدء تنظيم البطولة بنجاح',
+          color: 'success',
+        });
+        refreshNuxtData(`getSingelTournament-${tournamentId}`)
+      }
+
     };
     return { result, fetchREQ };
   };
@@ -203,6 +213,13 @@ export const useTournament = () => {
     return { result, fetchREQ };
   };
 
+const getTournamentStatistics = async (tournamentId: string) => {
+ return  await useAsyncData(
+    `getTournamentStatistics-${tournamentId}`,
+    () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
+  );
+};
+
   // const updatTourQydhaAndOwner = async () => {
 
   //   const ID = ref<number>()
@@ -243,5 +260,6 @@ export const useTournament = () => {
     getTournamnetOrderStartAtOptions,
     setupTournament,
     startTournament,
+    getTournamentStatistics
   };
 };

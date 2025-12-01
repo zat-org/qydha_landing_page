@@ -1,5 +1,5 @@
 <template>
-  <main class="grow w-full relative">
+  <main class="grow w-full h-full relative">
     <slot ></slot>
   </main>
 </template>
