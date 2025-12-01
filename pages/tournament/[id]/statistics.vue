@@ -75,7 +75,7 @@
                 <td
                   class="px-4 py-3 text-lg font-bold text-primary-600 dark:text-primary-400 text-left sm:text-right"
                 >
-                  {{ formatStatValue(item.value) }}
+                  {{item.value }}
                 </td>
               </tr>
             </tbody>
