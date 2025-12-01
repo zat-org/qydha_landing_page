@@ -130,6 +130,12 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		g.matches = JSON.parse(groupMatches);
 		console.log("TournamentBracketChanged")
 	}
+	const handleBracketUpdated = (groupId: string, groupMatches: string) => {
+		let g = tournament.value.find(g => g.data.id == groupId);
+		if (g == null) return;
+		g.matches = JSON.parse(groupMatches);
+		console.log("BracketUpdated")
+	}
 	const initWebsocket = async (tournamentId: string) => {
 		const config = useRuntimeConfig();
 		const connection = new signalR.HubConnectionBuilder()
@@ -146,7 +152,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		}
 		connection.on("MatchStateChanged", handleMatchStateChanged)
 		connection.on("TournamentBracketChanged", handleBracketChanged)
-
+		connection.on("braket updated", handleBracketUpdated)
 		return connection
 	}
 	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ}

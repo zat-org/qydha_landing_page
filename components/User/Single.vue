@@ -37,6 +37,18 @@
                   @click="copyToClipboard(userData?.user.phone || '')" />
               </UTooltip>
             </div>
+            <div v-if="userData?.user.email" class="flex items-center justify-center gap-2 text-gray-600 dark:text-gray-300 mb-3">
+              <UIcon name="i-heroicons-envelope" class="text-xl" />
+              <span dir="ltr">{{ userData?.user.email }}</span>
+              <UTooltip text="نسخ البريد الإلكتروني">
+                <UButton color="neutral" variant="ghost" icon="i-heroicons-clipboard"
+                  @click="copyToClipboard(userData?.user.email || '')" />
+              </UTooltip>
+            </div>
+            <div v-else class="flex items-center justify-center gap-2 text-gray-500 dark:text-gray-400 mb-3">
+              <UIcon name="i-heroicons-envelope" class="text-xl" />
+              <span class="text-sm italic">لا يوجد بريد إلكتروني</span>
+            </div>
             <div class="flex items-center justify-center gap-2 text-gray-500">
               <span class="text-xs">ID: {{ userData?.user.id }}</span>
               <UTooltip text="نسخ المعرف">
