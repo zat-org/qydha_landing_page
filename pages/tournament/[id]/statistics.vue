@@ -173,7 +173,7 @@ const refresh = () => {
 onMounted(() => {
   const intervalId = setInterval(() => {
     refresh();
-  }, 60_000);
+  }, 10*60_000);
 
   onBeforeUnmount(() => {
     clearInterval(intervalId);
