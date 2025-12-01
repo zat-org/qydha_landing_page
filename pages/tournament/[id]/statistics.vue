@@ -50,13 +50,13 @@
                   scope="col"
                   class="px-4 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-200"
                 >
-                  الإحصائية
+                  الإحصائيات
                 </th>
                 <th
                   scope="col"
                   class="px-4 py-3 text-left sm:text-right text-sm font-semibold text-gray-700 dark:text-gray-200"
                 >
-                  القيمة
+                  العدد
                 </th>
               </tr>
             </thead>
@@ -99,13 +99,13 @@
                   scope="col"
                   class="px-4 py-3 text-right text-sm font-semibold text-gray-700 dark:text-gray-200"
                 >
-                  الإحصائية
+                  الإحصائيات
                 </th>
                 <th
                   scope="col"
                   class="px-4 py-3 text-left sm:text-right text-sm font-semibold text-gray-700 dark:text-gray-200"
                 >
-                  القيمة
+                  العدد
                 </th>
               </tr>
             </thead>
