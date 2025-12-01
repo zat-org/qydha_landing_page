@@ -1,8 +1,16 @@
 <template>
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
-    <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md" 
+    <div class="flex flex-col w-[300px] h-[86px] text-xs font-semibold p-1 rounded-lg shadow-sm transition-all duration-300 hover:shadow-md relative" 
       :class="matchContainerClasses">
+
+      <!-- Optional logo bound to this node -->
+      <img
+        v-if="showLogo"
+        :src="QydhaLogo"
+        alt="Qydha logo"
+        class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white shadow-md pointer-events-none"
+      />
       
       <div :class="firstTeamClasses"
         class="flex justify-between items-center pe-1 bg-gray-300 dark:bg-gray-700 rounded-t-md rounded-b-none border border-gray-500 dark:border-gray-600 h-[22px] w-full transition-all duration-200">
@@ -63,7 +71,7 @@
             </button>
           </UTooltip>
 
-          <UTooltip v-if="hasAdminPrivileges" text="تعديل المباراة">
+          <UTooltip v-if="hasAdminPrivileges && !isMatchEnded" text="تعديل المباراة">
             <button 
               class="p-1 rounded-md hover:bg-yellow-100 dark:hover:bg-yellow-900/30 hover:scale-110 active:scale-95 transition-all duration-200"
               @click="onEdit">
@@ -113,8 +121,11 @@ import type { Match } from "@/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "../Bracket/StatusModal.vue";
 import EditModal from "../Bracket/EditModal.vue";
+import QydhaLogo from "@/assets/images/qydha-logo.svg";
 
-const props = defineProps<{ data: { match: Match } }>();
+const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
+
+const showLogo = computed(() => props.data.showLogo === true);
 const useStore = useMyAuthStore()
 const { privilege, permissions } = storeToRefs(useStore)
 const overlay = useOverlay();

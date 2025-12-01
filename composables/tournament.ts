@@ -87,21 +87,24 @@ export const useTournament = () => {
       
     );
   };
-  const setupTournament =  (tournamentId: string) => {
+  const setupTournament = (tournamentId: string) => {
     const body= ref()
     const result=useAsyncData(
         `setupTournament-${tournamentId}`,
         () => $api(`/tournaments/${tournamentId}/stages/setup`, { method: "POST", body: unref(body) }),
         { immediate: false }
       );
-      const fetchREQ = async ( type:string) => {
-        console.log(type)
-        if (type == "direct"){
-          body.value= {hasQualificationsStage:false , qualificationsStageData:null }
-        }
-        await result.execute()
+    const fetchREQ = async (type: string) => {
+      console.log(type);
+      if (type == "direct") {
+        body.value = {
+          hasQualificationsStage: false,
+          qualificationsStageData: null,
+        };
       }
-    return {result,fetchREQ}    
+      await result.execute();
+    };
+    return { result, fetchREQ };
   };
   const updateTournament = async (tournamentId: string) => {
     const body = ref<FormData>();
@@ -185,6 +188,21 @@ export const useTournament = () => {
     };
     return { data, pending, error, refresh, status, fetchREQ };
   };
+
+  const startTournament = async (tournamentId: string) => {
+    const result = await useAsyncData(
+      `startTournament-${tournamentId}`,
+      () => $api(`/tournaments/${tournamentId}/start`, { method: "POST" }),
+      { immediate: false }
+    );
+
+    const fetchREQ = async () => {
+      await result.execute();
+    };
+
+    return { result, fetchREQ };
+  };
+
   // const updatTourQydhaAndOwner = async () => {
 
   //   const ID = ref<number>()
@@ -223,6 +241,7 @@ export const useTournament = () => {
     updateTournament,
     getTournamnetStateOptions,
     getTournamnetOrderStartAtOptions,
-    setupTournament
+    setupTournament,
+    startTournament,
   };
 };

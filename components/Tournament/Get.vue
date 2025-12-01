@@ -158,12 +158,39 @@
 
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-5">
-        <UButton v-for="(button, index) in adminButtons" :key="index" :to="button.to" :label="button.label"
-          :icon="button.icon" size="lg" class="w-full" variant="soft" />
+        <UButton
+          v-for="(button, index) in adminButtons"
+          :key="index"
+          :to="button.to"
+          :label="button.label"
+          :icon="button.icon"
+          size="lg"
+          class="w-full"
+          variant="soft"
+        />
       </div>
+
       <hr />
-      <div v-if="showOrganizeTournamentButton">
-        <UButton label=" بدء تنظيم البطولة " icon="i-mdi-tournament" size="lg"  variant="soft" @click="HandelSetupTournament" />
+
+      <div v-if="showOrganizeTournamentButton" class="mt-4 px-5">
+        <UButton
+          label=" بدء تنظيم البطولة "
+          icon="i-mdi-tournament"
+          size="lg"
+          variant="soft"
+          @click="HandelSetupTournament"
+        />
+      </div>
+
+      <div v-if="showStartTournamentButton" class="mt-4 px-5">
+        <UButton
+          label="بدء البطولة"
+          icon="i-mdi-play"
+          size="lg"
+          color="primary"
+          variant="solid"
+          @click="handleStartTournament"
+        />
       </div>
 
     </div>
@@ -209,7 +236,7 @@ const canEdit = computed(() => {
 
 
 const props = defineProps<{ id: string }>();
-const { getSingelTournament, getTournamnetStateOptions ,setupTournament} = useTournament();
+const { getSingelTournament, getTournamnetStateOptions, setupTournament, startTournament } = useTournament();
 const { getTournamentTypeOptions, getTournamentPrizeCurrency  } = useTournamentRequest()
 
 const getREQ = await getSingelTournament(props.id);
@@ -226,23 +253,34 @@ const finalGroup = computed(() => {
 const pending = computed(() => getREQ.pending.value);
 const tour = computed(() => getREQ.data.value?.data);
 const showOrganizeTournamentButton = computed(() => {
-  return finalGroup.value?.state == GroupState.Created &&
-   tour.value?.tournament?.hasQualificationsStage == null && 
-   tour.value?.tournament.state == TournamentState.Upcoming
+  return (
+    finalGroup.value?.state == GroupState.Created &&
+    tour.value?.tournament?.hasQualificationsStage == null &&
+    tour.value?.tournament.state == TournamentState.Upcoming
+  );
 });
 
-const  overlay = useOverlay()
-const setupTournamentModal = overlay.create(SetupTournamentModal)
+const showStartTournamentButton = computed(() => {
+  return tour.value?.tournament?.state === TournamentState.Upcoming;
+});
 
-const setupReq = setupTournament(props.id)
+const overlay = useOverlay();
+const setupTournamentModal = overlay.create(SetupTournamentModal);
 
-const HandelSetupTournament =async () => {
-  const instace = setupTournamentModal.open()
-  const confirmed = await instace.result
-  if(!confirmed){ return }
-  await setupReq.fetchREQ(confirmed)
+const setupReq = setupTournament(props.id);
+const startReq = await startTournament(props.id);
 
-}
+const HandelSetupTournament = async () => {
+  const instace = setupTournamentModal.open();
+  const confirmed = await instace.result;
+  if (!confirmed) { return; }
+  await setupReq.fetchREQ(confirmed);
+};
+
+const handleStartTournament = async () => {
+  await startReq.fetchREQ();
+  await getREQ.refresh();
+};
 
 const states = getTournamnetStateOptions()
 const getState = (value: TournamentState) => {
