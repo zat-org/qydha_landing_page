@@ -124,7 +124,7 @@
                 <td
                   class="px-4 py-3 text-lg font-bold text-primary-600 dark:text-primary-400 text-left sm:text-right"
                 >
-                  {{ formatStatValue(item.value) }}
+                  {{ item.value }}
                 </td>
               </tr>
             </tbody>
@@ -264,9 +264,7 @@ const rightTableEntries = computed<Array<{ key: string; label: string; value: nu
   return sorted.slice(8);
 });
 
-const formatStatValue = (value: number) => {
-  return value.toLocaleString("ar-EG");
-};
+
 
 definePageMeta({
   layout: "custom",
