@@ -59,9 +59,7 @@ export const useTournamentCalculations = () => {
    * Generate basic round structure (names and match counts) for tournament
    * This eliminates code duplication between different calculation functions
    */
-  const generateRoundStructure = (
-    teamsCount: number
-  ): Array<{ name: string; matches: number; remainingTeams: number }> => {
+  const generateRoundStructure = ( teamsCount: number ): Array<{ name: string; matches: number; remainingTeams: number }> => {
     if (teamsCount <= 1) return [];
 
     const rounds: Array<{
@@ -200,10 +198,6 @@ export const useTournamentCalculations = () => {
     }, 0);
   };
 
-
-  /**
-   * Calculate optimal number of tables for tournament
-   */
   const calculateOptimalTables = (teamsCount: number): number => {
     const roundStructure = generateRoundStructure(teamsCount);
 

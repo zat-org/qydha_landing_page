@@ -10,6 +10,11 @@
             </UFormField>
         </div>
 
+        <div class="flex w-full justify-between items-center">
+            <span class="text-sm text-gray-600 dark:text-gray-400">
+                إجمالي الطلبات: <strong>{{ totalCount }}</strong>
+            </span>
+        </div>
 
         <UTable  :data="availableRequests" class="w-full" :columns="cols">
             <template #type-cell="{ row }">
@@ -43,8 +48,8 @@
             </template>
         </UTable>
 
-        <UPagination class="mt-auto" v-model="params.pageNumber" :total="getRequest.data.value?.data.totalCount ?? 0"
-            :page-size="params.pageSize" />
+            <UPagination class="mt-auto" v-model:page="params.pageNumber" :total="getRequest.data.value?.data.totalCount ?? 0"
+                :page-size="params.pageSize" />
     </div>
 </template>
 <script lang="ts" setup>
@@ -73,6 +78,7 @@ const { getTournamentJoinRequests,
 const getRequest = getTournamentJoinRequests(id, params)
 
 const availableRequests = computed(() => getRequest.data.value?.data.items ?? [])
+const totalCount = computed(() => getRequest.data.value?.data.totalCount ?? 0)
 
 const cols = [
     { accessorKey: 'teamName', header: 'اسم الفريق' },

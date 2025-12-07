@@ -106,6 +106,8 @@
             </UFormField>
 
 
+
+
             <!-- <TournamentAddTourDetailFormTournamentSchedule v-model="model" :best-time="timeNeeded"
                 :time-available="timeAvailable" :teams-count="model.TeamsCount" :tables-count="model.TablesCount"
                 :sakka-options="model.SakkaOptions" /> -->
@@ -165,7 +167,9 @@
                     </div>
                 </div>
             </div> -->
-
+            <!-- <pre dir="ltr">
+                {{ rounds }}
+            </pre> -->
         </UForm>
     </UCard>
 </template>
@@ -203,6 +207,11 @@ const model = defineModel<{
     // TeamSelectionMode: string;
 }>({ required: true })
 
+
+const { getNumberOfRounds,rounds } = useTourCalc();
+watchEffect( () => {
+    console.log(getNumberOfRounds(model.value.teamsCount, model.value.tablesCount));
+});
 
 
 // Computed min/max bounds for timeline pickers (same rules as form fields)
