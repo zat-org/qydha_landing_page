@@ -12,7 +12,7 @@
 
         <div class="flex w-full justify-between items-center">
             <span class="text-sm text-gray-600 dark:text-gray-400">
-                إجمالي الطلبات: <strong>{{ totalCount }}</strong>
+                إجمالي الطلبات: <strong>{{ numebrofUsers }}</strong>
             </span>
         </div>
 
@@ -71,11 +71,13 @@ const params = ref<GetTournamentJoinRequestParams>({
 const { getTournamentJoinRequests,
     getTournamentJoinRequestStateOptions,
     getTournamentJoinRequestTypeOptions,
+    getTouranmentnumberofUserWantstoIn,
     getType,
     getState,
     AcceptJoinRequest,
     RejectJoinRequest } = useTournamentJoinRequest()
 const getRequest = getTournamentJoinRequests(id, params)
+const {data:numebrofUsers} = await getTouranmentnumberofUserWantstoIn(id)
 
 const availableRequests = computed(() => getRequest.data.value?.data.items ?? [])
 const totalCount = computed(() => getRequest.data.value?.data.totalCount ?? 0)

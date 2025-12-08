@@ -46,7 +46,7 @@
             <div class="flex justify-between items-center px-6">
                 <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
                 <UButton v-if="canGoNext" color="primary" @click="validation.validateAndNext()" label="التالي"
-                    size="xl" />
+                    size="xl" class="ms-auto" />
                 <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit"
                     size="xl">
                     إرسال

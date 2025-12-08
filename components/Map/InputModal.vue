@@ -5,7 +5,7 @@
       content: 'min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5  ',
     }" >
   <!-- <UFormField :label="props.label" :name="props.name" :required="props.required"  :help="lat!=0 && lng!=0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'" > -->
-    <UButton  @click="show = true" :color="model.latitude!=0 && model.longitude!=0 ? 'primary' : 'neutral'" variant="soft" icon="i-heroicons-map-pin" label="اختر موقع البطولة" />
+    <UButton  @click="show = true" :color="model.latitude!=0 && model.longitude!=0 ? 'success' : 'neutral'" variant="soft" icon="i-heroicons-map-pin" label="اختر موقع البطولة" />
    <!-- </UFormField> -->
    
     <template #body>

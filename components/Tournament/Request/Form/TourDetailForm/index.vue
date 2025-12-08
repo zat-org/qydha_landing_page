@@ -12,6 +12,12 @@
             ref="form"
             :validate-on="['blur', 'change']"
         >
+        <UFormField  name="isAddPlayersByQydha" size="xl">
+                <div class="flex  gap-4">
+                    <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
+                    <label> التسجيل من خلال قيدها </label>
+                </div>
+            </UFormField>
             <!-- Timeline representation for key dates -->
             <div class="space-y-3">
                 <div class="text-sm text-gray-700 dark:text-gray-200 font-medium">المخطط الزمني لاختيار التواريخ</div>
@@ -68,12 +74,7 @@
             <UFormField label="نهاية البطولة" name="endAt">
                 <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" />
             </UFormField> -->
-            <UFormField  name="isAddPlayersByQydha" size="xl">
-                <div class="flex  gap-4">
-                    <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
-                    <label> قبول الطلبات النضمام من قيدها </label>
-                </div>
-            </UFormField>
+            
             <template v-if="modelValue.isAddPlayersByQydha">
                 <!-- <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
                     <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
@@ -208,10 +209,7 @@ const model = defineModel<{
 }>({ required: true })
 
 
-const { getNumberOfRounds,rounds } = useTourCalc();
-watchEffect( () => {
-    console.log(getNumberOfRounds(model.value.teamsCount, model.value.tablesCount));
-});
+
 
 
 // Computed min/max bounds for timeline pickers (same rules as form fields)

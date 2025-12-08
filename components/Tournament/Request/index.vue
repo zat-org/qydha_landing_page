@@ -8,8 +8,12 @@
             <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
           <div class="flex gap-3" v-if="userStore.isOrganizer">
+            <UButton variant="outline" color="primary" icon="i-lucide-calculator" to="/tournament/request/calcaulator"
+            label="حاسبة البطولة" class="px-6" />
+
             <UButton variant="outline" color="primary" icon="i-heroicons-information-circle"
               to="/tournament/request/info" label="دليل انشاء البطولة" class="px-6" />
+
             <UButton variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
               label="إضافة بطولة جديدة" class="px-6" />
           </div>

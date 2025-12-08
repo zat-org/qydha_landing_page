@@ -68,6 +68,44 @@ export const useTournamentJoinRequest = () => {
       { watch: [unref(param)], deep: true }
     );
   };
+
+  const getTouranmentnumberofUserWantstoIn = (tournamentId: string) => {
+    return useAsyncData<number>(
+      `getTouranmentnumberofUserWantstoIn-${tournamentId}`,
+      async () => {
+        const [teamsResponse, singlesResponse] = await Promise.all([
+          $api<{ data: GetTournamentJoinRequestResponse; message: string }>(
+            `/tournaments/${tournamentId}/join-requests/`,
+            {
+              params: {
+                state: TournamentJoinRequestState.WaitingApproval,
+                type: TournamentJoinRequestType.Team,
+              },
+              method: "get",
+            }
+          ),
+          $api<{ data: GetTournamentJoinRequestResponse; message: string }>(
+            `/tournaments/${tournamentId}/join-requests/`,
+            {
+              params: {
+                state: TournamentJoinRequestState.WaitingApproval,
+                type: TournamentJoinRequestType.Single,
+              },
+              method: "get",
+            }
+          ),
+        ]);
+
+        const teamsCount = teamsResponse.data?.totalCount ?? 0;
+        const singlesCount = singlesResponse.data?.totalCount ?? 0;
+        
+        // Teams count is multiplied by 2 (assuming 2 players per team)
+        return teamsCount * 2 + singlesCount;
+      }
+    );
+  }
+
+
   const getTournamnetAcceptedSingleJoinRequest = async (
     tournamentId: string,
     params: Ref<GetTournamentJoinRequestParams>
@@ -272,6 +310,7 @@ const AutoCompleteJoinRequest =()=>{
 
   return {
     getTournamentJoinRequests,
+    getTouranmentnumberofUserWantstoIn,
     getTournamnetAcceptedSingleJoinRequest,
     getTournamnetAcceptedTeamsJoinRequest,
     AcceptJoinRequest,

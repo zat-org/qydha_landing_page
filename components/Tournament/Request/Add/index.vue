@@ -8,12 +8,18 @@
         <template #header>
             <div class="flex justify-around  items-center w-full">
                 <div class=" flex-1 flex  gap-2">
-                    <UButton to="/tournament/request" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1">
+                    <UButton to="/tournament/request" size="sm" icon="i-heroicons-arrow-left" variant="ghost"
+                        class="flex-1">
                         العودة
                     </UButton>
-                    <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle" variant="ghost">
+                    <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle"
+                        variant="ghost">
                         دليل انشاء البطولة
                     </UButton>
+
+                    <UButton variant="outline" color="primary" icon="i-lucide-calculator"
+                        to="/tournament/request/calcaulator" label="حاسبة البطولة" class="px-6" />
+
                 </div>
 
                 <UStepper size="sm"
@@ -26,26 +32,28 @@
         <template #default>
             <div ref="scrollContainer" class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
                 <div class="h-full">
-                    <KeepAlive> 
-                        <TournamentRequestFormTourForm ref="tourForm" v-show="currentStepValue === 0" v-model="formData" />
+                    <KeepAlive>
+                        <TournamentRequestFormTourForm ref="tourForm" v-show="currentStepValue === 0"
+                            v-model="formData" />
                     </KeepAlive>
                     <KeepAlive>
                         <TournamentRequestFormTourDetailForm ref="detailForm" v-show="currentStepValue === 1"
                             v-model="formData" />
                     </KeepAlive>
                     <KeepAlive>
-                        <TournamentRequestFormRulesForm ref="rulesForm" v-show="currentStepValue === 2" v-model="formData" />
+                        <TournamentRequestFormRulesForm ref="rulesForm" v-show="currentStepValue === 2"
+                            v-model="formData" />
                     </KeepAlive>
                 </div>
             </div>
-            
-            
+
+
         </template>
         <template #footer>
             <div class="flex justify-between items-center px-6">
                 <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
                 <UButton v-if="canGoNext" color="primary" @click="validation.validateAndNext()" label="التالي"
-                    size="xl" />
+                    size="xl" class="ms-auto" />
                 <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit"
                     size="xl">
                     إرسال
@@ -88,12 +96,12 @@ const formData = reactive<TournamentCreationRequest>({
     isContactPhoneWhatsapp: false,
     sponsors: [],
     startAt: "",
-    endAt:"",
+    endAt: "",
     type: TournamentType.public,
     isAddPlayersByQydha: true,
-    joinRequestEndAt:"",
-    joinRequestStartAt:"",
-    joinRequestMaxCount:100,
+    joinRequestEndAt: "",
+    joinRequestStartAt: "",
+    joinRequestMaxCount: 100,
     teamsCount: 16,
     tablesCount: 8,
     tournamentPrivatePassword: "",
@@ -160,35 +168,35 @@ const getStepForField = (error: any): number => {
     console.log("Hello")
     console.log(error)
     if (!error || typeof error !== 'object') return 0;
-    
+
     // Fields in Step 0 (TourInfo - معلومات البطولة)
     const step0Fields = [
-        'title', 'description', 'logo', 'contactPhone', 
-        'isContactPhoneCall', 'isContactPhoneWhatsapp', 
-        'locationDescription', 'location', 'type', 
+        'title', 'description', 'logo', 'contactPhone',
+        'isContactPhoneCall', 'isContactPhoneWhatsapp',
+        'locationDescription', 'location', 'type',
         'tournamentPrivatePassword', 'sponsors'
     ];
-    
+
     // Fields in Step 1 (TourDetail - تفاصيل البطولة)
     const step1Fields = [
-        'startAt', 'endAt', 'joinRequestStartAt', 
-        'joinRequestEndAt', 'joinRequestMaxCount', 
-        'isAddPlayersByQydha', 'prizes', 'teamsCount', 
+        'startAt', 'endAt', 'joinRequestStartAt',
+        'joinRequestEndAt', 'joinRequestMaxCount',
+        'isAddPlayersByQydha', 'prizes', 'teamsCount',
         'tablesCount'
     ];
-    
+
     // Fields in Step 2 (RulesForm - قوانين البطولة)
     const step2Fields = ['rules'];
-    
+
     // Check which field has an error
     const errorKeys = Object.keys(error.errors);
-    
+
     for (const key of errorKeys) {
         if (step0Fields.includes(key)) return 0;
         if (step1Fields.includes(key)) return 1;
         if (step2Fields.includes(key)) return 2;
     }
-    
+
     // Default: if we have errors but can't match them, go to step 0
     return 0;
 };
@@ -205,17 +213,17 @@ const validation = useMultiStepFormValidation(formRefs as any, {
     onFormSubmit: async () => {
         // Here you would typically send the data to your API
         await addREq.fetchREQ(formData)
-        if(addREq.status.value == 'success'){
+        if (addREq.status.value == 'success') {
             console.log(unref(addREq.data))
             console.log('Form submitted successfully!', formData);
             navigateTo("/tournament/request")
-        }else{
+        } else {
             console.log(unref(addREq.error))
-            console.log(getStepForField((addREq.error.value?.data as any).data ))
-            const targetTab = getStepForField((addREq.error.value?.data as any).data )
+            console.log(getStepForField((addREq.error.value?.data as any).data))
+            const targetTab = getStepForField((addREq.error.value?.data as any).data)
             validation.goToStep(targetTab)
-            
-            toast.add({title:`خطاء في بيانات  ${Object.keys((addREq.error.value?.data as any).data .errors).join(", ")}`})
+
+            toast.add({ title: `خطاء في بيانات  ${Object.keys((addREq.error.value?.data as any).data.errors).join(", ")}` })
         }
 
     },
@@ -224,7 +232,7 @@ const validation = useMultiStepFormValidation(formRefs as any, {
 
 const currentStepValue = computed(() => validation.currentStep.value);
 watch(currentStepValue, () => {
-        scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 const totalStepsValue = computed(() => validation.enhancedSteps.value.length);
