@@ -241,7 +241,7 @@ const { getSingelTournament, getTournamnetStateOptions, setupTournament, startTo
 const { getTournamentTypeOptions, getTournamentPrizeCurrency  } = useTournamentRequest()
 
 const getREQ = await getSingelTournament(props.id);
-const getgroupREQ = await useGroup().getGroups();
+const getgroupREQ =  useGroup().getGroups();
 await getgroupREQ.fetchREQ(props.id);
 const finalGroup = computed(() => {
   return getgroupREQ.data.value?.data?.groups.find(g => g.type == GroupType.Final)
@@ -276,6 +276,7 @@ const HandelSetupTournament = async () => {
   const confirmed = await instace.result;
   if (!confirmed) { return; }
   await setupReq.fetchREQ(confirmed);
+  
 };
 
 const handleStartTournament = async () => {
