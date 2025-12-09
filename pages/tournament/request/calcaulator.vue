@@ -15,7 +15,6 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <UFormField label="عدد الفرق" name="teamsCount">
                         <UInput 
-
                             v-model="teamsCount" 
                             type="number" 
                             min="1"
@@ -33,33 +32,43 @@
                             size="xs"
                         />
                     </UFormField>
+                </div>
 
-                    <UFormField label="وقت الصكة (دقيقة)" name="sakkTime">
+                <!-- Sakka Time Inputs -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime">
                         <UInput 
                             v-model="sakkTime" 
                             type="number" 
                             min="1"
-                            placeholder="وقت الصكة"
+                            placeholder="وقت صكة واحدة"
+                            size="xs"
+                        />
+                    </UFormField>
+
+                    <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3">
+                        <UInput 
+                            v-model="sakkTime3" 
+                            type="number" 
+                            min="1"
+                            placeholder="وقت 3 صكات"
+                            size="xs"
+                        />
+                    </UFormField>
+
+                    <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5">
+                        <UInput 
+                            v-model="sakkTime5" 
+                            type="number" 
+                            min="1"
+                            placeholder="وقت 5 صكات"
                             size="xs"
                         />
                     </UFormField>
                 </div>
 
                 <!-- Total Time Summary -->
-                <div v-if="rounds.length > 0" class="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border border-primary-200 dark:border-primary-800">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-sm text-gray-600 dark:text-gray-400">إجمالي الوقت</p>
-                            <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">
-                                {{ formatTime(totalTime) }}
-                            </p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm text-gray-600 dark:text-gray-400">عدد الأدوار</p>
-                            <p class="text-2xl font-semibold">{{ rounds.length }}</p>
-                        </div>
-                    </div>
-                </div>
+          
 
                 <!-- Rounds List -->
                 <div v-if="rounds.length > 0" class="space-y-1 h-[50vh] overflow-y-auto px-1">
@@ -111,6 +120,25 @@
                     </div>
                 </div>
 
+                <div v-if="rounds.length > 0" class="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-4 border border-primary-200 dark:border-primary-800">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">إجمالي الوقت</p>
+                            <p class="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                                {{ formatTime(totalTime) }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">عدد الأدوار</p>
+                            <p class="text-2xl font-semibold">{{ rounds.length }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-600 dark:text-gray-400">عدد المباريات</p>
+                            <p class="text-2xl font-semibold">{{ totalMatches }}</p>
+                        </div>
+
+                    </div>
+                </div>
                 <!-- Empty State -->
                 <div v-else class="text-center py-12">
                     <div class="text-gray-400 dark:text-gray-600 mb-4">
@@ -126,7 +154,7 @@
 </template>
 
 <script setup lang="ts">
-const { rounds, teamsCount, tablesCount, sakkTime, totalTime } = useTourCalc();
+const { rounds, teamsCount, tablesCount, sakkTime, sakkTime3, sakkTime5, totalTime , totalMatches } = useTourCalc();
 
 const router = useRouter();
 
