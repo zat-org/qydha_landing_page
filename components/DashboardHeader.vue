@@ -42,11 +42,13 @@ const links = computed(() => {
 
   if (userStore.isSuperAdmin || userStore.isStaffAdmin ||  userStore.isOrganizer  ) {
 
-    result.push({ label: "البطولات",  children:[
-      {label:"الطلبات"  ,to:'/tournament/request'},
-      {label:"البطولات", to: "/tournament",}
+    // children:[
+    //   {label:"الطلبات"  ,to:'/tournament/request'},
 
-    ]});
+    // ]
+    result.push({ label: "البطولات",  to: "/tournament", });
+    result.push({ label: "الطلبات",  to: "/tournament/request", });
+
   }
 
   if (userStore.isStreamer) {

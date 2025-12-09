@@ -20,15 +20,14 @@ const links = computed(() => {
     onSelect: () => {
       emit("close");
     },
-    children:[
-      {
-        label: "الطلبات", to: "/tournament/request",
-        onSelect: () => {
-          emit("close");
-        }
-      }
-      
-    ]
+    
+  });
+  result[3].push({
+    label: "الطلبات", to: "/tournament/request",
+    onSelect: () => {
+      emit("close");
+    },
+    
   });
 if( userStore.roles?.includes("SuperAdmin")){
   result[0].push({
