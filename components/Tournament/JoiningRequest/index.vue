@@ -182,6 +182,7 @@ const canAcceptMore = computed(() => {
 
 const canSubmit = computed(() => {
   if (canAction.value) {
+    return true
     return acceptedteamsNumber.value + Math.floor(acceptedsinglesNumber.value / 2) === expectedTeamsCount.value
   }
   return false
