@@ -166,7 +166,8 @@ const toast = useToast()
 const filters = ref<GetTournamentParams>({
   PageNumber: 1,
   PageSize: 9,
-  OrderByStartAtDirection: OrderByStartAtDirection.ASC
+  OrderByStartAtDirection: OrderByStartAtDirection.ASC,
+  States: [TournamentState.Upcoming,TournamentState.Running,TournamentState.Finished]
 })
 
 const dropdownItems= [
