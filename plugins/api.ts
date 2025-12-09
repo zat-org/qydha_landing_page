@@ -14,6 +14,28 @@ export default defineNuxtPlugin(() => {
   const authStore = useMyAuthStore();
   const { user } = storeToRefs(authStore);
   const config = useRuntimeConfig();
+  if (process.client && user.value?.jwtToken) {
+    try {
+      const decoded = jwtDecode<DecodedToken>(user.value.jwtToken);
+      const currentTime = Math.floor(Date.now() / 1000);
+      
+      // If token is expired, clear user data and redirect
+      if (decoded.exp && decoded.exp < currentTime) {
+        user.value = null;
+        // Only navigate if not already on home page
+        if (useRoute().path !== '/') {
+          navigateTo("/");
+        }
+      }
+    } catch (error) {
+      // If token is invalid, clear user data
+      console.error("Invalid token:", error);
+      user.value = null;
+    }
+  }
+  
+
+
   const $api = $fetch.create({
     baseURL: config.public.apiBase,
     onRequest: async ({ options }: { options: FetchOptions }) => {
