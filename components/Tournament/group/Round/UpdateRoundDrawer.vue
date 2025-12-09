@@ -9,41 +9,70 @@
                     </UFormField>
 
                     <!-- Game Settings -->
-                    <div class="border-t pt-4">
+                    <div class="border-t pt-4 space-y-3">
                         <h3 class="text-lg font-semibold mb-4">إعدادات اللعبة</h3>
                         
-                        <UFormField label="معكوس" name="gameSettings.isFlipped">
-                            <USwitch v-model="formState.gameSettings.isFlipped" />
+                        <UFormField  name="gameSettings.isFlipped">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isFlipped" />
+                                <label class="text-lg ">معكوس</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تسجيل متقدم" name="gameSettings.isAdvancedRecording">
-                            <USwitch v-model="formState.gameSettings.isAdvancedRecording" />
+                        <UFormField  name="gameSettings.isAdvancedRecording">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isAdvancedRecording" />
+                                <label class="text-lg ">تسجيل متقدم</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="وضع سكة مشدودة" name="gameSettings.isSakkahMashdodahMode">
-                            <USwitch v-model="formState.gameSettings.isSakkahMashdodahMode" />
+                        <UFormField  name="gameSettings.isSakkahMashdodahMode">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isSakkahMashdodahMode" />
+                                <label class="text-lg ">وضع سكة مشدودة</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض من فاز في حالة التعادل" name="gameSettings.showWhoWonDialogOnDraw">
-                            <USwitch v-model="formState.gameSettings.showWhoWonDialogOnDraw" />
+                        <UFormField  name="gameSettings.showWhoWonDialogOnDraw">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.showWhoWonDialogOnDraw" />
+                                <label class="text-lg ">عرض من فاز في حالة التعادل</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تفعيل صوت الأرقام" name="gameSettings.isNumbersSoundEnabled">
-                            <USwitch v-model="formState.gameSettings.isNumbersSoundEnabled" />
+                        <UFormField  name="gameSettings.isNumbersSoundEnabled">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isNumbersSoundEnabled" />
+                                <label class="text-lg ">تفعيل صوت الأرقام</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تفعيل صوت التعليقات" name="gameSettings.isCommentsSoundEnabled">
-                            <USwitch v-model="formState.gameSettings.isCommentsSoundEnabled" />
+                        <UFormField  name="gameSettings.isCommentsSoundEnabled">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isCommentsSoundEnabled" />
+                                <label class="text-lg ">تفعيل صوت التعليقات</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض الإكاك" name="gameSettings.isEkakShown">
-                            <USwitch v-model="formState.gameSettings.isEkakShown" />
+                        <UFormField  name="gameSettings.isEkakShown">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isEkakShown" />
+                                <label class="text-lg ">عرض الإكك</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض الأكلات" name="gameSettings.isAklatShown">
-                            <USwitch v-model="formState.gameSettings.isAklatShown" />
+                        <UFormField name="gameSettings.isAklatShown">
+                                <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isAklatShown" />
+                                <label class="text-lg ">عرض الأكلات</label>
+                            </div>
                         </UFormField>
-
+                        <UFormField  name="gameSettings.isVoiceRecording">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.gameSettings.isVoiceRecording" />
+                                <label class="text-lg ">تسجيل صوتي</label>
+                            </div>
+                        </UFormField>
                         <UFormField label="عدد الصكات" name="gameSettings.sakkasCount">
                             <USelect 
                                 v-model="formState.gameSettings.sakkasCount" 
@@ -52,10 +81,9 @@
                             />
                         </UFormField>
 
-                        <UFormField label="تسجيل صوتي" name="gameSettings.isVoiceRecording">
-                            <USwitch v-model="formState.gameSettings.isVoiceRecording" />
-                        </UFormField>
+                        
                     </div>
+
 
                     <!-- Form Actions -->
                     <div class="flex justify-end gap-2 pt-4 border-t">
