@@ -1,5 +1,5 @@
 export default defineEventHandler((event) => {
-  setHeader(event, 'Content-Type', 'application/json');
+  setHeader(event, "Content-Type", "application/json");
   return {
     applinks: {
       apps: [],
@@ -8,6 +8,10 @@ export default defineEventHandler((event) => {
           appID: "FWP98M426M.com.qydha",
           paths: [
             "/",
+            "/home",
+            "/toss",
+            "/tournaments",
+            "/tournament-invitations",
             "/authentication",
             "/tournaments/*",
             "/baloot-game",
@@ -15,15 +19,13 @@ export default defineEventHandler((event) => {
             "/notifications",
             "/profile/*",
             "/store/*",
-            "!*"
-          ]
-        }
-      ]
+            "!*",
+          ],
+        },
+      ],
     },
     webcredentials: {
-      apps: [
-        "FWP98M426M.com.qydha"
-      ]
-    }
+      apps: ["FWP98M426M.com.qydha"],
+    },
   };
 });
