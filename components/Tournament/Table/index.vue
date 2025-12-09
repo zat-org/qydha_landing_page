@@ -2,7 +2,14 @@
   <UCard>
     <template #header>
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl font-bold">الطاولات</h1>
+        <div class="flex items-center gap-4">
+          <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
+            @click="router.back()" />
+          <h1 class="text-2xl font-bold">     
+          <span>الطاولات</span>
+          ({{ tablesNumber }})
+        </h1>
+        </div>
         <UButton 
           label="إضافة طاولة" 
           color="primary" 
@@ -91,12 +98,7 @@
             إجمالي الطاولات: <span class="font-semibold">{{ tables.length }}</span>
           </span>
         </div>
-        <UButton 
-          label="عودة" 
-          color="error" 
-          icon="i-heroicons-arrow-right"
-          @click="navigateTo('/tournament/' + tour_id)" 
-        />
+        
       </div>
     </template>
   </UCard>
@@ -109,6 +111,7 @@ import AddModal from './AddModal.vue';
 
 const overlay = useOverlay()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const tour_id = route.params.id.toString()
 
@@ -131,6 +134,9 @@ watch(() => getTableREQ.status.value, (status) => {
 // Tables data
 const tables = computed(() => {
   return getTableREQ.data.value?.data || []
+})
+const tablesNumber = computed(() => {
+  return tables.value?.length || 0
 })
 
 // Table columns

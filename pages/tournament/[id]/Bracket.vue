@@ -6,7 +6,7 @@
           :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'" block
           @click="handleGroupSelection(item.data.id.toString())" />
       </UButtonGroup>
-      <loading v-if="tourStore.groupsREQ.status == 'pending'" />
+      <loading v-if=" tourStore.groupsREQ?.status && tourStore.groupsREQ?.status== 'pending'" />
       <ClientOnly>
         <Bracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
       </ClientOnly>
@@ -36,7 +36,7 @@ const tourid = route.params.id.toString()
 
 const tourStore = useMyTournamentStore();
 onMounted(async () => {
-  await tourStore.initStore(tourid)
+  await tourStore.initStore()
 })
 const IsMatchesGenerated = computed(() => {
 

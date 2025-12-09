@@ -1,7 +1,7 @@
 <template>
     <div class="flex flex-col gap-6 w-full">
         <div class="flex items-center gap-4">
-            <UButton :to="`/tournament/${tournamentId}`" icon="i-heroicons-arrow-right" variant="ghost">
+            <UButton @click="router.back()" icon="i-heroicons-arrow-right" variant="ghost">
                 عودة
             </UButton>
             <div>
@@ -13,7 +13,10 @@
 </template>
 
 <script lang="ts" setup>
+    const router = useRouter();
 interface Props {
+
+
     tournamentId: string;
 }
 

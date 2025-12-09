@@ -7,7 +7,9 @@
       <UForm :state="state" :schema="schema" ref="refreeForm" @submit="onSubmit">
 
         <UFormField label="اسم الحكم " name="username">
-          <USelectMenu 
+          <USelectMenu
+          :resetSearchTermOnBlur="false"
+          :resetSearchTermOnSelect="false"
           clear-search-on-close
            v-model="state.username"
            v-model:search-term="searchTerm"

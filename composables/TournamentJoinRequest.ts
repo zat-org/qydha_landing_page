@@ -110,10 +110,12 @@ export const useTournamentJoinRequest = () => {
     tournamentId: string,
     params: Ref<GetTournamentJoinRequestParams>
   ) => {
-      const param =ref(params)
+      const param = params
 
-      watch([()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
-        param.value.pageNumber=1
+      watch([()=>param.value?.state,()=>param.value?.type],(newValue,oldValue)=>{
+        if (param.value) {
+          param.value.pageNumber = 1
+        }
       })
     return await useAsyncData<{ data: GetTournamentJoinRequestResponse; message: string }>(
       "getTournamnetAcceptedSingleJoinRequest",

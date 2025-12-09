@@ -7,12 +7,18 @@
   <UCard v-else :ui="{ root: 'flex flex-col h-full ', body: 'grow flex flex-col  justify-between' }">
     <template #header>
       <div class="flex items-center justify-between">
-        <p>
+        <div class="flex items-center gap-4">
+        <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
+            @click="router.back()" />
+        
+        <h1 class="text-2xl font-bold">     
           {{ tour.title }}
           /
-          الفرق
+          <span class="text-gray-500">الفرق</span>
           ({{ teamsNumber }})
-        </p>
+        </h1>
+        </div>
+      
         <div class="flex items-center justify-start gap-2">
           <UButton label="قبول ملف Excel" icon="i-heroicons-document-arrow-up" color="success"
           :loading="importTeamsFromExcelREQ.result.status.value == 'pending'"
@@ -22,7 +28,8 @@
 
           <UButton label="إضافة فريق" icon="i-heroicons-plus" color="primary" @click="openDrawer('add')" />
 
-        </div>
+        
+      </div>
       </div>
     </template>
 
@@ -56,13 +63,6 @@
       </template>
     </UTable>
     <UPagination v-model:page="page" :page-count="10" :total="total" class="mx-auto" />
-    <template #footer>
-      <div class="flex justify-between items-center ">
-        <!-- <UButton label="إضافة فريق إلى المجموعة النهائية" color="primary" @click="()=>addTeamToFinalGroup()" /> -->
-        <UButton label="عودة " color="error" @click="navigateTo('/tournament/' + tour_id)" />
-      </div>
-    </template>
-
   </UCard>
 
   <!-- Single Drawer with Dynamic Content -->
@@ -88,6 +88,7 @@ import { ConfirmationModal } from '#components';
 import { useFileDialog } from '@vueuse/core'
 import type { IPlayer, ITeam } from '~/models/tournamentTeam';
 const tablekey = ref(Date.now())
+const router = useRouter()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const toast = useToast()

@@ -19,9 +19,8 @@ interface GraphData {
 export const useGroup = () => {
   const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
-  const getGroups = () => {
-    const tourid = ref<string>();
-    const { data, pending, error, refresh, status, execute } = useAsyncData<{
+  const getGroups =  (tourid: string) => {
+    const { data, pending, error, refresh, status, execute } =  useLazyAsyncData<{
       message: string;
       data: {
         groups: Group[];
@@ -30,19 +29,20 @@ export const useGroup = () => {
           privilege: Privilege;
         };
       };
-    }>("getGroups", () => $api(`/tournaments/${tourid.value}/groups`), {
-      immediate: false,
-    });
-    const fetchREQ = async (_tour_id: string) => {
-      tourid.value = _tour_id;
-      await execute();
+    }>(
+      () => ["getGroups", tourid].join("-"),
+      () => $api(`/tournaments/${tourid}/groups`),
+      
+    );
+    watch(status, () => {
       if (status.value == "success" && data.value && data.value.data) {
         userStore.permissions =
           data.value?.data.requesterPrivilege.permissions ?? [];
         userStore.privilege = data.value?.data.requesterPrivilege.privilege;
       }
-    };
-    return { data, pending, error, refresh, status, fetchREQ };
+    });
+
+    return { data, pending, error, refresh, status };
   };
   const getGroupDetails = async (tour_id: string, group_id: string) => {
     return await useAsyncData<{ message: string; data: DetailGroup }>(
@@ -131,7 +131,9 @@ export const useGroup = () => {
       body.value = _body;
       await result.execute();
       if (result.status.value == "success") {
-        refreshNuxtData(["getRoundsGroupDetails", _tour_id, _group_id].join("-"));
+        refreshNuxtData(
+          ["getRoundsGroupDetails", _tour_id, _group_id].join("-")
+        );
       }
     };
     return { result, fetchREQ };
@@ -159,6 +161,9 @@ export const useGroup = () => {
       group_id.value = _group_id;
       body.value = _body;
       await result.execute();
+      if (result.status.value == "success") {
+        refreshNuxtData(["getGroups", tour_id.value].join("-"));
+      }
     };
     return { result, fetchREQ };
   };
@@ -200,6 +205,6 @@ export const useGroup = () => {
     unlinkTeamFromGroup,
     ceateMatchesForGroup,
     getRoundsGroupDetails,
-    updateTournamentRound
+    updateTournamentRound,
   };
 };

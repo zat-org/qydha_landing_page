@@ -2,15 +2,15 @@
   <UCard v-if="tour" :ui="{ root: 'flex flex-col h-full ' }">
     <template #header>
       <div class="flex items-center justify-between">
-      <p>
-        <span class="text-2xl ">
-          {{ tour.title }}
-        </span>
-        /
-        <span class="text-2xl text-gray-500">
-          الحكام
-        </span>
-      </p>
+        <div class="flex items-center gap-4">
+          <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
+            @click="router.back()" />
+          <h1 class="text-2xl font-bold">     
+          <span>الحكام</span>
+          ({{ refreesNumber }})
+        </h1>
+        </div>
+
       <UButton label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
 
       </div>
@@ -21,12 +21,7 @@
         <UButton icon="material-symbols:delete" color="error" @click="deleteref(row.original)"/>
       </template>
     </UTable>
-    <template #footer>
-      <div class="flex justify-between items-center">
-
-        <UButton label="عودة " color="error" @click="navigateTo('/tournament/'+tour_id)" />
-      </div>
-    </template>
+    
   </UCard>
   <UDrawer v-model:open="isDrawerOpen" title="اضافة حكم" description="اضافة حكم جديد" direction="left"> 
     <template #content>
@@ -41,6 +36,7 @@
 import type { MinUser } from '~/models/user';
 
 const route = useRoute()
+const router = useRouter()
 const tour_id = route.params.id.toString()
 const toast = useToast()
 const tourREQ= await useTournament().getSingelTournament(tour_id)
@@ -63,7 +59,9 @@ const refrees = computed(() => {
     return refreeGetREQ.data.value.data
 })
 
-
+const refreesNumber = computed(() => {
+  return refrees.value?.length || 0
+})
 const cols= [
    {accessorKey:"username",header:"الاسم"},
   {accessorKey:"phone",header:"الهاتف"},

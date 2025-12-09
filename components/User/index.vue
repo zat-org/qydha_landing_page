@@ -136,7 +136,7 @@ const sorting = ref([
   }
 ])
 watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
-  if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]) {
+  if (oldValue[1] !== newValue[1] || oldValue[2] !== newValue[2]|| oldValue[3] !== newValue[3]) {
     page.value = 1;
   }
 
@@ -161,6 +161,7 @@ const roleOptions = [
   { value: "SuperAdmin", label: "الادمن" },
   { value: "StaffAdmin", label: "الاستف" },
   { value: "User", label: "مستخدمين" },
+  { value: "Organizer", label: "منظم بطوله" },
   { value: "Streamer", label: "الاستريمر" },
 ];
 </script>

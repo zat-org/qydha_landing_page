@@ -4,7 +4,7 @@
       <div class="flex  justify-between  gap-4">
         <div class="flex items-center gap-4">
           <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
-            @click="navigateTo('/tournament')" />
+            @click="router.back()" />
           <h1 class="text-2xl font-bold">طلبات الانضمام للبطولة</h1>
         </div>
 
@@ -135,7 +135,7 @@ import {
 import { useTournamentJoinRequestStore } from '~/store/tournamentJoinRequest';
 import { formatDate } from '~/utils/formatDate';
 import Loading from '../../loading.vue';
-
+const router = useRouter()
 const id = useRoute().params.id.toString()
 const { getSingelTournament } = useTournament()
 const getTournamentReq = await getSingelTournament(id)

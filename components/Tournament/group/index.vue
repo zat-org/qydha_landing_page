@@ -11,10 +11,15 @@
             <UAlert color="error" variant="soft" icon="i-heroicons-exclamation-triangle" title="خطأ في تحميل المجموعات" :description="error.message" />
         </div>
 
-        <UAccordion v-else :items="accordionItems"  class="w-full bg-gray-100 dark:bg-gray-800">
+        <UAccordion v-else :items="accordionItems"  class="w-full  border border-gray-200 dark:border-gray-700 rounded-lg px-2" v-model="active">
             <template v-for="(item, index) in accordionItems" :key="`slot-${index}`" v-slot:[item.slot] class="px-4">
-                <GroupDetails :group="groups[index]" v-if="groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created"  />
-                <RoundsGroupDetails :group="groups[index]" v-else-if="groups[index].state == GroupState.MatchesGenerated || groups[index].state == GroupState.MatchesRunning" />
+                <Suspense>
+                    <GroupDetails :group="groups[index]" v-if="groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created"  />
+                    <RoundsGroupDetails :group="groups[index]" v-else-if="groups[index].state == GroupState.MatchesGenerated || groups[index].state == GroupState.MatchesRunning" />
+                    <template #fallback>   
+                        <loading />
+                    </template>
+                </Suspense>
             </template>
         </UAccordion>
 
@@ -32,6 +37,7 @@ import type { Group, Match } from "~/models/group";
 interface Props {
     tournamentId: string;
 }
+const active = ref("0")
 const props = defineProps<Props>();
 
 const groupApi = useGroup();
@@ -39,7 +45,9 @@ const groupApi = useGroup();
 // Expanded groups and rounds state
 
 // Data fetching
-const { data, pending, error, refresh, status, fetchREQ } = await groupApi.getGroups();
+
+const { data, pending, error, refresh, status } =   await groupApi.getGroups(props.tournamentId);
+
 const groups = computed(() => {
     return data.value?.data.groups || []
 })
@@ -54,11 +62,11 @@ const accordionItems = computed(() => {
 })
 
 // Fetch groups on component mount
-onMounted(async () => {
-    if (props.tournamentId) {
-        await fetchREQ(props.tournamentId);
-    }
-});
+// onMounted(async () => {
+//     if (props.tournamentId) {
+//         await fetchREQ(props.tournamentId);
+//     }
+// });
 
 
 

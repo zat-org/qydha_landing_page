@@ -1,7 +1,10 @@
 <template>
+
+
   <UCard class="max-w-5xl mx-auto">
     <Loading v-if="pending" class="mt-10" />
     <div v-else-if="tour" class="flex flex-col space-y-8 mt-2">
+
       <div class="flex flex-col md:flex-row items-center gap-8 px-5">
         <div class="relative w-[150px] h-[150px] rounded-lg overflow-hidden shadow-2xl">
           <UAvatar :src="tour.tournament?.logoUrl" :text="tour.tournament.title"
@@ -43,7 +46,7 @@
               <UIcon name="i-mdi-account-arrow-right" class="text-gray-500" />
               <p>
                 طلبات الانضمام:
-                <span>{{ tour.tournament?.joinRequestStartAt ? formatDate(tour.tournament?.joinRequestStartAt) : 'غير  محدد' }}</span>
+                <span>{{ tour.tournament?.joinRequestStartAt ? formatDate(tour.tournament?.joinRequestStartAt) : 'غير محدد' }}</span>
                 -
                 <span>{{ tour.tournament?.joinRequestEndAt ? formatDate(tour.tournament?.joinRequestEndAt) : 'غير محدد'
                 }}</span>
@@ -157,40 +160,38 @@
       </div>
 
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4 px-5">
-        <UButton
-          v-for="(button, index) in adminButtons"
-          :key="index"
-          :to="button.to"
-          :label="button.label"
-          :icon="button.icon"
-          size="lg"
-          class="w-full"
-          variant="soft"
-        />
+      <!-- Admin Buttons -->
+      <UStepper v-model="active" :items="stepperSteps" size="lg" :linear="false" />
+      <div class="space-y-4 px-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <template v-for="(button, index) in adminButtons" :key="index">
+            <UButton v-if="stepperSteps[active].slot == button.slot || stepperSteps[active].slot=='General' " :to="button.to" :label="button.label" :icon="button.icon" size="lg"
+              class="w-full" variant="soft" />
+          </template>
+        </div>
+
+        <div v-if="showStartTournamentButton && finalGroup?.state == GroupState.MatchesGenerated" class="mt-4">
+          <UButton label="بدء البطولة" icon="i-mdi-play" size="lg" color="primary" variant="solid"
+            @click="handleStartTournament"  v-if="stepperSteps[active].slot=='StartTournament' || stepperSteps[active].slot=='General'" />
+        
+          </div>
+        <div v-if="finalGroup?.state == GroupState.MatchesRunning">
+          <UAlert  
+          title="تم بدء البطولة بنجاح  "
+          v-if="stepperSteps[active].slot=='StartTournament' || stepperSteps[active].slot=='General'"> </UAlert>
+        </div>
       </div>
 
-      <hr />
-
-      <div v-if="showOrganizeTournamentButton" class="mt-4 px-5">
-        <UButton
-          label=" بدء تنظيم البطولة "
-          icon="i-mdi-tournament"
-          size="lg"
-          variant="soft"
-          @click="HandelSetupTournament"
-        />
+      <!-- Setup Tournament Button (if needed) -->
+      <div v-if="showOrganizeTournamentButton" class=" px-5">
+        <UButton label=" بدء تنظيم البطولة " icon="i-mdi-tournament" size="lg" variant="soft"
+        v-if="stepperSteps[active].slot=='OrganizeTournament' || stepperSteps[active].slot=='General'"
+          @click="HandelSetupTournament" />
       </div>
-
-      <div v-if="showStartTournamentButton &&   finalGroup?.state == GroupState.TeamsLinking" class="mt-4 px-5">
-        <UButton
-          label="بدء البطولة"
-          icon="i-mdi-play"
-          size="lg"
-          color="primary"
-          variant="solid"
-          @click="handleStartTournament"
-        />
+      <div v-else-if="finalGroup?.state == GroupState.TeamsLinking">
+        <UAlert  
+        title="تم تنظيم البطولة بنجاح اتجه للمجموعات   لتكوين المباريات "
+        v-if="stepperSteps[active].slot=='OrganizeTournament' || stepperSteps[active].slot=='General'"> </UAlert>
       </div>
 
     </div>
@@ -198,7 +199,7 @@
     <template #footer>
       <div class="flex flex-wrap gap-4 justify-between items-center">
         <UButton label="عودة" color="neutral" variant="soft" icon="i-mdi-arrow-left"
-          @click="navigateTo('/tournament')" />
+          @click="returnToTournament" />
 
         <div class="flex gap-3">
           <UButton v-if="isAdmin && canEdit" color="warning" label="تعديل" icon="i-mdi-pencil"
@@ -206,7 +207,8 @@
 
           <UButton label="خريطة البطولة" :to="'/tournament/' + id + '/bracket'" icon="i-mdi-tournament" target="_blank"
             color="primary" />
-            <UButton label="أحصائيات  البطولة" icon="i-mdi-chart-box" size="lg" color="primary" variant="solid" :to="'/tournament/' + id + '/statistics'" target="_blank" />
+          <UButton label="أحصائيات  البطولة" icon="i-mdi-chart-box" size="lg" color="primary" variant="solid"
+            :to="'/tournament/' + id + '/statistics'" target="_blank" />
         </div>
       </div>
     </template>
@@ -221,7 +223,18 @@ import { TournamentState } from "~/models/tournament";
 import type { TournamentType } from "~/models/tournamenetType";
 import type { TournamentPrizeCurrency } from "~/models/tournamentPrize";
 import { GroupState, GroupType } from "~/models/group";
+import { formatDate } from "~/utils/formatDate";
+import { useSingleTournamnetMangmentStore } from "~/store/SingleTournamnetMangment";
+
 const userStore = useMyAuthStore();
+const tournamentManagementStore = useSingleTournamnetMangmentStore();
+const {activeStep:active} = storeToRefs(tournamentManagementStore);
+const router = useRouter();
+const returnToTournament = () => {
+  router.back();
+  tournamentManagementStore.setActiveStep(0);
+}
+
 const isAdmin = computed(() => {
   return userStore.user?.user.roles.includes("SuperAdmin") ||
     userStore.user?.user.roles.includes("StaffAdmin")
@@ -238,21 +251,83 @@ const canEdit = computed(() => {
 
 const props = defineProps<{ id: string }>();
 const { getSingelTournament, getTournamnetStateOptions, setupTournament, startTournament } = useTournament();
-const { getTournamentTypeOptions, getTournamentPrizeCurrency  } = useTournamentRequest()
+const { getTournamentTypeOptions, getTournamentPrizeCurrency } = useTournamentRequest()
 
 const getREQ = await getSingelTournament(props.id);
-const getgroupREQ =  useGroup().getGroups();
-await getgroupREQ.fetchREQ(props.id);
+const getgroupREQ = await useGroup().getGroups(props.id);
 const finalGroup = computed(() => {
   return getgroupREQ.data.value?.data?.groups.find(g => g.type == GroupType.Final)
-});
+}); 
+// Fetch teams, tables, and referees data
+const { useTourrnamentTeam } = await import("~/composables/tourrnamentTeam");
+const { useTournamentTable } = await import("~/composables/tournamentTable");
+const { useTournamentRefree } = await import("~/composables/tournamentRefree");
 
+const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams();
+await getTeamsREQ.fetchREQ(props.id);
 
+const getTablesREQ = useTournamentTable().getTable(props.id);
 
-// const qydhaToggle = await tourApi.updatTourQydhaAndOwner();
+const getRefereesREQ = await useTournamentRefree().getTournamentRefree();
+await getRefereesREQ.fetchREQ(props.id);
 
 const pending = computed(() => getREQ.pending.value);
 const tour = computed(() => getREQ.data.value?.data);
+
+// Simple stepper steps - no validation, just show all steps
+const stepperSteps = computed(() => {
+  const steps = [];
+
+  // Always show join requests step if tournament uses it
+  if (tour.value?.tournament?.addPlayersByQydha) {
+    steps.push({
+      title: "طلبات الانضمام",
+      icon: "i-mdi-account-arrow-right",
+      slot: "JoinRequest"
+    });
+  }
+
+  // Always show these steps
+  steps.push(
+    {
+      title: "الفرق",
+      icon: "i-mdi-account-group",
+      slot: "Teams"
+    },
+    {
+      title: "الطاولات",
+      icon: "i-mdi-table",
+      slot: "Tables"
+    },
+    {
+      title: "الحكام",
+      icon: "i-mdi-gavel",
+      slot: "Referees"
+    },
+    {
+      title: "تنظيم البطولة",
+      icon: "i-mdi-play-circle",
+      slot: "OrganizeTournament"
+    }
+    , {
+      title: "المجموعات",
+      icon: "i-mdi-user-group",
+      slot: "Groups"
+    },
+    {
+      title: "بدء البطولة",
+      icon: "i-mdi-play",
+      slot: "StartTournament"
+    },
+    {
+      title: "العام",
+      icon: "i-mdi-trophy",
+      slot: "General"
+    }
+  );
+
+  return steps;
+});
 const showOrganizeTournamentButton = computed(() => {
   return (
     finalGroup.value?.state == GroupState.Created &&
@@ -276,12 +351,21 @@ const HandelSetupTournament = async () => {
   const confirmed = await instace.result;
   if (!confirmed) { return; }
   await setupReq.fetchREQ(confirmed);
-  
+  if (setupReq.result.status.value == 'success') {
+    await getREQ.refresh();
+    await getgroupREQ.refresh();
+    tournamentManagementStore.setActiveStep(active.value+1);
+  }
+
 };
 
 const handleStartTournament = async () => {
   await startReq.fetchREQ();
-  await getREQ.refresh();
+  if (startReq.result.status.value == 'success') {
+    await getREQ.refresh();
+    await getgroupREQ.refresh();
+    tournamentManagementStore.setActiveStep(active.value+1);
+  }
 };
 
 const states = getTournamnetStateOptions()
@@ -306,12 +390,12 @@ const adminButtons = computed(() => {
   const result = []
 
   if (tour.value?.tournament?.addPlayersByQydha) {
-    result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table' })
+    result.push({ label: 'ادارة طلبات الانضمام ', to: `/tournament/${props.id}/joinRequest`, icon: 'i-mdi-table', slot: 'JoinRequest' })
   }
-  result.push({ label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group' })
-  result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel' })
-  result.push({ label: 'ادارة المجموعات', to: `/tournament/${props.id}/group`, icon: 'i-mdi-user-group' })
-  result.push({ label: 'ادارة الطاولات', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table' })
+  result.push({ label: ' ادارة الفرق واللاعبين', to: `/tournament/${props.id}/team`, icon: 'i-mdi-account-group', slot: 'Teams' })
+  result.push({ label: 'ادارة الحكام', to: `/tournament/${props.id}/refree`, icon: 'i-mdi-gavel', slot: 'Referees' })
+  result.push({ label: 'ادارة المجموعات', to: `/tournament/${props.id}/group`, icon: 'i-mdi-user-group', slot: 'Groups' })
+  result.push({ label: 'ادارة الطاولات', to: `/tournament/${props.id}/table`, icon: 'i-mdi-table', slot: 'Tables' })
 
   return result
 });

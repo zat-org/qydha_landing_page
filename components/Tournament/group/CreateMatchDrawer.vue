@@ -3,7 +3,7 @@
         <template #header>
             <h1>انشاء مباراة</h1>
         </template>
-        <template #body> 
+        <template #body>
             <div class="w-[500px] p-4">
                 <UForm :schema="schema" :state="formState" class="flex flex-col space-y-6" ref="form">
                     <!-- Used Tables -->
@@ -19,96 +19,103 @@
                         </div>
                         <div v-else class="max-h-[300px] overflow-y-auto rounded-lg">
                             <!-- v-model:row-selection="selectedTables" -->
-                            <UTable 
-                                ref="tablesTable"
-                                :data="tables" 
-                                :columns="tableColumns"
-                                :loading="getTableREQ.pending.value"
-                            />
+                            <UTable ref="tablesTable" :data="tables" :columns="tableColumns"
+                                :loading="getTableREQ.pending.value" />
                         </div>
                     </UFormField>
 
                     <!-- Default Game Interval -->
                     <UFormField label="فترة اللعبة" name="defaultGameInterval">
                         <div class="flex items-center gap-2">
-                            
+
                             <div class="flex flex-col gap-1">
                                 <label for="durationMinutes">دقائق</label>
-                            <UInput 
-                                v-model.number="durationMinutes" 
-                                type="number" 
-                                placeholder="دقائق"
-                                :min="0"
-                                :max="59"
-                                class="w-24"
-                                @update:model-value="updateDuration"
-                            />
+                                <UInput v-model.number="durationMinutes" type="number" placeholder="دقائق" :min="0"
+                                    :max="59" class="w-24" @update:model-value="updateDuration" />
                             </div>
                             <span class="text-gray-500">:</span>
 
                             <div class="flex flex-col gap-1">
                                 <label for="durationHours">ساعات</label>
-                            <UInput 
-                                v-model.number="durationHours" 
-                                type="number" 
-                                placeholder="ساعات"
-                                :min="0"
-                                :max="23"
-                                class="w-24"
-                                @update:model-value="updateDuration"
-                            />
+                                <UInput v-model.number="durationHours" type="number" placeholder="ساعات" :min="0"
+                                    :max="23" class="w-24" @update:model-value="updateDuration" />
                             </div>
                             <span class="text-sm text-gray-500">{{ formState.defaultGameInterval || '00:00:00' }}</span>
                         </div>
                     </UFormField>
 
                     <!-- Default Game Settings -->
-                    <div class="border-t pt-4">
-                        <h3 class="text-lg font-semibold mb-4">إعدادات اللعبة الافتراضية</h3>
-                        
-                        <UFormField label="معكوس" name="defaultGameSettings.isFlipped">
-                            <USwitch v-model="formState.defaultGameSettings.isFlipped" />
+                    <div class="border-t pt-4 space-y-3 ">
+                        <h3 class="text-lg font-semibold ">إعدادات اللعبة الافتراضية</h3>
+
+                        <UFormField name="defaultGameSettings.isFlipped">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isFlipped" size="lg" />
+                                <label class="text-lg ">معكوس</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تسجيل متقدم" name="defaultGameSettings.isAdvancedRecording">
-                            <USwitch v-model="formState.defaultGameSettings.isAdvancedRecording" />
+                        <UFormField name="defaultGameSettings.isAdvancedRecording">
+                            <div class="flex items-center gap-2"> 
+                                <USwitch v-model="formState.defaultGameSettings.isAdvancedRecording" size="lg" />
+                                <label class="text-lg ">تسجيل متقدم</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="وضع سكة مشدودة" name="defaultGameSettings.isSakkahMashdodahMode">
-                            <USwitch v-model="formState.defaultGameSettings.isSakkahMashdodahMode" />
+                        <UFormField name="defaultGameSettings.isSakkahMashdodahMode">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isSakkahMashdodahMode" />
+                                <label class="text-lg ">وضع صكة مشدودة</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض من فاز في حالة التعادل" name="defaultGameSettings.showWhoWonDialogOnDraw">
-                            <USwitch v-model="formState.defaultGameSettings.showWhoWonDialogOnDraw" />
+                        <UFormField name="defaultGameSettings.showWhoWonDialogOnDraw">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.showWhoWonDialogOnDraw" />
+                                <label class="text-lg ">عرض من فاز في حالة التعادل</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تفعيل صوت الأرقام" name="defaultGameSettings.isNumbersSoundEnabled">
-                            <USwitch v-model="formState.defaultGameSettings.isNumbersSoundEnabled" />
+                        <UFormField  name="defaultGameSettings.isNumbersSoundEnabled">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isNumbersSoundEnabled" />
+                                <label class="text-lg ">تفعيل صوت الأرقام</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="تفعيل صوت التعليقات" name="defaultGameSettings.isCommentsSoundEnabled">
-                            <USwitch v-model="formState.defaultGameSettings.isCommentsSoundEnabled" />
+                        <UFormField name="defaultGameSettings.isCommentsSoundEnabled">
+                            <div class="flex items-center gap-2">
+
+                                <USwitch v-model="formState.defaultGameSettings.isCommentsSoundEnabled" />
+                                <label class="text-lg ">تفعيل صوت التعليقات</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض الإكاك" name="defaultGameSettings.isEkakShown">
-                            <USwitch v-model="formState.defaultGameSettings.isEkakShown" />
+                        <UFormField name="defaultGameSettings.isEkakShown">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isEkakShown" />
+                                <label class="text-lg ">عرض الإكك</label>
+                            </div>
                         </UFormField>
 
-                        <UFormField label="عرض الأكلات" name="defaultGameSettings.isAklatShown">
-                            <USwitch v-model="formState.defaultGameSettings.isAklatShown" />
+                        <UFormField name="defaultGameSettings.isAklatShown">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isAklatShown" />
+                                <label class="text-lg ">عرض الأكلات</label>
+                            </div>
+                        </UFormField>
+                        <UFormField  name="defaultGameSettings.isVoiceRecording">
+                            <div class="flex items-center gap-2">
+                                <USwitch v-model="formState.defaultGameSettings.isVoiceRecording" />
+                                <label class="text-lg ">تسجيل صوتي</label>
+                            </div>
                         </UFormField>
 
                         <UFormField label="عدد الصكات" name="defaultGameSettings.sakkasCount">
-                            <USelect 
-                                v-model="formState.defaultGameSettings.sakkasCount" 
-                                :items="sakkasCountOptions"
-                                placeholder="اختر عدد الصكات"
-                            />
+                            <USelect v-model="formState.defaultGameSettings.sakkasCount" :items="sakkasCountOptions"
+                                placeholder="اختر عدد الصكات" />
                         </UFormField>
 
-                        <UFormField label="تسجيل صوتي" name="defaultGameSettings.isVoiceRecording">
-                            <USwitch v-model="formState.defaultGameSettings.isVoiceRecording" />
-                        </UFormField>
                     </div>
 
                     <!-- Form Actions -->
@@ -182,7 +189,7 @@ const selectedTablesIds = computed(() => {
 // Watch selected tables and update formState
 watch(selectedTablesIds, () => {
     formState.value.usedTables = selectedTablesIds.value;
-}, { deep: true});
+}, { deep: true });
 
 
 // Duration inputs
@@ -256,25 +263,31 @@ watch(open, async (isOpen) => {
     if (isOpen) {
         // Refresh tables
         await getTableREQ.refresh();
-        
+
         // Parse existing duration or reset
         const parsed = parseDuration(formState.value.defaultGameInterval);
         durationHours.value = parsed.hours;
         durationMinutes.value = parsed.minutes;
-        
+
         // Reset table selection
         // selectedTables.value = {};
         formState.value.usedTables = [];
     }
 });
 const createMatchREQ = useGroup().ceateMatchesForGroup();
-
+const toast = useToast();
 const handleSubmit = async () => {
     try {
         await form.value?.validate();
         // Form is valid, you can emit or handle the data here
         console.log("Form data:", formState.value);
         await createMatchREQ.fetchREQ(tour_id, props.group.id, formState.value);
+        if (createMatchREQ.result.status.value == "success") {
+            toast.add({ title: "تم إنشاء المباراة بنجاح", color: "success" });
+            open.value = false;
+        } else {
+            toast.add({ title: "خطأ في إنشاء المباراة", color: "error" });
+        }
         // TODO: Add your submit logic here
     } catch (error) {
 

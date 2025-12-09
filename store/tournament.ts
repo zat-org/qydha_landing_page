@@ -3,7 +3,7 @@ import * as signalR from "@microsoft/signalr";
 import type { Group, Match } from '~/models/group';
 import type { IMatchData, IMathStat } from '~/models/MatchStat';
 
-export const useMyTournamentStore = defineStore('myTournamentStore', () => {
+export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 
 	const route = useRoute();
 	const groupApi = useGroup();
@@ -76,13 +76,14 @@ export const useMyTournamentStore = defineStore('myTournamentStore', () => {
 		if(	!connection.value) return ;
 			connection.value.stop()
 	}
-	const groupsREQ =  groupApi.getGroups();
-	const initStore = async (tournamentId: string) => {
+	const groupsREQ =    groupApi.getGroups(route.params.id.toString())
+	const initStore = async () => {
+		const tournamentId = route.params.id.toString()
 		selectedTournamentId.value = tournamentId;
-
-		
-		await groupsREQ.fetchREQ(tournamentId);
-		if (groupsREQ.status.value == "error") {
+		// groupsREQ.value = undefined;
+		// const { data, pending, error, refresh, status } = await groupsREQ
+		// await groupsREQ.value?.refresh();
+		if (groupsREQ.status && groupsREQ.status.value == "error") {
 			console.log(groupsREQ.error)
 			return;
 		}
