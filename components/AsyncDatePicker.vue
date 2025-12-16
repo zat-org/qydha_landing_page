@@ -1,24 +1,22 @@
 <template>
   <ClientOnly>
-    <VueDatePicker
-      dir="ltr"
-      style="direction: ltr;"
-      v-bind="$attrs"
-      v-model="internalDate"
-    :format="format"
-      :dark="isDark"
-      class="z-100"
-    />
+    <VueDatePicker v-bind="$attrs" v-model="internalDate" :format="format" :dark="isDark" :enable-time-picker="enableTime"
+      class="z-100" />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { defineAsyncComponent } from 'vue';
-const colorMode= useColorMode()
-const isDark= computed(()=>{
-  return colorMode.value == 'dark' ? true:false
+const colorMode = useColorMode()
+const props = withDefaults(defineProps<{
+  enableTime?: boolean
+}>(), {
+  enableTime: true
 })
-const VueDatePicker = defineAsyncComponent(() => 
+const isDark = computed(() => {
+  return colorMode.value == 'dark' ? true : false
+})
+const VueDatePicker = defineAsyncComponent(() =>
   import('@vuepic/vue-datepicker').then(m => {
     // Import CSS only when component is loaded
     import('@vuepic/vue-datepicker/dist/main.css');
@@ -27,7 +25,7 @@ const VueDatePicker = defineAsyncComponent(() =>
 );
 
 // Use defineModel for v-model binding instead of props/emits
-const model = defineModel<string|Date>();
+const model = defineModel<string | Date>();
 
 // Define emits for change and input events
 const emit = defineEmits<{
@@ -64,10 +62,12 @@ const format = (date: Date) => {
   const year = date.getFullYear();
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
-  
+
   return `${day}/${month}/${year} ${hours}:${minutes}`;
 }
 </script>
 <style scoped>
-
+.dp__main * {
+  direction: rtl;
+}
 </style>

@@ -2,9 +2,9 @@ export const useTourCalc = () => {
 const teamsCount = ref(0);
 const tablesCount = ref(0);
 const sakkTime = ref(30); // Time for 1 sakka
-const sakkTime3 = ref(90); // Time for 3 sakkas
-const sakkTime5 = ref(150); // Time for 5 sakkas
-
+const sakkTime3 = ref(60); // Time for 3 sakkas
+const sakkTime5 = ref(100); // Time for 5 sakkas
+const dayNumber = ref(1);
 // Helper function to get time based on sakkanumber
 const getSakkTime = (sakkanumber: number): number => {
   switch (sakkanumber) {
@@ -76,8 +76,11 @@ const calculateRounds = () => {
       ? 'نصف النهائي' 
       : roundCounter == 3 
       ? 'ربع النهائي' 
-      : `الدور ${roundCounter}`;
-    
+      :
+      Math.pow(2, index) == matchesInRound ? `الدور ${matchesInRound}` : ' التأهيلي';
+      ;
+
+
     allRounds.push({
       id: roundCounter,
       name: roundName,
@@ -117,6 +120,9 @@ watch(() => rounds.value.map(round => round.sakkanumber), () => {
 const totalTime = computed(() => {
 return rounds.value.reduce((total, round) => total + round.Time, 0);
 })
+const timePerDay = computed(() => {
+  return totalTime.value / dayNumber.value;
+})
 const totalMatches = computed(() => {
   return teamsCount.value-1;
 })
@@ -136,5 +142,7 @@ return {
   sakkTime5,
   totalTime,
   totalMatches,
+  dayNumber,
+  timePerDay
 };
 }

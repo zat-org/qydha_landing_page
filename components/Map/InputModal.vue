@@ -14,7 +14,7 @@
       <Loading  v-show="!map"/>
         <div   id="map" class="min-w-[600px] min-h-[600px] max-w-[1200px] max-h-[800px]  p-5 mx-auto z-0" ></div>
       
-        <div class="flex justify-between items-center w-full p-2 gap-2">
+        <div v-if="props.showInputs" class="flex justify-between items-center w-full p-2 gap-2">
           <UFormField label="الطول" name="latitude">
             <UInput type="number" v-model="model.latitude" label="الطول" />
           </UFormField>
@@ -38,6 +38,9 @@ const show = ref(false);
 const map = ref();
 let L: any = null;
 let MyIcon: any = null;
+  const props  =withDefaults(defineProps<{showInputs?:boolean}>(), {
+    showInputs: true
+  })
 
 interface LocationObject {
   latitude: number;

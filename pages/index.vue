@@ -2,6 +2,7 @@
   <section class="space-y-10">
 
     <Hero />
+    <TournamentSection />
     <Calculators />
     <Statistics />
     <Download />
@@ -18,6 +19,7 @@ import Calculators from '~/components/Home/Calculators.vue'
 import Statistics from '~/components/Home/Statistics.vue'
 import Download from '~/components/Home/Download.vue'
 import Features from '~/components/Home/Features.vue'
+import TournamentSection from '~/components/Home/TournamentSection.vue'
 import Subscription from '~/components/Home/Subscription.vue'
 import Clients from '~/components/Home/Clients.vue'
 import Blogs from '~/components/Home/Blogs.vue'

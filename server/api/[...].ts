@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
   }
   
   // console.log(`Forwarding to: ${backendUrl}/${path}`);
-  
+  console.log("backendUrl", backendUrl);
   try {
     const response = await $fetch(`${backendUrl}/${path}`, {
       method,

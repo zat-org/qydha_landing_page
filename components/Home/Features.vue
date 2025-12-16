@@ -42,6 +42,8 @@
                     </div>
                 </div>
             </div>
+
+            
         </div>
     </section>
 </template>
@@ -78,6 +80,11 @@ const features = [
   }
 ]
 
+
+const handleRequestTournament = () => {
+  const whatsappUrl = 'https://api.whatsapp.com/send/?phone=966508253266&text=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7%D9%8B+%0A%D9%86%D8%AD%D9%86+%D8%B4%D8%B1%D9%83%D8%A9+.......+%D9%86%D8%B1%D8%BA%D8%A8+%D9%81%D9%8A+%D8%AA%D9%86%D8%B8%D9%8A%D9%85+%D8%A8%D8%B7%D9%88%D9%84%D8%A9+%D8%A8%D9%84%D9%88%D8%AA+%D9%81%D9%8A+%D8%AA%D8%A7%D8%B1%D9%8A%D8%AE%3A+%0A%D8%A8%D9%85%D8%AF%D9%8A%D9%86%D8%A9%3A+%0A%D8%B9%D8%AF%D8%AF+%D8%A7%D9%84%D9%84%D8%A7%D8%B9%D8%A8%D9%8A%D9%86%3A+%0A%0A%D9%86%D8%B1%D8%BA%D8%A8+%D9%81%D9%8A+%D8%B9%D8%B1%D8%B6+%D8%B3%D8%B9%D8%B1+%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%D9%83%D9%85+%D9%81%D9%8A+%D9%82%D9%8A%D8%AF%D9%87%D8%A7&type=phone_number&app_absent=0';
+  window.open(whatsappUrl, '_blank');
+}
 // const features = [
 //     'تنظيم وإدارة البطولات',
 //     'إدارة بثوث البلوت',
@@ -97,5 +104,42 @@ const features = [
 }
 #features {
     scroll-margin-top: 100px;
+}
+
+/* Tournament card hover expansion */
+.tournament-card-wrapper {
+    grid-column: 1 / -1;
+    transition: all 0.5s ease-out;
+}
+
+.tournament-card {
+    transform: scale(1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tournament-card-wrapper:hover .tournament-card {
+    transform: scale(1.02);
+    box-shadow: 0 25px 50px -12px rgba(245, 158, 11, 0.5);
+}
+
+/* Pulse glow animation */
+@keyframes pulse-glow {
+    0%, 100% {
+        opacity: 0.5;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+.animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Smooth transitions for all elements */
+.tournament-card * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 </style>
