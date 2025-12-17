@@ -501,13 +501,13 @@ onMounted(() => {
 
 // Arabic labels for known keys
 const labels: Record<string, string> = {
-  playedSakkas: "عدد الصكات الملعوبة",
+  playedSakkas: "عدد الصكات ",
   winnedSakkas: "عدد الصكات الفائزة",
   lostSakka: "عدد الصكات الخاسرة",
-  moshtaraSunCount: "عدد مشتريات الصن",
-  moshtaraHokmCount: "عدد مشتريات الحكم",
-  wonMoshtaraCount: "عدد المشتريات الرابحة",
-  lostMoshtaraCount: "عدد المشتريات الخاسرة",
+  moshtaraSunCount: " مشترى الصن",
+  moshtaraHokmCount: " مشترى الحكم",
+  wonMoshtaraCount: " مشترى ناجح",
+  lostMoshtaraCount: " مشترى خسران",
   ekak: "إكك",
   aklat: "أكلات",
   sra: "سرا",
