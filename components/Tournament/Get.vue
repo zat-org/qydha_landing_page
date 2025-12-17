@@ -290,7 +290,7 @@ const stepperSteps = computed(() => {
   // Always show these steps
   steps.push(
     {
-      title: "الفرق",
+      title: "  الفرق المقبوله ",
       icon: "i-mdi-account-group",
       slot: "Teams"
     },

@@ -8,10 +8,7 @@
   font-family: Alexandria, sans-serif;
   scroll-behavior: smooth;
 }
-body{
-  overflow: hidden;
 
-}
 
 /* Vue Tel Input - Simple CSS */
 .vue-tel-input {
