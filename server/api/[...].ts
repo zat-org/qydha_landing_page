@@ -29,7 +29,7 @@ export default defineEventHandler(async (event) => {
     | undefined;
   
   const headers = normalizeHeaders(event.node.req.headers);
-  console.log(`Method: ${method}, Path: ${path}`);
+  // console.log(`Method: ${method}, Path: ${path}`);
   
   let body: any = undefined;
   let processedHeaders = { ...headers };
@@ -76,11 +76,11 @@ export default defineEventHandler(async (event) => {
           delete processedHeaders['content-type'];
         } else {
           // If parsing returns null/empty, fallback to raw body
-          console.warn('Multipart parsing returned empty, using raw body');
+          // console.warn('Multipart parsing returned empty, using raw body');
           body = await readRawBody(event);
         }
       } catch (error) {
-        console.error('Error parsing multipart form data:', error);
+        // console.error('Error parsing multipart form data:', error);
         // Fallback: try to read raw body and forward as-is
         try {
           body = await readRawBody(event);
@@ -97,7 +97,7 @@ export default defineEventHandler(async (event) => {
   }
   
   // console.log(`Forwarding to: ${backendUrl}/${path}`);
-  console.log("backendUrl", backendUrl);
+  // console.log("backendUrl", backendUrl);
   try {
     const response = await $fetch(`${backendUrl}/${path}`, {
       method,

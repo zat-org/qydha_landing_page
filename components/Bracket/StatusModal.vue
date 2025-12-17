@@ -263,12 +263,12 @@ const statusThem = computed(() => {
 
 const items = [
   {
-    slot: "status",
-    label: "الاحصائيات",
-  },
-  {
     slot: "news",
     label: "النشرة",
+  },
+  {
+    slot: "status",
+    label: "الاحصائيات",
   },
 ];
 </script>

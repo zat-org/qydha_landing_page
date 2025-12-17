@@ -25,7 +25,7 @@
         </template>
 
         <template #default>
-            <div ref="scrollContainer" class=" ">
+            <div ref="scrollContainer" class=" h-[75vh] overflow-y-auto">
                     <KeepAlive>
                         <TournamentRequestUpdateTourForm ref="tourForm" v-show="currentStepValue === 0"
                             v-model="formData" />

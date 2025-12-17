@@ -1,5 +1,5 @@
 <template>
-  <UModal title="تاكيد العملية" description="هل أنت متأكد من أنك تريد إتمام العملية؟">
+  <UModal title="تاكيد العملية" description="هل أنت متأكد من أنك تريد إتمام العملية؟" >
     <template #body>
       <div class="h-[100px] flex justify-center items-center ">
         <h2 class="text-xl text-center ">
@@ -21,6 +21,22 @@
 
 const props= defineProps<{message:string}>()
 const emit = defineEmits(['success','close'])
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
+
+function handleKeydown(e: KeyboardEvent) {
+  console.log(e)
+  if (e.key === 'Enter') {
+    emit('success')
+    emit('close', true)
+  }
+}
 
 
 </script>

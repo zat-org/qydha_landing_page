@@ -42,7 +42,9 @@
 
 
     <div class="  flex flex-col flex-1  ">
-      <Loading v-if="pending" class="mt-10" />
+      <!-- {{ !data.data }} -->
+      <!-- {{ pending }} -->
+      <Loading v-if="status == 'pending' && data?.data == undefined" class="mt-10" />
       <component v-else :is="userStore.isStaffAdmin || userStore.isSuperAdmin
         ? TournamentAdminRequestTable
         : TournamentOranizerRequestTable" />

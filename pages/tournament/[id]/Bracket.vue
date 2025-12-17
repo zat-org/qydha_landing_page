@@ -6,6 +6,7 @@
           :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'" block
           @click="handleGroupSelection(item.data.id.toString())" />
       </UButtonGroup>
+      
       <loading v-if=" tourStore.groupsREQ?.status && tourStore.groupsREQ?.status== 'pending'" />
       <ClientOnly>
         <Bracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />

@@ -1,11 +1,12 @@
 <template>
     <UCard :ui="{
-        root:'h-full  relative ',
-        body: 'p-1 sm:p-1',
+        root:'  relative ',
+        body: 'p-1 sm:p-1 ',
         header: 'p-1 sm:p-1',
         footer: 'p-1 sm:p-1',
 
-    }">
+    }"
+    >
         <template #header>
             <div class="flex justify-around  items-center w-full sticky top-0 bg-white dark:bg-gray-900">
                 <div class=" flex-1 flex  gap-2">
@@ -30,7 +31,7 @@
             </div>
         </template>
 
-            <div ref="scrollContainer" class="">
+            <div  class="h-[75vh] overflow-y-auto" ref="scrollContainer">
                 <!-- <div class="h-full"> -->
                     <KeepAlive>
                         <TournamentRequestFormTourForm ref="tourForm" v-show="currentStepValue === 0"
@@ -231,7 +232,9 @@ const validation = useMultiStepFormValidation(formRefs as any, {
 
 const currentStepValue = computed(() => validation.currentStep.value);
 watch(currentStepValue, () => {
+
     scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+
 });
 
 const totalStepsValue = computed(() => validation.enhancedSteps.value.length);
