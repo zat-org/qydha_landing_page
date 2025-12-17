@@ -1,18 +1,13 @@
 <template>
     <UCard :ui="{
-        body: 'px-3 py-1 sm:p-1',
-        header: 'px-2 py-1 sm:p-1',
+        body: 'px-3 py-1 sm:p-1   ',
+        header: 'px-2 py-1 sm:p-1 ',
         footer: 'px-2 py-1 sm:p-1',
     }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
-        <UForm 
-            :schema="localSchema" 
-            :state="model" 
-            class="flex flex-col space-y-6" 
-            ref="form"
-            :validate-on="['blur', 'change']"
-        >
-        <UFormField  name="isAddPlayersByQydha" size="xl">
+        <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-2" ref="form"
+            :validate-on="['blur', 'change']">
+            <UFormField name="isAddPlayersByQydha" size="xl">
                 <div class="flex  gap-4">
                     <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
                     <label> التسجيل من خلال قيدها </label>
@@ -23,45 +18,35 @@
                 <div class="text-sm text-gray-700 dark:text-gray-200 font-medium">المخطط الزمني لاختيار التواريخ</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <!-- Join Request Start -->
-                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                    <div v-if="modelValue.isAddPlayersByQydha"
+                        class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
-                        <AsyncDatePicker 
-                            v-model="model.joinRequestStartAt" 
-                            :min-date="new Date()"
-                            :max-date="model.startAt"
-                            @update:model-value="onDateChange('joinRequestStartAt')"
-                        />
+                            <AsyncDatePicker v-model="model.joinRequestStartAt" :min-date="new Date()"
+                                :max-date="model.startAt" @update:model-value="onDateChange('joinRequestStartAt')" />
                         </UFormField>
                     </div>
                     <!-- Join Request End -->
-                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
-                      <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
-                        <AsyncDatePicker 
-                            v-model="model.joinRequestEndAt" 
-                            :min-date="model.joinRequestStartAt" 
-                            :max-date="model.startAt"
-                            @update:model-value="onDateChange('joinRequestEndAt')"
-                        />
-                      </UFormField>
+                    <div v-if="modelValue.isAddPlayersByQydha"
+                        class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                        <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
+                            <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
+                                :max-date="model.startAt" @update:model-value="onDateChange('joinRequestEndAt')" />
+                        </UFormField>
                     </div>
                     <!-- Tournament Start -->
-                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                    <div
+                        class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية البطولة" name="startAt">
-                            <AsyncDatePicker 
-                                v-model="model.startAt" 
-                                :min-date="minstartDate"
-                                @update:model-value="onDateChange('startAt')"
-                            />
+                            <AsyncDatePicker v-model="model.startAt" :min-date="minstartDate"
+                                @update:model-value="onDateChange('startAt')" />
                         </UFormField>
                     </div>
                     <!-- Tournament End -->
-                    <div class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
+                    <div
+                        class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="نهاية البطولة" name="endAt">
-                            <AsyncDatePicker 
-                                v-model="model.endAt" 
-                                :min-date="model.startAt"
-                                @update:model-value="onDateChange('endAt')"
-                            />
+                            <AsyncDatePicker v-model="model.endAt" :min-date="model.startAt"
+                                @update:model-value="onDateChange('endAt')" />
                         </UFormField>
                     </div>
                 </div>
@@ -69,7 +54,7 @@
 
 
             <template v-if="modelValue.isAddPlayersByQydha">
-                
+
                 <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount">
                     <UInput type="number" v-model="model.joinRequestMaxCount" />
                 </UFormField>
@@ -79,19 +64,42 @@
 
 
             <!-- show data depend on qydha  -->
+            <div class="grid grid-cols-3 gap-4">
 
-            <UFormField label=" عدد الفرق" name="teamsCount">
-                <div class="flex items-center gap-2">
-                    <USelect v-model="TeamsCount" :items=TeamsCountOptions />
-                    <UInput v-if="TeamsCount === 'custom'" v-model="model.teamsCount" type="number" min="1"
-                        placeholder="0" @input="validatePositiveNumber" />
-                </div>
-            </UFormField>
+                <UFormField label=" عدد الفرق" name="teamsCount">
+                    <div class="flex  flex-col items-center gap-2">
+                        <USelect v-model="TeamsCount" :items=TeamsCountOptions />
+                        <UInput v-if="TeamsCount === 'custom'" v-model="model.teamsCount" type="number" min="1"
+                            placeholder="0" @input="validatePositiveNumber" />
+                    </div>
+                </UFormField>
+                <UFormField label=" عدد الطاولات" name="tablesCount">
+                    <UInput v-model="model.tablesCount" type="number" placeholder="0" />
+                </UFormField>
 
-            <UFormField label=" عدد الطاولات" name="tablesCount"
-               >
-                <UInput v-model="model.tablesCount" type="number" placeholder="0" />
-            </UFormField>
+                <UFormField label="عدد الأيام" name="dayNumber">
+                    <UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" />
+                </UFormField>
+
+                <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime">
+                    <UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" />
+                </UFormField>
+
+                <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3">
+                    <UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" />
+                </UFormField>
+
+                <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5">
+                    <UInput v-model="sakkTime5" type="number" min="1" placeholder="وقت 5 صكات" size="xs" />
+                </UFormField>
+
+            </div>
+
+            <TournamentRequestCalculatorRounds :rounds="rounds" :sakka-options="sakkaOptions"
+                :format-time="formatTime" />
+
+            <TournamentRequestCalculatorSummary :rounds="rounds" :total-time="totalTime" :time-per-day="timePerDay"
+                :total-matches="totalMatches" :day-number="dayNumber" :format-time="formatTime" />
 
         </UForm>
     </UCard>
@@ -135,10 +143,10 @@ const isValidating = ref(false);
 const minstartDate = computed(() => {
     // console.log(new Date(model.value.joinRequestEndAt as string  ))
     // console.log()
-   const joinRequestEndDate = new Date(model.value.joinRequestEndAt as string ?? undefined);
-   const today = new Date();
-   // Take the max between joinRequestEndDate and today
-   const date = joinRequestEndDate > today ? joinRequestEndDate : today;
+    const joinRequestEndDate = new Date(model.value.joinRequestEndAt as string ?? undefined);
+    const today = new Date();
+    // Take the max between joinRequestEndDate and today
+    const date = joinRequestEndDate > today ? joinRequestEndDate : today;
     return date;
 });
 // Add form ref for Nuxt UI validation
@@ -161,8 +169,8 @@ const localSchema = object({
             const date = new Date(value);
             const today = new Date();
             // Set time portion of both to zero for date-only comparison
-            date.setHours(0,0,0,0);
-            today.setHours(0,0,0,0);
+            date.setHours(0, 0, 0, 0);
+            today.setHours(0, 0, 0, 0);
             return date >= today;
         }),
 
@@ -348,14 +356,14 @@ const localSchema = object({
 const onDateChange = async (fieldName: string) => {
     // Wait for reactivity to update
     await nextTick();
-    
+
     // Clear the error for this field if it exists, then re-validate
     // This will trigger validation which will clear errors if the field is now valid
     form.value?.clear(fieldName);
-    
+
     // Wait a bit more for the clear to take effect, then validate
     await nextTick();
-    
+
     // The form will automatically re-validate due to validate-on="['blur', 'change']"
     // But we can also manually trigger validation for the entire form
     try {
@@ -392,17 +400,7 @@ defineExpose({
 
 
 // Use the tournament calculations composable
-const {
-    calculateSakkaOptions,
-    calculateTournamentTime,
-    calculateAvailableTime,
-    calculateOptimalTables,
-    calculateMatchTime,
-    isValidTimeRange,
-    formatTime
-} = useTournamentCalculations();
-
-
+// const {} = 
 
 
 const TeamsCount = ref<number | string>(model.value.teamsCount);
@@ -438,44 +436,30 @@ const TeamsCountOptions = [
     }
 ]
 
-const SelectSakkaOptions = [
-    {
-        label: " صكة",
-        value: "1",
-    },
-    {
-        label: "3 صكات",
-        value: "3",
-    },
-    {
-        label: "5 صكات",
-        value: "5",
-    },
-]
-const TeamSelectionModeOptions = [
-    { label: "اوتوماتيكي", value: "auto" },
-    { label: " يدوي", value: "manual" },
+
+
+const { rounds, teamsCount, tablesCount, sakkTime, sakkTime3, sakkTime5, totalTime, timePerDay, totalMatches, dayNumber } = useTourCalc();
+teamsCount.value = model.value.teamsCount;
+tablesCount.value = model.value.tablesCount;
+
+const sakkaOptions = [
+    { label: '1', value: 1 },
+    { label: '3', value: 3 },
+    { label: '5', value: 5 },
 ];
 
-// refreee detail 
-const selectedRfreeOption = ref<string>("players");
-const refreeeOptions = [
-    {
-        label: "اللاعبين ",
-        value: "players",
-    },
-    {
-        label: "الحكام",
-        value: "refree",
+const formatTime = (minutes: number): string => {
+    if (minutes < 60) {
+        return `${minutes.toFixed(0)} دقيقة`;
     }
-]
-// const onSelectionModeChange = () => {
-//     if (selectedRfreeOption.value === 'players') {
-//         model.value.RefreeNeed = false;
-//     } else if (selectedRfreeOption.value === 'refree') {
-//         model.value.RefreeNeed = true;
-//     }
-// }
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (mins === 0) {
+        return `${hours.toFixed(0)} ساعة`;
+    }
+    return `${hours.toFixed(0)} ساعة و ${mins.toFixed(0)} دقيقة`;
+};
+
 
 const validatePositiveNumber = (event: Event) => {
     const input = event.target as HTMLInputElement;
@@ -484,45 +468,6 @@ const validatePositiveNumber = (event: Event) => {
         input.value = '1';
     }
 }
-
-// Helper function to revalidate a field
-
-// Watch for changes to endAt and revalidate dependent fields
-
-// Enhanced sakka options using the composable
-// const updateSakkaOptions = () => {
-//     model.value.SakkaOptions = calculateSakkaOptions(model.value.TeamsCount);
-// }
-
-// Computed values using the composable
-const BestNumberofTables = computed(() => {
-    return calculateOptimalTables(model.value.teamsCount);
-});
-
-// const timeAvailable = computed(() => {
-//     return calculateAvailableTime(model.value.TournamentDates);
-// })
-
-// const timeNeeded = computed(() => {
-//     return calculateTournamentTime(model.value.TeamsCount, model.value.TablesCount, model.value.SakkaOptions);
-// })
-
-// Watch effects
-// watchEffect(() => {
-//     updateSakkaOptions();
-// })
-
-// watchEffect(() => {
-//     form.value?.clear("TournamentDaysNumber")
-//     console.log("timeNeeded", timeNeeded.value)
-//     if (timeNeeded.value > timeAvailable.value) {
-//         form.value?.setErrors([{
-//             name: "TournamentDaysNumber",
-//             message: ` الوقت المحدد للبطولة ${Math.ceil(timeNeeded.value / 60)} ساعة  والوقت المتاح للبطولة ${Math.ceil(timeAvailable.value / 60)} ساعة  برجاء اضافة المزيد من الوقت `
-//         }])
-//     }
-// })
-
 
 
 </script>

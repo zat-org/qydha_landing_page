@@ -7,6 +7,7 @@ import {
   TournamentState,
   type DetailTournament,
   type TournamentUpdate,
+  type TournamentStatistics,
 } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
 import { useMyTournamentStore } from "~/store/tournament";
@@ -214,7 +215,7 @@ export const useTournament = () => {
   };
 
 const getTournamentStatistics = async (tournamentId: string) => {
- return  await useAsyncData(
+ return  await useLazyAsyncData<{data:TournamentStatistics}>(
     `getTournamentStatistics-${tournamentId}`,
     () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
   );

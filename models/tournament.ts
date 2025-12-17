@@ -46,9 +46,9 @@ export interface TournamentUpdate {
   startAt: string;
   endAt: string;
   showInQydha: boolean;
-  joinRequestStartAt?: string ;
-  joinRequestEndAt?: string ;
-  joinRequestMaxCount?: number ;
+  joinRequestStartAt?: string;
+  joinRequestEndAt?: string;
+  joinRequestMaxCount?: number;
   addPlayersByQydha: boolean;
   // addPlayesrByQydha: boolean;
   teamsCount: number;
@@ -57,10 +57,10 @@ export interface TournamentUpdate {
   isContactPhoneCall: boolean;
   isContactPhoneWhatsapp: boolean;
   tournamentType: TournamentType;
-  tournamentPrivatePassword?: string ;
+  tournamentPrivatePassword?: string;
   logo: File | undefined;
   remainingSponsorsUrls: string[];
-  sponsors: File[] ;
+  sponsors: File[];
   rules: string[];
 }
 export interface Tournament {
@@ -118,52 +118,12 @@ export interface DetailTournament {
     sponsors: string[];
     tournamentPrivatePassword: null | string;
     hasQualificationsStage: boolean;
-
-
-
   };
   requesterPrivilege: {
     privilege: string;
     permissions: string[];
   };
 }
-
-// export interface DetailTournament {
-//   id: string;
-//   name: string;
-//   description: string;
-//   city: string;
-//   startAt: string;
-//   endAt: string;
-//   state: string;
-//   showInQydha: boolean;
-//   logoUrl: null | string;
-//   bracketLink: string;
-//   joinRequestStartAt: null | string;
-//   joinRequestEndAt: null | string;
-//   joinRequestMaxCount: null | number;
-//   addPlayesrByQydha: true;
-//   addPlayersByQydha: true;
-//   expectedTeamsCount: number;
-//   expectedTablesCount: number;
-//   contactPhone: string;
-//   isContactPhoneWhatsapp: boolean;
-//   isContactPhoneCall: boolean;
-//   tournamentType: TournamentType;
-//   sponsors: string[];
-//   tournamentPrivatePassword: string | null;
-//   location: {
-//     longitude: number;
-//     latitude: number;
-//   };
-//   prizes: TournamentPrize[];
-//   owner: TournamentOwner;
-//   moderators: TournamentModerator[];
-//   requesterPrivilege: {
-//     privilege: string;
-//     permissions: string[];
-//   };
-// }
 
 export interface getTournamentResponse {
   data: {
@@ -182,6 +142,33 @@ export interface GetTournamentParams {
   OrderByStartAtDirection?: OrderByStartAtDirection | undefined;
   PageNumber: number;
   PageSize: number;
+}
+
+export interface TournamentStatistics {
+  matchesCount: number;
+  statistics: {
+    
+    sra: number;
+    baloot: number;
+    khamsen: number;
+    me2a: number;
+    rob3ome2a: number;
+    
+    ekak: number;
+    aklat: number;
+    
+    moshtaraSunCount: number;
+    moshtaraHokmCount: number;
+    wonMoshtaraCount: number;
+    lostMoshtaraCount: number;
+    
+    sunKaboot: number;
+    hokmKaboot: number;
+    
+    playedSakkas: number;
+    winnedSakkas: number;
+    lostSakka: number;
+  };
 }
 
 export enum TournamentState {

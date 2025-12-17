@@ -1,12 +1,13 @@
 <template>
     <UCard :ui="{
+        root:'h-full  relative ',
         body: 'p-1 sm:p-1',
         header: 'p-1 sm:p-1',
         footer: 'p-1 sm:p-1',
 
     }">
         <template #header>
-            <div class="flex justify-around  items-center w-full">
+            <div class="flex justify-around  items-center w-full sticky top-0 bg-white dark:bg-gray-900">
                 <div class=" flex-1 flex  gap-2">
                     <UButton to="/tournament/request" size="sm" icon="i-heroicons-arrow-left" variant="ghost"
                         class="flex-1">
@@ -29,9 +30,8 @@
             </div>
         </template>
 
-        <template #default>
-            <div ref="scrollContainer" class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
-                <div class="h-full">
+            <div ref="scrollContainer" class="">
+                <!-- <div class="h-full"> -->
                     <KeepAlive>
                         <TournamentRequestFormTourForm ref="tourForm" v-show="currentStepValue === 0"
                             v-model="formData" />
@@ -44,13 +44,12 @@
                         <TournamentRequestFormRulesForm ref="rulesForm" v-show="currentStepValue === 2"
                             v-model="formData" />
                     </KeepAlive>
-                </div>
+                <!-- </div> -->
             </div>
 
 
-        </template>
         <template #footer>
-            <div class="flex justify-between items-center px-6">
+            <div class="flex justify-between items-center px-6 sticky bottom-0 bg-white dark:bg-gray-900">
                 <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
                 <UButton v-if="canGoNext" color="primary" @click="validation.validateAndNext()" label="التالي"
                     size="xl" class="ms-auto" />
