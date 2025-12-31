@@ -81,6 +81,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Private keys (only available on server-side)
     // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    apiSecret: process.env.API_SECRET || process.env.QydhaToken || 'default-secret-change-in-production', // Secret for request validation
     qydhaapiBase: process.env.QydhaApiBase,
     
     public: {
