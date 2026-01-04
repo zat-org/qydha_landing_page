@@ -83,8 +83,8 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 		// groupsREQ.value = undefined;
 		// const { data, pending, error, refresh, status } = await groupsREQ
 		// await groupsREQ.value?.refresh();
+		await groupsREQ.execute()
 		if (groupsREQ.status && groupsREQ.status.value == "error") {
-			console.log(groupsREQ.error)
 			return;
 		}
 		groupsREQ.data.value?.data.groups.forEach(g => {
@@ -98,7 +98,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 
 		let g = tournament.value.find(g => g.data.id == selectedGroup.value?.data.id);
 		if (g == null) return;
-		console.log(matchesREQ.data.value.data)
+		// console.log(matchesREQ.data.value.data)
 		g.matches = matchesREQ.data.value.data;
 
 		connection.value  = await initWebsocket(tournamentId);

@@ -42,7 +42,7 @@ export const useGroup = () => {
       }
     });
 
-    return { data, pending, error, refresh, status };
+    return { data, pending, error, refresh, status, execute };
   };
   const getGroupDetails = async (tour_id: string, group_id: string) => {
     return await useAsyncData<{ message: string; data: DetailGroup }>(
