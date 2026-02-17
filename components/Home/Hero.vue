@@ -85,7 +85,7 @@
                 <!-- Stats preview -->
                 <div class="grid grid-cols-3 gap-4 sm:gap-8 pt-4">
                     <div class="text-center">
-                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">72K+</div>
+                        <div class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400">100K+</div>
                         <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">تنزيلات</div>
                     </div>
                     <div class="text-center">

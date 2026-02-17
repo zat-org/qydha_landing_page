@@ -7,7 +7,7 @@
     <Statistics />
     <Download />
     <Features />
-    <Subscription />
+    <!-- <Subscription /> -->
     <Clients />
     <Blogs />
   </section>
