@@ -14,7 +14,7 @@
                          data-aos-duration="400"
                          data-aos-delay="100"
                          data-aos-once="true">
-                        72,000 +
+                        100,000 +
                     </div>
                     <h3 class="text-2xl font-semibold text-black dark:text-gray-100 mb-2"
                         data-aos="fade-up"
