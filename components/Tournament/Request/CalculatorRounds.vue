@@ -71,9 +71,7 @@ const props = defineProps<{
 const { rounds, sakkaOptions, formatTime } = toRefs(props);
 const calculatorRoundsRoot = ref<HTMLElement | null>(null);
 
-// #region agent log
-watch(rounds, ()=>{nextTick(()=>{if(calculatorRoundsRoot.value){const el=calculatorRoundsRoot.value;fetch('http://127.0.0.1:7242/ingest/f1f2c127-9aa9-49ca-9ffa-039b1ea88dcf',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'CalculatorRounds.vue:74',message:'CalculatorRounds after rounds change',data:{clientHeight:el.clientHeight,scrollHeight:el.scrollHeight,offsetHeight:el.offsetHeight,roundsLength:rounds.value.length,maxHeight:window.getComputedStyle(el).maxHeight,overflowY:window.getComputedStyle(el).overflowY},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'A,D'})}).catch(()=>{});}});},{immediate:true});
-// #endregion
+
 </script>
 
 

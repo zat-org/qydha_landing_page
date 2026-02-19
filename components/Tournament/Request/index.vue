@@ -44,7 +44,7 @@
     <div class="  flex flex-col flex-1  ">
       <!-- {{ !data.data }} -->
       <!-- {{ pending }} -->
-      <Loading v-if="status == 'pending' && data?.data == undefined" class="mt-10" />
+      <Loading v-if="status == 'pending' && !data" class="mt-10" />
       <component v-else :is="userStore.isStaffAdmin || userStore.isSuperAdmin
         ? TournamentAdminRequestTable
         : TournamentOranizerRequestTable" />
@@ -82,14 +82,10 @@ const isAdmin = computed(() => {
     user.value?.user.roles.includes('StaffAdmin')
 });
 
-const { getTournamnetStateOptions, getTournamentTypeOptions, AdminGetTournamentRequests, OrganizerGetTournamentRequests } = useTournamentRequest();
+const { getTournamnetStateOptions, getTournamentTypeOptions, AdminGetTournamentRequests } = useTournamentRequest();
 
 const apiResult = computed(() => {
-  if (userStore.isSuperAdmin || userStore.isStaffAdmin) {
     return AdminGetTournamentRequests
-  } else {
-    return OrganizerGetTournamentRequests
-  }
 })
 
 const { data, pending, status } = apiResult.value(filters)

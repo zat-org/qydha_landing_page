@@ -78,16 +78,12 @@ const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");
 const { updateTournamentRequest } = useTournamentRequest()
 
 const authStore = useMyAuthStore()
-const { OrganizerGetSingleTournamentRequest, AdminGetSingleTournamentRequest } = useTournamentRequest()
+const { AdminGetSingleTournamentRequest } = useTournamentRequest()
 // get from data by index  api 
 const route = useRoute()
 const id = route.params.id.toString()
 const apiFetch = computed(() => {
-    if (authStore.isStaffAdmin || authStore.isSuperAdmin) {
-        return AdminGetSingleTournamentRequest
-    } else {
-        return OrganizerGetSingleTournamentRequest
-    }
+    return AdminGetSingleTournamentRequest
 })
 const formData = reactive<UpdateTournamentCreationRequest>({
     title: "",
@@ -264,7 +260,7 @@ const validation = useMultiStepFormValidation(formRefs as any, {
         await updateReq.fetchReq(formData)
         if (updateReq.status.value == 'success') {
             console.log(unref(updateReq.data))
-            navigateTo("/tournament")
+            navigateTo("/tournament/request")
         } else {
             // console.log(unref(updateReq.error))
             console.log(updateReq.error.value)

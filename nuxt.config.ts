@@ -87,8 +87,8 @@ export default defineNuxtConfig({
     public: {
       qydhaapiBase: process.env.QydhaApiBase,
       qydhaToken: process.env.QydhaToken,
-      apiBase: "/api",
-      // apiBase: process.env.QydhaApiBase,
+      // apiBase: "/api",
+      apiBase: process.env.QydhaApiBase,
 
       logo: LogoURL,
       title: Title,

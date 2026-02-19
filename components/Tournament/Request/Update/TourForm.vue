@@ -217,14 +217,9 @@ const route =useRoute()
 const id= route.params.id.toString()
 const authStore = useMyAuthStore()
 const adminData =useNuxtData<{data:DetailTournamentRequest}>(`AdminGetSingleTournamentRequest-${id}`)
-const organizerData =useNuxtData<{data:DetailTournamentRequest}>(`OrganizerGetSingleTournamentRequest-${id}`)
 
 const SelectedRequest = computed(()=>{
-  if (authStore.isStaffAdmin || authStore.isSuperAdmin){
-    return  unref(adminData.data.value?.data)
-  }else{
-    return unref(organizerData.data.value?.data)
-  }
+  return  unref(adminData.data.value?.data)
 })
 
 

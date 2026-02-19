@@ -63,7 +63,7 @@ export const useTournamentRequest = () => {
     const { data, status, execute, pending, error } = useAsyncData(
       "Crearetrequest",
       () =>
-        $api("/tournaments/creation-request",
+        $api("/tournaments/creation-requests",
            {  method: "post",
           body: body.value,
         }),
@@ -72,6 +72,7 @@ export const useTournamentRequest = () => {
     // Helper function to convert object to FormData
 
     const fetchREQ = async (_body: TournamentCreationRequest) => {
+      console.log(_body)
       body.value = new FormData();
       body.value.append("title", _body.title);
       body.value.append("description", _body.description);
@@ -128,36 +129,36 @@ export const useTournamentRequest = () => {
     return { data, status, fetchREQ, pending, error };
   };
   //Organizer
-  const OrganizerGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
-    const param = ref(params.value);
-    watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
-      param.value.pageNumber=1
-    })
+  // const OrganizerGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
+  //   const param = ref(params.value);
+  //   watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
+  //     param.value.pageNumber=1
+  //   })
 
-    const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
-      "OrganizerTourReqests",
-      () => $api("tournaments/creation-request/me", { params: unref(param) }),
-      {
-        watch: [param],
-      }
-    );
-    return { data, status, pending };
-  };
+  //   const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
+  //     "OrganizerTourReqests",
+  //     () => $api("tournaments/creation-request/me", { params: unref(param) }),
+  //     {
+  //       watch: [param],
+  //     }
+  //   );
+  //   return { data, status, pending };
+  // };
 
-  const OrganizerGetSingleTournamentRequest = (id: string) => {
-    return useLazyAsyncData<{ data: DetailTournamentRequest }>(
-      `OrganizerGetSingleTournamentRequest-${id}`,
-      () => $api(`/tournaments/creation-request/me/${unref(id)}`),
-      { server: false }
-    );
-  };
+  // const OrganizerGetSingleTournamentRequest = (id: string) => {
+  //   return useLazyAsyncData<{ data: DetailTournamentRequest }>(
+  //     `OrganizerGetSingleTournamentRequest-${id}`,
+  //     () => $api(`/tournaments/creation-request/me/${unref(id)}`),
+  //     { server: false }
+  //   );
+  // };
   const OrganizerCancelRequest = () => {
     const id = ref();
     const { data, status, execute, pending } = useAsyncData(
       "OrganizerCancelRequest",
       () =>
-        $api(`/tournaments/creation-request/me/${unref(id)}/cancel`, {
-          method: "patch",  
+        $api(`/tournaments/creation-requests/${unref(id)}/cancel`, {
+          method: "post",  
         }),
       { immediate: false }
     );
@@ -166,7 +167,7 @@ export const useTournamentRequest = () => {
       await execute();
       if (unref(status) == "success") {
         refreshNuxtData("AdminTourReqests");
-        refreshNuxtData("OrganizerTourReqests");
+        // refreshNuxtData("OrganizerTourReqests");
 
       }
     };
@@ -181,7 +182,7 @@ export const useTournamentRequest = () => {
 
     const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
       "AdminTourReqests",
-      () => $api("tournaments/creation-request", { params: unref(param) }),
+      () => $api("tournaments/creation-requests", { params: unref(param) }),
       {
         watch: [unref(param)],
         deep: true,
@@ -194,8 +195,8 @@ export const useTournamentRequest = () => {
     const { data, status, execute, pending } = useAsyncData(
       ()=>['AdminApproveRequest',id.value].join('-'),
       () =>
-        $api(`/tournaments/creation-request/${unref(id)}/approve`, {
-          method: "patch",
+        $api(`/tournaments/creation-requests/${unref(id)}/approve`, {
+          method: "post",
         }),
       { immediate: false }
     );
@@ -213,8 +214,8 @@ export const useTournamentRequest = () => {
     const { data, status, execute, pending } = useAsyncData(
       ()=>['AdminRejectRequest',id.value].join('-'),
       () =>
-        $api(`/tournaments/creation-request/${unref(id)}/reject`, {
-          method: "patch",
+        $api(`/tournaments/creation-requests/${unref(id)}/reject`, {
+          method: "post",
         }),
       { immediate: false }
     );
@@ -230,7 +231,7 @@ export const useTournamentRequest = () => {
   const AdminGetSingleTournamentRequest = (id: string) => {
     return useLazyAsyncData<{ data: DetailTournamentRequest }>(
       `AdminGetSingleTournamentRequest-${id}`,
-      () => $api(`/tournaments/creation-request/${unref(id)}`),
+      () => $api(`/tournaments/creation-requests/${unref(id)}`),
       { server: false }
     );
   };
@@ -242,7 +243,7 @@ export const useTournamentRequest = () => {
     }>(
       `updateTournamentRequest-${id}`,
       () =>
-        $api(`/tournaments/creation-request/${unref(id)}`, {
+        $api(`/tournaments/creation-requests/${unref(id)}`, {
           method: "put",
           body: unref(body),
         }),
@@ -304,7 +305,7 @@ export const useTournamentRequest = () => {
 
       await execute();
       if(status.value=='success'){
-        refreshNuxtData("OrganizerTourReqests")
+        // refreshNuxtData("OrganizerTourReqests")
         refreshNuxtData("AdminTourReqests")
 
       }
@@ -347,8 +348,6 @@ export const useTournamentRequest = () => {
 
   return {
     AddTournamentRequest,
-    OrganizerGetTournamentRequests,
-    OrganizerGetSingleTournamentRequest,
     OrganizerCancelRequest,
     AdminGetTournamentRequests,
     AdminApproveRequest,

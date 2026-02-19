@@ -303,7 +303,6 @@ import {formatDateTime,formatDate} from'~/utils/formatDate'
 const props = defineProps<{id:string}>()
 const { 
   AdminGetSingleTournamentRequest, 
-  OrganizerGetSingleTournamentRequest,
   OrganizerCancelRequest,
   AdminApproveRequest, 
   AdminRejectRequest,
@@ -314,11 +313,7 @@ const {
 
 const userStore = useMyAuthStore()
 const apiFetch = computed(()=>{
-  if(userStore.isStaffAdmin || userStore.isSuperAdmin){
-    return AdminGetSingleTournamentRequest
-  }else {
-    return OrganizerGetSingleTournamentRequest
-  }
+  return AdminGetSingleTournamentRequest
 })
 const { data:res, status, pending } = apiFetch.value(props.id)
 const data =computed(()=>{
@@ -358,7 +353,6 @@ const handleCancel = async () => {
   await cancelRequest(data.value.id)
   if (status.value === 'success' ) {
     // Refresh data or show success message
-    await refreshNuxtData(`OrganizerGetSingleTournamentRequest-${data.value.id}`)
     await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
 
   }

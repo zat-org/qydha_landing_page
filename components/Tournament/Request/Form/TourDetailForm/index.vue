@@ -5,8 +5,7 @@
         footer: 'px-2 py-1 sm:p-1',
     }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900  ">
         <!-- Tournament Prize Section -->
-        <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-2" ref="form"
-            :validate-on="['blur', 'change']">
+        <UForm :schema="localSchema" :state="model" class="flex flex-col space-y-2" ref="form">
             <UFormField name="isAddPlayersByQydha" size="xl">
                 <div class="flex  gap-4">
                     <USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" />
@@ -168,9 +167,10 @@ const localSchema = object({
             if (!value) return true;
             const date = new Date(value);
             const today = new Date();
+
             // Set time portion of both to zero for date-only comparison
-            date.setHours(0, 0, 0, 0);
-            today.setHours(0, 0, 0, 0);
+            // date.setHours(0, 0, 0, 0);
+            // today.setHours(0, 0, 0, 0);
             return date >= today;
         }),
 
@@ -211,7 +211,18 @@ const localSchema = object({
                     const requestStartDate = new Date(value);
                     const tournamentStartDate = new Date(tournamentStart);
                     return requestStartDate < tournamentStartDate;
-                }),
+                })
+                .test('start-after-today', 'تاريخ بداية تقديم طلبات الانضمام يجب أن يكون بعد تاريخ اليوم', function (value) {
+                    if (!value) return true;
+                    const date = new Date(value);
+                    const today = new Date();
+
+                    // Set time portion of both to zero for date-only comparison
+                    // date.setHours(0, 0, 0, 0);
+                    // today.setHours(0, 0, 0, 0);
+                    return date >= today;
+                })
+            ,
             otherwise: (schema) => schema.notRequired()
         }),
 
