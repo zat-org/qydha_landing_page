@@ -68,7 +68,7 @@ import { type TournamentCreationRequest } from '~/models/tournamentRequest';
 // import { TournamentType } from '~/models/tournamenetType';
 import { TournamentType } from '~/models/tournamenetType';
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/models/tournamentPrize';
-
+import { TournamentPlayerJoinRequestType } from '~/models/tournamentRequest';
 // Type definitions for form refs
 interface FormStepRef {
     validate: () => Promise<boolean>;
@@ -118,6 +118,8 @@ const formData = reactive<TournamentCreationRequest>({
         }
     ],
     rules: [],
+    allowedJoinRequestType: TournamentPlayerJoinRequestType.All,
+    minimumSubscriptionDays: 0,
     // TournamentDates: [{ date: "", startTime: "", endTime: "" }],
     // connectionPhoneNumberForPlayers: "",
     // Sponsered: false,

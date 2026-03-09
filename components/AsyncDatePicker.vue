@@ -1,73 +1,50 @@
 <template>
   <ClientOnly>
-    <VueDatePicker v-bind="$attrs" v-model="internalDate" :format="format" :dark="isDark" :enable-time-picker="enableTime"
-      class="z-100" />
+    <VDatePicker v-bind="$attrs" dir="ltr" v-model="internalDate" :is-dark="isDark" :mode="enableTime ? 'dateTime' : 'date'"
+      :masks="{ input: 'DD/MM/YYYY HH:mm' }" class="z-100">
+      <template #default="{ inputValue, inputEvents }">
+        <UInput :value="inputValue" v-on="inputEvents" />
+      </template>
+
+    </VDatePicker>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue';
 const colorMode = useColorMode()
+
 const props = withDefaults(defineProps<{
   enableTime?: boolean
 }>(), {
   enableTime: true
 })
-const isDark = computed(() => {
-  return colorMode.value == 'dark' ? true : false
-})
-const VueDatePicker = defineAsyncComponent(() =>
-  import('@vuepic/vue-datepicker').then(m => {
-    // Import CSS only when component is loaded
-    import('@vuepic/vue-datepicker/dist/main.css');
-    return m.default;
-  })
-);
 
-// Use defineModel for v-model binding instead of props/emits
-const model = defineModel<string | Date>();
+const isDark = computed(() => colorMode.value === 'dark')
 
-// Define emits for change and input events
+const model = defineModel<string | Date | null>()
+
 const emit = defineEmits<{
   'update:modelValue': [value: string | Date | null]
   'change': [value: Date | null]
   'input': [value: Date | null]
-}>();
+}>()
 
-// Computed property to handle conversion between Date and ISO string
-const internalDate = computed({
+const internalDate = computed<Date | null>({
   get: () => {
-    if (!model.value) return null;
-    return model.value instanceof Date ? model.value : new Date(model.value as string);
+    if (!model.value) return null
+    return model.value instanceof Date ? model.value : new Date(model.value as string)
   },
-  set: (value: Date | null) => {
+  set: (value) => {
     if (value) {
-      // Convert to UTC ISO string
-      const utcIsoString = value.toISOString();
-      model.value = utcIsoString as any;
-      // Emit change and input events for form validation
-      emit('change', value);
-      emit('input', value);
+      const utcIsoString = value.toISOString()
+      model.value = utcIsoString as any
+      emit('change', value)
+      emit('input', value)
     } else {
-      model.value = null as any;
-      emit('change', null);
-      emit('input', null);
+      model.value = null as any
+      emit('change', null)
+      emit('input', null)
     }
   }
-});
-
-const format = (date: Date) => {
-  const day = date.getDate();
-  const month = date.getMonth() + 1;
-  const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-
-  return `${day}/${month}/${year} ${hours}:${minutes}`;
-}
+})
 </script>
-<style scoped>
-.dp__main * {
-  direction: rtl;
-}
-</style>

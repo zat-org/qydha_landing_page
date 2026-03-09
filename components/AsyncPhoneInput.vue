@@ -96,7 +96,12 @@ function onCountryChanged(country: any) {
     if (!previousCountry) {
 
       // console.log(modelValue)
-    //  modelValue.value = `+${modelValue.value}`
+      if (modelValue.value.length > 0) {
+        
+        modelValue.value = `${modelValue.value}`
+      } else {
+        modelValue.value = `+${country.dialCode}`
+      }
       return 
     }
 

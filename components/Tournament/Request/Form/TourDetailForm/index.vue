@@ -21,7 +21,8 @@
                         class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
                             <AsyncDatePicker v-model="model.joinRequestStartAt" :min-date="new Date()"
-                                :max-date="model.startAt" @update:model-value="onDateChange('joinRequestStartAt')" />
+                                :max-date="model.startAt || undefined"
+                                @update:model-value="onDateChange('joinRequestStartAt')" />
                         </UFormField>
                     </div>
                     <!-- Join Request End -->
@@ -29,7 +30,8 @@
                         class="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
                             <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
-                                :max-date="model.startAt" @update:model-value="onDateChange('joinRequestEndAt')" />
+                                :max-date="model.startAt || undefined"
+                                @update:model-value="onDateChange('joinRequestEndAt')" />
                         </UFormField>
                     </div>
                     <!-- Tournament Start -->
@@ -57,7 +59,16 @@
                 <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount">
                     <UInput type="number" v-model="model.joinRequestMaxCount" />
                 </UFormField>
+                <UFormField label="نوع طلبات الانضمام" name="allowedJoinRequestType">
+                    <USelect v-model="model.allowedJoinRequestType" :items="TournamentPlayerJoinRequestTypeOptions" />
+                </UFormField>
+                <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays">
+                    <UInput type="number" v-model="model.minimumSubscriptionDays" min="1" placeholder="0" />
+                </UFormField>
             </template>
+
+
+
 
             <TournamentRequestFormTourDetailFormPrizeManagement v-model="model" />
 
@@ -107,7 +118,7 @@
 <script lang="ts" setup>
 import { object, string, number, boolean, array, mixed } from "yup";
 import type { TournamentPrizeType } from "~/models/tournamentPrize";
-
+import { TournamentPlayerJoinRequestType } from "~/models/tournamentRequest";
 const model = defineModel<{
     startAt: string;
     endAt: string;
@@ -125,9 +136,25 @@ const model = defineModel<{
     joinRequestEndAt?: string;
     joinRequestStartAt?: string;
     joinRequestMaxCount?: number;
+    allowedJoinRequestType: TournamentPlayerJoinRequestType;
+    minimumSubscriptionDays: number;
 
 }>({ required: true })
 
+const TournamentPlayerJoinRequestTypeOptions = [
+    {
+        label: "كل الطلبات",
+        value: TournamentPlayerJoinRequestType.All,
+    },
+    {
+        label: "طلبات فردية",
+        value: TournamentPlayerJoinRequestType.Single,
+    },
+    {
+        label: "طلبات الفرق",
+        value: TournamentPlayerJoinRequestType.Team,
+    },
+]
 
 
 

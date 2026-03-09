@@ -119,11 +119,11 @@ const tour = computed(() => {
   if (getTourREQ.data.value)
     return getTourREQ.data.value.data.tournament
 })
+const page = ref(1)
 
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams()
-await getTeamsREQ.fetchREQ(tour_id)
+await getTeamsREQ.fetchREQ(tour_id, page.value)
 
-const page = ref(1)
 
 const total = computed(() => getTeamsREQ.data.value?.data.totalCount!)
 // Drawer state management

@@ -57,7 +57,7 @@ const tournamentprizeCurrencyLable: Record<TournamentPrizeCurrency, string> = {
 export const useTournamentRequest = () => {
   const { $api } = useNuxtApp();
   const user = useMyAuthStore();
-  // console.log(user.isStaffAdmin)
+
   const AddTournamentRequest = () => {
     const body = ref(new FormData());
     const { data, status, execute, pending, error } = useAsyncData(
@@ -101,6 +101,12 @@ export const useTournamentRequest = () => {
         }
         if (_body.joinRequestMaxCount) {
           body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));
+        }
+        if (_body.allowedJoinRequestType) {
+          body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType);
+        }
+        if (_body.minimumSubscriptionDays) {
+          body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays));
         }
       }
       if (_body.tournamentPrivatePassword) {
@@ -279,6 +285,12 @@ export const useTournamentRequest = () => {
         }
         if (_body.joinRequestMaxCount) {
           body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));
+        }
+        if (_body.allowedJoinRequestType) {
+          body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType);
+        }
+        if (_body.minimumSubscriptionDays) {
+          body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays));
         }
       }
       if (_body.tournamentPrivatePassword) {

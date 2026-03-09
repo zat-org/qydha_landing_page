@@ -79,6 +79,7 @@ const { updateTournamentRequest } = useTournamentRequest()
 
 const authStore = useMyAuthStore()
 const { AdminGetSingleTournamentRequest } = useTournamentRequest()
+import { TournamentPlayerJoinRequestType } from '~/models/tournamentRequest';
 // get from data by index  api 
 const route = useRoute()
 const id = route.params.id.toString()
@@ -114,6 +115,8 @@ const formData = reactive<UpdateTournamentCreationRequest>({
         }
     ],
     rules: [],
+    allowedJoinRequestType: TournamentPlayerJoinRequestType.All,
+    minimumSubscriptionDays: 0,
     // TournamentDates: [{ date: "", startTime: "", endTime: "" }],
     // connectionPhoneNumberForPlayers: "",
     // Sponsered: false,
@@ -150,7 +153,8 @@ const assignData = () => {
         formData.joinRequestEndAt = data.joinRequestEndAt
         formData.joinRequestMaxCount = data.joinRequestMaxCount
         formData.joinRequestStartAt = data.joinRequestStartAt
-
+        formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.All
+        formData.minimumSubscriptionDays = data.minimumSubscriptionDays
 
     } else {
         // navigateTo('/tournament/request')

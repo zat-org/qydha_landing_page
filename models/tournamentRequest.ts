@@ -23,7 +23,11 @@ export interface GetTournamentRequestParams {
   pageSize: number;
 }
 
-
+export enum TournamentPlayerJoinRequestType {
+  All = "All",
+  Single = "Single",
+  Team = "Team",
+}
 
 export interface TournamentCreationRequest {
   title: string;
@@ -50,6 +54,8 @@ export interface TournamentCreationRequest {
   locationDescription: string;
   prizes: TournamentPrize[];
   rules: string[];
+  allowedJoinRequestType: TournamentPlayerJoinRequestType ;
+  minimumSubscriptionDays: number;
 }
 export interface UpdateTournamentCreationRequest {
   title: string;
@@ -77,6 +83,8 @@ export interface UpdateTournamentCreationRequest {
   locationDescription: string;
   prizes: TournamentPrize[];
   rules: string[];
+  allowedJoinRequestType: TournamentPlayerJoinRequestType;
+  minimumSubscriptionDays: number;
 }
 
 export interface TournamentRequest {
@@ -132,4 +140,6 @@ export interface DetailTournamentRequest {
   joinRequestStartAt: string;
   joinRequestEndAt: string;
   joinRequestMaxCount: number;
+  allowedJoinRequestType: TournamentPlayerJoinRequestType;
+  minimumSubscriptionDays: number;
 }

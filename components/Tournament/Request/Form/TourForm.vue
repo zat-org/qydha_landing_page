@@ -15,7 +15,7 @@
         <UInput v-model="modelValue.title" placeholder="أدخل اسم البطولة" />
       </UFormField>
 
-    <UFormField label="وصف البطولة" name="description" required>
+    <UFormField label="وصف البطولة" name="description" >
         <UTextarea v-model="modelValue.description" :rows="5" placeholder="أدخل وصف البطولة" />
       </UFormField>
 
@@ -125,6 +125,7 @@
 <script lang="ts" setup>
 import { object, string, number, boolean, array, mixed } from "yup";
 import { TournamentType } from "~/models/tournamenetType";
+import { TournamentPlayerJoinRequestType } from "~/models/tournamentRequest";
 
 const props = defineProps<{
   modelValue: {
@@ -139,6 +140,7 @@ const props = defineProps<{
     type: TournamentType;
     tournamentPrivatePassword?: string;
     locationDescription: string;
+    allowedJoinRequestType: TournamentPlayerJoinRequestType | null;
   }
 }>();
 
@@ -152,7 +154,7 @@ const isValidating = ref(false);
 // Move schema to component level for better encapsulation
 const localSchema = object({
   title: string().required("اسم البطولة مطلوب"),
-  description: string().required("وصف البطولة مطلوب"),
+  description: string(),
   logo: mixed().required("شعار البطولة مطلوب"),
   type: string().required("نوع البطولة مطلوب"),
   tournamentPrivatePassword: string().when('type', {
