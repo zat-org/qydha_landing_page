@@ -41,14 +41,14 @@
                                     </UFormField>
 
                                     <UFormField label="البريد الإلكتروني" :name="'players[' + index + '].email'"
-                                        :required="true" class="text-xs sm:text-sm">
+                                        class="text-xs sm:text-sm">
                                         <UInput v-model="player.email" type="email" placeholder="example@email.com"
                                             :disabled="pending" trailing-icon="i-heroicons-envelope" size="md"
                                             class="text-sm" />
                                     </UFormField>
 
                                     <UFormField label="رقم الهاتف" :name="'players[' + index + '].phone'"
-                                        :required="true" class="text-xs sm:text-sm">
+                                        class="text-xs sm:text-sm">
                                         <AsyncPhoneInput v-model="player.phone" :disabled="pending" dir="ltr" />
                                     </UFormField>
 
@@ -114,8 +114,10 @@ const schema = object({
     players: array().of(
         object({
             name: string().required("برجاء ادخال اسم اللاعب"),
-            phone: string().required("برجاء ادخال رقم الهاتف").min(11, 'يجب ان يكون رقم الهاتف صحيح'),
-            email: string().email(" برجاء ادخال البريد الالكتروني بشكل صحيح ").required(" برجاء ادخال البريد الالكتروني   "),
+            phone: string().nullable(),
+            // phone: string().required("برجاء ادخال رقم الهاتف").min(11, 'يجب ان يكون رقم الهاتف صحيح'),
+            email: string().nullable(),
+            // email: string().email(" برجاء ادخال البريد الالكتروني بشكل صحيح ").required(" برجاء ادخال البريد الالكتروني   "),
             qydhaUsername: string()
         })).min(2, "يجب ادخال بيانات لاعبين على الأقل").test(
             'complete-player-data',
@@ -123,16 +125,14 @@ const schema = object({
             function (players) {
                 return players!.every(
                     player =>
-                        player.name &&
-                        player.phone &&
-                        player.email
+                        !!player.name
                 );
             }
         )
 })
 
 watch(
-    () => state.players.map(p => p.name), 
+    () => state.players.map(p => p.name),
     (newNames) => {
         const processedNames = newNames.map(name => {
             if (!name) return '';
@@ -179,7 +179,7 @@ const onSubmit = async () => {
             color: "success",
             icon: "material-symbols:check",
         })
-      }
+    }
     if (addTeamREQ.status.value == "error" && addTeamREQ.error.value) {
         if (addTeamREQ.error.value.statusCode == 404) {
             let errorPlayerIndex = state.players.findIndex(p => {

@@ -25,7 +25,6 @@
             @click="() => openExcelDialog()" />
 
 
-
           <UButton label="إضافة فريق" icon="i-heroicons-plus" color="primary" @click="openDrawer('add')" />
 
         
