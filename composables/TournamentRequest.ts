@@ -105,9 +105,9 @@ export const useTournamentRequest = () => {
         if (_body.allowedJoinRequestType) {
           body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType);
         }
-        if (_body.minimumSubscriptionDays) {
+        // if (_body.minimumSubscriptionDays) {
           body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays));
-        }
+        // }
       }
       if (_body.tournamentPrivatePassword) {
         body.value.append(

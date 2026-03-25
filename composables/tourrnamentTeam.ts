@@ -26,6 +26,30 @@ export const useTourrnamentTeam = () => {
     };
     return { data, pending, error, refresh, status, fetchREQ };
   };
+  const getNotInGroupTourTeams = async () => {
+    const tourId = ref();
+    const page = ref();
+    const groupId = ref();
+    const { data, pending, error, refresh, status, execute } =
+      await useAsyncData<{
+        data: { items: ITeam[]; totalCount: number; currentPage: number };
+        message: string;
+      }>(
+        "getNotInGroupTourTeams",
+        () =>
+          $api(`/tournaments/${tourId.value}/teams`, {
+            query: { PageNumber: page.value,notInGroupId:groupId.value ,playersCount:2},
+          }),
+        { immediate: false }
+      );
+    const fetchREQ = async (tour_id: string,_groupId: string, _page: number = 1) => {
+      page.value = _page;
+      tourId.value = tour_id;
+      groupId.value = _groupId;
+      await execute();
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  };
 
   const addTourTeam = async () => {
     const tourId = ref();
@@ -273,8 +297,53 @@ export const useTourrnamentTeam = () => {
   };
   
 
+  const linkTeamToGroup = async () => {
+    const tourId = ref();
+    const groupId = ref();
+    const teamIds = ref();
+    const { data, pending, error, refresh, status, execute } =
+      await useAsyncData(
+        "linkTeamToGroup",
+        () => $api(`/tournaments/${tourId.value}/groups/${groupId.value}/teams-links`, { method: "post", body:{teamsIds: teamIds.value} }),
+        { immediate: false }
+      );
+    const fetchREQ = async (tour_id: string, group_id: string, team_ids: string[]) => {
+      tourId.value = tour_id;
+      groupId.value = group_id;
+      teamIds.value = team_ids;
+      await execute();
+      if (status.value == "success") {
+        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
+      }
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  }
+  const unlinkTeamFromGroup = async () => {
+    const tourId = ref();
+    const groupId = ref();
+    const teamIds = ref();
+    const { data, pending, error, refresh, status, execute } =
+      await useAsyncData(
+        "unlinkTeamFromGroup",
+        () => $api(`/tournaments/${tourId.value}/groups/${groupId.value}/teams-links`, { method: "delete", body:{teamsIds: teamIds.value} }),
+        { immediate: false }
+      );
+    const fetchREQ = async (tour_id: string, group_id: string, team_ids: string[]) => {
+      tourId.value = tour_id;
+      groupId.value = group_id;
+      teamIds.value = team_ids;
+      await execute();
+      if (status.value == "success") {
+        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
+        refreshNuxtData("getNotInGroupTourTeams");
+      }
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  }
+
   return {
     getAllTourTeams,
+    getNotInGroupTourTeams,
     addTourTeam,
     deleteTourTeam,
     updateTourTeamName,
@@ -284,5 +353,7 @@ export const useTourrnamentTeam = () => {
     addPlayerToTeam,
     removePlayerFromTeam,
     imprtTeamsFromExcel,
+    linkTeamToGroup,
+    unlinkTeamFromGroup,
   };
 };

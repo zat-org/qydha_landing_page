@@ -197,6 +197,27 @@ export const useGroup = () => {
     return { result, fetchREQ };
   };
 
+  const revertGroupToLinkingState = async () => {
+    const tourId = ref();
+    const groupId = ref();
+    const result = await useAsyncData(
+      "revertGroupToLinkingState",
+      () => $api(`/tournaments/${tourId.value}/groups/${groupId.value}/matches` , { method: "delete" }),
+      { immediate: false }
+    );
+    const fetchREQ = async (tour_id: string, group_id: string) => {
+      tourId.value = tour_id;
+      groupId.value = group_id;
+      await result.execute();
+      if (result.status.value == "success") {
+        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
+        refreshNuxtData(["getGroups", tour_id].join("-"));
+
+      }
+    };
+    return { ...result, fetchREQ };
+  };
+
   return {
     getGroups,
     getGroupMatches,
@@ -206,5 +227,6 @@ export const useGroup = () => {
     ceateMatchesForGroup,
     getRoundsGroupDetails,
     updateTournamentRound,
+    revertGroupToLinkingState
   };
 };

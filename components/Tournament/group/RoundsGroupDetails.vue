@@ -2,7 +2,10 @@
     <UCard>
         <template #header>
             <div class="flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">جولات المجموعة</h3>
+                <div class="flex items-center gap-2">
+                    <UButton  color="neutral" variant="soft" size="sm" @click="revertGroupToLinkingState" label="تعديل الفرق " />
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">جولات المجموعة</h3>
+                </div>
                 <UBadge v-if="roundsGroupDetails" color="primary" variant="soft">
                     {{ roundsGroupDetails.rounds?.length || 0 }} جولة
                 </UBadge>
@@ -167,7 +170,6 @@ const expandedRows = ref({});
 // Table reference
 const roundsTable = useTemplateRef('roundsTable');
 
-
 // Match state helpers
 const getMatchStateLabel = (state: string): string => {
     const stateMap: Record<string, string> = {
@@ -243,4 +245,18 @@ const openUpdateMatchDrawer = async (matchId: string) => {
         // updateMatchDrawer.value.open = true;
     // }
 }
+
+
+const toast = useToast();
+
+const revertGroupToLinkingStateReq = await useGroup().revertGroupToLinkingState();
+const revertGroupToLinkingState = async () => {
+    await revertGroupToLinkingStateReq.fetchREQ(tour_id, props.group.id);
+    if (revertGroupToLinkingStateReq.status.value == "success") {
+        toast.add({ title: "تم تعديل الفرق بنجاح", color: "success" })
+    } else {
+        toast.add({ title: (revertGroupToLinkingStateReq.error.value?.data as any).data.message, color: "error" })
+    }
+}
+
 </script>

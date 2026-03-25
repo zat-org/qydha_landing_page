@@ -78,80 +78,15 @@
         </template>
         <template #actions-cell="{ row }">
           <UButtonGroup>
-            <!-- view single -->
-            <!-- <UButton icon="i-lucide-eye" :to="`/tournament/${row.original.id}`" variant="outline"/> -->
-            <!-- edit -->
+         
             <UButton   v-if="isAdmin"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
-            <!-- <UDropdownMenu 
-            v-if="userStore.isOrganizer" 
-            :items="[{label:'طلبات الانضمام',to:`/tournament/${row.original.id}/Joinrequest`}]"  >
-              <UButton icon="i-lucide-menu"  variant="outline" />
-            </UDropdownMenu> -->
+  
 
           </UButtonGroup>
         </template>
       </UTable>
       <UPagination v-if="getReq.status.value == 'success' && data && data.length > 0" v-model:page="filters.PageNumber" :page-count="getReq.data.value?.data.totalPages" :total="getReq.data.value?.data.totalCount" class="mx-auto" />
-      <!-- <UTable :data="filteredRows" :columns="cols"  :loading="loading" hover class="flex-1">
-        <template #empty-state>
-          <div class="flex flex-col items-center justify-center py-12 px-4">
-            <UIcon name="i-heroicons-inbox" class="text-4xl text-gray-400 mb-2" />
-            <p class="text-gray-500">لا توجد بطولات متاحة</p>
-          </div>
-        </template>
-
-        <template #showInQydha-cell="{ row }">
-          <UBadge :color="row.original.showInQydha ? 'success' : 'neutral'" variant="subtle"
-            :label="row.original.showInQydha ? 'معروض' : 'مخفي'" />
-        </template>
-
-        <template #links-cell="{ row }">
-         <UButtonGroup>
-          <UDropdownMenu :items="[
-            {
-              label: 'الخريطة',
-              icon: 'i-heroicons-chart-bar',
-              to: `/tournament/${row.original.id}/bracket`
-            },
-            {
-              label: 'المسؤولين',
-              icon: 'i-heroicons-user-group', 
-              to: `/tournament/${row.original.id}/moderator`
-            },
-            {
-              label: 'الطلبات',
-              icon: 'i-heroicons-inbox-stack',
-              to: `/tournament/${row.original.id}/request`
-            },
-            {
-              label: 'اللاعبين',
-              icon: 'i-heroicons-users',
-              to: `/tournament/${row.original.id}/player`
-            },
-            {
-              label: 'الطاولات', 
-              icon: 'i-heroicons-table-cells',
-              to: `/tournament/${row.original.id}/table`
-            },
-            {
-              label: 'المجموعات',
-              icon: 'i-heroicons-user-circle',
-              to: `/tournament/${row.original.id}/group`
-            }
-          ]">
-            <UButton color="primary" variant="ghost">
-              <UIcon name="i-heroicons-ellipsis-vertical" />
-              إدارة البطولة
-            </UButton>
-          </UDropdownMenu>
-
-         </UButtonGroup>
-      
-        </template>
-      </UTable> -->
-
-      <!-- <UPagination class="mx-auto" v-if="totalPages > 1" v-model="currentPage" :page-count="totalPages"
-        :total="totalItems" /> -->
+     
     </div>
   </UCard>
 </template>

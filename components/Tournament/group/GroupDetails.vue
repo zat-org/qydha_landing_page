@@ -3,10 +3,13 @@
         <template #header>
             <UButtonGroup>
                 <UButton color="success" variant="soft" size="sm" @click="createMatches">انشاء المباريات </UButton>
-                <UButton color="primary" icon="i-heroicons-plus" variant="soft" size="sm" @click="linkTeam">اضافة فريق
+
+                <UButton color="primary" icon="i-heroicons-plus" variant="soft" size="sm" @click="linkTeam"
+                    v-if="groupDetails?.state == GroupState.TeamsLinking">اضافة فريق
                 </UButton>
-                <UButton color="error" icon="i-heroicons-minus" variant="soft" size="sm" @click="unlinkTeam"
-                    :disabled="selectedTeamsIds.length === 0">حذف الفريق </UButton>
+                <UButton v-if="groupDetails?.state == GroupState.TeamsLinking" color="error" icon="i-heroicons-minus"
+                    variant="soft" size="sm" @click="unlinkTeam" :disabled="selectedTeamsIds.length === 0">حذف الفريق
+                </UButton>
             </UButtonGroup>
         </template>
         <!-- Loading State -->
@@ -39,19 +42,22 @@
             </div>
         </div>
     </UCard>
-<CreateMatchDrawer ref="createMatchDrawer" :group="group" />
-
+    <CreateMatchDrawer ref="createMatchDrawer" :group="group" />
+    <LinkTeamDrawer ref="linkTeamDrawer" :group="group" />
 
 </template>
 
 <script lang="ts" setup>
-import type { Group, DetailGroup } from "~/models/group";
+import { GroupState, type Group, type DetailGroup } from "~/models/group";
 import loading from "~/components/loading.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";
-
-
+// import LinkTeamDrawer from "./LinkTeamDrawer.vue";
+const LinkTeamDrawer = defineAsyncComponent(() =>
+    import('./LinkTeamDrawer.vue')
+)
 const createMatchDrawer = useTemplateRef('createMatchDrawer');
 
+const linkTeamDrawer = useTemplateRef('linkTeamDrawer');
 interface Props {
     group: Group;
 }
@@ -61,19 +67,20 @@ interface TableRow {
     teamName: string;
     original: DetailGroup['teams'][0];
 }
-
+import { useTourrnamentTeam } from '~/composables/tourrnamentTeam';
 const props = defineProps<Props>();
 const route = useRoute();
 const tour_id = route.params.id.toString();
 const groupApi = useGroup();
 const groupDetailREQ = await groupApi.getGroupDetails(tour_id, props.group.id);
-
+const unlinkTeamFromGroupReq = await useTourrnamentTeam().unlinkTeamFromGroup();
 const selectedTeams = ref();
 
 // Extract group details data
 const groupDetails = computed<DetailGroup | null>(() => {
     return groupDetailREQ.data.value?.data || null;
 });
+const toast = useToast();
 
 const TableRef = useTemplateRef('table');
 // Create table data with team names from players
@@ -121,7 +128,7 @@ const columns: TableColumn<TableRow>[] = [
 ];
 
 const selectedTeamsIds = computed(() => {
-    return TableRef?.value?.tableApi?.getFilteredSelectedRowModel().rows?.map((item: any) => item.original.id ) ||[];
+    return TableRef?.value?.tableApi?.getFilteredSelectedRowModel().rows?.map((item: any) => item.original.id) || [];
 });
 
 const createMatches = () => {
@@ -131,12 +138,23 @@ const createMatches = () => {
     }
 }
 const linkTeam = () => {
-    console.log('linkTeam');
-    console.log(selectedTeamsIds.value);
+
+    if (linkTeamDrawer.value) {
+        linkTeamDrawer.value.open = true;
+    }
+
 }
 
-const unlinkTeam = () => {
-    console.log('unlinkTeam', selectedTeamsIds.value);
+const unlinkTeam = async () => {
+    await unlinkTeamFromGroupReq.fetchREQ(tour_id, props.group.id, selectedTeamsIds.value);
+    if (unlinkTeamFromGroupReq.status.value == "success") {
+        toast.add({ title: "تم إزالة الفريق بنجاح", color: "success" })
+        groupDetailREQ.refresh()
+    } else {
+        const error = (unlinkTeamFromGroupReq.error.value?.data as any).data.message
+        toast.add({ title: error, color: "error" })
+    }
+    selectedTeams.value = {};
 }
 
 

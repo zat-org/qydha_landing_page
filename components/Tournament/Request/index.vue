@@ -5,7 +5,6 @@
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-3xl font-bold"> طلبات البطولات </h1>
-            <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
           <div class="flex gap-3" v-if="userStore.isOrganizer">
             <UButton variant="outline" color="primary" icon="i-lucide-calculator" to="/tournament/request/calcaulator"
@@ -35,16 +34,11 @@
       </div>
     </template>
 
-    <!-- if role is Admin  show Admin Table -->
-    <!-- compoenet datt form compoennt filter   -->
-
-    <!-- if role is Oranizer  show Oranizer Table  -->
-
+   
 
     <div class="  flex flex-col flex-1  ">
-      <!-- {{ !data.data }} -->
-      <!-- {{ pending }} -->
-      <Loading v-if="status == 'pending' && !data" class="mt-10" />
+
+      <Loading v-if="status == 'pending' " class="mt-10" />
       <component v-else :is="userStore.isStaffAdmin || userStore.isSuperAdmin
         ? TournamentAdminRequestTable
         : TournamentOranizerRequestTable" />

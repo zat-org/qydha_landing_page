@@ -186,7 +186,7 @@ const localSchema = object({
     startAt: string()
         .required("تاريخ بداية  البطولة مطلوب")
         .test('start-date-valid', 'تاريخ بداية  البطولة  غير صحيح', function (value) {
-            if (!value) return true; // Let required validation handle empty values
+            if (!value) return true; 
             const date = new Date(value);
             return !isNaN(date.getTime());
         })
@@ -195,9 +195,7 @@ const localSchema = object({
             const date = new Date(value);
             const today = new Date();
 
-            // Set time portion of both to zero for date-only comparison
-            // date.setHours(0, 0, 0, 0);
-            // today.setHours(0, 0, 0, 0);
+    
             return date >= today;
         }),
 
@@ -215,10 +213,6 @@ const localSchema = object({
             const startDate = new Date(start);
             const endDate = new Date(value);
 
-            // Check if dates are valid
-            // if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-            //     return true; // Let other validations handle invalid dates
-            // }
             return endDate > startDate;
         }),
 
@@ -244,9 +238,7 @@ const localSchema = object({
                     const date = new Date(value);
                     const today = new Date();
 
-                    // Set time portion of both to zero for date-only comparison
-                    // date.setHours(0, 0, 0, 0);
-                    // today.setHours(0, 0, 0, 0);
+                
                     return date >= today;
                 })
             ,
