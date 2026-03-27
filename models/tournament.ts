@@ -2,6 +2,7 @@ import type { TournamentType } from "./tournamenetType";
 import type { TournamentModerator } from "./tournamentModeratorr";
 import type { TournamentOwner } from "./tournamentOwner";
 import type { TournamentPrize } from "./tournamentPrize";
+import type { TournamentPlayerJoinRequestType } from "./tournamentRequest";
 import type { Privilege } from "./user";
 
 export interface ITournamentCreate {
@@ -61,6 +62,8 @@ export interface TournamentUpdate {
   sponsors: File[];
   rules: string[];
   ownerId: string;
+  allowedJoinRequestType: TournamentPlayerJoinRequestType;
+  minimumSubscriptionDays: number;
 }
 export interface Tournament {
   id: string;
@@ -117,6 +120,8 @@ export interface DetailTournament {
     sponsors: string[];
     tournamentPrivatePassword: null | string;
     hasQualificationsStage: boolean;
+    allowedJoinRequestType: TournamentPlayerJoinRequestType;
+    minimumSubscriptionDays: number;
   };
   requesterPrivilege: {
     privilege: string;

@@ -61,7 +61,7 @@
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/models/tournamentPrize'
 import { TournamentType } from '~/models/tournamenetType'
 
-import { type TournamentCreationRequest, type UpdateTournamentCreationRequest } from '~/models/tournamentRequest';
+import { TournamentPlayerJoinRequestType, type TournamentCreationRequest, type UpdateTournamentCreationRequest } from '~/models/tournamentRequest';
 import { useMyAuthStore } from '~/store/Auth';
 import type { TournamentUpdate } from '~/models/tournament';
 
@@ -118,6 +118,8 @@ const formData = reactive<TournamentUpdate>({
     joinRequestEndAt: undefined,
     joinRequestMaxCount: undefined,
     rules: [],
+    allowedJoinRequestType: TournamentPlayerJoinRequestType.All,
+    minimumSubscriptionDays: 0,
     ownerId: "",
 
 });
@@ -146,6 +148,8 @@ const assignData = () => {
         formData.joinRequestStartAt = data.joinRequestStartAt ?? undefined
         formData.showInQydha = data.showInQydha
         formData.ownerId = data.owner.id
+        formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.All
+        formData.minimumSubscriptionDays = data.minimumSubscriptionDays ?? 0
 
     } else {
         // navigateTo('/tournament/request')

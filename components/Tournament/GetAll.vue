@@ -79,7 +79,7 @@
         <template #actions-cell="{ row }">
           <UButtonGroup>
          
-            <UButton   v-if="isAdmin"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
+            <UButton   v-if="isAdmin && row.original.state == TournamentState.Upcoming"  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
   
 
           </UButtonGroup>

@@ -7,22 +7,11 @@
       <UForm :state="state" :schema="schema" ref="refreeForm" @submit="onSubmit">
 
         <UFormField label="اسم الحكم " name="username">
-          <USelectMenu
-          :resetSearchTermOnBlur="false"
-          :resetSearchTermOnSelect="false"
-          clear-search-on-close
-           v-model="state.username"
-           v-model:search-term="searchTerm"
-           :loading="getusers.status.value=='pending'"
-            v-if="authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')"
-            :items="Users"  
-            label-key="username" 
-            value-key="username"
-            searchable
-            placeholder="ابحث عن حكم..." />
-
-          <UInput v-model="state.username" v-else />
-
+          <UserSelectMenu
+            v-model="state.username"
+            :remote-search="canPickUserFromList"
+            placeholder="ابحث عن حكم..."
+          />
         </UFormField>
       </UForm>
       <template #footer>
@@ -37,7 +26,6 @@
 
 <script lang="ts" setup>
 import { object, string } from "yup"
-import { refDebounced } from '@vueuse/core'
 
 const emit = defineEmits(['close'])
 const route = useRoute()
@@ -46,30 +34,14 @@ const toast = useToast()
 const refreeAddREQ = await useTournamentRefree().addTourRefree()
 import { useMyAuthStore } from "~/store/Auth";
 const refreeForm = ref()
-const getusers = await useUsers().getAllUsers()
 
 const authStore = useMyAuthStore()
 
-if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-  await getusers.fetchREQ('')
-}
-
-const Users = computed(() => {
-  if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-    return getusers.data.value?.data.items
-  }
-})
-
-const searchTerm = ref("")
-const searchTermDebounced = refDebounced(searchTerm, 500)
-
-// Watch for changes in the debounced search term and trigger backend search
-watch(searchTermDebounced, async (newSearchTerm) => {
-  if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-    await getusers.fetchREQ(newSearchTerm || "")
-  }
-})
-
+const canPickUserFromList = computed(
+  () =>
+    !!authStore.user?.user.roles?.includes("SuperAdmin") ||
+    !!authStore.user?.user.roles?.includes("StaffAdmin")
+)
 
 const schema = object({
   username: string().required("برجاء ادخال اسم الحكم")

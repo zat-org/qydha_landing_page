@@ -50,13 +50,14 @@
             </UFormField>
 
             <template v-if="modelValue.addPlayersByQydha">
-                <!-- <UFormField label="بداية تقديم طلبات الانضمام" name="joinRequestStartAt">
-                    <AsyncDatePicker v-model="model.joinRequestStartAt" :max-date="model.startAt" />
+             
+                <UFormField label="نوع طلبات الانضمام" name="allowedJoinRequestType">
+                    <USelect v-model="model.allowedJoinRequestType" :items="TournamentPlayerJoinRequestTypeOptions" />
                 </UFormField>
-                <UFormField label="انتهاء تقديم طلبات الانضمام" name="joinRequestEndAt">
-                    <AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt"
-                        :max-date="model.startAt" />
-                </UFormField> -->
+                <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays">
+                    <UInput type="number" v-model="model.minimumSubscriptionDays" min="1" placeholder="0" />
+                </UFormField>
+
                 <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount">
                     <UInput type="number" v-model="model.joinRequestMaxCount" />
                 </UFormField>
@@ -81,65 +82,6 @@
             </UFormField>
 
 
-            <!-- <TournamentAddTourDetailFormTournamentSchedule v-model="model" :best-time="timeNeeded"
-                :time-available="timeAvailable" :teams-count="model.TeamsCount" :tables-count="model.TablesCount"
-                :sakka-options="model.SakkaOptions" /> -->
-
-            <!-- <div class="flex items-center gap-2">
-                <UFormField label=" مين يسجل النشرة " name="TeamSelectionMode" class=" flex-1">
-                    <USelect v-model="selectedRfreeOption" :items="refreeeOptions" placeholder="اختر مين يسجل النشرة"
-                        @update:model-value="onSelectionModeChange()" />
-                </UFormField>
-                <UFormField v-if="selectedRfreeOption === 'refree'"
-                    :hint="` افضل عدد حكام لادارة الفرق  ${BestNumberofTables} حكام `" label=" عدد الحكام"
-                    name="RefreeCount" class=" flex-1">
-                    <UInput v-model="model.RefreeCount" type="number" placeholder="0" />
-                </UFormField>
-            </div> -->
-            <!-- 
-            <UFormField label="  نوع توزيع الفرق" name="TeamSelectionMode" class=" flex-1">
-                <USelect v-model="model.TeamSelectionMode" :items="TeamSelectionModeOptions"
-                    placeholder="اختر نوع توزيع الفرق" />
-            </UFormField> -->
-
-            <!-- <UFormField label="  هل تحتاج البطولة الاحصائيات عن طريق التسجيل المتقدم " name="StatisticsNeed">
-                <USwitch size="xl" v-model="model.StatisticsNeed" color="primary" class="w-[200px]" />
-                <template #label>
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        هل تحتاج البطولة الاحصائيات عن طريق التسجيل المتقدم
-                    </span>
-                    <UPopover>
-                        <UButton icon="i-heroicons-question-mark-circle" variant="ghost" color="neutral" />
-                        <template #content>
-                            <img src="~assets/images/staticsExample.jpeg" alt="مثال على الاحصائيات"
-                                class="w-32 md:w-64 h-auto rounded-lg" />
-                        </template>
-</UPopover>
-</template>
-</UFormField> -->
-
-
-
-            <!-- <div v-if="model.SakkaOptions.length > 0" class="space-y-4 mt-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h4 class="text-md font-medium text-gray-700 dark:text-gray-200">اختيارات الصكات لكل دور</h4>
-                    <div
-                        class="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded">
-                        التوقيت: 1 صكة = 30د، 3 صكات = 60د، 5 صكات = 90د
-                    </div>
-                </div>
-                <div v-for="(sakka, index) in model.SakkaOptions" :key="index"
-                    class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex-1">
-                            <UFormField :label="sakka.group" :name="`SakkaOptions[${index}].sakka`"
-                                :hint="`${calculateMatchTimeDisplay(parseInt(sakka.sakka))} لكل مباراة`">
-                                <USelect v-model="sakka.sakka" value-key="value" :items="SelectSakkaOptions" />
-                            </UFormField>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
 
         </UForm>
     </UCard>
@@ -148,6 +90,7 @@
 <script lang="ts" setup>
 import { object, string, number, boolean, array } from "yup";
 import type { TournamentPrizeType } from "~/models/tournamentPrize";
+import { TournamentPlayerJoinRequestType } from "~/models/tournamentRequest";
 
 const model = defineModel<{
     startAt: string;
@@ -167,16 +110,9 @@ const model = defineModel<{
     joinRequestStartAt?: string;
     joinRequestMaxCount?: number;
     showInQydha:boolean;
-
-    // TournametPrizeOption: number;
-    // TournametPrize: { money: number, items: string[], position: number, isMoney: boolean, isItem: boolean, currency: string }[];
-    // RefreeNeed: boolean;
-    // RefreeCount: number;
-    // StatisticsNeed: boolean;
-    // SakkaOptions: { group: string, sakka: string }[],
-    // TournamentDaysNumber: number;
-    // TournamentDates: { date: string, startTime: string, endTime: string }[];
-    // TeamSelectionMode: string;
+    allowedJoinRequestType: TournamentPlayerJoinRequestType;
+    minimumSubscriptionDays: number;
+ 
 }>({ required: true })
 
 const minstartDate = computed(() => {
@@ -198,6 +134,21 @@ const isValidating = ref(false);
 // Add form ref for Nuxt UI validation
 const form = useTemplateRef("form");
 provide('formRef', form);
+
+const TournamentPlayerJoinRequestTypeOptions = [
+    {
+        label: "كل الطلبات",
+        value: TournamentPlayerJoinRequestType.All,
+    },
+    {
+        label: "طلبات فردية",
+        value: TournamentPlayerJoinRequestType.Single,
+    },
+    {
+        label: "طلبات الفرق",
+        value: TournamentPlayerJoinRequestType.Team,
+    },
+]
 
 
 const localSchema = object({
