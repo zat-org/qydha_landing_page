@@ -14,8 +14,8 @@ import { useMyTournamentStore } from "~/store/tournament";
 
 export const useTournament = () => {
   const userStore = useMyAuthStore();
-  const toast=useToast();
-  const { $api ,$qaydhaapi} = useNuxtApp();
+  const toast = useToast();
+  const { $api, $qaydhaapi } = useNuxtApp();
   const tournamentStateLabel: Record<TournamentState, string> = {
     [TournamentState.Upcoming]: "القادمة",
     [TournamentState.Running]: "الجارية",
@@ -61,22 +61,25 @@ export const useTournament = () => {
       [() => param.value.States, () => param.value.OrderByStartAtDirection],
       (newValue, oldValue) => {
         param.value.PageNumber = 1;
-      }
+      },
     );
 
     const { data, pending, error, refresh, status } =
       await useLazyAsyncData<getTournamentResponse>(
         "getAllTournament",
         () => $api("/tournaments/dashboard", { query: unref(param) }),
-        { watch: [unref(param)], server: false }
+        { watch: [unref(param)], server: false },
       );
-      watch(status,()=>{
-        if (status.value == 'success') {
-          const tournaments = data.value?.data.items as Tournament[]
+    watch(
+      status,
+      () => {
+        if (status.value == "success") {
+          const tournaments = data.value?.data.items as Tournament[];
           // useMyTournamentStore().setSelectedTournament(tournaments)
         }
-      },{immediate:true})
-    
+      },
+      { immediate: true },
+    );
 
     return { data, pending, error, refresh, status };
   };
@@ -86,16 +89,19 @@ export const useTournament = () => {
       () => {
         return $api(`/tournaments/${tournamentId}/dashboard`);
       },
-      
     );
   };
   const setupTournament = (tournamentId: string) => {
-    const body= ref()
-    const result=useAsyncData(
-        `setupTournament-${tournamentId}`,
-        () => $api(`/tournaments/${tournamentId}/stages/setup`, { method: "POST", body: unref(body) }),
-        { immediate: false }
-      );
+    const body = ref();
+    const result = useAsyncData(
+      `setupTournament-${tournamentId}`,
+      () =>
+        $api(`/tournaments/${tournamentId}/stages/setup`, {
+          method: "POST",
+          body: unref(body),
+        }),
+      { immediate: false },
+    );
     const fetchREQ = async (type: string) => {
       console.log(type);
       if (type == "direct") {
@@ -105,15 +111,14 @@ export const useTournament = () => {
         };
       }
       await result.execute();
-      if (result.status.value == 'success') {
+      if (result.status.value == "success") {
         toast.add({
-          title: 'تم بدء تنظيم البطولة',
-          description: 'تم بدء تنظيم البطولة بنجاح',
-          color: 'success',
+          title: "تم بدء تنظيم البطولة",
+          description: "تم بدء تنظيم البطولة بنجاح",
+          color: "success",
         });
-        refreshNuxtData(`getSingelTournament-${tournamentId}`)
+        refreshNuxtData(`getSingelTournament-${tournamentId}`);
       }
-
     };
     return { result, fetchREQ };
   };
@@ -124,11 +129,11 @@ export const useTournament = () => {
       await useAsyncData(
         `updateTournament-${tournamentId}`,
         () =>
-          $api(`/tournaments/${tournamentId}/admin`, {
+          $api(`/tournaments/${tournamentId}`, {
             method: "PUT",
             body: unref(body),
           }),
-        { immediate: false }
+        { immediate: false },
       );
 
     const fetchREQ = async (_body: TournamentUpdate) => {
@@ -143,7 +148,7 @@ export const useTournament = () => {
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
       body.value.append(
         "isContactPhoneWhatsapp",
-        String(_body.isContactPhoneWhatsapp)
+        String(_body.isContactPhoneWhatsapp),
       );
       body.value.append("showInQydha", String(_body.showInQydha));
       body.value.append("addPlayersByQydha", String(_body.addPlayersByQydha));
@@ -152,28 +157,20 @@ export const useTournament = () => {
       if (_body.addPlayersByQydha) {
         if (_body.joinRequestStartAt) {
           console.log();
-          body.value.append(
-            "joinRequestStartAt",
-            _body.joinRequestStartAt
-          );
+          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
         }
         if (_body.joinRequestEndAt) {
-          body.value.append(
-            "joinRequestEndAt",
-            _body.joinRequestEndAt
-          );
+          body.value.append("joinRequestEndAt", _body.joinRequestEndAt!);
         }
-        if (_body.joinRequestMaxCount) {
-          body.value.append(
-            "joinRequestMaxCount",
-            String(_body.joinRequestMaxCount)
-          );
-        }
+        body.value.append(
+          "joinRequestMaxCount",
+          String(_body.joinRequestMaxCount),
+        );
       }
       if (_body.tournamentPrivatePassword) {
         body.value.append(
           "tournamentPrivatePassword",
-          _body.tournamentPrivatePassword
+          _body.tournamentPrivatePassword,
         );
       }
 
@@ -182,16 +179,16 @@ export const useTournament = () => {
 
       body.value.append(
         "remainingSponsorsUrls",
-        JSON.stringify(_body.remainingSponsorsUrls)
+        JSON.stringify(_body.remainingSponsorsUrls),
       );
       _body.sponsors.forEach((sponsor, index) => {
         body.value!.append(`sponsors[${index}]`, sponsor);
       });
       body.value.append("prizes", JSON.stringify(_body.prizes));
-      if(_body.rules.length > 0){
+      body.value.append("ownerId", _body.ownerId);
+      if (_body.rules.length > 0) {
         body.value!.append("rules", JSON.stringify(_body.rules));
-
-      }else{
+      } else {
         body.value!.append("rules", "[]");
       }
 
@@ -204,7 +201,7 @@ export const useTournament = () => {
     const result = await useAsyncData(
       `startTournament-${tournamentId}`,
       () => $api(`/tournaments/${tournamentId}/start`, { method: "POST" }),
-      { immediate: false }
+      { immediate: false },
     );
 
     const fetchREQ = async () => {
@@ -214,12 +211,12 @@ export const useTournament = () => {
     return { result, fetchREQ };
   };
 
-const getTournamentStatistics = async (tournamentId: string) => {
- return  await useLazyAsyncData<{data:TournamentStatistics}>(
-    `getTournamentStatistics-${tournamentId}`,
-    () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
-  );
-};
+  const getTournamentStatistics = async (tournamentId: string) => {
+    return await useLazyAsyncData<{ data: TournamentStatistics }>(
+      `getTournamentStatistics-${tournamentId}`,
+      () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
+    );
+  };
 
   // const updatTourQydhaAndOwner = async () => {
 
@@ -261,6 +258,6 @@ const getTournamentStatistics = async (tournamentId: string) => {
     getTournamnetOrderStartAtOptions,
     setupTournament,
     startTournament,
-    getTournamentStatistics
+    getTournamentStatistics,
   };
 };

@@ -32,7 +32,6 @@ export interface ITournamentUpdate {
   startAt: string | Date;
   endAt: string | Date;
 }
-///////
 
 export interface TournamentUpdate {
   title: string;
@@ -50,7 +49,6 @@ export interface TournamentUpdate {
   joinRequestEndAt?: string;
   joinRequestMaxCount?: number;
   addPlayersByQydha: boolean;
-  // addPlayesrByQydha: boolean;
   teamsCount: number;
   tablesCount: number;
   contactPhone: string;
@@ -62,6 +60,7 @@ export interface TournamentUpdate {
   remainingSponsorsUrls: string[];
   sponsors: File[];
   rules: string[];
+  ownerId: string;
 }
 export interface Tournament {
   id: string;
@@ -147,24 +146,23 @@ export interface GetTournamentParams {
 export interface TournamentStatistics {
   matchesCount: number;
   statistics: {
-    
     sra: number;
     baloot: number;
     khamsen: number;
     me2a: number;
     rob3ome2a: number;
-    
+
     ekak: number;
     aklat: number;
-    
+
     moshtaraSunCount: number;
     moshtaraHokmCount: number;
     wonMoshtaraCount: number;
     lostMoshtaraCount: number;
-    
+
     sunKaboot: number;
     hokmKaboot: number;
-    
+
     playedSakkas: number;
     winnedSakkas: number;
     lostSakka: number;

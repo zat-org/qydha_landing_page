@@ -118,19 +118,8 @@ const formData = reactive<TournamentUpdate>({
     joinRequestEndAt: undefined,
     joinRequestMaxCount: undefined,
     rules: [],
-    // rules: [],
-    // TournamentDates: [{ date: "", startTime: "", endTime: "" }],
-    // connectionPhoneNumberForPlayers: "",
-    // Sponsered: false,
-    // TournamentStartEnrolmmentDate: "",
-    // TournamentEndEnrolmmentDate: "",
-    // TournametPrizeOption: 1,
-    // TeamSelectionMode: "auto",
-    // TournamentDaysNumber: 1,
-    // RefreeCount: 0,
-    // RefreeNeed: false,
-    // StatisticsNeed: false,
-    // SakkaOptions: [],
+    ownerId: "",
+
 });
 const assignData = () => {
     const data = getReq.data.value?.data.tournament ?? null
@@ -156,6 +145,7 @@ const assignData = () => {
         formData.joinRequestMaxCount = data.joinRequestMaxCount ?? undefined
         formData.joinRequestStartAt = data.joinRequestStartAt ?? undefined
         formData.showInQydha = data.showInQydha
+        formData.ownerId = data.owner.id
 
     } else {
         // navigateTo('/tournament/request')
