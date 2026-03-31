@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import * as signalR from "@microsoft/signalr";
-import type { Group, Match } from '~/models/group';
+import type { Group, Match, RoundGroupDetails } from '~/models/group';
 import type { IMatchData, IMathStat } from '~/models/MatchStat';
 
 export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
@@ -11,6 +11,16 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 	const selectedTournamentId = ref<string>("");
 	const tournament = ref<{ data: Group, matches: Match[] }[]>([])
 	const connection  =ref<signalR.HubConnection>()
+	const rounds = ref<RoundGroupDetails['rounds']>([])
+	const selectedRound = ref<RoundGroupDetails['rounds'][0]>()
+	const handleRoundSelection = (roundId: string) => {
+		if (selectedRound.value?.id == roundId) {
+			selectedRound.value = undefined;
+			return;
+		};
+		selectedRound.value = rounds.value.find(r => r.id == roundId)
+	}
+
 
 	const matchesTree = computed((): Match[] | undefined => {
 		if (!selectedGroup.value) return undefined;
@@ -97,10 +107,12 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 		if (matchesREQ.status.value == "error" || !matchesREQ.data || !matchesREQ.data.value) return;
 
 		let g = tournament.value.find(g => g.data.id == selectedGroup.value?.data.id);
+		console.log(g)
 		if (g == null) return;
-		// console.log(matchesREQ.data.value.data)
 		g.matches = matchesREQ.data.value.data;
-
+		const roundsREQ = await groupApi.getRoundsGroupDetails(tournamentId, selectedGroup.value.data.id)
+		if (roundsREQ.status.value == "error" || !roundsREQ.data || !roundsREQ.data.value) return;
+		rounds.value = roundsREQ.data.value.data.rounds;
 		connection.value  = await initWebsocket(tournamentId);
 	}
 	const fetchGame = async (id: string) => {
@@ -156,5 +168,5 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 		connection.on("braket updated", handleBracketUpdated)
 		return connection
 	}
-	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ}
+	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ, rounds, selectedRound, handleRoundSelection}
 })

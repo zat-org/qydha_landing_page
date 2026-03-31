@@ -122,9 +122,12 @@ import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "../Bracket/StatusModal.vue";
 import EditModal from "../Bracket/EditModal.vue";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
+import { useMyTournamentStore } from "@/store/tournament";
 
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
 
+const tourStore = useMyTournamentStore();
+const { selectedRound } = storeToRefs(tourStore);
 const showLogo = computed(() => props.data.showLogo === true);
 const useStore = useMyAuthStore()
 const { privilege, permissions } = storeToRefs(useStore)
@@ -133,6 +136,7 @@ const toast = useToast();
 
 // Computed properties for conditional classes
 const matchContainerClasses = computed(() => ({
+  'opacity-50': selectedRound.value?.name != props.data.match.roundName && selectedRound.value?.name != undefined,
   'bg-blue-200 dark:bg-blue-800': props.data.match.state == 'Running' || props.data.match.state == 'Paused',
   'bg-white dark:bg-gray-800': props.data.match.level != 1 && props.data.match.state == 'Created' || props.data.match.state == 'Ended',
   'border-2 border-[#FFD200] dark:border-yellow-500': props.data.match.level == 1 && props.data.match.matchQualifyThemTeamFrom == 'Winner' && props.data.match.matchQualifyUsTeamFrom == 'Winner',
