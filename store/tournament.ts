@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import * as signalR from "@microsoft/signalr";
 import type { Group, Match, RoundGroupDetails } from '~/models/group';
 import type { IMatchData, IMathStat } from '~/models/MatchStat';
+import type { DetailTournament } from '~/models/tournament';
 
 export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 
@@ -9,6 +10,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 	const groupApi = useGroup();
 	const games = ref<{ id: string, game: IMatchData, statistics: IMathStat }[]>([])
 	const selectedTournamentId = ref<string>("");
+	const tournamentDashboard = ref<DetailTournament['tournament'] | null>(null);
 	const tournament = ref<{ data: Group, matches: Match[] }[]>([])
 	const connection  =ref<signalR.HubConnection>()
 	const rounds = ref<RoundGroupDetails['rounds']>([])
@@ -19,6 +21,28 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 			return;
 		};
 		selectedRound.value = rounds.value.find(r => r.id == roundId)
+	}
+
+	const refreshTournamentDashboard = async (tournamentId: string) => {
+		try {
+			const req = await useTournament().getSingelTournament(tournamentId);
+			await req.execute();
+			tournamentDashboard.value = req.data.value?.data.tournament ?? null;
+		} catch {
+			tournamentDashboard.value = null;
+		}
+	}
+
+	const refreshRounds = async (tournamentId: string, groupId: string) => {
+		const roundsREQ = await groupApi.getRoundsGroupDetails(tournamentId, groupId)
+		if (roundsREQ.status.value == "error" || !roundsREQ.data || !roundsREQ.data.value) return;
+
+		rounds.value = roundsREQ.data.value.data.rounds;
+
+		// Keep selectedRound stable after refresh (if still exists)
+		if (selectedRound.value?.id) {
+			selectedRound.value = rounds.value.find(r => r.id == selectedRound.value?.id)
+		}
 	}
 
 
@@ -90,6 +114,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 	const initStore = async () => {
 		const tournamentId = route.params.id.toString()
 		selectedTournamentId.value = tournamentId;
+		await refreshTournamentDashboard(tournamentId);
 		// groupsREQ.value = undefined;
 		// const { data, pending, error, refresh, status } = await groupsREQ
 		// await groupsREQ.value?.refresh();
@@ -110,9 +135,7 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 		console.log(g)
 		if (g == null) return;
 		g.matches = matchesREQ.data.value.data;
-		const roundsREQ = await groupApi.getRoundsGroupDetails(tournamentId, selectedGroup.value.data.id)
-		if (roundsREQ.status.value == "error" || !roundsREQ.data || !roundsREQ.data.value) return;
-		rounds.value = roundsREQ.data.value.data.rounds;
+		await refreshRounds(tournamentId, selectedGroup.value.data.id)
 		connection.value  = await initWebsocket(tournamentId);
 	}
 	const fetchGame = async (id: string) => {
@@ -168,5 +191,5 @@ export const useMyTournamentStore = defineStore('myTournamentStore',  () => {
 		connection.on("braket updated", handleBracketUpdated)
 		return connection
 	}
-	return { initStore, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ, rounds, selectedRound, handleRoundSelection}
+	return { initStore, refreshTournamentDashboard, tournamentDashboard, refreshRounds, tournament, matchesTree, loserMatches, selectedGroup, games, fetchGame,closeConnection ,groupsREQ, rounds, selectedRound, handleRoundSelection}
 })

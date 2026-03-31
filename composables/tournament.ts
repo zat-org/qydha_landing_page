@@ -10,7 +10,6 @@ import {
   type TournamentStatistics,
 } from "~/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
-import { useMyTournamentStore } from "~/store/tournament";
 
 export const useTournament = () => {
   const userStore = useMyAuthStore();
@@ -91,6 +90,7 @@ export const useTournament = () => {
       },
     );
   };
+  
   const setupTournament = (tournamentId: string) => {
     const body = ref();
     const result = useAsyncData(

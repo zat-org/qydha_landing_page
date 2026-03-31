@@ -119,6 +119,10 @@ const props = defineProps<{
     groupId: string;
 }>();
 
+const emit = defineEmits<{
+    (e: 'updated'): void;
+}>();
+
 const open = ref(false);
 const toast = useToast();
 
@@ -238,6 +242,7 @@ const handleSubmit = async () => {
                 color: 'success'
             });
             open.value = false;
+            emit('updated');
         } else if (updateRoundREQ.result.error.value) {
             toast.add({
                 title: 'خطأ في التحديث',
