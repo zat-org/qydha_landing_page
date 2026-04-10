@@ -17,20 +17,22 @@
               <NuxtLink :to="link.href" class="text-sm font-medium">{{ link.text }}</NuxtLink>
         </li>
       </ul>
+<div class="flex flex-col items-center space-y-4">
+  <div class="flex flex-wrap justify-center gap-3">
+    <UButtonGroup size="sm" orientation="horizontal" class="bg-white dark:bg-white/10 backdrop-blur-sm">
+      <UBadge  color="white" class="text-gray-700 dark:text-gray-300" label="customer-support@qydha.com" />
+      <UButton icon="i-heroicons-envelope" color="primary" to="mailto:customer-support@qydha.com" />
+</UButtonGroup>
 
-          <div class="flex flex-wrap justify-center gap-3">
-            <UButtonGroup size="sm" orientation="horizontal" class="bg-white dark:bg-white/10 backdrop-blur-sm">
-              <UBadge  color="white" class="text-gray-700 dark:text-gray-300" label="customer-support@qydha.com" />
-              <UButton icon="i-heroicons-envelope" color="primary" to="mailto:customer-support@qydha.com" />
-        </UButtonGroup>
-
-            <UButtonGroup size="sm"  orientation="horizontal" class="bg-white flex  dark:bg-white/10 backdrop-blur-sm">
-              <UBadge  color="white" class="text-gray-700 dark:text-gray-300" >
-                <p dir="ltr">{{ phonenumber }}</p>
-              </UBadge>
-              <UButton icon="i-heroicons-phone" color="primary" @click="sendMessage" />
-        </UButtonGroup>
-      </div>
+    <UButtonGroup size="sm"  orientation="horizontal" class="bg-white flex  dark:bg-white/10 backdrop-blur-sm">
+      <UBadge  color="white" class="text-gray-700 dark:text-gray-300" >
+        <p dir="ltr">{{ phonenumber }}</p>
+      </UBadge>
+      <UButton icon="i-heroicons-phone" color="primary" @click="sendMessage" />
+</UButtonGroup>
+</div>
+<p class="text-center text-sm text-gray-500 dark:text-gray-400">OSAMA ABDULLAH MOHAMMED </p>
+</div>
     </div>
 
         <!-- Social Media -->
