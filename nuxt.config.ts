@@ -97,6 +97,11 @@ export default defineNuxtConfig({
       authDomain: process.env.authDomain,
       projectId: process.env.projectId,
       appId: process.env.appId,
+      /** In-memory banner list (no API). Dev: on unless NUXT_PUBLIC_MOCK_ASSET_BANNERS=false. Prod: only if env true. */
+      mockAssetBanners:
+        process.env.NODE_ENV === "development"
+          ? process.env.NUXT_PUBLIC_MOCK_ASSET_BANNERS !== "false"
+          : process.env.NUXT_PUBLIC_MOCK_ASSET_BANNERS === "true",
     },
   },
 

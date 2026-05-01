@@ -14,10 +14,14 @@
     </template>
 
 
+    <template v-if="tabindex == 2">
+      <AssetsBanner />
+    </template>
+
 
 
     <template #footer>
-      <UButton label="تعديل" color="warning" @click="openModal" />
+      <UButton v-if="tabindex !== 2" label="تعديل" color="warning" @click="openModal" />
     </template>
 
   </UCard>
@@ -32,7 +36,9 @@ const tabindex = ref(0)
 const tabChange = (index: number) => { tabindex.value = index }
 const assetItems = [
   { id: 0, slot: 'book', label: 'الكتاب' },
-  { id: 1, slot: 'popup', label: 'النافذة المنبثقة' }
+  { id: 1, slot: 'popup', label: 'النافذة المنبثقة' },
+  { id: 2, slot: 'Banner', label: 'البنارات ' }
+
 ]
 const overlay = useOverlay();
 const openModal = () => {
