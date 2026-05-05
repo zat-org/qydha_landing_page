@@ -2,12 +2,12 @@
   <div class="flex flex-col gap-5">
     <UForm :state="state" :schema="schema" @submit="onSubmit" ref="form" class="flex flex-col gap-3">
       <div class="flex justify-center">
-        <UButtonGroup size="2xs" orientation="horizontal">
-          <UButton :color="index == 0 ? 'green' : 'gray'" label="الهاتف" icon="ic:baseline-phone"
+        <UButtonGroup size="xs" orientation="horizontal">
+          <UButton :color="index == 0 ? 'success' : 'neutral'" label="الهاتف" icon="ic:baseline-phone"
             @click="searchWith(0)" />
-          <UButton :color="index == 1 ? 'green' : 'gray'" label=" الايميل" icon="ic:baseline-email"
+          <UButton :color="index == 1 ? 'success' : 'neutral'" label=" الايميل" icon="ic:baseline-email"
             @click="searchWith(1)" />
-          <UButton :color="index == 2 ? 'green' : 'gray'" label="الرقم المرجعي" icon="mdi:key" @click="searchWith(2)" />
+          <UButton :color="index == 2 ? 'success' : 'neutral'" label="الرقم المرجعي" icon="mdi:key" @click="searchWith(2)" />
         </UButtonGroup>
       </div>
       <UFormField v-show="index == 0" help="برجاء ادخال الرقم بدون الكود" class="duration-300 transition-all grow"
@@ -26,7 +26,7 @@
       </UFormField>
 
       <div class="flex justify-center items-center">
-        <UButton type="submit" label="بحث" icon="material-symbols:search" color="emerald" variant="outline" />
+        <UButton type="submit" label="بحث" icon="material-symbols:search" color="success" variant="outline" />
       </div>
     </UForm>
     <div v-if="selected_user!">
@@ -56,7 +56,7 @@
 import { object, string } from "yup";
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
-import type { State } from "~/models/Player";
+import type { State } from "~/features/tournament/models/Player";
 const dialcode = ref();
 const form = ref();
 const leagueApi = useLeague();

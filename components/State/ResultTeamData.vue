@@ -44,7 +44,7 @@
             }) }}
         </p>
     </div>
-    <UAlert class="mt-2" icon="hugeicons:alert-02" color="red" variant="soft">
+    <UAlert class="mt-2" icon="hugeicons:alert-02" color="error" variant="soft">
         <template #icon="{ icon }">
             <UIcon :name="icon" class="text-2xl" />
         </template>
@@ -59,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-import { PlayerState, type TeamData } from "~/models/Player";
+import { PlayerState, type TeamData } from "~/features/tournament/models/Player";
 const props = defineProps<{ teamData: TeamData, level: number, tableNumber: number }>();
 const teamState = computed(() => {
     switch (props.teamData.state) {

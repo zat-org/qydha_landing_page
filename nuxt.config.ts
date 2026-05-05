@@ -78,6 +78,14 @@ export default defineNuxtConfig({
 
   compatibilityDate: "2024-08-20",
 
+  imports: {
+    dirs: [
+      "composables",
+      "utils",
+      "features/tournament/*/composables",
+    ],
+  },
+
   runtimeConfig: {
     // Private keys (only available on server-side)
     // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,

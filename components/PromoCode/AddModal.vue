@@ -1,7 +1,7 @@
 <template>
   <UModal title="اضافة كود جديد" description="اضافة كود جديد" prevent-close class="max-w-2xl h-[80vh]">
     <template #body>
-      <UForm :state="state" :schema="schema" ref="Form" class="flex gap-2 h-full w-full justify-between "
+      <UForm :state="state as any" :schema="schema" ref="Form" class="flex gap-2 h-full w-full justify-between "
         @submit="onsubmit">
         <div class="flex flex-col flex-1 gap-5    ">
 

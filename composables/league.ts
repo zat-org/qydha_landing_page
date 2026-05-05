@@ -1,4 +1,4 @@
-import type { State, TeamData } from "~/models/Player";
+import type { State, TeamData } from "~/features/tournament/models/Player";
 
 export const useLeague = () => {
   const { $api } = useNuxtApp();

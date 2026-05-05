@@ -16,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import TournamentRequestCalculator from '~/features/tournament/request/components/TournamentRequestCalculator.vue';
 const router = useRouter();
 
 definePageMeta({

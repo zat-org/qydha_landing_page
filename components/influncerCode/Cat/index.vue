@@ -2,8 +2,8 @@
   <UTable    :data="catRow" :columns="cols">
     <template #action-cell="{row}">
     <UButtonGroup>
-      <UButton icon="material-symbols:edit" color='primary' @click="openupdateModal(row.original as ICategory)" /> 
-      <UButton icon="material-symbols:delete" color="error" @click="deletecat(row.original as ICategory) "/>
+      <UButton icon="material-symbols:edit" color='primary' @click="openupdateModal(row.original as unknown as ICategory)" /> 
+      <UButton icon="material-symbols:delete" color="error" @click="deletecat(row.original as unknown as ICategory) "/>
     </UButtonGroup>    
     </template>
   </UTable>

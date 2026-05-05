@@ -1,4 +1,4 @@
-import type { ITable } from "~/models/Table";
+import type { ITable } from "~/features/tournament/models/Table";
 
 export const useTable = () => {
   const { $api } = useNuxtApp();

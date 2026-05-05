@@ -4,7 +4,8 @@
     </ClientOnly>
   </template>
   <script lang="ts" setup>
-import { TournamentRequsetFormType } from '~/models/tournamentRequest';
+import TournamentRequestForm from '~/features/tournament/request/components/TournamentRequestForm.vue';
+import { TournamentRequsetFormType } from '~/features/tournament/models/tournamentRequest';
 
 
   const mode = TournamentRequsetFormType.Add

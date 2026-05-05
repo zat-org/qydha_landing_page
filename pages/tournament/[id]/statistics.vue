@@ -464,7 +464,7 @@
 
 <script setup lang="ts">
 import qydhaLogo from "~/assets/images/qydha-logo.svg";
-import type { TournamentStatistics } from "~/models/tournament";
+import type { TournamentStatistics } from "~/features/tournament/models/tournament";
 
 const route = useRoute();
 const id = route.params.id.toString();

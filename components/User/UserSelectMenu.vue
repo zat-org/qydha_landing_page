@@ -19,6 +19,7 @@
 
 <script setup lang="ts">
 import { toRef } from "vue";
+import type { User } from "~/models/user";
 
 defineOptions({ inheritAttrs: false });
 
@@ -29,8 +30,8 @@ const props = withDefaults(
     /** When true: searchable remote user list (admin). When false: plain text input. */
     remoteSearch: boolean;
     placeholder?: string;
-    labelKey?: string;
-    valueKey?: string;
+    labelKey?: keyof User;
+    valueKey?: keyof User;
   }>(),
   {
     placeholder: "ابحث عن مستخدم...",

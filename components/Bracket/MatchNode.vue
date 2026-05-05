@@ -117,7 +117,7 @@
 <script lang="ts" setup>
 import { Position } from "@vue-flow/core";
 import { Handle } from "@vue-flow/core";
-import type { Match } from "@/models/group";
+import type { Match } from "@/features/tournament/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "../Bracket/StatusModal.vue";
 import EditModal from "../Bracket/EditModal.vue";

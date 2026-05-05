@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type State } from "~/models/Player";
+import { type State } from "~/features/tournament/models/Player";
 // const googlemap_link = `
 // https://www.google.com/maps/place/24%C2%B038'56.3%22N+46%C2%B039'04.1%22E/@24.6489763,46.6485675,17z/data=!3m1!4b1!4m4!3m3!8m2!3d24.6489763!4d46.6511424?entry=ttu&g_ep=EgoyMDI0MDgyNi4wIKXMDSoASAFQAw%3D%3D
 // `

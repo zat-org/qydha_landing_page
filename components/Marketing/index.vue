@@ -1,5 +1,5 @@
 <template>
-  <UCard :ui="{base:'h-full flex flex-col ',body:{base:'grow'}}">
+  <UCard class="h-full flex flex-col">
     <template #header>
       <div class="flex justify-between">
         <UButton  label="اضافة " @click="openAddModal"/>

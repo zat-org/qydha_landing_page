@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts" setup>
+import TournamentRefree from '~/features/tournament/referees/components/TournamentRefree.vue';
 definePageMeta({ middleware: ['auth','role'],
   requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
  });

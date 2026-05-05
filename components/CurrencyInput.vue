@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import { TournamentPrizeCurrency } from '~/models/tournamentPrize';
+import { TournamentPrizeCurrency } from '~/features/tournament/models/tournamentPrize';
 
 const currency = defineModel<TournamentPrizeCurrency>({ required: true, default: TournamentPrizeCurrency.SAR });
 const { getTournamentPrizeCurrency } = useTournamentRequest()

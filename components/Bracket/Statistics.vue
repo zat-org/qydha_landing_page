@@ -131,7 +131,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { IMathStat,IMatchData } from '~/models/MatchStat';
+import type { IMathStat,IMatchData } from '~/features/tournament/models/MatchStat';
 
 const props = defineProps<{ state: IMatchData, statistics: IMathStat }>()
 

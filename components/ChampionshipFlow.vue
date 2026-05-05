@@ -25,7 +25,7 @@ import { VueFlow, useVueFlow } from "@vue-flow/core";
 import { Background } from "@vue-flow/background";
 import type { Node, Edge } from "@vue-flow/core";
 import MatchNode from "./MatchNode.vue";
-import type { Match } from "~/models/group";
+import type { Match } from "~/features/tournament/models/group";
 const { onPaneReady } = useVueFlow();
 onPaneReady((instance) => instance.fitView());
 const props = defineProps<{ group_id?: number }>();

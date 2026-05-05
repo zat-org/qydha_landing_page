@@ -1,4 +1,4 @@
-import type { IRefre } from "~/models/Refre";
+import type { IRefre } from "~/features/tournament/models/Refre";
 
 export const useRefre = () => {
   const { $api } = useNuxtApp();

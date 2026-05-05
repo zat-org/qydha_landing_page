@@ -4,6 +4,7 @@
 
 <script lang="ts" setup>
 import { useMyAuthStore } from '~/store/Auth';
+import TournamentGetAll from '~/features/tournament/core/components/TournamentGetAll.vue';
 
 const userStore = useMyAuthStore();
 

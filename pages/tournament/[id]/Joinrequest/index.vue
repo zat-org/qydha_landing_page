@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts" setup>
+import TournamentJoiningRequest from '~/features/tournament/join-request/components/TournamentJoiningRequest.vue';
 const route = useRoute();
 const id = route.params.id.toString();
 

@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts" setup>
+import TournamentEdit from '~/features/tournament/core/components/TournamentEdit.vue';
 const route =useRoute()
 const tourId  = route.params.id.toString()
 // const tourApi = useTournament()

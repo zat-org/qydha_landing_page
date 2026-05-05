@@ -3,6 +3,7 @@
     </template>
     
     <script lang="ts" setup>
+    import TournamentGroup from '~/features/tournament/group/components/TournamentGroup.vue';
     const route = useRoute();
     const id = route.params.id.toString();
     definePageMeta({ middleware: ['auth','role'],

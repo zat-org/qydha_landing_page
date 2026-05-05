@@ -20,12 +20,12 @@
 <div class="flex flex-col items-center space-y-4">
   <div class="flex flex-wrap justify-center gap-3">
     <UButtonGroup size="sm" orientation="horizontal" class="bg-white dark:bg-white/10 backdrop-blur-sm">
-      <UBadge  color="white" class="text-gray-700 dark:text-gray-300" label="customer-support@qydha.com" />
+      <UBadge  color="neutral" class="text-gray-700 dark:text-gray-300" label="customer-support@qydha.com" />
       <UButton icon="i-heroicons-envelope" color="primary" to="mailto:customer-support@qydha.com" />
 </UButtonGroup>
 
     <UButtonGroup size="sm"  orientation="horizontal" class="bg-white flex  dark:bg-white/10 backdrop-blur-sm">
-      <UBadge  color="white" class="text-gray-700 dark:text-gray-300" >
+      <UBadge  color="neutral" class="text-gray-700 dark:text-gray-300" >
         <p dir="ltr">{{ phonenumber }}</p>
       </UBadge>
       <UButton icon="i-heroicons-phone" color="primary" @click="sendMessage" />

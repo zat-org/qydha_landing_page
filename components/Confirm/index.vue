@@ -137,7 +137,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type TeamData } from "~/models/Player";
+import { type TeamData } from "~/features/tournament/models/Player";
 
 import { object, string,ref as YUPref } from "yup";
 const items = [

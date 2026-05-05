@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts" setup>
+import TournamentModerator from '~/features/tournament/moderators/components/TournamentModerator.vue';
 definePageMeta({ middleware: ['auth','role'],
   requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
  });

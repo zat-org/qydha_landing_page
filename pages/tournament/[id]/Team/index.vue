@@ -3,6 +3,7 @@
 </template>
 
 <script lang="ts" setup>
+import TournamentTeam from '~/features/tournament/teams/components/TournamentTeam.vue';
 definePageMeta({ middleware: ['auth','role'],
   requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
  });

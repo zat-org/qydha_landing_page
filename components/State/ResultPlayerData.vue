@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type State } from "~/models/Player";
+import { type State } from "~/features/tournament/models/Player";
 defineProps<{ playerState: State }>();
 
 </script>

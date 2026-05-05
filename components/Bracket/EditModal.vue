@@ -136,8 +136,8 @@
 </template>
 <script lang="ts" setup>
 import { object, string, boolean } from "yup";
-import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/models/match";
-import type { Match } from "~/models/group";
+import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/features/tournament/models/match";
+import type { Match } from "~/features/tournament/models/group";
 import { Privilege } from "~/models/user";
 import { useMyAuthStore } from "~/store/Auth";
 import loading from "~/components/loading.vue";

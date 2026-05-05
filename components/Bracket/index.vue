@@ -44,7 +44,7 @@
   
 <script lang="ts" setup>
 import { defineAsyncComponent, computed } from 'vue';
-import type { Group } from "@/models/group";
+import type { Group } from "@/features/tournament/models/group";
 import { useMyTournamentStore } from "@/store/tournament";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
 import { useColorMode } from '@vueuse/core';

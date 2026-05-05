@@ -4,6 +4,7 @@
 
 <script lang="ts" setup>
 import { useMyAuthStore } from '~/store/Auth';
+import TournamentGet from "~/features/tournament/core/components/TournamentGet/index.vue";
 
 const route = useRoute();
 const id = route.params.id.toString();

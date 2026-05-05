@@ -1,7 +1,7 @@
 <template>
   <UModal title="اضافة كود" description="اضافة كود" prevent-close class="max-w-2xl h-[80vh]" >
       <template #body>
-        <UForm :state="state" :schema="schema" ref="CodeForm" @submit="onSubmit" class="grid grid-cols-2  h-full  gap-4" >
+        <UForm :state="state as any" :schema="schema" ref="CodeForm" @submit="onSubmit" class="grid grid-cols-2  h-full  gap-4" >
           
          <div class="flex flex-col gap-4 justify-around ">
            <UFormField label="الكود" name="code">

@@ -223,8 +223,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { Match } from "~/models/group";
-import type { IMatchData, IMathStat } from "~/models/MatchStat";
+import type { Match } from "~/features/tournament/models/group";
+import type { IMatchData, IMathStat } from "~/features/tournament/models/MatchStat";
 import { useMyTournamentStore } from "~/store/tournament";
 
 const props = defineProps<{ m: Match }>();
