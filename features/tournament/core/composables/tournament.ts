@@ -235,7 +235,7 @@ export const useTournament = () => {
 
   /** POST — يعيد البطولة لمرحلة إدارة خريطة المجموعة النهائية (`ManagingFinalGroupBracket`). */
   const resetFinalGroupMatches = async (tournamentId: string) => {
-    const result = await useAsyncData(
+    const result = await useAsyncData<any , { message?: string,code:string }>(
       `resetFinalGroupMatches-${tournamentId}`,
       () =>
         $api(`/tournaments/${tournamentId}/reset-final-group-matches`, {
@@ -253,6 +253,22 @@ export const useTournament = () => {
 
     return { result, fetchREQ };
   };
+  const finishTournament =  async() => {
+    const tour_id = ref();
+    const result = await  useAsyncData<any , { message?: string,code:string }>(
+      `finishTournament-${tour_id.value}`,
+      () => $api(`/tournaments/${tour_id.value}/finish`, { method: "POST" }),
+      { immediate: false },
+    );
+    const fetchREQ = async (_tour_id: string) => {
+      tour_id.value = _tour_id;
+      await result.execute();
+      if (result.status.value === "success") {
+        refreshNuxtData(`getSingelTournament-${tour_id.value}`);
+      }
+    };
+    return {...result, fetchREQ};
+  };
 
   const getTournamentStatistics = async (tournamentId: string) => {
     return await useLazyAsyncData<{ data: TournamentStatistics }>(
@@ -260,6 +276,24 @@ export const useTournament = () => {
       () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
     );
   };
+
+  const resumeFinalGroupAfterFinish = async () => {
+    const tour_id = ref();
+    const result = await useAsyncData<any , { message?: string,code:string }>(
+      `resumeTournamentAfterFinish-${tour_id.value}`,
+      () => $api(`/tournaments/${tour_id.value}/resume-final-group-matches`, { method: "POST" }),
+      { immediate: false },
+    );
+    const fetchREQ = async (_tour_id: string) => {
+      tour_id.value = _tour_id;
+      await result.execute();
+      if (result.status.value === "success") {
+        refreshNuxtData(`getSingelTournament-${tour_id.value}`);
+      }
+    };
+    return {...result, fetchREQ};
+  };
+
 
   // const updatTourQydhaAndOwner = async () => {
 
@@ -304,5 +338,7 @@ export const useTournament = () => {
     startFinalGroupTournament,
     resetFinalGroupMatches,
     getTournamentStatistics,
+    finishTournament,
+    resumeFinalGroupAfterFinish ,  
   };
 };

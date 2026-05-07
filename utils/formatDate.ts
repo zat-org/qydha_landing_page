@@ -11,6 +11,6 @@ export  const formatTime = (dateString: string) => {
         minute: '2-digit'
     });
 };
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string  ) => {
     return new Date(dateString).toLocaleDateString('ar-EG');
 };

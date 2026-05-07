@@ -106,6 +106,7 @@ export interface DetailTournament {
     showInQydha: boolean;
     logoUrl: string;
     bracketLink: string;
+    statisticsLink: string;
     owner: TournamentOwner;
     moderators: TournamentModerator[];
     joinRequestStartAt?: string | null;
@@ -125,11 +126,18 @@ export interface DetailTournament {
     allowedJoinRequestType: TournamentPlayerJoinRequestType | null;
     minimumSubscriptionDays: number | null;
     groups: Group[];
+    winners: TournamentWinner[];
   };
   requesterPrivilege: {
     privilege: string;
     permissions: string[] | null;
   };
+}
+
+export interface TournamentWinner {
+  teamId: string;
+  teamName: string;
+  order: number;
 }
 
 export interface getTournamentResponse {

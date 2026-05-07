@@ -111,5 +111,55 @@ export const useMatch = () => {
     return { data, pending, error, refresh, status, fetchRestREQ, fetchWithdrawREQ }
 
   }
-  return { getMatchData, getMatchStatstics, updateMatch, updateMatchState,getUpdateChoicesForMatch };
+
+const MatchWithdraw = async () => {
+  const GameId = ref()
+  const withdrawSide = ref<"Us" | "Them" | "All">()
+  const { data, pending, error, refresh, status, execute } = await useAsyncData(
+    ()=> `MatchWithdraw-${GameId.value}-${withdrawSide.value}`,
+    () => $api(`/baloot-games/${GameId.value}/withdraw`, { method: "POST", body: { withdrawSide: withdrawSide.value } }), { immediate: false }
+  );
+  const fetchREQ = async (_GameId: string, _withdrawSide: "Us" | "Them" | "All") => {
+    GameId.value = _GameId
+    withdrawSide.value = _withdrawSide
+    await execute()
+    if(status.value=="success"){
+      // refreshNuxtData("getMatchData")
+    }
+  }
+  return { data, pending, error, refresh, status, execute, fetchREQ }
+}
+const MatchReset = async () => {
+  const GameId = ref()
+  const { data, pending, error, refresh, status, execute } = await useAsyncData(
+    ()=> `MatchReset-${GameId.value}`,
+    () => $api(`/baloot-games/${GameId.value}/reset`, { method: "POST" }), { immediate: false }
+  );
+  const fetchREQ = async (_GameId: string) => {
+    GameId.value = _GameId
+    await execute()
+    if(status.value=="success"){
+      // refreshNuxtData("getMatchData")
+    }
+  }
+  return { data, pending, error, refresh, status, execute, fetchREQ }
+}
+const MatchBack = async () => {
+  const GameId = ref()
+  const { data, pending, error, refresh, status, execute } = await useAsyncData(
+    ()=> `MatchBack-${GameId.value}`,
+    () => $api(`/baloot-games/${GameId.value}/back`, { method: "POST" }), { immediate: false }
+  );
+  const fetchREQ = async (_GameId: string) => {
+    GameId.value = _GameId
+    await execute()
+    if(status.value=="success"){
+      // refreshNuxtData("getMatchData")
+    }
+  }
+  return { data, pending, error, refresh, status, execute, fetchREQ }
+}
+
+
+  return { getMatchData, getMatchStatstics, updateMatch, updateMatchState,getUpdateChoicesForMatch  , MatchWithdraw, MatchReset, MatchBack };
 };

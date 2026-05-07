@@ -155,8 +155,7 @@ const canEditSelectedRound = computed(() => {
   return Boolean(
     isAdminOrStaff.value &&
       tourStore.selectedGroup &&
-      tourStore.selectedRound?.id &&
-      tourStore.tournamentDashboard?.state == TournamentState.Upcoming,
+      tourStore.selectedRound?.id 
   );
 });
 

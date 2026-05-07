@@ -45,7 +45,7 @@
 <script lang="ts" setup>
 import { GroupType, type RoundGroupDetails } from "~/features/tournament/models/group";
 import { useMyTournamentStore } from '~/features/tournament/core/stores/tournament';
-import { BracketPageHeader } from "~/features/tournament/bracket/components";
+import { Bracket, BracketPageHeader } from "~/features/tournament/bracket/components";
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
 import TournamentGetStartConfirmModal from "~/features/tournament/core/components/TournamentGet/TournamentGetStartConfirmModal.vue";

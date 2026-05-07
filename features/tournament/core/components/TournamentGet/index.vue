@@ -5,50 +5,54 @@
       root: 'overflow-hidden rounded-2xl',
       header: 'p-0 border-b border-gray-200/90 dark:border-gray-800/90 bg-gray-50/40 dark:bg-gray-950/30',
       body: 'p-0',
-    }"
-  >
+    }">
     <template v-if="tour" #header>
-      <TournamentGetHeader
-        :id="id"
-        :is-admin="isAdmin"
-        :can-edit="canEdit"
-        @back="returnToTournament"
-      />
+      <TournamentGetHeader :id="id" :is-admin="isAdmin" :can-edit="canEdit" @back="returnToTournament" />
     </template>
 
     <Loading v-if="pending" class="py-20" />
     <div v-else-if="tour" class="flex flex-col">
-      <TournamentGetHero
-        v-model:hero-accordion-open="heroAccordionOpen"
-        v-model:details-sections-open="detailsSectionsOpen"
-        :tour="tour"
-        :hero-accordion-items="heroAccordionItems"
-        :details-accordion-items="detailsAccordionItems"
-        :detailed-state="detailedState"
-        :get-state="getState"
-        :get-type="getType"
-        :get-currency="getCurrency"
-      />
-      <TournamentGetManagementBoard
-        :id="id"
-        :detailed-state="detailedState"
-        :phase-behavior="phaseBehavior"
-        :phase-order="phaseOrder"
-        :current-phase-index="currentPhaseIndex"
-        :phase-circle-class="phaseCircleClass"
-        :phase-step-status="phaseStepStatus"
+      <TournamentGetHero v-model:hero-accordion-open="heroAccordionOpen"
+        v-model:details-sections-open="detailsSectionsOpen" :tour="tour" :hero-accordion-items="heroAccordionItems"
+        :details-accordion-items="detailsAccordionItems" :detailed-state="detailedState" :get-state="getState"
+        :get-type="getType" :get-currency="getCurrency" />
+      <section
+        v-if="showWinnersSection"
+        class="mx-4 mt-5 rounded-2xl border border-amber-200/80 bg-gradient-to-b from-amber-50/85 to-white p-4 shadow-sm dark:border-amber-700/40 dark:from-amber-900/20 dark:to-gray-950/30 sm:mx-8 sm:p-5"
+      >
+        <div class="mb-3 flex items-center gap-2">
+          <UIcon name="i-mdi-trophy-award" class="size-5 text-amber-500 dark:text-amber-400" />
+          <h3 class="text-base font-bold text-gray-900 dark:text-white">الفائزون</h3>
+        </div>
+
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <article
+            v-for="winner in winnersSorted"
+            :key="winner.teamId"
+            class="rounded-xl border border-amber-200/70 bg-white/90 p-3 shadow-sm dark:border-amber-700/40 dark:bg-gray-900/60"
+          >
+            <div class="flex items-center justify-between gap-2">
+              <p class="text-sm font-bold text-gray-900 dark:text-white">المركز {{ winner.order }}</p>
+              <UBadge color="warning" variant="soft" size="sm">#{{ winner.order }}</UBadge>
+            </div>
+            <p class="mt-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">{{ winner.teamName }}</p>
+          </article>
+        </div>
+      </section>
+      <TournamentGetManagementBoard :id="id" :detailed-state="detailedState" :phase-behavior="phaseBehavior"
+        :phase-order="phaseOrder" :current-phase-index="currentPhaseIndex" :phase-circle-class="phaseCircleClass"
+        :phase-step-status="phaseStepStatus" 
+        :is-start-final-group-pending="isStartFinalGroupPending"
         :is-reset-final-group-matches-pending="isResetFinalGroupMatchesPending"
-        @organize-tournament="HandelSetupTournament"
-        @open-start-confirm="openStartTournamentConfirm"
-        @reset-final-group-matches="handleResetFinalGroupMatches"
-      />
+        :is-finish-tournament-pending="finishTournamentReq.status.value === 'pending'"
+        :is-resume-final-group-after-finish-pending="resumeTournamentAfterFinishReq.status.value === 'pending'"
+        @organize-tournament="HandelSetupTournament" @open-start-confirm="openStartTournamentConfirm"
+        @reset-final-group-matches="handleResetFinalGroupMatches" @finish-tournament="handleFinishTournament"
+        @resume-final-group-after-finish="handleResumeFinalGroupAfterFinish" />
     </div>
 
-    <TournamentGetStartConfirmModal
-      v-model:open="startTournamentConfirmOpen"
-      :pending="isStartFinalGroupPending"
-      @confirm="confirmAndStartTournament"
-    />
+    <TournamentGetStartConfirmModal v-model:open="startTournamentConfirmOpen" :pending="isStartFinalGroupPending"
+      @confirm="confirmAndStartTournament" />
   </UCard>
 </template>
 <script lang="ts" setup>
@@ -160,6 +164,12 @@ const detailsAccordionItems = computed(() => {
 const finalGroup = computed(() =>
   tour.value?.tournament?.groups?.find((g) => g.type === GroupType.Final),
 );
+const winnersSorted = computed(() =>
+  [...(tour.value?.tournament?.winners ?? [])].sort((a, b) => a.order - b.order),
+);
+const showWinnersSection = computed(
+  () => tour.value?.tournament?.state === TournamentState.Finished && winnersSorted.value.length > 0,
+);
 
 const detailedState = computed(() => tour.value?.tournament?.detailedState);
 
@@ -255,15 +265,48 @@ const handleResetFinalGroupMatches = async () => {
     });
     await getREQ.refresh();
   } else {
-    const err = resetFinalGroupMatchesReq.result.error.value as { message?: string } | null | undefined;
+    const err = resetFinalGroupMatchesReq.result.error
+    const code = err?.value?.data?.code
+    if (code === "InvalidTournamentOperation") {
+      toast.add({
+        title: "تعذّر إعادة الضبط",
+        description: "لا يمكن اعادة ضبط الخريطة   وقد تم بدء اللعب ",
+        color: "error",
+      });
+    }
+
+  }
+};
+const finishTournamentReq = await useTournament().finishTournament();
+const handleFinishTournament = async () => {
+  await finishTournamentReq.fetchREQ(props.id);
+  if (finishTournamentReq.status.value === "success") {
     toast.add({
-      title: "تعذّر إعادة الضبط",
-      description: err?.message ?? "تحقق من الصلاحيات والاتصال ثم أعد المحاولة.",
-      color: "error",
+      title: "تم انهاء البطولة",
+      description: "تم انهاء البطولة بنجاح",
+      color: "success",
     });
+  } else {
+    const err = finishTournamentReq.error.value?.data?.code
+    if (err === "InvalidTournamentOperation") {
+      toast.add({
+        title: "تعذّر انهاء البطولة",
+        description: "لا يمكن انهاء البطولة الا بعد انهاء كل المباريات  ",
+        color: "error",
+      });
+    }
   }
 };
 
+const resumeTournamentAfterFinishReq = await useTournament().resumeFinalGroupAfterFinish();
+const handleResumeFinalGroupAfterFinish = async () => {
+  await resumeTournamentAfterFinishReq.fetchREQ(props.id);
+  if (resumeTournamentAfterFinishReq.status.value === "success") {
+    toast.add({
+      title: "تم استكمال البطولة",
+    });
+  }
+};
 const states = getTournamnetStateOptions()
 const getState = (value: TournamentState) => {
   const result = states.find(s => s.value == value)
@@ -281,5 +324,5 @@ const getCurrency = (value: TournamentPrizeCurrency) => {
 }
 
 
-</script>
 
+</script>

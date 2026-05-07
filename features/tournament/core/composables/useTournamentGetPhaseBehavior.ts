@@ -21,17 +21,21 @@ export interface TournamentPhaseBehavior {
   showOrganizeTournamentButton: boolean;
   showStartTournamentCta: boolean;
   showResetFinalGroupMatches: boolean;
+  showFinishTournament: boolean;
+  showResumeFinalGroupAfterFinish: boolean;
   content: TournamentPhaseContent;
 }
 
 type ButtonVariant = "solid" | "outline" | "soft";
 type ButtonColor = "primary" | "warning" | "neutral";
 type AlertColor = "info" | "success" | "warning" | "neutral";
-type ActionEvent = "organize-tournament" | "open-start-confirm" | "reset-final-group-matches";
+type ActionEvent = "organize-tournament" | "open-start-confirm" | "reset-final-group-matches" | "finish-tournament" | "resume-final-group-after-finish";
 type VisibilityFlag =
   | "showOrganizeTournamentButton"
   | "showStartTournamentCta"
-  | "showResetFinalGroupMatches";
+  | "showResetFinalGroupMatches"
+  | "showFinishTournament"
+  | "showResumeFinalGroupAfterFinish";
 
 export interface TournamentPhaseAction {
   label: string;
@@ -226,6 +230,15 @@ function getPhaseContent(panel: TournamentPhasePanel): TournamentPhaseContent {
             className: "w-full min-h-12 justify-center sm:w-auto",
             visibleWhen: "showResetFinalGroupMatches",
           },
+          {
+            label: "انهاء  البطولة ",
+            icon: "i-mdi-trophy",
+            event: "finish-tournament",
+            variant: "soft",
+            color: "primary",
+            className: "w-full min-h-12 justify-center sm:w-auto",
+            visibleWhen: "showFinishTournament",
+          },
         ],
       };
     case "finished":
@@ -248,6 +261,15 @@ function getPhaseContent(panel: TournamentPhasePanel): TournamentPhaseContent {
             variant: "soft",
             className: "w-full min-h-12 justify-center sm:flex-1",
           },
+          {
+            label: "استكمال البطولة",
+            icon: "i-mdi-check",
+            event: "resume-final-group-after-finish",
+            variant: "soft",
+            color: "primary",
+            className: "w-full min-h-12 justify-center sm:w-auto",
+            visibleWhen: "showResumeFinalGroupAfterFinish",
+          }
         ],
       };
     default:
@@ -300,11 +322,19 @@ export function useTournamentGetPhaseBehavior(options: UseTournamentGetPhaseBeha
       isAdmin && detailedState === TournamentDetailedState.FinalGroupRunning;
     const content = getPhaseContent(panel);
 
-    return {
+    const showFinishTournament =
+      isAdmin && detailedState === TournamentDetailedState.FinalGroupRunning;
+    
+    const showResumeFinalGroupAfterFinish =
+      isAdmin && detailedState === TournamentDetailedState.Finished;
+
+      return {
       panel,
       showOrganizeTournamentButton,
       showStartTournamentCta,
       showResetFinalGroupMatches,
+      showFinishTournament,
+      showResumeFinalGroupAfterFinish,
       content,
     };
   });
