@@ -45,6 +45,8 @@
 import { object, string, number, boolean, array } from "yup";
 import type { TournamentPrizeType } from "~/features/tournament/models/tournamentPrize";
 import { TournamentPlayerJoinRequestType } from "~/features/tournament/models/tournamentRequest";
+import TournamentRequestCalculatorRounds from "~/features/tournament/request/components/CalculatorRounds.vue";
+import TournamentRequestCalculatorSummary from "~/features/tournament/request/components/CalculatorSummary.vue";
 const model = defineModel<any>({ required: true })
 const TournamentPlayerJoinRequestTypeOptions = [{ label: "كل الطلبات", value: TournamentPlayerJoinRequestType.All },{ label: "طلبات فردية", value: TournamentPlayerJoinRequestType.Single },{ label: "طلبات الفرق", value: TournamentPlayerJoinRequestType.Team }]
 const isValid = ref(false); const errors = ref<Record<string, string>>({}); const isValidating = ref(false);

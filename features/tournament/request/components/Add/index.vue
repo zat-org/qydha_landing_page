@@ -66,6 +66,9 @@ import { type TournamentCreationRequest } from '~/features/tournament/models/tou
 import { TournamentType } from '~/features/tournament/models/tournamenetType';
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/features/tournament/models/tournamentPrize';
 import { TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
+import TournamentRequestFormTourForm from '~/features/tournament/request/components/Form/TourForm.vue';
+import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
+import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 
 interface FormStepRef {
     validate: () => Promise<boolean>;

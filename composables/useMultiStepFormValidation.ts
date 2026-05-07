@@ -1,8 +1,8 @@
 interface FormStepRef {
     validate: () => Promise<boolean>;
-    isValid: Ref<boolean>;
-    errors: Ref<Record<string, string>>;
-    isValidating: Ref<boolean>;
+    isValid: boolean | Ref<boolean>;
+    errors: Record<string, string> | Ref<Record<string, string>>;
+    isValidating: boolean | Ref<boolean>;
 }
 
 interface FormStep {
@@ -31,11 +31,16 @@ export const useMultiStepFormValidation = (
     const completedSteps = ref(new Set<number>());
     const isSubmitting = ref(false);
 
+    const unwrapMaybeRef = <T>(value: T | Ref<T> | undefined, fallback: T): T => {
+        if (value === undefined || value === null) return fallback;
+        return isRef(value) ? value.value : value;
+    };
+
     // Validation state tracking
     const stepValidationStates = computed(() => {
         const states: Record<number, boolean> = {};
         formRefs.value.forEach((formRef, index) => {
-            states[index] = formRef?.isValid.value || false;
+            states[index] = unwrapMaybeRef(formRef?.isValid, false);
         });
         return states;
     });
@@ -103,7 +108,8 @@ export const useMultiStepFormValidation = (
 
             if (!isValid && onValidationError) {
                 const formRef = formRefs.value[currentStep.value];
-                const errors = formRef?.errors.value ? Object.values(formRef.errors.value) : [];
+                const errorRecord = unwrapMaybeRef(formRef?.errors, {} as Record<string, string>);
+                const errors = Object.values(errorRecord);
                 onValidationError(currentStep.value, errors);
             }
 

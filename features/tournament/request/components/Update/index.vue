@@ -61,6 +61,9 @@ import { TournamentType } from '~/features/tournament/models/tournamenetType'
 import { type UpdateTournamentCreationRequest } from '~/features/tournament/models/tournamentRequest';
 import { useMyAuthStore } from '~/store/Auth';
 import { TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
+import TournamentRequestUpdateTourForm from '~/features/tournament/request/components/Update/TourForm.vue';
+import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
+import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 
 interface FormStepRef {
     validate: () => Promise<boolean>;

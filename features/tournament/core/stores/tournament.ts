@@ -3,7 +3,7 @@ import * as signalR from "@microsoft/signalr";
 import type { Group, Match, RoundGroupDetails } from "~/features/tournament/models/group";
 import type { IMatchData, IMathStat } from "~/features/tournament/models/MatchStat";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
-
+// to control bracket matches and rounds
 export const useMyTournamentStore = defineStore("myTournamentStore", () => {
   const route = useRoute();
   const groupApi = useGroup();

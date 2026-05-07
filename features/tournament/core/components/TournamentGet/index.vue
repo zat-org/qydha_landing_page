@@ -7,7 +7,7 @@
       body: 'p-0',
     }">
     <template v-if="tour" #header>
-      <TournamentGetHeader :id="id" :is-admin="isAdmin" :can-edit="canEdit" @back="returnToTournament" />
+      <TournamentGetHeader :id="id" :is-admin="isAdmin" :can-edit="canUpdateTournament(detailedState ?? TournamentDetailedState.Created)" @back="returnToTournament" />
     </template>
 
     <Loading v-if="pending" class="py-20" />
@@ -89,17 +89,9 @@ const isAdmin = computed((): boolean => {
   return !!roles?.includes("SuperAdmin") || !!roles?.includes("StaffAdmin");
 });
 
-const { permissions, privilege } = storeToRefs(userStore);
 
-const canEdit = computed((): boolean => {
-  return (
-    privilege.value?.toLowerCase() == "admin" ||
-    privilege.value?.toLowerCase() == "owner" ||
-    permissions.value.includes("ModifyTournamentData")
-  );
-});
 
-/** Hero — بيانات البطولة (UAccordion، مطوي افتراضياً) */
+
 const HERO_ACCORDION_ITEM_VALUE = 'tournament-hero'
 const heroAccordionOpen = ref<string | undefined>(undefined)
 const heroAccordionItems = [
@@ -118,7 +110,7 @@ const { getSingelTournament, getTournamnetStateOptions, setupTournament, startTo
 const { getTournamentTypeOptions, getTournamentPrizeCurrency } = useTournamentRequest()
 const toast = useToast();
 const getREQ = await getSingelTournament(props.id);
-
+const { canUpdateTournament } = useTournamentLogic();
 const pending = computed(() => getREQ.pending.value);
 const tour = computed(() => getREQ.data.value?.data);
 
