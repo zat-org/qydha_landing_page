@@ -3,7 +3,7 @@
     <VDatePicker v-bind="$attrs" dir="ltr" v-model="internalDate" :is-dark="isDark" :mode="enableTime ? 'dateTime' : 'date'"
       :masks="{ input: 'DD/MM/YYYY HH:mm' }" class="z-100">
       <template #default="{ inputValue, inputEvents }">
-        <UInput :value="inputValue" v-on="inputEvents" />
+        <UInput :value="inputValue" v-on="disabled ? {} : inputEvents" :disabled="disabled" />
       </template>
 
     </VDatePicker>
@@ -15,6 +15,7 @@ const colorMode = useColorMode()
 
 const props = withDefaults(defineProps<{
   enableTime?: boolean
+  disabled?: boolean
 }>(), {
   enableTime: true
 })

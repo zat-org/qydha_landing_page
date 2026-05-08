@@ -2,34 +2,35 @@
     <UCard :ui="{ body: 'px-3 py-1 sm:p-1', header: 'px-2 py-1 sm:p-1 ', footer: 'px-2 py-1 sm:p-1' }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900">
         <UForm :state="model" class="flex flex-col space-y-2">
             <UFormField name="isAddPlayersByQydha" size="xl">
-                <div class="flex  gap-4"><USwitch v-model="modelValue.isAddPlayersByQydha" size="xl" /><label> التسجيل من خلال قيدها </label></div>
+                <div class="flex  gap-4"><USwitch v-model="modelValue.isAddPlayersByQydha" :disabled="disabledFields?.isAddPlayersByQydha" size="xl" /><label> التسجيل من خلال قيدها </label></div>
             </UFormField>
             <div class="space-y-3">
                 <div class="text-sm font-medium">المخطط الزمني لاختيار التواريخ</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
-                        <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt" :error="errors?.joinRequestStartAt"><AsyncDatePicker v-model="model.joinRequestStartAt" :min-date="new Date()" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestStartAt')" /></UFormField>
+                        <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt" :error="errors?.joinRequestStartAt"><AsyncDatePicker v-model="model.joinRequestStartAt" :disabled="disabledFields?.joinRequestStartAt" :min-date="new Date()" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestStartAt')" /></UFormField>
                     </div>
+                    
                     <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
-                        <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt" :error="errors?.joinRequestEndAt"><AsyncDatePicker v-model="model.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestEndAt')" /></UFormField>
+                        <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt" :error="errors?.joinRequestEndAt"><AsyncDatePicker v-model="model.joinRequestEndAt" :disabled="disabledFields?.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestEndAt')" /></UFormField>
                     </div>
                     <div class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
-                        <UFormField label="بداية البطولة" name="startAt" :error="errors?.startAt"><AsyncDatePicker v-model="model.startAt" :min-date="minstartDate" @update:model-value="onFieldBlur?.('startAt')" /></UFormField>
+                        <UFormField label="بداية البطولة" name="startAt" :error="errors?.startAt"><AsyncDatePicker v-model="model.startAt" :disabled="disabledFields?.startAt" :min-date="minstartDate" @update:model-value="onFieldBlur?.('startAt')" /></UFormField>
                     </div>
                     <div class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
-                        <UFormField label="نهاية البطولة" name="endAt" :error="errors?.endAt"><AsyncDatePicker v-model="model.endAt" :min-date="model.startAt" @update:model-value="onFieldBlur?.('endAt')" /></UFormField>
+                        <UFormField label="نهاية البطولة" name="endAt" :error="errors?.endAt"><AsyncDatePicker v-model="model.endAt" :disabled="disabledFields?.endAt" :min-date="model.startAt" @update:model-value="onFieldBlur?.('endAt')" /></UFormField>
                     </div>
                 </div>
             </div>
             <template v-if="modelValue.isAddPlayersByQydha">
-                <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount" :error="errors?.joinRequestMaxCount"><UInput type="number" v-model="model.joinRequestMaxCount" @blur="onFieldBlur?.('joinRequestMaxCount')" /></UFormField>
-                <UFormField label="نوع طلبات الانضمام" name="allowedJoinRequestType" :error="errors?.allowedJoinRequestType"><USelect v-model="model.allowedJoinRequestType" :items="TournamentPlayerJoinRequestTypeOptions" @update:model-value="onFieldBlur?.('allowedJoinRequestType')" /></UFormField>
-                <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays" :error="errors?.minimumSubscriptionDays"><UInput type="number" v-model="model.minimumSubscriptionDays" min="1" placeholder="0" @blur="onFieldBlur?.('minimumSubscriptionDays')" /></UFormField>
+                <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount" :error="errors?.joinRequestMaxCount"><UInput type="number" :disabled="disabledFields?.joinRequestMaxCount" v-model="model.joinRequestMaxCount" @blur="onFieldBlur?.('joinRequestMaxCount')" /></UFormField>
+                <UFormField label="نوع طلبات الانضمام" name="allowedJoinRequestType" :error="errors?.allowedJoinRequestType"><USelect v-model="model.allowedJoinRequestType" :disabled="disabledFields?.allowedJoinRequestType" :items="TournamentPlayerJoinRequestTypeOptions" @update:model-value="onFieldBlur?.('allowedJoinRequestType')" /></UFormField>
+                <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays" :error="errors?.minimumSubscriptionDays"><UInput type="number" :disabled="disabledFields?.minimumSubscriptionDays" v-model="model.minimumSubscriptionDays" min="1" placeholder="0" @blur="onFieldBlur?.('minimumSubscriptionDays')" /></UFormField>
             </template>
             <TournamentRequestFormTourDetailFormPrizeManagement v-model="model" />
             <div class="grid grid-cols-3 gap-4">
-                <UFormField label=" عدد الفرق" name="teamsCount" :error="errors?.teamsCount"><div class="flex flex-col items-center gap-2"><USelect v-model="TeamsCount" :items=TeamsCountOptions @update:model-value="onFieldBlur?.('teamsCount')" /><UInput v-if="TeamsCount === 'custom'" v-model="model.teamsCount" type="number" min="1" placeholder="0" @input="validatePositiveNumber" @blur="onFieldBlur?.('teamsCount')" /></div></UFormField>
-                <UFormField label=" عدد الطاولات" name="tablesCount" :error="errors?.tablesCount"><UInput v-model="model.tablesCount" type="number" placeholder="0" @blur="onFieldBlur?.('tablesCount')" /></UFormField>
+                <UFormField label=" عدد الفرق" name="teamsCount" :error="errors?.teamsCount"><div class="flex flex-col items-center gap-2"><USelect v-model="TeamsCount" :disabled="disabledFields?.teamsCount" :items=TeamsCountOptions @update:model-value="onFieldBlur?.('teamsCount')" /><UInput v-if="TeamsCount === 'custom'" :disabled="disabledFields?.teamsCount" v-model="model.teamsCount" type="number" min="1" placeholder="0" @input="validatePositiveNumber" @blur="onFieldBlur?.('teamsCount')" /></div></UFormField>
+                <UFormField label=" عدد الطاولات" name="tablesCount" :error="errors?.tablesCount"><UInput :disabled="disabledFields?.tablesCount" v-model="model.tablesCount" type="number" placeholder="0" @blur="onFieldBlur?.('tablesCount')" /></UFormField>
                 <UFormField label="عدد الأيام" name="dayNumber"><UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" /></UFormField>
                 <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime"><UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" /></UFormField>
                 <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3"><UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" /></UFormField>
@@ -45,8 +46,8 @@
 import { TournamentPlayerJoinRequestType } from "~/features/tournament/models/tournamentRequest";
 import TournamentRequestCalculatorRounds from "~/features/tournament/request/components/CalculatorRounds.vue";
 import TournamentRequestCalculatorSummary from "~/features/tournament/request/components/CalculatorSummary.vue";
-const props = defineProps<{ errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void }>();
-const { errors, onFieldBlur } = toRefs(props);
+const props = defineProps<{ errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void; disabledFields?: Record<string, boolean> }>();
+const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<any>({ required: true })
 const TournamentPlayerJoinRequestTypeOptions = [{ label: "كل الطلبات", value: TournamentPlayerJoinRequestType.All },{ label: "طلبات فردية", value: TournamentPlayerJoinRequestType.Single },{ label: "طلبات الفرق", value: TournamentPlayerJoinRequestType.Team }]
 const minstartDate = computed(() => { const joinRequestEndDate = new Date(model.value.joinRequestEndAt as string ?? undefined); const today = new Date(); return joinRequestEndDate > today ? joinRequestEndDate : today; });
