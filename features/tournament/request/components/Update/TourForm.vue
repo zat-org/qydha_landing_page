@@ -5,10 +5,10 @@
         <h2 class="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">معلومات البطولة</h2>
       </div>
     </template>
-    <UForm :schema="localSchema" :state="modelValue" class="flex flex-col space-y-6  " ref="form">
-      <UFormField label="اسم البطولة" name="title" required><UInput v-model="modelValue.title" /></UFormField>
-      <UFormField label="وصف البطولة" name="description"><UTextarea v-model="modelValue.description" :rows="5" /></UFormField>
-      <UFormField label="شعار البطولة" name="logo" required>
+    <UForm :state="modelValue" class="flex flex-col space-y-6">
+      <UFormField label="اسم البطولة" name="title" required :error="errors?.title"><UInput v-model="modelValue.title" @blur="onFieldBlur?.('title')" /></UFormField>
+      <UFormField label="وصف البطولة" name="description" :error="errors?.description"><UTextarea v-model="modelValue.description" :rows="5" @blur="onFieldBlur?.('description')" /></UFormField>
+      <UFormField label="شعار البطولة" name="logo" required :error="errors?.logo">
         <input type="file" ref="fileInput" class="hidden" accept=".png,.jpg,.jpeg" @change="onLogoChange" />
         <div class="flex flex-col items-center gap-4">
           <div class="relative w-48 h-48 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer group bg-gray-50 dark:bg-gray-800">
@@ -17,11 +17,24 @@
           </div>
         </div>
       </UFormField>
-      <UFormField label="رقم التواصل" name="contactPhone" required><AsyncPhoneInput dir="ltr" v-model="modelValue.contactPhone" /></UFormField>
-      <UFormField label="مكان البطولة" name="locationDescription" required><UInput v-model="modelValue.locationDescription" /></UFormField>
-      <UFormField label="موقع البطولة" name="location" required><MapInputModal v-model="modelValue.location" name="location" label="مكان البطولة" required /></UFormField>
-      <UFormField label="نوع البطولة" name="type" required><USelect v-model="modelValue.type" :items="TournamentTypeOptions" /></UFormField>
-      <UFormField label="رمز سري" name="tournamentPrivatePassword" v-if="modelValue.type == TournamentType.private" required><UInput v-model="modelValue.tournamentPrivatePassword" /></UFormField>
+      <UFormField label="رقم التواصل" name="contactPhone" required :error="errors?.contactPhone">
+        <div class="flex items-center gap-4 flex-col md:flex-row">
+          <AsyncPhoneInput dir="ltr" v-model="modelValue.contactPhone" @blur="onFieldBlur?.('contactPhone')" />
+          <div class="shrink-0">
+            <div class="flex items-center gap-4">
+              <UCheckbox v-model="modelValue.isContactPhoneWhatsapp" label="واتساب" @update:model-value="onFieldBlur?.('isContactPhoneWhatsapp')" />
+              <UCheckbox v-model="modelValue.isContactPhoneCall" label="اتصال" @update:model-value="onFieldBlur?.('isContactPhoneCall')" />
+            </div>
+            <p v-if="errors?.isContactPhoneWhatsapp || errors?.isContactPhoneCall" class="mt-1 text-xs text-red-500">
+              {{ errors?.isContactPhoneWhatsapp || errors?.isContactPhoneCall }}
+            </p>
+          </div>
+        </div>
+      </UFormField>
+      <UFormField label="مكان البطولة" name="locationDescription" required :error="errors?.locationDescription"><UInput v-model="modelValue.locationDescription" @blur="onFieldBlur?.('locationDescription')" /></UFormField>
+      <UFormField label="موقع البطولة" name="location" required :error="errors?.location"><MapInputModal v-model="modelValue.location" name="location" label="مكان البطولة" required @update:model-value="onFieldBlur?.('location')" /></UFormField>
+      <UFormField label="نوع البطولة" name="type" required :error="errors?.type"><USelect v-model="modelValue.type" :items="TournamentTypeOptions" @update:model-value="onFieldBlur?.('type')" /></UFormField>
+      <UFormField label="رمز سري" name="tournamentPrivatePassword" v-if="modelValue.type == TournamentType.private" required :error="errors?.tournamentPrivatePassword"><UInput v-model="modelValue.tournamentPrivatePassword" @blur="onFieldBlur?.('tournamentPrivatePassword')" /></UFormField>
       <div class="flex items-center justify-between">
         <UFormField label="هل يوجد الرعاة" name="Sponsered"><USwitch v-model="sponsersAvilabel" size="lg" /></UFormField>
         <UButton v-if="sponsersAvilabel" @click="AddSponser()" color="primary" variant="soft">إضافة راعي</UButton>
@@ -44,35 +57,13 @@
 </template>
 
 <script lang="ts" setup>
-import { object, string, number, boolean, array, mixed } from "yup";
 import { TournamentType } from "~/features/tournament/models/tournamenetType";
 import type { DetailTournamentRequest } from "~/features/tournament/models/tournamentRequest";
 import { useMyAuthStore } from "~/store/Auth";
 
-const props = defineProps<{ modelValue: any }>();
+const props = defineProps<{ modelValue: any; errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void }>();
+const { errors, onFieldBlur } = toRefs(props);
 const sponsersAvilabel = ref(false)
-const isValid = ref(false);
-const errors = ref<Record<string, string>>({});
-const isValidating = ref(false);
-const localSchema = object({
-  title: string().required("اسم البطولة مطلوب"),
-  description: string().required("وصف البطولة مطلوب"),
-  logo: mixed(),
-  type: string().required("نوع البطولة مطلوب"),
-  tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  locationDescription: string().required("عنوان البطولة مطلوب"),
-  location: object({ latitude: number(), longitude: number() }).test('location-selected', 'يرجى اختيار الموقع', function (value) { return !!value && value.latitude !== 0 && value.longitude !== 0; }),
-  contactPhone: string().required("رقم للتواصل للاعبين مطلوب").min(10, "رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام"),
-  isContactPhoneCall: boolean(),
-  isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method","يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)",function(value){ const parent = this.parent; return value  || parent.isContactPhoneCall; }),
-  sponsors: array().of(mixed()),
-});
-const form = useTemplateRef("form");
-const validate = async (): Promise<boolean> => {
-  isValidating.value = true; errors.value = {};
-  try { await form.value?.validate(); isValid.value = true; return true; } catch { isValid.value = false; return false; } finally { isValidating.value = false; }
-};
-defineExpose({ validate, isValid: readonly(isValid), errors: readonly(errors), isValidating: readonly(isValidating) });
 
 const route =useRoute()
 const id= route.params.id.toString()
@@ -89,6 +80,7 @@ const onLogoChange = (event: Event) => {
     const reader = new FileReader();
     reader.onload = (e) => { logoImageUrl.value = e.target?.result as string; props.modelValue.logo = file };
     reader.readAsDataURL(file);
+    props.onFieldBlur?.("logo");
   }
 };
 interface SponsorItem { type: 'existing' | 'new'; url: string; fileIndex?: number; urlIndex?: number; }
@@ -109,6 +101,7 @@ const onSponsorsChange = (event: Event) => {
     const file = files[0]; const reader = new FileReader();
     reader.onload = (e) => { const previewUrl = e.target?.result as string; props.modelValue.sponsors.push(file); const fileIndex = props.modelValue.sponsors.length - 1; sponsorItems.value.push({ type: 'new', url: previewUrl, fileIndex }); };
     reader.readAsDataURL(file); target.value = '';
+    props.onFieldBlur?.("sponsors");
   }
 }
 const removeSponsors = (index: number) => {
@@ -127,7 +120,6 @@ const removeSponsors = (index: number) => {
   sponsorItems.value.splice(index, 1);
 }
 const TournamentTypeOptions = [{ label: "بطولة عامة", value: TournamentType.public }, { label: "بطولة خاصة", value: TournamentType.private }]
-watch(() => props.modelValue.location, () => { form.value?.clear("location") }, { deep: true })
 </script>
 
 <style></style>

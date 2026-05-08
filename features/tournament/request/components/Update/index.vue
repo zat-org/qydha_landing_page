@@ -17,9 +17,7 @@
                         دليل انشاء البطولة
                     </UButton>
                 </div>
-                <UStepper size="sm"
-                    :items="[...validation.enhancedSteps.value].map(step => ({ ...step, color: step.color.value }))"
-                    class="flex-4 " v-model="currentStepValue" />
+                <UStepper size="sm" :items="stepperItems" class="flex-4 " v-model="currentStepValue" />
 
             </div>
         </template>
@@ -27,24 +25,36 @@
         <template #default>
             <div ref="scrollContainer" class=" h-[75vh] overflow-y-auto">
                     <KeepAlive>
-                        <TournamentRequestUpdateTourForm ref="tourForm" v-show="currentStepValue === 0"
-                            v-model="formData" />
+                        <TournamentRequestUpdateTourForm
+                          v-show="currentStepValue === 0"
+                          v-model="formData"
+                          :errors="visibleErrors"
+                          :on-field-blur="onFieldBlur"
+                        />
                     </KeepAlive>
                     <KeepAlive>
-                        <TournamentRequestFormTourDetailForm ref="detailForm" v-show="currentStepValue === 1"
-                            v-model="formData" />
+                        <TournamentRequestFormTourDetailForm
+                          v-show="currentStepValue === 1"
+                          v-model="formData"
+                          :errors="visibleErrors"
+                          :on-field-blur="onFieldBlur"
+                        />
                     </KeepAlive>
                     <KeepAlive>
-                        <TournamentRequestFormRulesForm ref="rulesForm" v-show="currentStepValue === 2"
-                            v-model="formData" />
+                        <TournamentRequestFormRulesForm
+                          v-show="currentStepValue === 2"
+                          v-model="formData"
+                          :errors="visibleErrors"
+                          :on-field-blur="onFieldBlur"
+                        />
                     </KeepAlive>
             </div>
 
         </template>
         <template #footer>
             <div class="flex justify-between items-center px-6">
-                <UButton v-if="canGoBack" variant="outline" @click="validation.previousStep" label="السابق" size="xl" />
-                <UButton v-if="canGoNext" color="primary" @click="() => { void validation.validateAndNext(); }" label="التالي"
+                <UButton v-if="canGoBack" variant="outline" @click="previousStep" label="السابق" size="xl" />
+                <UButton v-if="canGoNext" color="primary" @click="() => { void validateAndNext(); }" label="التالي"
                     size="xl" class="ms-auto" />
                 <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit"
                     size="xl">
@@ -61,21 +71,15 @@ import { TournamentType } from '~/features/tournament/models/tournamenetType'
 import { type UpdateTournamentCreationRequest } from '~/features/tournament/models/tournamentRequest';
 import { useMyAuthStore } from '~/store/Auth';
 import { TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
+import { object, string, number, boolean, array, mixed } from "yup";
+import { useForm } from "vee-validate";
+import { toTypedSchema } from "@vee-validate/yup";
 import TournamentRequestUpdateTourForm from '~/features/tournament/request/components/Update/TourForm.vue';
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 
-interface FormStepRef {
-    validate: () => Promise<boolean>;
-    isValid: Ref<boolean>;
-    errors: Ref<Record<string, string>>;
-    isValidating: Ref<boolean>;
-}
-
-const tourForm = useTemplateRef<FormStepRef>("tourForm");
-const detailForm = useTemplateRef<FormStepRef>("detailForm");
-const rulesForm = useTemplateRef<FormStepRef>("rulesForm");
 const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");
+const toast = useToast();
 const { updateTournamentRequest } = useTournamentRequest()
 
 const authStore = useMyAuthStore()
@@ -113,27 +117,155 @@ const steps = [
     { id: 1, title: "تفاصيل البطولة", slot: "TourDetail", icon: "i-heroicons-clipboard-document-list" },
     { id: 2, title: "قوانين البطولة", slot: "TourRules", icon: "i-heroicons-scale" },
 ];
-const formRefs = computed(() => [tourForm.value, detailForm.value, rulesForm.value]);
+const stepFieldMap: Record<number, string[]> = {
+    0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors', 'remainingSponsorsUrls'],
+    1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
+    2: ['rules'],
+};
+const requestSchema = object({
+    title: string().required("اسم البطولة مطلوب"),
+    description: string(),
+    logo: mixed(),
+    type: string().required("نوع البطولة مطلوب"),
+    tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
+    locationDescription: string().required("عنوان البطولة مطلوب"),
+    location: object({ latitude: number(), longitude: number() }).test('location-selected', 'يرجى اختيار الموقع', (value) => !!value && value.latitude !== 0 && value.longitude !== 0),
+    contactPhone: string().required("رقم للتواصل للاعبين مطلوب").min(10, "رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام"),
+    isContactPhoneCall: boolean(),
+    isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method", "يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)", function (value) {
+        const parent = this.parent as UpdateTournamentCreationRequest;
+        return value || parent.isContactPhoneCall;
+    }),
+    sponsors: array().of(mixed()),
+    remainingSponsorsUrls: array().of(string()),
+    isAddPlayersByQydha: boolean(),
+    startAt: string().required("تاريخ بداية البطولة مطلوب"),
+    endAt: string().required("تاريخ نهاية البطولة مطلوب"),
+    joinRequestStartAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ بداية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
+    joinRequestEndAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ نهاية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
+    joinRequestMaxCount: number().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("عدد طلبات الانضمام المطلوب مطلوب"), otherwise: (schema) => schema.notRequired() }),
+    prizes: array().min(1, "يجب إضافة جائزة واحدة على الأقل"),
+    teamsCount: number().typeError("عدد الفرق مطلوب").required("عدد الفرق مطلوب").min(2, "يجب أن يكون عدد الفرق على الأقل 2"),
+    tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
+    rules: array().of(string()),
+    allowedJoinRequestType: string().required("نوع طلبات الانضمام مطلوب"),
 
-const updateReq = updateTournamentRequest(id)
-const validation = useMultiStepFormValidation(formRefs as any, {
-    totalSteps: steps.length,
-    steps,
-    onFormSubmit: async () => {
-        await updateReq.fetchReq(formData)
-        if (updateReq.status.value == 'success') navigateTo("/tournament/request")
-    },
+   minimumSubscriptionDays: number()
+    .nullable()
+    .when('isAddPlayersByQydha', {
+      is: true,
+      then: (schema) => schema.min(0, "الحد الأدنى يجب أن يكون 0 أو أكثر"),
+      otherwise: (schema) => schema.nullable().notRequired(),
+    }),
+});
+const { validateField, setValues, setFieldError, errors } = useForm<UpdateTournamentCreationRequest>({
+    validationSchema: toTypedSchema(requestSchema),
+    initialValues: formData,
+});
+watch(formData, (value) => {
+    setValues({ ...value }, false);
+}, { deep: true, immediate: true });
+const currentStepValue = ref(0);
+const completedSteps = ref<Set<number>>(new Set());
+const touchedFields = ref<Set<string>>(new Set());
+const attemptedSteps = ref<Set<number>>(new Set());
+
+const fieldStepMap = computed(() => {
+    const map = new Map<string, number>();
+    Object.entries(stepFieldMap).forEach(([step, fields]) => {
+        fields.forEach((field) => map.set(field, Number(step)));
+    });
+    return map;
 });
 
-const currentStepValue = computed(() => validation.currentStep.value);
+const shouldShowFieldError = (field: string) => {
+    const step = fieldStepMap.value.get(field);
+    if (step === undefined) return true;
+    return touchedFields.value.has(field) || attemptedSteps.value.has(step);
+};
+
+const visibleErrors = computed(() => {
+    const result: Record<string, string> = {};
+    Object.entries(errors.value).forEach(([field, message]) => {
+        if (message && shouldShowFieldError(field)) {
+            result[field] = message;
+        }
+    });
+    return result;
+});
+
+const onFieldBlur = async (field: string) => {
+    touchedFields.value.add(field);
+    await validateField(field as any);
+};
+
+const updateReq = updateTournamentRequest(id)
+const validateCurrentStep = async () => {
+    const fields = stepFieldMap[currentStepValue.value] ?? [];
+    let isStepValid = true;
+    for (const field of fields) {
+        const result = await validateField(field as any);
+        console.log(result)
+        if (!result.valid) isStepValid = false;
+    }
+    return isStepValid;
+};
+const validateAndNext = async () => {
+    const isValid = await validateCurrentStep();
+    if (!isValid) {
+        attemptedSteps.value.add(currentStepValue.value);
+        toast.add({ title: "يرجى تصحيح أخطاء الخطوة الحالية", color: "error" });
+        return;
+    }
+    completedSteps.value.add(currentStepValue.value);
+    if (currentStepValue.value < steps.length - 1) currentStepValue.value += 1;
+};
+const previousStep = () => {
+    if (currentStepValue.value > 0) currentStepValue.value -= 1;
+};
+const submitForm = async () => {
+    const currentStepBeforeSubmit = currentStepValue.value;
+    for (let idx = 0; idx < steps.length; idx++) {
+        attemptedSteps.value.add(idx);
+        const fields = stepFieldMap[idx] ?? [];
+        let stepValid = true;
+        for (const field of fields) {
+            const result = await validateField(field as any);
+            if (!result.valid) stepValid = false;
+        }
+        if (!stepValid) {
+            currentStepValue.value = idx;
+            toast.add({ title: "يرجى إكمال الحقول المطلوبة", color: "error" });
+            return;
+        }
+    }
+    currentStepValue.value = currentStepBeforeSubmit;
+
+    await updateReq.fetchReq(formData);
+    if (updateReq.status.value == 'success') {
+        await navigateTo("/tournament/request");
+        return;
+    }
+    const apiData = (updateReq.error.value?.data as any)?.data;
+    const apiErrors = apiData?.errors as Record<string, string[]> | undefined;
+    if (apiErrors) {
+        for (const [key, value] of Object.entries(apiErrors)) {
+            setFieldError(key as any, Array.isArray(value) ? value[0] : String(value));
+        }
+    }
+};
 watch(currentStepValue, () => { scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' }); });
-const totalStepsValue = computed(() => validation.enhancedSteps.value.length);
-const isSubmittingValue = computed(() => validation.isSubmitting.value);
+const stepperItems = computed(() => steps.map((step, idx) => ({
+    ...step,
+    color: currentStepValue.value === idx ? "primary" : completedSteps.value.has(idx) ? "success" : "neutral",
+})));
+const totalStepsValue = computed(() => steps.length);
+const isSubmittingValue = computed(() => updateReq.status.value === "pending");
 const canGoBack = computed(() => currentStepValue.value >= 1);
 const canGoNext = computed(() => currentStepValue.value < totalStepsValue.value - 1);
 const isLastStep = computed(() => currentStepValue.value == totalStepsValue.value - 1);
 const handelSubmit = () => {
-  void validation.submitForm();
+  void submitForm();
 };
 </script>
 
