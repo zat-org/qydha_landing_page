@@ -24,39 +24,15 @@
         </template>
 
         <template #default>
-            <div ref="scrollContainer" class="overflow-y-auto  max-h-[calc(100vh-300px)] min-h-[69vh] ">
-                <div class="h-full">
-                    <KeepAlive>
-                        <TourForm
-                          v-show="currentStepValue === 0"
-                          v-model="formData"
-                          :errors="visibleErrors"
-                          :on-field-blur="onFieldBlur"
-                          :disabled-fields="disabledFields"
-                          :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
-                        />
-                    </KeepAlive>
-                    <KeepAlive>
-                        <TourDetailForm
-                          v-show="currentStepValue === 1"
-                          v-model="formData"
-                          :errors="visibleErrors"
-                          :on-field-blur="onFieldBlur"
-                          :disabled-fields="disabledFields"
-                        />
-                    </KeepAlive>
-                    <KeepAlive>
-                        <RulesForm
-                          v-show="currentStepValue === 2"
-                          v-model="formData"
-                          :errors="visibleErrors"
-                          :on-field-blur="onFieldBlur"
-                          :disabled-fields="disabledFields"
-                        />
-                    </KeepAlive>
-                </div>
-            </div>
-
+            <TournamentEditPanels
+                v-model="formData"
+                :current-step="currentStepValue"
+                :errors="visibleErrors"
+                :on-field-blur="onFieldBlur"
+                :disabled-fields="disabledFields"
+                :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
+                :owner="getReq.data.value?.data.tournament?.owner ?? null"
+            />
         </template>
         <template #footer>
             <div class="flex justify-between items-center px-6">
@@ -81,18 +57,24 @@ import { TournamentPrizeCurrency, TournamentPrizeType } from '~/features/tournam
 import { TournamentType } from '~/features/tournament/models/tournamenetType';
 import { TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
 import { TournamentDetailedState, type TournamentUpdate } from '~/features/tournament/models/tournament';
+import { useTournamentLogic } from '~/features/tournament/core/composables/tournament.logic';
 import Loading from "~/components/loading.vue";
-import TourForm from '~/features/tournament/request/components/Form/TourForm.vue';
-import TourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
-import RulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
+import TournamentEditPanels from '~/features/tournament/core/components/TournamentEditForm/Panels.vue';
 
 type TournamentEditForm = TournamentUpdate & {
   type: TournamentType;
   isAddPlayersByQydha: boolean;
 };
 
-const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");
 const { getSingelTournament, updateTournament } = useTournament();
+const { canUpdateTournament } = useTournamentLogic();
+
+const tournamentEditFreezeFieldKeys = [
+  "title", "description", "logo", "showInQydha", "contactPhone", "isContactPhoneCall", "isContactPhoneWhatsapp",
+  "locationDescription", "location", "type", "tournamentPrivatePassword", "sponsors", "startAt", "endAt",
+  "joinRequestStartAt", "joinRequestEndAt", "joinRequestMaxCount", "isAddPlayersByQydha", "prizes",
+  "teamsCount", "tablesCount", "allowedJoinRequestType", "minimumSubscriptionDays", "rules", "ownerId",
+] as const;
 const route = useRoute();
 const router = useRouter();
 const id = route.params.id.toString();
@@ -146,23 +128,30 @@ const steps = [
 
 const stepFieldMap: Record<number, string[]> = {
   0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors'],
-  1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
+  1: ['showInQydha', 'ownerId', 'startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
   2: ['rules'],
 };
+
+const contactMethodMessage = "يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)";
 
 const editSchema = object({
   title: string().required("اسم البطولة مطلوب"),
   description: string(),
   logo: mixed(),
+  showInQydha: boolean(),
+  ownerId: string().required("يجب اختيار منظم البطولة").trim().min(1, "يجب اختيار منظم البطولة"),
   type: string().required("نوع البطولة مطلوب"),
   tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
   locationDescription: string().required("عنوان البطولة مطلوب"),
   location: object({ latitude: number(), longitude: number() }).test('location-selected', 'يرجى اختيار الموقع', (value) => !!value && value.latitude !== 0 && value.longitude !== 0),
   contactPhone: string().required("رقم للتواصل للاعبين مطلوب").min(10, "رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام"),
-  isContactPhoneCall: boolean(),
-  isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method", "يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)", function (value) {
+  isContactPhoneCall: boolean().test("at-least-one-contact-method", contactMethodMessage, function () {
     const parent = this.parent as TournamentEditForm;
-    return value || parent.isContactPhoneCall;
+    return !!(parent.isContactPhoneWhatsapp || parent.isContactPhoneCall);
+  }),
+  isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method", contactMethodMessage, function () {
+    const parent = this.parent as TournamentEditForm;
+    return !!(parent.isContactPhoneWhatsapp || parent.isContactPhoneCall);
   }),
   sponsors: array().of(mixed()),
   isAddPlayersByQydha: boolean(),
@@ -228,11 +217,18 @@ if (getReq.status.value == "error") {
   await navigateTo('/tournamnent');
 }
 
+const detailedStateEdit = computed(
+  () => getReq.data.value?.data.tournament?.detailedState ?? TournamentDetailedState.Created,
+);
+
 const disabledFields = computed<Record<string, boolean>>(() => {
-  
+  const frozen = !canUpdateTournament(detailedStateEdit.value);
+  if (frozen) {
+    return Object.fromEntries(tournamentEditFreezeFieldKeys.map((k) => [k, true])) as Record<string, boolean>;
+  }
   return {
-    "isAddPlayersByQydha":true,
-    "joinRequestStartAt":true,
+    isAddPlayersByQydha: true,
+    joinRequestStartAt: true,
   };
 });
 
@@ -264,7 +260,7 @@ const assignData = () => {
   formData.joinRequestStartAt = data.joinRequestStartAt ?? undefined;
   formData.showInQydha = data.showInQydha;
   formData.ownerId = data.owner.id;
-  formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.All;
+  formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.Team;
   formData.minimumSubscriptionDays = data.minimumSubscriptionDays ?? 0;
 };
 
@@ -346,10 +342,6 @@ const stepperItems = computed(() => steps.map((step, idx) => ({
   ...step,
   color: currentStepValue.value === idx ? "primary" : completedSteps.value.has(idx) ? "success" : "neutral",
 })));
-
-watch(currentStepValue, () => {
-  scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
-});
 
 const totalStepsValue = computed(() => steps.length);
 const isSubmittingValue = computed(() => updateReq.status.value === "pending");

@@ -1,4 +1,3 @@
-import { ConsoleLogger } from "@microsoft/signalr/dist/esm/Utils";
 import {
   type GetTournamentJoinRequestParams,
   type GetTournamentJoinRequestResponse,
@@ -8,6 +7,9 @@ import {
   type AcceptedTeam,
   type SingleJoinRequest,
   type GetTournamentAcceptedTeamsJoinRequestResponse,
+  type GetTeamJoinRequestsParams,
+  type GetTeamJoinRequestsResponse,
+  type TeamJoinRequestPatchAction,
 } from "~/features/tournament/models/TournamentJoinRequest";
 
 const TournamentJoinRequestTypeLabel: Record<
@@ -48,9 +50,57 @@ const TournamentJoinRequestStateColors: Record<
   [TournamentJoinRequestState.Withdrawn]: "neutral",
 };
 
+function buildTeamJoinRequestsQuery(p: GetTeamJoinRequestsParams): string {
+  const qs = new URLSearchParams();
+  qs.set("pageNumber", String(p.pageNumber));
+  qs.set("pageSize", String(p.pageSize));
+  for (const s of p.GetOnlyStates ?? []) qs.append("GetOnlyStates", s);
+  return qs.toString();
+}
+
 export const useTournamentJoinRequest = () => {
   const { $api } = useNuxtApp();
-  const toast = useToast()
+  const toast = useToast();
+
+  /** Team join requests (single list endpoint, `GetOnlyStates` filter). */
+  const getTeamJoinRequests = (
+    tournamentId: string,
+    params: Ref<GetTeamJoinRequestsParams>,
+    instanceKey: string,
+  ) => {
+    return useAsyncData<{ data: GetTeamJoinRequestsResponse; message: string }>(
+      () => `getTeamJoinRequests-${instanceKey}-${tournamentId}-${JSON.stringify(unref(params))}`,
+      () => {
+        const p = unref(params);
+        const query = buildTeamJoinRequestsQuery(p);
+        return $api(`/tournaments/${tournamentId}/tournament-team-join-requests?${query}`);
+      },
+      { watch: [params], deep: true },
+    );
+  };
+
+  const patchTeamJoinRequests = async (
+    tournamentId: string,
+    action: TeamJoinRequestPatchAction,
+    joinRequestIds: string[],
+  ) => {
+    if (!joinRequestIds.length) {
+      toast.add({ title: "اختر طلباً واحداً على الأقل", color: "warning" });
+      return false;
+    }
+    try {
+      await $api(`/tournaments/${tournamentId}/tournament-team-join-requests/${action}`, {
+        method: "patch",
+        body: { joinRequestIds },
+      });
+      toast.add({ title: "تم تنفيذ الإجراء", color: "success" });
+      return true;
+    } catch {
+      toast.add({ title: "تعذر تنفيذ الإجراء", color: "error" });
+      return false;
+    }
+  };
+
   const getTournamentJoinRequests = (
     tournamentId: string,
     params: Ref<GetTournamentJoinRequestParams>
@@ -62,7 +112,7 @@ export const useTournamentJoinRequest = () => {
     }>(
       "getTournamentJoinRequests",
       () =>
-        $api(`/tournaments/${tournamentId}/join-requests`, {
+        $api(`/tournaments/${tournamentId}/tournament-team-join-requests`, {
           params: unref(param),
         }),
       { watch: [unref(param)], deep: true }
@@ -312,6 +362,8 @@ const AutoCompleteJoinRequest =()=>{
 
   return {
     getTournamentJoinRequests,
+    getTeamJoinRequests,
+    patchTeamJoinRequests,
     getTouranmentnumberofUserWantstoIn,
     getTournamnetAcceptedSingleJoinRequest,
     getTournamnetAcceptedTeamsJoinRequest,

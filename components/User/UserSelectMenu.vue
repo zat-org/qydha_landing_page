@@ -8,7 +8,7 @@
     v-model="model"
     v-model:search-term="searchTerm"
     :loading="loading"
-    :items="items"
+    :items="mergedItems"
     :label-key="labelKey"
     :value-key="valueKey"
     searchable
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { toRef } from "vue";
+import { computed, toRef } from "vue";
 import type { User } from "~/models/user";
 
 defineOptions({ inheritAttrs: false });
@@ -32,15 +32,27 @@ const props = withDefaults(
     placeholder?: string;
     labelKey?: keyof User;
     valueKey?: keyof User;
+    /** API `Role` filter for `/users` (default `"User"`). */
+    roleFilter?: string;
+    /** Merged before remote results (e.g. current owner so the selected id always has a label). */
+    extraItems?: User[];
   }>(),
   {
     placeholder: "ابحث عن مستخدم...",
     labelKey: "username",
     valueKey: "username",
+    roleFilter: "User",
   }
 );
 
-const { searchTerm, items, loading } = await useUserSearchSelect(
-  toRef(props, "remoteSearch")
-);
+const { searchTerm, items, loading } = await useUserSearchSelect(toRef(props, "remoteSearch"), {
+  roleFilter: toRef(props, "roleFilter"),
+});
+
+const mergedItems = computed(() => {
+  const extra = props.extraItems ?? [];
+  const base = items.value;
+  const seen = new Set(base.map((u) => u.id));
+  return [...extra.filter((u) => u?.id && !seen.has(u.id)), ...base];
+});
 </script>

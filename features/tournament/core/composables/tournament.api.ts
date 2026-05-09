@@ -158,18 +158,11 @@ export const useTournament = () => {
       body.value.append("addPlayersByQydha", String(_body.addPlayersByQydha));
       body.value.append("teamsCount", String(_body.teamsCount));
       body.value.append("tablesCount", String(_body.tablesCount));
+      console.log(_body.addPlayersByQydha);
       if (_body.addPlayersByQydha) {
-        if (_body.joinRequestStartAt) {
-          console.log();
-          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
-        }
-        if (_body.joinRequestEndAt) {
-          body.value.append("joinRequestEndAt", _body.joinRequestEndAt!);
-        }
-        body.value.append(
-          "joinRequestMaxCount",
-          String(_body.joinRequestMaxCount),
-        );
+          body.value.append("joinRequestStartAt", _body.joinRequestStartAt??" no date");
+          body.value.append("joinRequestEndAt", _body.joinRequestEndAt ?? " no date");
+        body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount ?? 0));
       }
       if (_body.tournamentPrivatePassword) {
         body.value.append(
@@ -195,7 +188,9 @@ export const useTournament = () => {
       } else {
         body.value!.append("rules", "[]");
       }
-
+      
+      body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType.toString())
+      body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays ?? 0));
       await execute();
     };
     return { data, pending, error, refresh, status, fetchREQ };

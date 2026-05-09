@@ -1,1 +1,3 @@
-export { default as TournamentJoiningRequest } from "./TournamentJoiningRequest.vue";
+import TournamentJoiningRequest from "./TournamentJoiningRequest.vue";
+
+export default TournamentJoiningRequest;
