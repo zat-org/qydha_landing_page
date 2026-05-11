@@ -82,9 +82,9 @@ export const useTournamentJoinRequest = () => {
   const patchTeamJoinRequests = async (
     tournamentId: string,
     action: TeamJoinRequestPatchAction,
-    joinRequestIds: string[],
+    joinRequestIds?: string[],
   ) => {
-    if (!joinRequestIds.length) {
+    if (!joinRequestIds?.length && action !== "approve") {
       toast.add({ title: "اختر طلباً واحداً على الأقل", color: "warning" });
       return false;
     }

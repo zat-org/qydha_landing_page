@@ -1,38 +1,54 @@
 <template>
-  <UCard dir="rtl">
+  <UCard
+    dir="rtl"
+    class="w-full min-w-0"
+    :ui="{
+      root: 'w-full min-w-0',
+      header: 'p-3 sm:p-4 md:p-5',
+      body: 'p-3 pt-0 sm:p-4 sm:pt-0 md:p-5 md:pt-0',
+    }"
+  >
     <template #header>
-      <div class="flex flex-wrap justify-between gap-4">
-        <div class="flex items-center gap-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+        <div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
           <UButton
+            class="min-h-11 shrink-0 self-start touch-manipulation sm:min-h-0 sm:self-center"
             icon="i-heroicons-arrow-right"
             label="عوده"
             variant="ghost"
             color="neutral"
             @click="router.back()"
           />
-          <h1 class="text-xl font-bold sm:text-2xl">طلبات انضمام الفرق</h1>
+          <h1 class="min-w-0 break-words text-lg font-bold leading-snug sm:text-xl md:text-2xl">
+            طلبات انضمام الفرق
+          </h1>
         </div>
       </div>
     </template>
 
-    <ClientOnly>
+    <!-- <ClientOnly>
       <UAlert
         v-if="!canAction"
-        class="mb-4"
+        class="mb-3 text-sm sm:mb-4 sm:text-base"
         color="warning"
         variant="subtle"
         icon="i-heroicons-exclamation-triangle"
       >
         <template #description>
-          <p>
+          <p class="leading-relaxed">
             لا يمكن تنفيذ إجراءات على الطلبات في هذا الوقت (مثلاً نافذة الانضمام لم تنتهِ بعد أو حالة البطولة لا
             تسمح).
           </p>
         </template>
       </UAlert>
-    </ClientOnly>
+    </ClientOnly> -->
 
-    <UTabs :items="tabItems" class="mb-2" dir="rtl" :unmount-on-hide="false">
+    <UTabs
+      :items="tabItems"
+      class="mb-2 w-full min-w-0 overflow-x-auto [-webkit-overflow-scrolling:touch] sm:overflow-x-visible"
+      dir="rtl"
+      :unmount-on-hide="false"
+    >
       <template #requests-main>
         <Suspense>
           <TeamJoinRequestsPanel
@@ -43,7 +59,7 @@
             @mutated="refreshBothPanels"
           />
           <template #fallback>
-            <Loading class="mt-10" />
+            <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
           </template>
         </Suspense>
       </template>
@@ -58,7 +74,7 @@
             @mutated="refreshBothPanels"
           />
           <template #fallback>
-            <Loading class="mt-10" />
+            <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
           </template>
         </Suspense>
       </template>

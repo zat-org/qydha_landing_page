@@ -1,4 +1,6 @@
 <template>
+  
+  
   <ClientOnly>
     <div class="bracket-container">
       <div class="bracket-logo-theme">
@@ -41,7 +43,6 @@ import QydhaLogo from "@/assets/images/qydha-logo.svg";
 import { useColorMode } from "@vueuse/core";
 
 const VueFlow = defineAsyncComponent(() => import("@vue-flow/core").then((m) => m.VueFlow));
-const Background = defineAsyncComponent(() => import("@vue-flow/background").then((m) => m.Background));
 const MatchNode = defineAsyncComponent(() => import("./MatchNode.vue"));
 
 const props = defineProps<{ group: Group }>();

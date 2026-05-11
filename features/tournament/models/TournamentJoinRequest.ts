@@ -113,14 +113,35 @@ export interface GetTeamJoinRequestsParams {
   GetOnlyStates: TeamJoinRequestWorkflowState[];
 }
 
+
+
+
+
+
+
+
+
+
+
+
 export interface TeamJoinRequestListItem {
-  id: string;
-  ownerId?: string;
-  ownerUserName?: string;
+  joinRequestId: string;
+  
+
+  requesterUserId?: string;
+
+
   teammateId?: string;
-  teammateUserName?: string;
+  teammateUsername?: string;
   teamName?: string;
+
+
+
   createdAt: string;
+  createorId?: string;
+  creatorUsername?: string;
+  creatorName?: string;
+  overallStatus?: string;
   state: TeamJoinRequestWorkflowState | string;
 }
 
@@ -168,4 +189,4 @@ export const TEAM_JOIN_STATE_COLOR: Record<TeamJoinRequestWorkflowState, string>
 /** States listed on the main tab (every workflow state except «consideration» bucket). */
 export const TEAM_JOIN_MAIN_TAB_STATES: TeamJoinRequestWorkflowState[] = Object.values(
   TeamJoinRequestWorkflowState,
-).filter((s) => s !== TeamJoinRequestWorkflowState.WaitingOrganizerConsideration);
+).filter((s) => s !== TeamJoinRequestWorkflowState.WaitingOrganizerApproval);

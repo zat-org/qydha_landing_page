@@ -11,7 +11,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     []
   );
   const selectedTournamentId = ref<string>("");
-  const tournamentDashboard = ref<DetailTournament["tournament"] | null>(null);
+  // const tournamentDashboard = ref<DetailTournament["tournament"] | null>(null);
   const tournament = ref<{ data: Group; matches: Match[] }[]>([]);
   const connection = ref<signalR.HubConnection>();
   const rounds = ref<RoundGroupDetails["rounds"]>([]);
@@ -24,27 +24,27 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     selectedRound.value = rounds.value.find((r) => r.id == roundId);
   };
 
-  const refreshTournamentDashboard = async (tournamentId: string) => {
-    try {
-      const req = await useTournament().getSingelTournament(tournamentId);
-      await req.execute();
-      tournamentDashboard.value = req.data.value?.data.tournament ?? null;
-    } catch {
-      tournamentDashboard.value = null;
-    }
-  };
+  // const refreshTournamentDashboard = async (tournamentId: string) => {
+  //   try {
+  //     const req = await useTournament().getSingelTournament(tournamentId);
+  //     await req.execute();
+  //     tournamentDashboard.value = req.data.value?.data.tournament ?? null;
+  //   } catch {
+  //     tournamentDashboard.value = null;
+  //   }
+  // };
 
-  const refreshRounds = async (tournamentId: string, groupId: string) => {
-    const roundsREQ = await groupApi.getRoundsGroupDetails(tournamentId, groupId);
-    if (roundsREQ.status.value == "error" || !roundsREQ.data || !roundsREQ.data.value)
-      return;
+  // const refreshRounds = async (tournamentId: string, groupId: string) => {
+  //   const roundsREQ = await groupApi.getRoundsGroupDetails(tournamentId, groupId);
+  //   if (roundsREQ.status.value == "error" || !roundsREQ.data || !roundsREQ.data.value)
+  //     return;
 
-    rounds.value = roundsREQ.data.value.data.rounds;
+  //   rounds.value = roundsREQ.data.value.data.rounds;
 
-    if (selectedRound.value?.id) {
-      selectedRound.value = rounds.value.find((r) => r.id === selectedRound.value?.id);
-    }
-  };
+  //   if (selectedRound.value?.id) {
+  //     selectedRound.value = rounds.value.find((r) => r.id === selectedRound.value?.id);
+  //   }
+  // };
 
   const matchesTree = computed((): Match[] | undefined => {
     if (!selectedGroup.value) return undefined;
@@ -126,7 +126,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
         const g = tournament.value.find((g) => g.data.id === sel.data.id);
         if (g) g.matches = matchesREQ.data.value.data;
       }
-      await refreshRounds(tournamentId, sel.data.id);
+      // await refreshRounds(tournamentId, sel.data.id);
     } finally {
       bracketRefreshPending.value = false;
     }
@@ -135,7 +135,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
   const initStore = async () => {
     const tournamentId = route.params.id.toString();
     selectedTournamentId.value = tournamentId;
-    await refreshTournamentDashboard(tournamentId);
+    // await refreshTournamentDashboard(tournamentId);
     await groupsREQ.execute();
     if (groupsREQ.status && groupsREQ.status.value == "error") {
       return;
@@ -154,7 +154,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     console.log(g);
     if (g == null) return;
     g.matches = matchesREQ.data.value.data;
-    await refreshRounds(tournamentId, selectedGroup.value.data.id);
+    // await refreshRounds(tournamentId, selectedGroup.value.data.id);
     connection.value = await initWebsocket(tournamentId);
   };
   const fetchGame = async (id: string) => {
@@ -167,7 +167,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
         game: matchData.data.value?.data.state,
         statistics: matchData.data.value?.data.statistics,
       });
-    console.log(games.value);
+    // console.log(games.value);
   };
 
   const handleMatchStateChanged = (
@@ -224,9 +224,9 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
   };
   return {
     initStore,
-    refreshTournamentDashboard,
-    tournamentDashboard,
-    refreshRounds,
+    // refreshTournamentDashboard,
+    // tournamentDashboard,
+    // refreshRounds,
     refreshBracket,
     bracketRefreshPending,
     tournament,

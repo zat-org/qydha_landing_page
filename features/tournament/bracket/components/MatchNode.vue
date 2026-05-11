@@ -17,7 +17,7 @@
       </div>
 
       <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-1.5">
-        <div :class="firstTeamClasses"
+        <div :class="firstTeamSurfaceClass"
           class="group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10">
           <div class="flex h-full items-center justify-center gap-1 min-h-[30px]">
             <div class="flex flex-col h-full items-center justify-center grow ">
@@ -35,7 +35,7 @@
           VS
         </div>
 
-        <div :class="secondTeamClasses"
+        <div :class="secondTeamSurfaceClass"
           class="group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10">
           <div class="flex items-center justify-center gap-1 min-h-[30px]">
             <UIcon name="i-mdi-cards-club" class="size-3.5 shrink-0 text-fuchsia-700 dark:text-fuchsia-300" />
@@ -88,7 +88,7 @@
             <IconEndedGame v-if="isMatchEnded" class="text-[11px]" />
           </div>
         </UTooltip>
-        <UDropdownMenu :items="adminActionItems" :popper="{ placement: 'bottom-end' }">
+        <UDropdownMenu v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)" :items="adminActionItems" :popper="{ placement: 'bottom-end' }">
           <UTooltip text="إجراءات المباراة">
             <button type="button"
               class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-400/70 bg-white/90 text-slate-700 shadow-sm ring-1 ring-black/5 transition hover:bg-slate-100 dark:border-slate-500/60 dark:bg-gray-900/90 dark:text-slate-200 dark:ring-white/10 dark:hover:bg-gray-800"
@@ -118,6 +118,7 @@ import EditModal from "./EditModal.vue";
 import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
 import { useMatchNodeUi } from "~/features/tournament/bracket/composables/useMatchNodeUi";
 
+const userStore = useMyAuthStore();
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
 
 const tourStore = useMyTournamentStore();
@@ -234,6 +235,38 @@ const adminActionItems = computed(() => {
   items.push({ label: "نسخ معلومات المباراة", icon: "i-heroicons-clipboard-document", onSelect: copyClibboard });
   return [items];
 });
+
+
+// Final (level 1): winner gets gold gradient, runner-up gets silver.
+const isTournamentFinalPlacement = computed(
+  () =>
+    match.value.level === 1 &&
+    match.value.state === "Ended" &&
+    (match.value.winner?.toLowerCase() === "us" || match.value.winner?.toLowerCase() === "them"),
+);
+
+const firstClass = computed(
+  () =>
+    "bg-gradient-to-br from-amber-200/95 via-yellow-300/95 to-amber-600/95 text-amber-950 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] ring-1 ring-amber-400/55 dark:from-amber-500/45 dark:via-yellow-500/40 dark:to-amber-800/55 dark:text-amber-50 dark:ring-amber-400/30",
+);
+
+const secondClass = computed(
+  () =>
+    "bg-gradient-to-br from-slate-200/95 via-zinc-100/95 to-slate-500/95 text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-slate-400/50 dark:from-slate-600/45 dark:via-zinc-600/40 dark:to-slate-800/50 dark:text-slate-100 dark:ring-slate-500/30",
+);
+
+const firstTeamSurfaceClass = computed(() => {
+  if (!isTournamentFinalPlacement.value) return firstTeamClasses.value;
+  return match.value.winner?.toLowerCase() === "us" ? firstClass.value : secondClass.value;
+});
+
+const secondTeamSurfaceClass = computed(() => {
+  if (!isTournamentFinalPlacement.value) return secondTeamClasses.value;
+  return match.value.winner?.toLowerCase() === "them" ? firstClass.value : secondClass.value;
+});
+
+
+
 </script>
 
 <style>

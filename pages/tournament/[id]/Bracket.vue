@@ -2,14 +2,23 @@
   <div>
     <div class="w-full h-screen">
       <BracketPageHeader
-        @regenerate-final-matches="openFinalGroupRegenerateDrawer"
-        @open-start-confirm="openStartTournamentConfirm"
-        @edit-round="onEditRoundFromHeader"
+      v-if=" userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
+      @regenerate-final-matches="openFinalGroupRegenerateDrawer"
+      @open-start-confirm="openStartTournamentConfirm"
+      @edit-round="onEditRoundFromHeader"
+      @finish-tournament="finishTournament"
+      @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
       />
-
-
-
+      <UButtonGroup  v-else-if="tourStore.tournament.length > 0" orientation="horizontal" class="flex flex-wrap">
+      <UButton v-for="item in tourStore.tournament" :key="item.data.id" class="basis-[20px] grow"
+        :label="`${item.data.name}`" block
+        :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'"
+        @click="handleGroupSelection(item.data.id.toString())" />
+    </UButtonGroup>
+      
+      
       <loading v-if=" tourStore.groupsREQ?.status && tourStore.groupsREQ?.status== 'pending'" />
+      
       <ClientOnly>
         <Bracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
       </ClientOnly>
@@ -17,15 +26,16 @@
     </div>
 
     <UpdateRoundDrawer
+    v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
       ref="updateRoundDrawer"
       :round="roundBeingEdited"
       :tour-id="tourid"
       :group-id="tourStore.selectedGroup?.data.id || ''"
-      @updated="onRoundUpdated"
+    
     />
 
     <CreateMatchDrawer
-      v-if="tourStore.selectedGroup"
+      v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin) && tourStore.selectedGroup"
       :key="tourStore.selectedGroup.data.id"
       ref="createMatchDrawer"
       :group="tourStore.selectedGroup.data"
@@ -60,6 +70,8 @@ useHead({
     {name:'description',content:'خريطة البطولة'}
   ]
 })
+import { useMyAuthStore } from '~/store/Auth';
+const userStore = useMyAuthStore();
 
 const route = useRoute();
 const tourid = route.params.id.toString()
@@ -77,6 +89,11 @@ const isStartFinalGroupPending = computed(
   () => startFinalGroupTournamentReq.result.status.value === "pending",
 );
 
+const handleGroupSelection = (group_id: string) => {
+  useRouter().push({ path: useRoute().path, query: { group: group_id } });
+};
+
+
 const openStartTournamentConfirm = () => {
   if (tourStore.selectedGroup?.data.type !== GroupType.Final) return;
   startTournamentConfirmOpen.value = true;
@@ -91,7 +108,7 @@ const confirmAndStartTournament = async () => {
       color: "success",
     });
     startTournamentConfirmOpen.value = false;
-    await tourStore.refreshTournamentDashboard(tourid);
+    // await tourStore.refreshTournamentDashboard(tourid);
     await tourStore.refreshBracket(tourid);
   } else {
     const err = startFinalGroupTournamentReq.result.error.value as { message?: string } | null | undefined;
@@ -116,7 +133,43 @@ const openFinalGroupRegenerateDrawer = () => {
 const onCreateMatchDrawerSuccess = async () => {
   await tourStore.refreshBracket(tourid);
 };
+const finishReq = await useTournament().finishTournament();
+const finishTournament = async () => {
+  await finishReq.fetchREQ(tourid);
+  if (finishReq.status.value == "success") {
+    toast.add({
+      title: "تم انهاء البطولة",
+      description: "تم انهاء البطولة بنجاح",
+      color: "success",
+    });
+  }else{
 
+    toast.add({
+      title: "تعذّر انهاء البطولة",
+      description: "لا يمكن انهاء البطولة الا بعد انهاء كل المباريات  ",
+      color: "error",
+    })
+  }
+
+}
+const resumeReq = await useTournament().resumeFinalGroupAfterFinish();
+const resumeFinalGroupAfterFinish = async () => {
+  await resumeReq.fetchREQ(tourid);
+  if (resumeReq.status.value == "success") {
+    toast.add({
+      title: "تم استكمال البطولة",
+      description: "تم استكمال البطولة بنجاح",
+      color: "success",
+    });
+  } else {
+    const err = resumeReq.error.value as { message?: string } | null | undefined;
+    toast.add({
+      title: "تعذّر استكمال البطولة",
+      description: err?.message ?? "تحقق من الاتصال وحاول مرة أخرى.",
+      color: "error",
+    });
+  }
+}
 
 
 const roundBeingEdited = ref<RoundGroupDetails['rounds'][0] | null>(null);
@@ -129,26 +182,26 @@ const onEditRoundFromHeader = (round: RoundGroupDetails['rounds'][0]) => {
   }
 };
 
-const onRoundUpdated = async () => {
-  const groupId = tourStore.selectedGroup?.data.id;
-  if (!groupId) return;
-  await tourStore.refreshRounds(tourid, groupId);
-};
+// const onRoundUpdated = async () => {
+//   const groupId = tourStore.selectedGroup?.data.id;
+//   if (!groupId) return;
+//   await tourStore.refreshRounds(tourid, groupId);
+// };
 
-watch(
-  () => tourStore.selectedGroup?.data.id,
-  async (newGroupId, oldGroupId) => {
-    if (!newGroupId || newGroupId === oldGroupId) return;
-    roundBeingEdited.value = null;
-    if (updateRoundDrawer.value) {
-      updateRoundDrawer.value.open = false;
-    }
-    if (createMatchDrawer.value) {
-      createMatchDrawer.value.open = false;
-    }
-    await tourStore.refreshRounds(tourid, newGroupId);
-  }
-);
+// watch(
+//   () => tourStore.selectedGroup?.data.id,
+//   async (newGroupId, oldGroupId) => {
+//     if (!newGroupId || newGroupId === oldGroupId) return;
+//     roundBeingEdited.value = null;
+//     if (updateRoundDrawer.value) {
+//       updateRoundDrawer.value.open = false;
+//     }
+//     if (createMatchDrawer.value) {
+//       createMatchDrawer.value.open = false;
+//     }
+//     await tourStore.refreshRounds(tourid, newGroupId);
+//   }
+// );
 </script>
 
 <style></style>
