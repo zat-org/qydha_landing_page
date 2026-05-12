@@ -87,7 +87,7 @@ export const useTournamentRequest = () => {
         String(_body.isContactPhoneWhatsapp)
       );
       body.value.append(
-        "isAddPlayersByQydha",
+        "AddPlayersByQydha",
         String(_body.isAddPlayersByQydha)
       );
       body.value.append("teamsCount", String(_body.teamsCount));

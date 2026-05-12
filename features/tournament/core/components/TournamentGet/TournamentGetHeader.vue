@@ -10,7 +10,7 @@
     />
     <div class="flex flex-wrap items-center gap-2 justify-end">
       <UButton
-        v-if="isAdmin && canEdit"
+        v-if="isAdmin "
         color="warning"
         label="تعديل"
         icon="i-mdi-pencil"
@@ -43,7 +43,7 @@
 defineProps<{
   id: string;
   isAdmin: boolean;
-  canEdit: boolean;
+  
 }>();
 
 
