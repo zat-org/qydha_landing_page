@@ -205,6 +205,13 @@ function getPhaseContent(panel: TournamentPhasePanel): TournamentPhaseContent {
         },
         actions: [
           {
+            label: "المجموعات والمباريات",
+            icon: "i-mdi-user-group",
+            to: "/group",
+            variant: "soft",
+            className: "w-full min-h-12 justify-center sm:flex-1",
+          },
+          {
             label: "خريطة البطولة",
             icon: "i-mdi-tournament",
             to: "/bracket",

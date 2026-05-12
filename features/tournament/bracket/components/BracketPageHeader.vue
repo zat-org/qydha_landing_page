@@ -23,6 +23,9 @@
         color="primary" variant="solid" class="min-h-9"
         :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined" :disabled="!isFinalGroupSelected"
         @click="emit('resume-final-group-after-finish')" />
+        <!-- <pre>
+          {{ tourStore.rounds }}
+        </pre> -->
       <template v-if="tourStore.rounds && tourStore.rounds.length > 0">
         <USelectMenu v-model="selectedRoundId" :items="tourStore.rounds " label-key="name" value-key="id"
           :search-attributes="['name']" class="w-[220px]" :placeholder="tourStore.selectedRound?.name || 'اختر الجولة'"
@@ -68,10 +71,19 @@ const tourid = route.params.id.toString()
 const getTourRequest = await useTournament().getSingelTournament(tourid);
 const tour = computed(() => getTourRequest.data.value?.data);
 
-const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selectedGroup?.data.id ?? "");
+const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selectedGroup?.data.id ?? "",{immediate: false});
 // const rounds = computed(() => getRounds.data.value?.data.rounds);
-if (getRounds.status.value == "success")
-  tourStore.rounds = getRounds.data.value?.data.rounds ?? []
+watch(()=>tourStore.selectedGroup?.data.id ??false, async (id: string|boolean) => {
+  if (!id) return;
+  console.log(id)
+    await getRounds.fetchREQ(tourid, id as string);
+    if (getRounds.status.value == "success")
+      tourStore.rounds = getRounds.data.value?.data.rounds ?? []
+      console.log(getRounds);
+  
+  
+},{deep: true, immediate: true});
+
 
 const isAdminOrStaff = computed(() => {
   const roles = user.value?.user.roles;

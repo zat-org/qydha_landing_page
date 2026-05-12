@@ -19,21 +19,21 @@ interface GraphData {
 export const useGroup = () => {
   const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
-  const getGroups =  (tourid: string) => {
-    const { data, pending, error, refresh, status, execute } =  useLazyAsyncData<{
-      message: string;
-      data: {
-        groups: Group[];
-        requesterPrivilege: {
-          permissions: string[] | null;
-          privilege: Privilege;
+  const getGroups = (tourid: string) => {
+    const { data, pending, error, refresh, status, execute } =
+      useLazyAsyncData<{
+        message: string;
+        data: {
+          groups: Group[];
+          requesterPrivilege: {
+            permissions: string[] | null;
+            privilege: Privilege;
+          };
         };
-      };
-    }>(
-      () => ["getGroups", tourid].join("-"),
-      () => $api(`/tournaments/${tourid}/groups`),
-      
-    );
+      }>(
+        () => ["getGroups", tourid].join("-"),
+        () => $api(`/tournaments/${tourid}/groups`),
+      );
     watch(status, () => {
       if (status.value == "success" && data.value && data.value.data) {
         userStore.permissions =
@@ -47,14 +47,30 @@ export const useGroup = () => {
   const getGroupDetails = async (tour_id: string, group_id: string) => {
     return await useAsyncData<{ message: string; data: DetailGroup }>(
       () => ["getGroupDetails", tour_id, group_id].join("-"),
-      () => $api(`tournaments/${tour_id}/groups/${group_id}`)
+      () => $api(`tournaments/${tour_id}/groups/${group_id}`),
     );
   };
-  const getRoundsGroupDetails = async (tour_id: string, group_id: string) => {
-    return await useAsyncData<{ message: string; data: RoundGroupDetails }>(
+  const getRoundsGroupDetails = async (
+    tour_id: string,
+    group_id: string,
+    options: { immediate: boolean } = { immediate: true },
+  ) => {
+    const TOURID = ref(tour_id);
+    const GROUPID = ref(group_id);
+
+    const result = await useAsyncData<{
+      message: string;
+      data: RoundGroupDetails;
+    }>(
       () => ["getRoundsGroupDetails", tour_id, group_id].join("-"),
-      () => $api(`tournaments/${tour_id}/groups/${group_id}/rounds`)
-    );
+      () => $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/rounds`),
+    {immediate: options.immediate});
+    const fetchREQ = async (_tour_id: string, _group_id: string) => {
+      TOURID.value = _tour_id;
+      GROUPID.value = _group_id;
+      await result.execute();
+    };
+    return { ...result, fetchREQ };
   };
 
   const getGroupMatches = async () => {
@@ -66,7 +82,7 @@ export const useGroup = () => {
 
         () =>
           $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`),
-        { immediate: false }
+        { immediate: false },
       );
 
     const fetchREQ = async (_tour_id: string, _group_id: string) => {
@@ -92,7 +108,7 @@ export const useGroup = () => {
         $api(`tournaments/${tour_id.value}/groups/final/teams-links`, {
           method: "post",
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (_tour_id: string) => {
       tour_id.value = _tour_id;
@@ -114,16 +130,16 @@ export const useGroup = () => {
       () =>
         $api(
           `tournaments/${tour_id.value}/groups/${group_id.value}/rounds/${round_id.value}`,
-          { method: "put", body: body.value }
+          { method: "put", body: body.value },
         ),
-      { immediate: false }
+      { immediate: false },
     );
 
     const fetchREQ = async (
       _tour_id: string,
       _round_id: string,
       _group_id: string,
-      _body: TournamentRoundUpdate
+      _body: TournamentRoundUpdate,
     ) => {
       tour_id.value = _tour_id;
       round_id.value = _round_id;
@@ -132,7 +148,7 @@ export const useGroup = () => {
       await result.execute();
       if (result.status.value == "success") {
         refreshNuxtData(
-          ["getRoundsGroupDetails", _tour_id, _group_id].join("-")
+          ["getRoundsGroupDetails", _tour_id, _group_id].join("-"),
         );
       }
     };
@@ -150,12 +166,12 @@ export const useGroup = () => {
           method: "post",
           body: body.value,
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (
       _tour_id: string,
       _group_id: string,
-      _body: CreateMatch
+      _body: CreateMatch,
     ) => {
       tour_id.value = _tour_id;
       group_id.value = _group_id;
@@ -167,7 +183,7 @@ export const useGroup = () => {
     };
     return { result, fetchREQ };
   };
-  
+
   const ceateMatchesForFinalGroup = () => {
     const tour_id = ref();
     const body = ref<CreateMatch>();
@@ -178,12 +194,12 @@ export const useGroup = () => {
           method: "post",
           body: body.value,
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (
       _tour_id: string,
       _body: CreateMatch,
-      _group_id?: string
+      _group_id?: string,
     ) => {
       tour_id.value = _tour_id;
       body.value = _body;
@@ -192,7 +208,7 @@ export const useGroup = () => {
         refreshNuxtData(["getGroups", tour_id.value].join("-"));
         if (_group_id) {
           refreshNuxtData(
-            ["getRoundsGroupDetails", _tour_id, _group_id].join("-")
+            ["getRoundsGroupDetails", _tour_id, _group_id].join("-"),
           );
         }
       }
@@ -209,14 +225,14 @@ export const useGroup = () => {
       () =>
         $api(
           `/tournaments/${tourId.value}/groups/${groupId.value}/teams-links`,
-          { method: "delete", body: body.value }
+          { method: "delete", body: body.value },
         ),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (
       tour_id: string,
       group_id: string,
-      teams_id: string[]
+      teams_id: string[],
     ) => {
       tourId.value = tour_id;
       groupId.value = group_id;
@@ -234,8 +250,11 @@ export const useGroup = () => {
     const groupId = ref();
     const result = await useAsyncData(
       "revertGroupToLinkingState",
-      () => $api(`/tournaments/${tourId.value}/groups/${groupId.value}/matches` , { method: "delete" }),
-      { immediate: false }
+      () =>
+        $api(`/tournaments/${tourId.value}/groups/${groupId.value}/matches`, {
+          method: "delete",
+        }),
+      { immediate: false },
     );
     const fetchREQ = async (tour_id: string, group_id: string) => {
       tourId.value = tour_id;
@@ -244,7 +263,6 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
-
       }
     };
     return { ...result, fetchREQ };
@@ -253,8 +271,12 @@ export const useGroup = () => {
     const tourId = ref();
     const result = await useAsyncData(
       "revertFinalGroupGeneratedMatches",
-      () => $api(`/tournaments/${tourId.value}/revert-final-group-generated-matches` , { method: "post" }),
-      { immediate: false }
+      () =>
+        $api(
+          `/tournaments/${tourId.value}/revert-final-group-generated-matches`,
+          { method: "post" },
+        ),
+      { immediate: false },
     );
     const fetchREQ = async (tour_id: string, group_id: string) => {
       tourId.value = tour_id;
@@ -262,7 +284,6 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
-
       }
     };
     return { ...result, fetchREQ };
@@ -279,6 +300,6 @@ export const useGroup = () => {
     getRoundsGroupDetails,
     updateTournamentRound,
     revertGroupToLinkingState,
-    revertFinalGroupGeneratedMatches
+    revertFinalGroupGeneratedMatches,
   };
 };
