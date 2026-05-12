@@ -10,7 +10,7 @@
           <div>
             <h2 class="text-lg font-bold text-gray-900 dark:text-white">إدارة سريعة</h2>
             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              اختصارات دائمة — الطاولات، الحكام، والمشرفين في أي مرحلة
+              اختصارات دائمة — الطاولات، الحكام في أي مرحلة
             </p>
           </div>
         </div>
@@ -19,8 +19,8 @@
             color="neutral" class="min-h-12 w-full justify-center sm:justify-start" block />
           <UButton :to="`/tournament/${id}/refree`" label="الحكام" icon="i-mdi-gavel" size="lg" variant="soft"
             color="neutral" class="min-h-12 w-full justify-center sm:justify-start" block />
-          <UButton :to="`/tournament/${id}/moderator`" label="المشرفين" icon="i-mdi-shield-account" size="lg"
-            variant="soft" color="neutral" class="min-h-12 w-full justify-center sm:justify-start" block />
+          <!-- <UButton :to="`/tournament/${id}/moderator`" label="المشرفين" icon="i-mdi-shield-account" size="lg"
+            variant="soft" color="neutral" class="min-h-12 w-full justify-center sm:justify-start" block /> -->
         </div>
       </div>
 
