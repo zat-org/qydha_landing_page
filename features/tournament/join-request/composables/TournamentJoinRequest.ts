@@ -54,6 +54,7 @@ function buildTeamJoinRequestsQuery(p: GetTeamJoinRequestsParams): string {
   const qs = new URLSearchParams();
   qs.set("pageNumber", String(p.pageNumber));
   qs.set("pageSize", String(p.pageSize));
+  if (p.searchToken) qs.set("searchToken", p.searchToken);
   for (const s of p.GetOnlyStates ?? []) qs.append("GetOnlyStates", s);
   return qs.toString();
 }
@@ -69,11 +70,14 @@ export const useTournamentJoinRequest = () => {
     instanceKey: string,
   ) => {
     return useAsyncData<{ data: GetTeamJoinRequestsResponse; message: string }>(
-      () => `getTeamJoinRequests-${instanceKey}-${tournamentId}-${JSON.stringify(unref(params))}`,
+      () =>
+        `getTeamJoinRequests-${instanceKey}-${tournamentId}-${JSON.stringify(unref(params))}`,
       () => {
         const p = unref(params);
         const query = buildTeamJoinRequestsQuery(p);
-        return $api(`/tournaments/${tournamentId}/tournament-team-join-requests?${query}`);
+        return $api(
+          `/tournaments/${tournamentId}/tournament-team-join-requests?${query}`,
+        );
       },
       { watch: [params], deep: true },
     );
@@ -89,10 +93,16 @@ export const useTournamentJoinRequest = () => {
       return false;
     }
     try {
-      await $api(`/tournaments/${tournamentId}/tournament-team-join-requests/${action}`, {
-        method: "patch",
-        body: { joinRequestIds },
-      });
+      await $api(
+        `/tournaments/${tournamentId}/tournament-team-join-requests/${action}`,
+        {
+          method: "patch",
+          body: {
+            joinRequestIds,
+            updateSelectionType: "SelectedIds ",
+          },
+        },
+      );
       toast.add({ title: "تم تنفيذ الإجراء", color: "success" });
       return true;
     } catch {
@@ -101,9 +111,35 @@ export const useTournamentJoinRequest = () => {
     }
   };
 
+  const IntialApproveTeams = async (
+    tournamentId: string,
+    numberOfTeams: number,
+  ) => {
+    try {
+      await $api(
+        `/tournaments/${tournamentId}/tournament-team-join-requests/consider`,
+        {
+          method: "patch",
+          body: {
+            randomRequestsCount: numberOfTeams,
+            updateSelectionType: "RandomRequests",
+          },
+        },
+      );
+    } catch {
+      toast.add({ title: "تعذر تنفيذ الإجراء", color: "error" });
+      return false;
+  
+    }
+    toast.add({ title: "تم الموافقة الأوليه بنجاح", color: "success" });
+    return true;
+  };
+
+
+
   const getTournamentJoinRequests = (
     tournamentId: string,
-    params: Ref<GetTournamentJoinRequestParams>
+    params: Ref<GetTournamentJoinRequestParams>,
   ) => {
     const param = ref(params);
     return useAsyncData<{
@@ -115,7 +151,7 @@ export const useTournamentJoinRequest = () => {
         $api(`/tournaments/${tournamentId}/tournament-team-join-requests`, {
           params: unref(param),
         }),
-      { watch: [unref(param)], deep: true }
+      { watch: [unref(param)], deep: true },
     );
   };
 
@@ -132,7 +168,7 @@ export const useTournamentJoinRequest = () => {
                 type: TournamentJoinRequestType.Team,
               },
               method: "get",
-            }
+            },
           ),
           $api<{ data: GetTournamentJoinRequestResponse; message: string }>(
             `/tournaments/${tournamentId}/join-requests/`,
@@ -142,169 +178,193 @@ export const useTournamentJoinRequest = () => {
                 type: TournamentJoinRequestType.Single,
               },
               method: "get",
-            }
+            },
           ),
         ]);
 
         const teamsCount = teamsResponse.data?.totalCount ?? 0;
         const singlesCount = singlesResponse.data?.totalCount ?? 0;
-        
+
         // Teams count is multiplied by 2 (assuming 2 players per team)
         return teamsCount * 2 + singlesCount;
-      }
+      },
     );
-  }
-
+  };
 
   const getTournamnetAcceptedSingleJoinRequest = async (
     tournamentId: string,
-    params: Ref<GetTournamentJoinRequestParams>
+    params: Ref<GetTournamentJoinRequestParams>,
   ) => {
-      const param = params
+    const param = params;
 
-      watch([()=>param.value?.state,()=>param.value?.type],(newValue,oldValue)=>{
+    watch(
+      [() => param.value?.state, () => param.value?.type],
+      (newValue, oldValue) => {
         if (param.value) {
-          param.value.pageNumber = 1
+          param.value.pageNumber = 1;
         }
-      })
-    return await useAsyncData<{ data: GetTournamentJoinRequestResponse; message: string }>(
+      },
+    );
+    return await useAsyncData<{
+      data: GetTournamentJoinRequestResponse;
+      message: string;
+    }>(
       "getTournamnetAcceptedSingleJoinRequest",
-      () => $api(`/tournaments/${tournamentId}/join-requests` , {params:unref(param)}),
-      {watch:[unref(param)],deep:true}
+      () =>
+        $api(`/tournaments/${tournamentId}/join-requests`, {
+          params: unref(param),
+        }),
+      { watch: [unref(param)], deep: true },
     );
   };
 
   const getTournamnetAcceptedTeamsJoinRequest = async (
     tournamentId: string,
-    params: Ref<{pageNumber: number, pageSize: number}>
+    params: Ref<{ pageNumber: number; pageSize: number }>,
   ) => {
-    const param = ref(params)
-    return await useAsyncData<{ data: GetTournamentAcceptedTeamsJoinRequestResponse; message: string }>(
+    const param = ref(params);
+    return await useAsyncData<{
+      data: GetTournamentAcceptedTeamsJoinRequestResponse;
+      message: string;
+    }>(
       "getTournamnetAcceptedTeamsJoinRequest",
-      () => $api(`/tournaments/${tournamentId}/join-requests/staged-teams`  , {params:unref(param)}),
-      {watch:[unref(param)]}
-    
+      () =>
+        $api(`/tournaments/${tournamentId}/join-requests/staged-teams`, {
+          params: unref(param),
+        }),
+      { watch: [unref(param)] },
     );
   };
 
-  const AcceptJoinRequest =  () => {
-    const joinRequestId = ref()
-    const tournamentId = ref()  
-    const result =  useAsyncData<{ data: boolean; message: string }>(
+  const AcceptJoinRequest = () => {
+    const joinRequestId = ref();
+    const tournamentId = ref();
+    const result = useAsyncData<{ data: boolean; message: string }>(
       "AcceptJoinRequest",
       () =>
-        $api(`/tournaments/${unref(tournamentId)}/join-request/${unref(joinRequestId)}/accept`, {
-          method: "patch",
-        }),
-      { immediate: false }
-    );  
-    const fetchREQ = async (_joinRequestId: string ,_tournamentId: string) => {
-      joinRequestId.value = _joinRequestId
-      tournamentId.value = _tournamentId
-      await result.execute()
+        $api(
+          `/tournaments/${unref(tournamentId)}/join-request/${unref(joinRequestId)}/accept`,
+          {
+            method: "patch",
+          },
+        ),
+      { immediate: false },
+    );
+    const fetchREQ = async (_joinRequestId: string, _tournamentId: string) => {
+      joinRequestId.value = _joinRequestId;
+      tournamentId.value = _tournamentId;
+      await result.execute();
       if (result.status.value == "success") {
-
-        refreshNuxtData("getTournamentJoinRequests")
-        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
-        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest")
-        toast.add({ title: "تم القبول بنجاح", color: "success" })
+        refreshNuxtData("getTournamentJoinRequests");
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest");
+        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest");
+        toast.add({ title: "تم القبول بنجاح", color: "success" });
       }
-    }
-    return { result, fetchREQ }
+    };
+    return { result, fetchREQ };
   };
 
-  const RejectJoinRequest =  () => {
-    const joinRequestId = ref()
-    const tournamentId = ref()
-    const result =   useAsyncData<{ data: boolean; message: string }>(
+  const RejectJoinRequest = () => {
+    const joinRequestId = ref();
+    const tournamentId = ref();
+    const result = useAsyncData<{ data: boolean; message: string }>(
       "RejectJoinRequest",
       () =>
         // ${unref(tournamentId)}/
         $api(`/tournaments/join-request/${unref(joinRequestId)}/reject`, {
           method: "patch",
         }),
-      { immediate: false }
-    );  
-    const fetchREQ = async (_joinRequestId: string ,_tournamentId: string) => {
-      joinRequestId.value = _joinRequestId
-      tournamentId.value = _tournamentId
-      await result.execute()
+      { immediate: false },
+    );
+    const fetchREQ = async (_joinRequestId: string, _tournamentId: string) => {
+      joinRequestId.value = _joinRequestId;
+      tournamentId.value = _tournamentId;
+      await result.execute();
       if (result.status.value == "success") {
-        toast.add({ title: "تم الرفض بنجاح", color: "error" })
-        refreshNuxtData("getTournamentJoinRequests")
+        toast.add({ title: "تم الرفض بنجاح", color: "error" });
+        refreshNuxtData("getTournamentJoinRequests");
       }
-    }
-    return { result, fetchREQ }
+    };
+    return { result, fetchREQ };
   };
 
-  const RevertJoinRequest =()=>{
-    const joinRequestId = ref()
-    const tournamentId = ref()
-    const result =  useAsyncData<{ data: boolean; message: string }>(
-     ()=> ["revertJoinRequest",unref(joinRequestId),unref(tournamentId)].toString(),
+  const RevertJoinRequest = () => {
+    const joinRequestId = ref();
+    const tournamentId = ref();
+    const result = useAsyncData<{ data: boolean; message: string }>(
       () =>
-        $api(`/tournaments/${unref(tournamentId)}/join-request/${unref(joinRequestId)}/revert`, {
-          method: "patch",
-        }),
-      { immediate: false }
+        [
+          "revertJoinRequest",
+          unref(joinRequestId),
+          unref(tournamentId),
+        ].toString(),
+      () =>
+        $api(
+          `/tournaments/${unref(tournamentId)}/join-request/${unref(joinRequestId)}/revert`,
+          {
+            method: "patch",
+          },
+        ),
+      { immediate: false },
     );
-    const fetchREQ = async (_joinRequestId: string ,_tournamentId: string) => {
-      joinRequestId.value = _joinRequestId
-      tournamentId.value = _tournamentId
+    const fetchREQ = async (_joinRequestId: string, _tournamentId: string) => {
+      joinRequestId.value = _joinRequestId;
+      tournamentId.value = _tournamentId;
       // await nextTick()
-      await result.execute()
+      await result.execute();
       if (result.status.value == "success") {
-        toast.add({ title: "تم التراجع بنجاح", color: "success" })
-        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
-        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest")
-        refreshNuxtData("getTournamentJoinRequests")
+        toast.add({ title: "تم التراجع بنجاح", color: "success" });
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest");
+        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest");
+        refreshNuxtData("getTournamentJoinRequests");
       }
-    }
-    return { result, fetchREQ }
-    }
+    };
+    return { result, fetchREQ };
+  };
 
-  const MergeSingles =()=>{
-    const tournamentId = ref()
-    const result =  useAsyncData<{ data: boolean; message: string }>(
+  const MergeSingles = () => {
+    const tournamentId = ref();
+    const result = useAsyncData<{ data: boolean; message: string }>(
       "MergeSingles",
       () =>
         $api(`/tournaments/${unref(tournamentId)}/join-request/merge`, {
           method: "patch",
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchReq = async (_tournamentId: string) => {
-      tournamentId.value = _tournamentId
-      await result.execute()
+      tournamentId.value = _tournamentId;
+      await result.execute();
       if (result.status.value == "success") {
-        toast.add({ title: "تم الدمج بنجاح", color: "success" })
-        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
-        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest")
+        toast.add({ title: "تم الدمج بنجاح", color: "success" });
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest");
+        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest");
       }
-    }
-    return { result, fetchReq }
-  }
-const AutoCompleteJoinRequest =()=>{
-  const tournamentId = ref()
-  const result =  useAsyncData<{ data: boolean; message: string }>(
-    "AutoCompleteJoinRequest",
-    () => $api(`/tournaments/${unref(tournamentId)}/join-request/auto-complete`, {
-      method: "patch",
-    }),
-    { immediate: false }
-  );
-  const fetchReq = async (_tournamentId: string) => {
-    tournamentId.value = _tournamentId
-    await result.execute()
-    if (result.status.value == "success") {
-      toast.add({ title: "تم الاكمال التلقائي بنجاح", color: "success" })
-      refreshNuxtData("getTournamentJoinRequests")
-      refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
-      refreshNuxtData("getTournamnetAcceptedSingleJoinRequest")
-    }
-  }
-  return { result, fetchReq }
-}
+    };
+    return { result, fetchReq };
+  };
+  const AutoCompleteJoinRequest = () => {
+    const tournamentId = ref();
+    const result = useAsyncData<{ data: boolean; message: string }>(
+      "AutoCompleteJoinRequest",
+      () =>
+        $api(`/tournaments/${unref(tournamentId)}/join-request/auto-complete`, {
+          method: "patch",
+        }),
+      { immediate: false },
+    );
+    const fetchReq = async (_tournamentId: string) => {
+      tournamentId.value = _tournamentId;
+      await result.execute();
+      if (result.status.value == "success") {
+        toast.add({ title: "تم الاكمال التلقائي بنجاح", color: "success" });
+        refreshNuxtData("getTournamentJoinRequests");
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest");
+        refreshNuxtData("getTournamnetAcceptedSingleJoinRequest");
+      }
+    };
+    return { result, fetchReq };
+  };
 
   const getTournamentJoinRequestStateOptions = () => {
     const options = [
@@ -318,8 +378,10 @@ const AutoCompleteJoinRequest =()=>{
     return options;
   };
   const getState = (value: string): any => {
-    return getTournamentJoinRequestStateOptions().find(op => op.value == value)
-  }
+    return getTournamentJoinRequestStateOptions().find(
+      (op) => op.value == value,
+    );
+  };
   const getTournamentJoinRequestTypeOptions = () => {
     const options = [
       { label: "الكل", value: null, color: null },
@@ -333,31 +395,32 @@ const AutoCompleteJoinRequest =()=>{
   };
 
   const getType = (value: string): any => {
-    return getTournamentJoinRequestTypeOptions().find(op => op.value == value)
-  }
+    return getTournamentJoinRequestTypeOptions().find(
+      (op) => op.value == value,
+    );
+  };
 
-  const submitAcceptedTeams = async ( ) => {
-    const tournamentId = ref()
+  const submitAcceptedTeams = async () => {
+    const tournamentId = ref();
     const result = await useAsyncData<{ data: boolean; message: string }>(
-      ()=>["submitAcceptedTeams",unref(tournamentId)].toString(),
+      () => ["submitAcceptedTeams", unref(tournamentId)].toString(),
       () =>
         $api(`/tournaments/${unref(tournamentId)}/join-request/submit`, {
           method: "post",
         }),
-      { immediate: false }
-    );  
+      { immediate: false },
+    );
 
     const fetchREQ = async (_tournamentId: string) => {
-      tournamentId.value = _tournamentId
-      await result.execute()
+      tournamentId.value = _tournamentId;
+      await result.execute();
       if (result.status.value == "success") {
-        toast.add({ title: "تم التسليم بنجاح", color: "success" })
-        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest")
+        toast.add({ title: "تم التسليم بنجاح", color: "success" });
+        refreshNuxtData("getTournamnetAcceptedTeamsJoinRequest");
       }
-    }
-    
+    };
 
-    return { result, fetchREQ }
+    return { result, fetchREQ };
   };
 
   return {
@@ -369,6 +432,7 @@ const AutoCompleteJoinRequest =()=>{
     getTournamnetAcceptedTeamsJoinRequest,
     AcceptJoinRequest,
     RejectJoinRequest,
+    IntialApproveTeams,
     RevertJoinRequest,
     AutoCompleteJoinRequest,
     getTournamentJoinRequestStateOptions,
@@ -379,4 +443,3 @@ const AutoCompleteJoinRequest =()=>{
     getType,
   };
 };
-

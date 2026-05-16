@@ -461,16 +461,16 @@ const formState = ref<CreateMatch>({
     usedTables: [] as string[],
     defaultGameInterval: "00:30:00",
     defaultGameSettings: {
-        isFlipped: true,
+        isFlipped: false,
         isAdvancedRecording: true,
-        isSakkahMashdodahMode: true,
+        isSakkahMashdodahMode: false,
         showWhoWonDialogOnDraw: true,
-        isNumbersSoundEnabled: true,
-        isCommentsSoundEnabled: true,
-        isEkakShown: true,
-        isAklatShown: true,
+        isNumbersSoundEnabled: false,
+        isCommentsSoundEnabled: false,
+        isEkakShown: false,
+        isAklatShown: false,
         sakkasCount: 1,
-        isVoiceRecording: true,
+        isVoiceRecording: false,
     },
 });
 
@@ -500,6 +500,7 @@ watch(open, async (isOpen) => {
     selectedTables.value = {};
     formState.value.usedTables = [];
     await getTableREQ.refresh();
+    selectAllTables();
     const parsed = parseDuration(formState.value.defaultGameInterval);
     durationHours.value = parsed.hours;
     durationMinutes.value = parsed.minutes;

@@ -4,7 +4,7 @@
   <ClientOnly>
     <div class="bracket-container">
       <div class="bracket-logo-theme">
-        <img :src="QydhaLogo" alt="Qydha logo" class="bracket-logo" />
+        <img :src="QydhaLogo" alt="Qydha logo" loading="lazy" decoding="async" class="bracket-logo" />
         <button
           @click="toggleTheme"
           class="theme-toggle-btn px-3 py-1 mt-2 rounded border text-xs font-semibold"

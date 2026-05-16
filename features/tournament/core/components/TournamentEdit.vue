@@ -1,51 +1,43 @@
 <template>
-    <Loading v-if="getReq.status.value == 'pending'" />
-    <UCard v-else-if="getReq.status.value == 'success'" :ui="{
-        body: 'p-1 sm:p-1',
-        header: 'p-1 sm:p-1',
-        footer: 'p-1 sm:p-1',
+  <Loading v-if="getReq.status.value == 'pending'" />
+  <UCard v-else-if="getReq.status.value == 'success'" :ui="{
+    body: 'p-1 sm:p-1',
+    header: 'p-1 sm:p-1',
+    footer: 'p-1 sm:p-1',
 
-    }">
-        <template #header>
-            <div class="flex justify-around  items-center w-full">
-                <div class=" flex-1 flex  gap-2">
-                    <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost"
-                        class="flex-1">
-                        العودة
-                    </UButton>
-                    <!-- <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle"
+  }">
+    <template #header>
+      <div class="flex justify-around  items-center w-full">
+        <div class=" flex-1 flex  gap-2">
+          <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1">
+            العودة
+          </UButton>
+          <!-- <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle"
                         variant="ghost">
                         دليل انشاء البطولة
                     </UButton> -->
-                </div>
-                <UStepper size="sm" :items="stepperItems" class="flex-4 " v-model="currentStepValue" />
+        </div>
+        <UStepper size="sm" :items="stepperItems" class="flex-4 " v-model="currentStepValue" />
 
-            </div>
-        </template>
+      </div>
+    </template>
 
-        <template #default>
-            <TournamentEditPanels
-                v-model="formData"
-                :current-step="currentStepValue"
-                :errors="visibleErrors"
-                :on-field-blur="onFieldBlur"
-                :disabled-fields="disabledFields"
-                :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
-                :owner="getReq.data.value?.data.tournament?.owner ?? null"
-            />
-        </template>
-        <template #footer>
-            <div class="flex justify-between items-center px-6">
-                <UButton v-if="canGoBack" variant="outline" @click="previousStep" label="السابق" size="xl" />
-                <UButton v-if="canGoNext" color="primary" @click="validateAndNext" label="التالي"
-                    size="xl" class="ms-auto" />
-                <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit"
-                    size="xl">
-                    إرسال
-                </UButton>
-            </div>
-        </template>
-    </UCard>
+    <template #default>
+      <TournamentEditPanels v-model="formData" :current-step="currentStepValue" :errors="visibleErrors"
+        :on-field-blur="onFieldBlur" :disabled-fields="disabledFields"
+        :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
+        :owner="getReq.data.value?.data.tournament?.owner ?? null" />
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center px-6">
+        <UButton v-if="canGoBack" variant="outline" @click="previousStep" label="السابق" size="xl" />
+        <UButton v-if="canGoNext" color="primary" @click="validateAndNext" label="التالي" size="xl" class="ms-auto" />
+        <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit" size="xl">
+          إرسال
+        </UButton>
+      </div>
+    </template>
+  </UCard>
 
 </template>
 
@@ -63,7 +55,6 @@ import TournamentEditPanels from '~/features/tournament/core/components/Tourname
 
 type TournamentEditForm = TournamentUpdate & {
   type: TournamentType;
-  isAddPlayersByQydha: boolean;
 };
 
 const { getSingelTournament, updateTournament } = useTournament();
@@ -72,8 +63,8 @@ const { canUpdateTournament } = useTournamentLogic();
 const tournamentEditFreezeFieldKeys = [
   "title", "description", "logo", "showInQydha", "contactPhone", "isContactPhoneCall", "isContactPhoneWhatsapp",
   "locationDescription", "location", "type", "tournamentPrivatePassword", "sponsors", "startAt", "endAt",
-  "joinRequestStartAt", "joinRequestEndAt", "joinRequestMaxCount", "isAddPlayersByQydha", "prizes",
-  "teamsCount", "tablesCount", "allowedJoinRequestType", "minimumSubscriptionDays", "rules", "ownerId",
+  "prizes",
+  "teamsCount", "tablesCount", "rules", "ownerId",
 ] as const;
 const route = useRoute();
 const router = useRouter();
@@ -93,8 +84,6 @@ const formData = reactive<TournamentEditForm>({
   endAt: '',
   tournamentType: TournamentType.public,
   type: TournamentType.public,
-  addPlayersByQydha: false,
-  isAddPlayersByQydha: false,
   teamsCount: 16,
   tablesCount: 8,
   tournamentPrivatePassword: "",
@@ -110,13 +99,7 @@ const formData = reactive<TournamentEditForm>({
       nonFinancialPrizes: [],
     }
   ],
-  showInQydha: false,
-  joinRequestStartAt: undefined,
-  joinRequestEndAt: undefined,
-  joinRequestMaxCount: undefined,
   rules: [],
-  allowedJoinRequestType: TournamentPlayerJoinRequestType.All,
-  minimumSubscriptionDays: 0,
   ownerId: "",
 });
 
@@ -128,7 +111,7 @@ const steps = [
 
 const stepFieldMap: Record<number, string[]> = {
   0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors'],
-  1: ['showInQydha', 'ownerId', 'startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
+  1: [ 'ownerId', 'startAt', 'endAt', 'prizes', 'teamsCount', 'tablesCount'],
   2: ['rules'],
 };
 
@@ -138,7 +121,6 @@ const editSchema = object({
   title: string().required("اسم البطولة مطلوب"),
   description: string(),
   logo: mixed(),
-  showInQydha: boolean(),
   ownerId: string().required("يجب اختيار منظم البطولة").trim().min(1, "يجب اختيار منظم البطولة"),
   type: string().required("نوع البطولة مطلوب"),
   tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
@@ -154,22 +136,12 @@ const editSchema = object({
     return !!(parent.isContactPhoneWhatsapp || parent.isContactPhoneCall);
   }),
   sponsors: array().of(mixed()),
-  isAddPlayersByQydha: boolean(),
   startAt: string().required("تاريخ بداية البطولة مطلوب"),
   endAt: string().required("تاريخ نهاية البطولة مطلوب"),
-  joinRequestStartAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ بداية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestEndAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ نهاية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestMaxCount: number().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("عدد طلبات الانضمام المطلوب مطلوب"), otherwise: (schema) => schema.notRequired() }),
   prizes: array().min(1, "يجب إضافة جائزة واحدة على الأقل"),
   teamsCount: number().typeError("عدد الفرق مطلوب").required("عدد الفرق مطلوب").min(2, "يجب أن يكون عدد الفرق على الأقل 2"),
   tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
   rules: array().of(string()),
-  allowedJoinRequestType: string().required("نوع طلبات الانضمام مطلوب"),
-  minimumSubscriptionDays: number().nullable().when('isAddPlayersByQydha', {
-    is: true,
-    then: (schema) => schema.min(0, "الحد الأدنى يجب أن يكون 0 أو أكثر"),
-    otherwise: (schema) => schema.nullable().notRequired(),
-  }),
 });
 
 const { validateField, setValues, setFieldError, errors } = useForm<TournamentEditForm>({
@@ -180,6 +152,11 @@ const { validateField, setValues, setFieldError, errors } = useForm<TournamentEd
 watch(formData, (value) => setValues({ ...value }, false), { deep: true, immediate: true });
 
 const currentStepValue = ref(0);
+
+if (route.query.step === "join") {
+  currentStepValue.value = 1;
+}
+
 const completedSteps = ref<Set<number>>(new Set());
 const touchedFields = ref<Set<string>>(new Set());
 const attemptedSteps = ref<Set<number>>(new Set());
@@ -245,8 +222,6 @@ const assignData = () => {
   formData.endAt = data.endAt;
   formData.tournamentType = data.tournamentType as TournamentType;
   formData.type = data.tournamentType as TournamentType;
-  formData.addPlayersByQydha = data.addPlayersByQydha;
-  formData.isAddPlayersByQydha = data.addPlayersByQydha;
   formData.teamsCount = data.expectedTeamsCount;
   formData.tablesCount = data.expectedTablesCount;
   formData.tournamentPrivatePassword = data.tournamentPrivatePassword ?? undefined;
@@ -255,19 +230,13 @@ const assignData = () => {
   formData.prizes = data.prizes;
   formData.rules = data.tournamentRules ?? [];
   formData.remainingSponsorsUrls = data.sponsors;
-  formData.joinRequestEndAt = data.joinRequestEndAt ?? undefined;
-  formData.joinRequestMaxCount = data.joinRequestMaxCount ?? undefined;
-  formData.joinRequestStartAt = data.joinRequestStartAt ?? undefined;
-  formData.showInQydha = data.showInQydha;
   formData.ownerId = data.owner.id;
-  formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.Team;
-  formData.minimumSubscriptionDays = data.minimumSubscriptionDays ?? 0;
 };
 
 watch(() => getReq.status.value, () => {
   if (getReq.status.value == "success") assignData();
 });
-if (getReq.status.value == "success") assignData();
+// if (getReq.status.value == "success") assignData();
 
 const validateCurrentStep = async () => {
   const fields = stepFieldMap[currentStepValue.value] ?? [];
@@ -316,11 +285,6 @@ const submitForm = async () => {
   const payload: TournamentUpdate = {
     ...formData,
     tournamentType: formData.type,
-    addPlayersByQydha: formData.isAddPlayersByQydha,
-    joinRequestStartAt: formData.isAddPlayersByQydha ? formData.joinRequestStartAt : undefined,
-    joinRequestEndAt: formData.isAddPlayersByQydha ? formData.joinRequestEndAt : undefined,
-    joinRequestMaxCount: formData.isAddPlayersByQydha ? formData.joinRequestMaxCount : undefined,
-    minimumSubscriptionDays: formData.isAddPlayersByQydha ? (formData.minimumSubscriptionDays ?? 0) : 0,
   };
 
   await updateReq.fetchREQ(payload);

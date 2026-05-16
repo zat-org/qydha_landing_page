@@ -1,4 +1,5 @@
 ﻿<template>
+ 
   <div
     class="relative border-b rounded-2xl border-gray-200/90 dark:border-gray-800 bg-gradient-to-br from-primary/[0.07] via-gray-50/80 to-transparent dark:from-primary/15 dark:via-gray-950/50 dark:to-transparent px-4 sm:px-8 pt-4 pb-8 sm:pb-10">
     <!-- بيانات البطولة — UAccordion (مصغّر في الرأس، يكبر عند الفتح) -->
@@ -43,11 +44,9 @@
       </template>
 
       <template #trailing="{ open }">
-        <div class="ms-auto flex shrink-0 items-center">
           <UIcon :name="open ? 'i-mdi-chevron-up' : 'i-mdi-chevron-down'"
             class="size-7 text-gray-400 transition-transform duration-200 group-hover:text-primary"
-            :class="open ? 'text-primary' : ''" />
-        </div>
+            :class="open ? 'text-primary' : ''" /> 
       </template>
 
       <template #tournament-hero>

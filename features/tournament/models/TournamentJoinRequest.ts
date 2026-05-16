@@ -109,6 +109,7 @@ export enum TeamJoinRequestWorkflowState {
 export interface GetTeamJoinRequestsParams {
   pageNumber: number;
   pageSize: number;
+  searchToken?: string | null;
   /** Sent as repeated `GetOnlyStates` query keys. */
   GetOnlyStates: TeamJoinRequestWorkflowState[];
 }
@@ -125,18 +126,11 @@ export interface GetTeamJoinRequestsParams {
 
 
 export interface TeamJoinRequestListItem {
-  joinRequestId: string;
-  
-
+  joinRequestId: string;  
   requesterUserId?: string;
-
-
   teammateId?: string;
   teammateUsername?: string;
   teamName?: string;
-
-
-
   createdAt: string;
   createorId?: string;
   creatorUsername?: string;
@@ -166,10 +160,10 @@ export const TEAM_JOIN_STATE_LABEL: Record<TeamJoinRequestWorkflowState, string>
   [TeamJoinRequestWorkflowState.WaitingTeammateAcceptance]: "بانتظار قبول الزميل",
   [TeamJoinRequestWorkflowState.CanceledByCreator]: "ملغى من المنشئ",
   [TeamJoinRequestWorkflowState.RejectedByTeammate]: "مرفوض من الزميل",
-  [TeamJoinRequestWorkflowState.WaitingOrganizerConsideration]: "قيد دراسة المنظم",
+  [TeamJoinRequestWorkflowState.WaitingOrganizerConsideration]: "بانتظار الموافقة الأوليه",
+  [TeamJoinRequestWorkflowState.WaitingOrganizerApproval]: "بانتظار موافقة النهائية",
   [TeamJoinRequestWorkflowState.CanceledByOrganizer]: "ملغى من المنظم",
-  [TeamJoinRequestWorkflowState.WaitingOrganizerApproval]: "بانتظار موافقة المنظم",
-  [TeamJoinRequestWorkflowState.ApprovedByOrganizer]: "تمت الموافقة",
+  [TeamJoinRequestWorkflowState.ApprovedByOrganizer]: "تمت الموافقة النهائية",
   [TeamJoinRequestWorkflowState.Withdrawn]: "منسحب",
   [TeamJoinRequestWorkflowState.Expired]: "منتهي",
 };

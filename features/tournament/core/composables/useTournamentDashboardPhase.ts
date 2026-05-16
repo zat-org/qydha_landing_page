@@ -7,6 +7,7 @@ export const PHASE_LABELS_AR: Record<TournamentDetailedState, string> = {
   [TournamentDetailedState.ManagingTeams]: "إعداد الفرق",
   [TournamentDetailedState.LinkingFinalGroupTeams]: "ربط الفرق بالمجموعة النهائية",
   [TournamentDetailedState.ManagingFinalGroupBracket]: "إدارة المجموعة والمباريات",
+  [TournamentDetailedState.WaitingFinalGroupStarting]: "في انتظار بدء البطولة",
   [TournamentDetailedState.FinalGroupRunning]: "البطولة جارية",
   [TournamentDetailedState.Finished]: "انتهت البطولة",
 };
@@ -22,6 +23,7 @@ const DEFAULT_PHASE_ORDER: TournamentDetailedState[] = [
   TournamentDetailedState.ManagingTeams,
   TournamentDetailedState.LinkingFinalGroupTeams,
   TournamentDetailedState.ManagingFinalGroupBracket,
+  TournamentDetailedState.WaitingFinalGroupStarting,
   TournamentDetailedState.FinalGroupRunning,
   TournamentDetailedState.Finished,
 ];

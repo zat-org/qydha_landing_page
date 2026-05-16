@@ -21,7 +21,7 @@ export const useGroup = () => {
   const { $api } = useNuxtApp();
   const getGroups = (tourid: string) => {
     const { data, pending, error, refresh, status, execute } =
-      useLazyAsyncData<{
+      useAsyncData<{
         message: string;
         data: {
           groups: Group[];

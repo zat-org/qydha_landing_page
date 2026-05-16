@@ -15,7 +15,14 @@
             <template v-for="(item, index) in accordionItems" :key="`slot-${index}`" v-slot:[item.slot] class="px-4">
                 <Suspense>
                     <GroupDetails :group="groups[index]" v-if="groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created"  />
-                    <RoundsGroupDetails :group="groups[index]" v-else-if="groups[index].state == GroupState.MatchesGenerated || groups[index].state == GroupState.MatchesRunning" />
+                    <RoundsGroupDetails
+                        :group="groups[index]"
+                        v-else-if="
+                            groups[index].state == GroupState.MatchesGenerated
+                            || groups[index].state == GroupState.MatchesRunning
+                            || groups[index].state == GroupState.MatchesFinished
+                        "
+                    />
                     <template #fallback>   
                         <Loading />
                     </template>

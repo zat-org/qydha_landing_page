@@ -58,6 +58,7 @@
         </template>
 
         <!-- Loading -->
+         {{ rounGroupDetailsREQ.pending.value }} {{ rounGroupDetailsREQ.data.value?.data == null }}
         <div
             v-if="rounGroupDetailsREQ.pending.value && rounGroupDetailsREQ.data.value?.data == null"
             class="flex flex-col items-center justify-center gap-3 px-4 py-16"

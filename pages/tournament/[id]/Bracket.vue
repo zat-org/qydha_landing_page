@@ -81,7 +81,7 @@ const toast = useToast();
 
 const createMatchDrawer = useTemplateRef<InstanceType<typeof CreateMatchDrawer>>("createMatchDrawer");
 
-const startFinalGroupTournamentReq = await useTournament().startFinalGroupTournament(tourid);
+const startFinalGroupTournamentReq =  await  useTournament().startFinalGroupTournament(tourid);
 
 const startTournamentConfirmOpen = ref(false);
 

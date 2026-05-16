@@ -5,35 +5,41 @@ import type { TournamentPrize } from "./tournamentPrize";
 import type { TournamentPlayerJoinRequestType } from "./tournamentRequest";
 import type { Group } from "./group";
 
-export interface ITournamentCreate {
-  name: string;
-  description: string;
-  city: string;
-  location: {
-    longitude: number;
-    latitude: number;
-  };
-  prizes: string[];
-  prizesCurrency: string;
-  startAt: string | Date;
-  endAt: string | Date;
-  ownerId: string;
-}
+// export interface ITournamentCreate {
+//   name: string;
+//   description: string;
+//   city: string;
+//   location: {
+//     longitude: number;
+//     latitude: number;
+//   };
+//   prizes: string[];
+//   prizesCurrency: string;
+//   startAt: string | Date;
+//   endAt: string | Date;
+//   ownerId: string;
+// }
 
-export interface ITournamentUpdate {
-  name: string;
-  description: string;
-  city: string;
-  location: {
-    longitude: number;
-    latitude: number;
-  };
-  prizes: string[];
-  prizesCurrency: string;
-  startAt: string | Date;
-  endAt: string | Date;
-}
+// export interface ITournamentUpdate {
+//   name: string;
+//   description: string;
+//   city: string;
+//   location: {
+//     longitude: number;
+//     latitude: number;
+//   };
+//   prizes: string[];
+//   prizesCurrency: string;
+//   startAt: string | Date;
+//   endAt: string | Date;
+// }
 
+// joinRequestStartAt?: string;
+// joinRequestEndAt?: string;
+// joinRequestMaxCount?: number;
+// addPlayersByQydha: boolean;
+// allowedJoinRequestType: TournamentPlayerJoinRequestType;
+// minimumSubscriptionDays: number;
 export interface TournamentUpdate {
   title: string;
   description: string;
@@ -45,11 +51,6 @@ export interface TournamentUpdate {
   prizes: TournamentPrize[];
   startAt: string;
   endAt: string;
-  showInQydha: boolean;
-  joinRequestStartAt?: string;
-  joinRequestEndAt?: string;
-  joinRequestMaxCount?: number;
-  addPlayersByQydha: boolean;
   teamsCount: number;
   tablesCount: number;
   contactPhone: string;
@@ -62,10 +63,15 @@ export interface TournamentUpdate {
   sponsors: File[];
   rules: string[];
   ownerId: string;
+}
+export interface UpdateJoinRequestSeetingsBody {
+  joinRequestStartAt: string;
+  joinRequestEndAt: string;
+  joinRequestMaxCount: number;
   allowedJoinRequestType: TournamentPlayerJoinRequestType;
   minimumSubscriptionDays: number;
+  addPlayersByQydha: boolean;
 }
-
 export interface Tournament {
   id: string;
   title: string;
@@ -195,6 +201,7 @@ export enum TournamentDetailedState {
   ManagingTeams = "ManagingTeams",
   LinkingFinalGroupTeams = "LinkingFinalGroupTeams",
   ManagingFinalGroupBracket = "ManagingFinalGroupBracket",
+  WaitingFinalGroupStarting = "WaitingFinalGroupStarting",
   FinalGroupRunning = "FinalGroupRunning",
   Finished = "Finished",
 }

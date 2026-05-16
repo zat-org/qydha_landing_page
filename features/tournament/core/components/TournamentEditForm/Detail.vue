@@ -1,17 +1,20 @@
 <template>
   <UCard :ui="{ body: 'px-3 py-1 sm:p-1', header: 'px-2 py-1 sm:p-1 ', footer: 'px-2 py-1 sm:p-1' }" class="max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900">
     <UForm :state="model" class="flex flex-col space-y-2">
-
-      <UFormField label="عرض البطولة في منصة قيدها" name="showInQydha" :error="errors?.showInQydha">
+<!-- 
+      <UFormField label="" name="showInQydha" :error="errors?.showInQydha">
+      <div class="flex gap-4">
         <USwitch v-model="model.showInQydha" :disabled="disabledFields?.showInQydha" size="lg" @update:model-value="onFieldBlur?.('showInQydha')" />
-      </UFormField>
+        <label>عرض البطولة في منصة قيدها</label>
+      </div>
+      </UFormField> -->
 
-      <UFormField name="isAddPlayersByQydha" size="xl">
+      <!-- <UFormField name="isAddPlayersByQydha" size="xl">
         <div class="flex gap-4">
           <USwitch v-model="model.isAddPlayersByQydha" :disabled="disabledFields?.isAddPlayersByQydha" size="xl" />
           <label> التسجيل من خلال قيدها </label>
         </div>
-      </UFormField>
+      </UFormField> -->
 
       <div class="rounded-lg border border-gray-200/80 bg-white/60 p-3 dark:border-gray-700 dark:bg-gray-800/60">
         <UFormField label="منظم البطولة" name="ownerId" :error="errors?.ownerId">
@@ -46,19 +49,18 @@
 
       <div class="space-y-3">
         <div class="text-sm font-medium">المخطط الزمني لاختيار التواريخ</div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div v-if="model.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
+        <div class="grid grid-cols-2 md:grid-cols-2 gap-3">
+          <!-- <div v-if="model.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
             <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt" :error="errors?.joinRequestStartAt">
               <AsyncDatePicker v-model="model.joinRequestStartAt" :disabled="disabledFields?.joinRequestStartAt" :min-date="new Date()" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestStartAt')" />
             </UFormField>
           </div>
 
           <div v-if="model.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
-             {{ model.joinRequestEndAt }}
             <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt" :error="errors?.joinRequestEndAt">
               <AsyncDatePicker v-model="model.joinRequestEndAt" :disabled="disabledFields?.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestEndAt')" />
             </UFormField>
-          </div>
+          </div> -->
           <div class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
             <UFormField label="بداية البطولة" name="startAt" :error="errors?.startAt">
               <AsyncDatePicker v-model="model.startAt" :disabled="disabledFields?.startAt" :min-date="minstartDate" @update:model-value="onFieldBlur?.('startAt')" />
@@ -71,7 +73,7 @@
           </div>
         </div>
       </div>
-      <template v-if="model.isAddPlayersByQydha">
+      <!-- <template v-if="model.isAddPlayersByQydha">
         <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount" :error="errors?.joinRequestMaxCount">
           <UInput v-model="model.joinRequestMaxCount" type="number" :disabled="disabledFields?.joinRequestMaxCount" @blur="onFieldBlur?.('joinRequestMaxCount')" />
         </UFormField>
@@ -81,7 +83,7 @@
         <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays" :error="errors?.minimumSubscriptionDays">
           <UInput v-model="model.minimumSubscriptionDays" type="number" min="1" placeholder="0" :disabled="disabledFields?.minimumSubscriptionDays" @blur="onFieldBlur?.('minimumSubscriptionDays')" />
         </UFormField>
-      </template>
+      </template> -->
       <TournamentTourDetailFormPrizeManagement v-model="model" />
       <div class="grid grid-cols-3 gap-4">
         <UFormField label=" عدد الفرق" name="teamsCount" :error="errors?.teamsCount">
