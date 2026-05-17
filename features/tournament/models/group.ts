@@ -133,6 +133,9 @@ export interface Match {
   themTeamId: string;
   themTeamName: string;
   winner: string | null;
+  endReason: string | null;
+  maxSakkasCountFromGame: number;
+  parentMatch: Match | null;
 }
 
 export interface MatchWithPlayer extends Match {

@@ -102,10 +102,13 @@ function toggleTheme() {
 const userStore = useMyAuthStore();
 
 const route = useRoute();
-const tourid = route.params.id.toString()
+const tourid = route.params.id?.toString() || '';
 
 const tourStore = useMyTournamentStore();
-const ShowBracket = computed(() => tourStore.selectedGroup?.data.state ==GroupState.WaitingMatchesStarting || userStore.isStaffAdmin || userStore.isSuperAdmin);
+const ShowBracket = computed(() => {
+  return tourStore.selectedGroup?.data.state != GroupState.WaitingMatchesStarting || userStore.isStaffAdmin || userStore.isSuperAdmin
+}
+);
 
 
 const toast = useToast();
@@ -173,6 +176,7 @@ const finishTournament = async () => {
       description: "تم انهاء البطولة بنجاح",
       color: "success",
     });
+    await tourStore.refreshBracket(tourid);
   }else{
 
     toast.add({
@@ -192,6 +196,7 @@ const resumeFinalGroupAfterFinish = async () => {
       description: "تم استكمال البطولة بنجاح",
       color: "success",
     });
+    await tourStore.refreshBracket(tourid);
   } else {
     const err = resumeReq.error.value as { message?: string } | null | undefined;
     toast.add({

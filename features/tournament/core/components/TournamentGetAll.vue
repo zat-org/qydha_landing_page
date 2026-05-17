@@ -107,9 +107,7 @@ const filters = ref<GetTournamentParams>({
   States: [TournamentState.Upcoming,TournamentState.Running,TournamentState.Finished]
 })
 
-const dropdownItems= [
-  {}
-]
+
 
 function onSelect(row: TableRow<Tournament>, e?: Event) {
   /* If you decide to also select the column you can do this  */

@@ -307,8 +307,8 @@ export const useTournament = () => {
     return { ...result, fetchREQ };
   };
 
-  const getTournamentStatistics = async (tournamentId: string) => {
-    return await useLazyAsyncData<{ data: TournamentStatistics }>(
+  const getTournamentStatistics =  (tournamentId: string) => {
+    return  useAsyncData<{ data: TournamentStatistics }>(
       `getTournamentStatistics-${tournamentId}`,
       () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
     );

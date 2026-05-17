@@ -78,7 +78,7 @@ const { updateMatch, MatchWithdraw, MatchReset, MatchBack } = useMatch();
 const route = useRoute();
 const emit = defineEmits(["close"]);
 const toast = useToast();
-const tour_id = route.params.id.toString();
+const tour_id = route.params.id?.toString() || '';
 
 const schema = object({
   refereeId: string().nullable(),

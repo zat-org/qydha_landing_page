@@ -2,7 +2,6 @@ import { defineStore } from "pinia";
 import * as signalR from "@microsoft/signalr";
 import type { Group, Match, RoundGroupDetails } from "~/features/tournament/models/group";
 import type { IMatchData, IMathStat } from "~/features/tournament/models/MatchStat";
-import type { DetailTournament } from "~/features/tournament/models/tournament";
 // to control bracket matches and rounds
 export const useMyTournamentStore = defineStore("myTournamentStore", () => {
   const route = useRoute();
@@ -48,19 +47,12 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
 
   const matchesTree = computed((): Match[] | undefined => {
     if (!selectedGroup.value) return undefined;
-    const heads: Match[] = [];
-    selectedGroup.value.matches.forEach((m) => {
-      if (
+    return selectedGroup.value.matches.filter(
+      (m) =>
         m.level == 1 &&
         (!m.matchQualifyUsTeamFrom || m.matchQualifyUsTeamFrom === "Winner") &&
-        (!m.matchQualifyThemTeamFrom || m.matchQualifyThemTeamFrom === "Winner")
-      ) {
-        populateChildren(m, selectedGroup.value!.matches);
-        heads.push(m);
-      }
-    });
-
-    return heads;
+        (!m.matchQualifyThemTeamFrom || m.matchQualifyThemTeamFrom === "Winner"),
+    );
   });
   const loserMatches = computed((): Match[] | undefined => {
     if (!selectedGroup.value) return undefined;
@@ -76,17 +68,67 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     });
   });
   const populateChildren = (match: Match | undefined, matches: Match[]) => {
-    if (!match) return undefined;
+    if (!match) return;
     if (match.matchQualifyThemTeamId)
       match.matchQualifyThemTeam = matches.find(
-        (m) => m.id == match.matchQualifyThemTeamId
+        (m) => m.id == match.matchQualifyThemTeamId,
       );
     if (match.matchQualifyUsTeamId)
       match.matchQualifyUsTeam = matches.find(
-        (m) => m.id == match.matchQualifyUsTeamId
+        (m) => m.id == match.matchQualifyUsTeamId,
       );
     populateChildren(match.matchQualifyThemTeam, matches);
     populateChildren(match.matchQualifyUsTeam, matches);
+  };
+
+  const linkParentMatches = (matches: Match[]) => {
+    for (const m of matches) {
+      if (m.matchQualifyUsTeamId) {
+        const child = matches.find((c) => c.id === m.matchQualifyUsTeamId);
+        if (child) child.parentMatch = m;
+      }
+      if (m.matchQualifyThemTeamId) {
+        const child = matches.find((c) => c.id === m.matchQualifyThemTeamId);
+        if (child) child.parentMatch = m;
+      }
+    }
+  };
+
+  const linkMatchTree = (matches: Match[]) => {
+    for (const m of matches) {
+      m.matchQualifyUsTeam = undefined;
+      m.matchQualifyThemTeam = undefined;
+      m.parentMatch = null;
+    }
+
+    const heads = matches.filter(
+      (m) =>
+        m.level == 1 &&
+        (!m.matchQualifyUsTeamFrom || m.matchQualifyUsTeamFrom === "Winner") &&
+        (!m.matchQualifyThemTeamFrom || m.matchQualifyThemTeamFrom === "Winner"),
+    );
+
+    for (const head of heads) {
+      populateChildren(head, matches);
+    }
+    linkParentMatches(matches);
+  };
+
+  const syncTournamentFromGroups = (groups: Group[]) => {
+    const matchesByGroupId = new Map(
+      tournament.value.map((entry) => [entry.data.id, entry.matches]),
+    );
+    tournament.value = groups.map((g) => ({
+      data: g,
+      matches: matchesByGroupId.get(g.id) ?? [],
+    }));
+  };
+
+  const applyMatchesToGroup = (groupId: string, matches: Match[]) => {
+    const entry = tournament.value.find((e) => e.data.id === groupId);
+    if (!entry) return;
+    entry.matches = matches;
+    linkMatchTree(entry.matches);
   };
 
   const selectedGroup = computed(() => {
@@ -109,7 +151,7 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     if (!connection.value) return;
     connection.value.stop();
   };
-  const groupsREQ = groupApi.getGroups(route.params.id.toString());
+  const groupsREQ = groupApi.getGroups(route.params.id?.toString() || '');
   const bracketRefreshPending = ref(false);
 
   /** Re-run groups async data and refetch bracket matches + rounds for the current group. */
@@ -117,45 +159,53 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
     const sel = selectedGroup.value;
     if (!sel) return;
 
+    const groupId = sel.data.id;
     bracketRefreshPending.value = true;
     try {
       await groupsREQ.refresh();
+
+      const groups = groupsREQ.data.value?.data.groups;
+      if (groups) syncTournamentFromGroups(groups);
+
       const matchesREQ = await groupApi.getGroupMatches();
-      await matchesREQ.fetchREQ(tournamentId, sel.data.id);
+      await matchesREQ.fetchREQ(tournamentId, groupId);
       if (matchesREQ.status.value !== "error" && matchesREQ.data?.value?.data) {
-        const g = tournament.value.find((g) => g.data.id === sel.data.id);
-        if (g) g.matches = matchesREQ.data.value.data;
+        applyMatchesToGroup(groupId, matchesREQ.data.value.data);
       }
-      // await refreshRounds(tournamentId, sel.data.id);
+      // await refreshRounds(tournamentId, groupId);
     } finally {
       bracketRefreshPending.value = false;
     }
   };
 
   const initStore = async () => {
-    const tournamentId = route.params.id.toString();
+    const tournamentId = route.params.id?.toString() || "";
     selectedTournamentId.value = tournamentId;
-    // await refreshTournamentDashboard(tournamentId);
+
+    tournament.value = [];
     await groupsREQ.execute();
-    if (groupsREQ.status && groupsREQ.status.value == "error") {
-      return;
-    }
-    groupsREQ.data.value?.data.groups.forEach((g) => {
-      tournament.value.push({ data: g, matches: [] });
-    });
-    if (selectedGroup.value === null) return;
+    if (groupsREQ.status?.value === "error") return;
+
+    const groups = groupsREQ.data.value?.data.groups ?? [];
+    syncTournamentFromGroups(groups);
+
+    const groupId = selectedGroup.value?.data.id;
+    if (!groupId) return;
 
     const matchesREQ = await groupApi.getGroupMatches();
-    await matchesREQ.fetchREQ(tournamentId, selectedGroup.value.data.id);
-    if (matchesREQ.status.value == "error" || !matchesREQ.data || !matchesREQ.data.value)
+    await matchesREQ.fetchREQ(tournamentId, groupId);
+    if (
+      matchesREQ.status.value === "error" ||
+      !matchesREQ.data?.value?.data
+    ) {
       return;
+    }
 
-    const g = tournament.value.find((g) => g.data.id == selectedGroup.value?.data.id);
-    console.log(g);
-    if (g == null) return;
-    g.matches = matchesREQ.data.value.data;
-    // await refreshRounds(tournamentId, selectedGroup.value.data.id);
-    connection.value = await initWebsocket(tournamentId);
+    applyMatchesToGroup(groupId, matchesREQ.data.value.data);
+
+    if (!connection.value) {
+      connection.value = await initWebsocket(tournamentId);
+    }
   };
   const fetchGame = async (id: string) => {
     const gameApi = useMatch();
@@ -167,7 +217,6 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
         game: matchData.data.value?.data.state,
         statistics: matchData.data.value?.data.statistics,
       });
-    // console.log(games.value);
   };
 
   const handleMatchStateChanged = (
@@ -189,19 +238,12 @@ export const useMyTournamentStore = defineStore("myTournamentStore", () => {
         statistics: statisticsObject,
       });
     }
-    console.log("MatchStateChanged");
   };
-  const handleBracketChanged = (GroupId: string, groupMatches: string) => {
-    const g = tournament.value.find((g) => g.data.id == GroupId);
-    if (g == null) return;
-    g.matches = JSON.parse(groupMatches);
-    console.log("TournamentBracketChanged");
+  const handleBracketChanged = (groupId: string, groupMatches: string) => {
+    applyMatchesToGroup(groupId, JSON.parse(groupMatches) as Match[]);
   };
   const handleBracketUpdated = (groupId: string, groupMatches: string) => {
-    const g = tournament.value.find((g) => g.data.id == groupId);
-    if (g == null) return;
-    g.matches = JSON.parse(groupMatches);
-    console.log("BracketUpdated");
+    applyMatchesToGroup(groupId, JSON.parse(groupMatches) as Match[]);
   };
   const initWebsocket = async (tournamentId: string) => {
     const config = useRuntimeConfig();

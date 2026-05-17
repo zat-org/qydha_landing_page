@@ -467,7 +467,7 @@ import qydhaLogo from "~/assets/images/qydha-logo.svg";
 import type { TournamentStatistics } from "~/features/tournament/models/tournament";
 
 const route = useRoute();
-const id = route.params.id.toString();
+const id = route.params.id?.toString() || '';
 
 const { getTournamentStatistics } = useTournament();
 const statsReq = await getTournamentStatistics(id);
@@ -478,7 +478,9 @@ const error = computed(() => statsReq.error.value);
 // API raw response: { data: { statistics: {...}, matchesCount }, message }
 const apiData = computed(() => statsReq.data.value as any || null);
 const statistics = computed<TournamentStatistics['statistics']>(
-  () => apiData.value?.data?.statistics ?? {}
+  () => { 
+    console.log(apiData)
+    return apiData.value?.data ?? {}}
 );
 const matchesCount = computed<number | null>(
   () => (apiData.value?.data?.matchesCount ?? null) as number | null
@@ -529,6 +531,8 @@ const hasStat = (key: keyof TournamentStatistics['statistics']): boolean => {
 // Check if there are any statistics to display
 const hasStatistics = computed(() => {
   const stats = statistics.value || {};
+  console.log(stats);
+  console.log(Object.keys(stats).length > 0);
   return Object.keys(stats).length > 0;
 });
 

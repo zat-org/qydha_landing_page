@@ -27,6 +27,8 @@ export function useMatchNodeUi(
   );
   const isMatchRunning = computed(() => match.value.state === "Running");
   const isMatchEnded = computed(() => match.value.state === "Ended");
+  const isMatchPaused = computed(() => match.value.state === "Paused");
+  const isMatchCreated = computed(() => match.value.state === "Created");
   const showInfoButton = computed(
     () => match.value.qydhaGameId && match.value.state !== "Created",
   );
@@ -120,6 +122,8 @@ export function useMatchNodeUi(
     isMatchCreatedOrPaused,
     isMatchRunning,
     isMatchEnded,
+    isMatchPaused,
+    isMatchCreated,
     showInfoButton,
     cardToneClass,
     roundOpacityClass,

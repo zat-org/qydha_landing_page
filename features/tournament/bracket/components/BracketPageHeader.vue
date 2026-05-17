@@ -67,7 +67,7 @@ const { user } = storeToRefs(userStore);
 
 const tourStore = useMyTournamentStore();
 const route = useRoute();
-const tourid = route.params.id.toString()
+const tourid = route.params.id?.toString() || '';
 const getTourRequest = await useTournament().getSingelTournament(tourid);
 const tour = computed(() => getTourRequest.data.value?.data);
 
@@ -75,11 +75,9 @@ const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selec
 // const rounds = computed(() => getRounds.data.value?.data.rounds);
 watch(()=>tourStore.selectedGroup?.data.id ??false, async (id: string|boolean) => {
   if (!id) return;
-  console.log(id)
     await getRounds.fetchREQ(tourid, id as string);
     if (getRounds.status.value == "success")
       tourStore.rounds = getRounds.data.value?.data.rounds ?? []
-      console.log(getRounds);
   
   
 },{deep: true, immediate: true});

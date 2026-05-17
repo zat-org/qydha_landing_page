@@ -62,7 +62,7 @@ export function useLayout() {
       };
       graphData.nodes.push(node);
       dagreGraph.setNode(node.id.toString(), {
-        width: 350  ,
+        width: 460  ,
         height: 100,
       });
       return node;

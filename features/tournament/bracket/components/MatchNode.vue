@@ -2,19 +2,9 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div dir="rtl"
-      class=" flex w-[330px] flex-col gap-2 overflow-hidden rounded-2xl p-1.5 text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:ring-white/10"
+      class=" flex w-[450px] flex-col gap-2 p-2 overflow-hidden rounded-2xl  text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:ring-white/10"
       :class="[cardToneClass, roundOpacityClass]">
-      <div class="flex items-center justify-between gap-2">
-        <!-- <div class="inline-flex min-w-0 max-w-[75%] items-center gap-1.5 rounded-lg bg-white/75 px-2 py-1 text-[10px] font-bold text-slate-800 ring-1 ring-black/5 dark:bg-black/25 dark:text-slate-100 dark:ring-white/10">
-           <span class="h-2 w-2 rounded-full" :class="statusDotClass" /> 
-          <span class="truncate">{{ matchStatusText || "حالة غير معروفة" }}</span> 
-        </div> -->
 
-        <!-- refree info -->
-        <!-- <div class="flex items-center gap-1">
-         
-        </div> -->
-      </div>
 
       <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-1.5">
         <div :class="firstTeamSurfaceClass"
@@ -23,7 +13,7 @@
             <div class="flex flex-col h-full items-center justify-center grow ">
               <span class="truncate text-center  text-[11px] font-bold leading-tight" :class="firstTeamNameClasses">{{
                 usTeamPrimary }}</span>
-              <p  class="truncate text-center text-[11px] font-bold leading-tight">
+              <p class="truncate text-center text-[11px] font-bold leading-tight">
                 {{ usTeamSecondary }}
               </p>
             </div>
@@ -42,7 +32,7 @@
             <div class="flex flex-col h-full items-center justify-center grow">
               <span class="truncate text-center  text-[11px] font-bold leading-tight" :class="secondTeamNameClasses">{{
                 themTeamPrimary }}</span>
-              <p  class="truncate text-center text-[11px] font-bold leading-tight">
+              <p class="truncate text-center text-[11px] font-bold leading-tight">
                 {{ themTeamSecondary }}
               </p>
             </div>
@@ -88,7 +78,15 @@
             <IconEndedGame v-if="isMatchEnded" class="text-[11px]" />
           </div>
         </UTooltip>
-        <UDropdownMenu v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)" :items="adminActionItems" :popper="{ placement: 'bottom-end' }">
+
+        <span
+          class="inline-flex min-w-0 items-center justify-center gap-1 rounded-lg bg-white/75 px-2 py-1 text-[10px] font-semibold text-slate-800 ring-1 ring-black/5 dark:bg-black/25 dark:text-slate-100 dark:ring-white/10">
+          <UIcon name="i-mdi-cards-playing-outline" class="shrink-0 text-[12px] text-slate-600 dark:text-slate-200" />
+          <span class="truncate">{{ sakkaText }}</span>
+        </span>
+
+        <UDropdownMenu  v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
+          :items="adminActionItems" :popper="{ placement: 'bottom-end' }">
           <UTooltip text="إجراءات المباراة">
             <button type="button"
               class="inline-flex h-6 w-6 items-center justify-center rounded-md border border-slate-400/70 bg-white/90 text-slate-700 shadow-sm ring-1 ring-black/5 transition hover:bg-slate-100 dark:border-slate-500/60 dark:bg-gray-900/90 dark:text-slate-200 dark:ring-white/10 dark:hover:bg-gray-800"
@@ -106,15 +104,37 @@
     </div>
 
     <Handle type="source" :position="Position.Right" style="opacity: 0" />
+
+    <MatchAdminActionConfirmModal
+      v-model:open="resetConfirmOpen"
+      title="تأكيد إعادة الضبط"
+      description="سيتم إعادة ضبط المباراة إلى حالتها الأولية. تأكد من تنفيذ الخطوات التالية قبل المتابعة."
+      confirm-label="نعم، إعادة الضبط"
+      confirm-icon="i-heroicons-arrow-path"
+      confirm-color="warning"
+      :pending="isResetPending"
+      @confirm="confirmReset"
+    />
+    <MatchAdminActionConfirmModal
+      v-model:open="backConfirmOpen"
+      title="تأكيد عودة المباراة"
+      description="سيتم إرجاع المباراة إلى حالة سابقة. تأكد من تنفيذ الخطوات التالية قبل المتابعة."
+      confirm-label="نعم، عودة المباراة"
+      confirm-icon="i-heroicons-arrow-left"
+      confirm-color="warning"
+      :pending="isBackPending"
+      @confirm="confirmBack"
+    />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Position, Handle } from "@vue-flow/core";
-import type { Match } from "@/features/tournament/models/group";
+import { GroupState, type Match } from "@/features/tournament/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "./StatusModal.vue";
 import EditModal from "./EditModal.vue";
+import MatchAdminActionConfirmModal from "./MatchAdminActionConfirmModal.vue";
 import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
 import { useMatchNodeUi } from "~/features/tournament/bracket/composables/useMatchNodeUi";
 
@@ -136,6 +156,8 @@ const {
   isMatchCreatedOrPaused,
   isMatchRunning,
   isMatchEnded,
+  isMatchPaused,
+  isMatchCreated,
   showInfoButton,
   cardToneClass,
   roundOpacityClass,
@@ -150,16 +172,20 @@ const showRefereeIcon = computed(() => hasStaffOrAdminPrivileges.value && props.
 const tableText = computed(() => props.data.match.tableName || "بدون طاولة");
 const roundText = computed(() => props.data.match.roundName || "بدون جولة");
 const timeText = computed(() => (props.data.match.startAt ? formatDateTime(props.data.match.startAt) : "بدون وقت"));
+const sakkaText = computed(() => {
+  const count = props.data.match.maxSakkasCountFromGame;
+  if (count == null || count <= 0) return "—";
+  if (count === 1) return "صكة واحدة";
+  if (count === 3) return "3 صكات";
+  if (count === 5) return "5 صكات";
+  return `${count} صكات`;
+});
 const statusBadgeClass = computed(() => {
   if (isMatchRunning.value) return "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300";
   if (isMatchEnded.value) return "bg-rose-50 text-rose-600 dark:bg-rose-950/40 dark:text-rose-300";
   return "bg-slate-100 text-slate-600 dark:bg-slate-900/60 dark:text-slate-300";
 });
-const statusDotClass = computed(() => {
-  if (isMatchRunning.value) return "bg-emerald-500";
-  if (isMatchEnded.value) return "bg-rose-500";
-  return "bg-slate-500";
-});
+
 const buildTeamDisplay = (teamName?: string | null, hasTeamId?: string | null) => {
   const normalizedName = (teamName || "").trim();
 
@@ -192,14 +218,40 @@ const { MatchReset, MatchBack } = useMatch();
 const MatchResetREQ = await MatchReset();
 const MatchBackREQ = await MatchBack();
 
-const onReset = async () => {
-  await MatchResetREQ.fetchREQ(props.data.match.qydhaGameId);
-  toast.add({ title: MatchResetREQ.status.value === "success" ? "تم الضبط بنجاح" : "خطأ في الضبط", color: MatchResetREQ.status.value === "success" ? "success" : "error" });
+const resetConfirmOpen = ref(false);
+const backConfirmOpen = ref(false);
+
+const isResetPending = computed(() => MatchResetREQ.status.value === "pending");
+const isBackPending = computed(() => MatchBackREQ.status.value === "pending");
+
+const openResetConfirm = () => {
+  resetConfirmOpen.value = true;
 };
 
-const onBack = async () => {
+const openBackConfirm = () => {
+  backConfirmOpen.value = true;
+};
+
+const confirmReset = async () => {
+  await MatchResetREQ.fetchREQ(props.data.match.qydhaGameId);
+  if (MatchResetREQ.status.value === "success") {
+    resetConfirmOpen.value = false;
+  }
+  toast.add({
+    title: MatchResetREQ.status.value === "success" ? "تم الضبط بنجاح" : "خطأ في الضبط",
+    color: MatchResetREQ.status.value === "success" ? "success" : "error",
+  });
+};
+
+const confirmBack = async () => {
   await MatchBackREQ.fetchREQ(props.data.match.qydhaGameId);
-  toast.add({ title: MatchBackREQ.status.value === "success" ? "تم العودة بنجاح" : "خطأ في العودة", color: MatchBackREQ.status.value === "success" ? "success" : "error" });
+  if (MatchBackREQ.status.value === "success") {
+    backConfirmOpen.value = false;
+  }
+  toast.add({
+    title: MatchBackREQ.status.value === "success" ? "تم العودة بنجاح" : "خطأ في العودة",
+    color: MatchBackREQ.status.value === "success" ? "success" : "error",
+  });
 };
 
 const copyClibboard = async () => {
@@ -220,17 +272,23 @@ const onEdit = () => {
   overlay.create(EditModal, { props: { match: props.data.match } }).open();
 };
 
+const isGroupRunning = computed(() =>{
+  return   tourStore.selectedGroup?.data.state == GroupState.MatchesRunning});
 const adminActionItems = computed(() => {
   const items: { label: string; icon: string; onSelect: () => void }[] = [];
-
-  if (!isMatchEnded.value) {
+  if ((isMatchCreated.value || isMatchPaused.value ) && isGroupRunning.value) {
     items.push({ label: "تعديل المباراة", icon: "i-heroicons-cog-6-tooth", onSelect: onEdit });
-  } else {
+  }
+    if ((isMatchEnded.value || isMatchPaused.value) && isGroupRunning.value) {
+    items.push({ label: "اعادة الضبط", icon: "i-heroicons-arrow-path", onSelect: openResetConfirm });
+  }
+  if (isMatchEnded.value && isGroupRunning.value &&  (match.value.level ==1 || match.value.parentMatch?.state == "Created" )) {
+
     items.push(
-      { label: "اعادة الضبط", icon: "i-heroicons-arrow-path", onSelect: onReset },
-      { label: "عودة المباراة", icon: "i-heroicons-arrow-left", onSelect: onBack },
+      { label: "عودة المباراة", icon: "i-heroicons-arrow-left", onSelect: openBackConfirm },
     );
   }
+
 
   items.push({ label: "نسخ معلومات المباراة", icon: "i-heroicons-clipboard-document", onSelect: copyClibboard });
   return [items];
