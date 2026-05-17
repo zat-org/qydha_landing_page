@@ -11,7 +11,7 @@
       <TournamentGetHeader
         :id="id"
         :is-admin="isAdmin"
-        :tournament="tour.tournament"
+        :tournament="tour?.tournament"
         @back="returnToTournament"
         @refreshed="refreshTournament"
       />

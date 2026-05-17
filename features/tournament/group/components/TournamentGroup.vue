@@ -1,7 +1,7 @@
 <template>
     <UCard class="flex flex-col flex-1 [&_[data-slot=body]]:flex-1">
         <template #header>
-            <GroupsHeader />
+            <GroupsHeader :showBracketButton="showBracketButton" />
         </template>
 
         <div v-if="status == 'pending'" class="flex justify-center items-center py-8">
@@ -48,10 +48,13 @@ const props = defineProps<Props>();
 
 const groupApi = useGroup();
 
-const { data, pending, error, refresh, status } =   await groupApi.getGroups(props.tournamentId);
+const { data, pending, error, refresh, status } =  groupApi.getGroups(props.tournamentId);
 
 const groups = computed(() => {
     return data.value?.data.groups || []
+})
+const showBracketButton = computed(() => {
+    return groups.value.some((group) => group.state == GroupState.MatchesGenerated || group.state == GroupState.MatchesRunning || group.state == GroupState.MatchesFinished)
 })
 
 const accordionItems = computed(() => {

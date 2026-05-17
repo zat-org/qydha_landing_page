@@ -3,18 +3,7 @@
   
   <ClientOnly>
     <div class="bracket-container">
-      <div class="bracket-logo-theme">
-        <img :src="QydhaLogo" alt="Qydha logo" loading="lazy" decoding="async" class="bracket-logo" />
-        <button
-          @click="toggleTheme"
-          class="theme-toggle-btn px-3 py-1 mt-2 rounded border text-xs font-semibold"
-          :class="isDark ? 'bg-gray-900 text-white border-gray-800' : 'bg-white text-gray-900 border-gray-300'"
-          aria-label="تبديل الثيم"
-        >
-          <template v-if="isDark">☀️</template>
-          <template v-else>🌙</template>
-        </button>
-      </div>
+ 
 
       <VueFlow
         v-if="OrderedNodes"
@@ -39,7 +28,6 @@
 import { defineAsyncComponent, computed } from "vue";
 import type { Group } from "@/features/tournament/models/group";
 import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
-import QydhaLogo from "@/assets/images/qydha-logo.svg";
 import { useColorMode } from "@vueuse/core";
 
 const VueFlow = defineAsyncComponent(() => import("@vue-flow/core").then((m) => m.VueFlow));
@@ -50,16 +38,6 @@ const props = defineProps<{ group: Group }>();
 const tourStore = useMyTournamentStore();
 const { layoutFromMatchesTree } = useLayout();
 const { matchesTree, loserMatches, games } = storeToRefs(tourStore);
-
-const colorMode = useColorMode({
-  emitAuto: true,
-  selector: "html",
-});
-const isDark = computed(() => colorMode.value === "dark");
-
-function toggleTheme() {
-  colorMode.value = isDark.value ? "light" : "dark";
-}
 
 const direction = computed(() => {
   return ((props.group.type.toLowerCase() == "final" && games.value.length > 32) || (loserMatches.value?.length && loserMatches.value.length > 0))

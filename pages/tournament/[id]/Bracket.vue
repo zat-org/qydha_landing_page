@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="w-full h-screen">
+  <div >
+    <div class="w-full h-screen ">
       <BracketPageHeader
       v-if=" userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
       @regenerate-final-matches="openFinalGroupRegenerateDrawer"
@@ -20,7 +20,26 @@
       <loading v-if=" tourStore.groupsREQ?.status && tourStore.groupsREQ?.status== 'pending'" />
       
       <ClientOnly>
-        <Bracket v-if="tourStore.selectedGroup" :group="tourStore.selectedGroup.data" />
+        <div class="bracket-logo-theme">
+        <img :src="QydhaLogo" alt="Qydha logo" loading="lazy" decoding="async" class="bracket-logo" />
+        <button
+          @click="toggleTheme"
+          class="theme-toggle-btn px-3 py-1 mt-2 rounded border text-xs font-semibold"
+          :class="isDark ? 'bg-gray-900 text-white border-gray-800' : 'bg-white text-gray-900 border-gray-300'"
+          aria-label="تبديل الثيم"
+        >
+          <template v-if="isDark">☀️</template>
+          <template v-else>🌙</template>
+        </button>
+      </div>
+        <Bracket v-if="tourStore.selectedGroup && ShowBracket" :group="tourStore.selectedGroup.data" />
+        <div v-else>
+          <div class="flex flex-col items-center justify-center h-screen ">
+            <UIcon name="i-heroicons-exclamation-triangle" class="text-4xl text-warning-500" />
+            <h1 class="text-2xl font-bold">لا يمكن عرض الخريطة حاليا</h1>
+            <p class="text-gray-500">يجب عليك ان تنتظر ان يبدأ المباريات</p>
+          </div>
+        </div>
       </ClientOnly>
 
     </div>
@@ -59,6 +78,8 @@ import { Bracket, BracketPageHeader } from "~/features/tournament/bracket/compon
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
 import TournamentGetStartConfirmModal from "~/features/tournament/core/components/TournamentGet/TournamentGetStartConfirmModal.vue";
+import { GroupState } from "~/features/tournament/models/group";
+import QydhaLogo from "@/assets/images/qydha-logo.svg";
 
 definePageMeta({
   layout: "custom",
@@ -71,12 +92,22 @@ useHead({
   ]
 })
 import { useMyAuthStore } from '~/store/Auth';
+
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === "dark");
+function toggleTheme() {
+  colorMode.value = isDark.value ? "light" : "dark";
+}
+
 const userStore = useMyAuthStore();
 
 const route = useRoute();
 const tourid = route.params.id.toString()
 
 const tourStore = useMyTournamentStore();
+const ShowBracket = computed(() => tourStore.selectedGroup?.data.state ==GroupState.WaitingMatchesStarting || userStore.isStaffAdmin || userStore.isSuperAdmin);
+
+
 const toast = useToast();
 
 const createMatchDrawer = useTemplateRef<InstanceType<typeof CreateMatchDrawer>>("createMatchDrawer");

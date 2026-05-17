@@ -102,7 +102,7 @@ const toast = useToast()
 
 const filters = ref<GetTournamentParams>({
   PageNumber: 1,
-  PageSize: 9,
+  PageSize: 10,
   OrderByStartAtDirection: OrderByStartAtDirection.ASC,
   States: [TournamentState.Upcoming,TournamentState.Running,TournamentState.Finished]
 })

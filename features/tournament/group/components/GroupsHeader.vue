@@ -12,13 +12,16 @@
             </div>
         </div>
         <div>
-            <UButton label="عرض الخريطه " />
+            <UButton label="عرض الخريطه " v-if="showBracketButton" target="_blank" :to="`/tournament/${tournamentId}/bracket`" />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-    const router = useRouter();
-
+const props = defineProps<{
+    showBracketButton?: boolean;
+}>();
+const router = useRouter();
+const route = useRoute();
+const tournamentId = route.params.id.toString();
 </script>
-

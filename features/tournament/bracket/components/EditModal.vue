@@ -117,8 +117,8 @@ const MatchWithdrawREQ = await MatchWithdraw();
 
 const withdrawItems = [[
   {
-    label: ` انسحاب  ${props.match.usTeamName}`, onSelect: () => {
-      MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "Us")
+    label: ` انسحاب  ${props.match.usTeamName}`, onSelect:async () => {
+      await MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "Us")
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {
@@ -128,8 +128,8 @@ const withdrawItems = [[
     }
   },
   {
-    label: ` انسحاب  ${props.match.themTeamName}`, onSelect: () => {
-      MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "Them")
+    label: ` انسحاب  ${props.match.themTeamName}`, onSelect:async () => {
+      await MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "Them")
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {
@@ -139,8 +139,8 @@ const withdrawItems = [[
     }
   },
   {
-    label: "انسحاب كلا الفريقين", onSelect: () => {
-      MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "All")
+    label: "انسحاب كلا الفريقين", onSelect:async () => {
+      await MatchWithdrawREQ.fetchREQ(props.match.qydhaGameId, "All")
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {

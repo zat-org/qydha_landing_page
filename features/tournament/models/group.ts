@@ -4,6 +4,7 @@ export enum GroupState {
   MatchesGenerated = "MatchesGenerated",
   MatchesRunning = "MatchesRunning",
   MatchesFinished = "MatchesFinished",
+  WaitingMatchesStarting = "WaitingMatchesStarting",
 }
 
 export enum GroupType {
@@ -40,6 +41,18 @@ export interface DetailGroup {
   tournamentId: string;
   type: GroupType;
   withThirdPlaceMatch: boolean;
+}
+
+
+export  interface Round {
+  checkInAt: string;
+id: string;
+name: string;
+rounds: Round[];
+startPlayAt: string;
+state: string;
+type: string;
+withThirdPlaceMatch: boolean;
 }
 
 export interface RoundGroupDetails {

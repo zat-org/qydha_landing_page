@@ -290,7 +290,7 @@ export const useTournament = () => {
     return { result, fetchREQ };
   };
   const finishTournament = async () => {
-    const tour_id = ref();
+    const tour_id = ref("");
     const result = await useAsyncData<any, { message?: string; code: string }>(
       `finishTournament-${tour_id.value}`,
       () => $api(`/tournaments/${tour_id.value}/finish`, { method: "POST" }),
@@ -298,6 +298,7 @@ export const useTournament = () => {
     );
     const fetchREQ = async (_tour_id: string) => {
       tour_id.value = _tour_id;
+      console.log(tour_id.value);
       await result.execute();
       if (result.status.value === "success") {
         refreshNuxtData(`getSingelTournament-${tour_id.value}`);

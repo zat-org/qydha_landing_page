@@ -6,6 +6,7 @@ export const GROUP_STATE_LABELS_AR: Record<GroupState, string> = {
   [GroupState.MatchesGenerated]: "تم إنشاء المباريات",
   [GroupState.MatchesRunning]: "المباريات جارية",
   [GroupState.MatchesFinished]: "انتهت المباريات",
+  [GroupState.WaitingMatchesStarting]: "في انتظار بدء المباريات",
 };
 
 export function groupStateLabel(state: GroupState): string {

@@ -36,7 +36,7 @@
       class="w-full min-h-12 justify-center sm:flex-1"
       block
     />
-    <UButton
+    <!-- <UButton
       v-if="context.isAdmin"
       label="إعادة ضبط مرحلة الخريطة"
       icon="i-mdi-backup-restore"
@@ -47,7 +47,7 @@
       :loading="resetPending"
       block
       @click="handleReset"
-    />
+    /> -->
     <UButton
       v-if="context.isAdmin"
       label="انهاء البطولة"

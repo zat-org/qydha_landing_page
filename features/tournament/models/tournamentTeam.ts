@@ -18,6 +18,7 @@ export interface ITeam {
   tournamentId: number;
   status?: PlayerState | string;
   additionalData?: any;
+  teamJoinRequestId: string | null;
 }
 
 export interface IPlayerCreate {

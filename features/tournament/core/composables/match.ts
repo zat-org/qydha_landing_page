@@ -123,9 +123,7 @@ const MatchWithdraw = async () => {
     GameId.value = _GameId
     withdrawSide.value = _withdrawSide
     await execute()
-    if(status.value=="success"){
-      // refreshNuxtData("getMatchData")
-    }
+    
   }
   return { data, pending, error, refresh, status, execute, fetchREQ }
 }

@@ -18,7 +18,7 @@
       block
     />
     <UButton
-      v-if="showStartButton"
+      
       label="بدء البطولة"
       icon="i-mdi-play"
       size="lg"
@@ -60,11 +60,7 @@ const startPending = computed(
   () => startReq.result.status.value === "pending",
 );
 
-const showStartButton = computed(
-  () =>
-    props.context.tournamentState === TournamentState.Upcoming &&
-    props.context.finalGroupState === GroupState.MatchesGenerated,
-);
+
 
 const confirmStart = async () => {
   await startReq.fetchREQ();

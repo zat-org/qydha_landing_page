@@ -35,18 +35,20 @@
           <div v-for="player of row.original.players" class="flex items-center justify-between  gap-2"
             :key="player.toString()">
             <div class="flex items-center justify-between  gap-2 bg-gray-100 dark:bg-gray-800 px-4  py-2 rounded-md">
-              <p>{{ player.name }}</p>
-
-              <UIcon name="i-lucide-x" class="text-xl text-red-500  cursor-pointer "
-                @click="removePlayer(row.original, player.id)" />
-              <UIcon name="i-material-symbols:settings" class="text-xl text-warning-500  cursor-pointer "
-                @click="openUpdatePlayerModal(row.original, player)" />
+              <p> {{ player.qydhaUserData?.username ?? player.name }}</p>
+              <div v-if="isTeamNotJoinRequest(row.original)">
+                <UIcon name="i-lucide-x" class="text-xl text-red-500  cursor-pointer "
+                  @click="removePlayer(row.original, player.id)" />
+                <UIcon name="i-material-symbols:settings" class="text-xl text-warning-500  cursor-pointer "
+                  @click="openUpdatePlayerModal(row.original, player)" />
+              </div>
             </div>
           </div>
         </div>
       </template>
       <template #actions-cell="{ row }">
-        <UButtonGroup>
+
+        <UButtonGroup v-if="isTeamNotJoinRequest(row.original)">
           <UButton icon="material-symbols:delete" color="error" @click="deleteTeam(row.original)" />
           <UButton icon="material-symbols:settings" color="warning" @click="openUpdateModal(row.original)" />
           <UButton @click="openAddPlayerModal(row.original.id)" v-if="row.original.players.length < 2">
@@ -77,7 +79,6 @@
 
 <script lang="ts" setup>
 import { ConfirmationModal } from '#components';
-import { useFileDialog } from '@vueuse/core'
 import type { DetailTournament } from '~/features/tournament/models/tournament';
 import type { IPlayer, ITeam } from '~/features/tournament/models/tournamentTeam';
 import TournamentTeamAddForm from '~/features/tournament/teams/components/AddForm.vue';
@@ -89,29 +90,13 @@ const router = useRouter()
 const route = useRoute()
 const tour_id = route.params.id.toString()
 const toast = useToast()
-const { open: openExcelDialog, onChange } = useFileDialog({
-  accept: '.xlsx,.xls,.csv',
-  directory: false, 
-})
 
-const importTeamsFromExcelREQ = await useTourrnamentTeam().imprtTeamsFromExcel()
-onChange(async (file: FileList | null) => {
-  if (file) {
-    const selectedFile = file[0]
-    await importTeamsFromExcelREQ.fetchREQ(tour_id, selectedFile)
-    if (importTeamsFromExcelREQ.result.status.value == "success") {
-      toast.add({ title: "تم استيراد الفرق بنجاح", color: "success" })
-    } else {
-      const error = (importTeamsFromExcelREQ.result.error.value?.data as any).data.message
-      toast.add({ title: error, color: "error" })
-    }
-  }
-})
 
-/** Same key as `useTournament().getSingelTournament` — shares payload with TournamentGet and other screens */
+
+
 const tournamentDashboardKey = `getSingelTournament-${tour_id}` as const
 const { data: tournamentDashboardData } = useNuxtData<{ data: DetailTournament }>(tournamentDashboardKey)
-/** `immediate: false` so we do not call the API until the cache check below (same key reuses parent payload). */
+
 const getTourREQ = await useTournament().getSingelTournament(tour_id, { immediate: false })
 
 if (!tournamentDashboardData.value?.data?.tournament) {
@@ -195,6 +180,10 @@ const removePlayer = async (row: ITeam, player_id: string) => {
       await deleteREQ.fetchREQ(tour_id, row.id.toString(), player_id)
     }
   }
+}
+
+const isTeamNotJoinRequest =(team: ITeam) => {
+  return team.teamJoinRequestId == null
 }
 </script>
 
