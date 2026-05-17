@@ -121,4 +121,19 @@ export default defineNuxtConfig({
     domains: ["storage.googleapis.com"],
     provider: "none",
   },
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@dagrejs/dagre', // CJS
+        '@microsoft/signalr',
+        '@vee-validate/yup',
+        '@vue-flow/core',
+        '@vueuse/core',
+        'leaflet', // CJS
+        'vee-validate',
+        'vue-tel-input',
+        'yup',
+      ]
+    }
+  }
 });
