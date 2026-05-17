@@ -4,4 +4,5 @@ export interface IRefre {
   name: string | null;
   phone: string;
   username: string;
+  connectedGamesCount:number
 }

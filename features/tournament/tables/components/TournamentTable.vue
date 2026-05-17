@@ -11,6 +11,7 @@
         </h1>
         </div>
         <UButton 
+          v-if="canAddTable"
           label="إضافة طاولة" 
           color="primary" 
           icon="i-heroicons-plus-circle"
@@ -84,6 +85,7 @@
             icon="i-heroicons-trash"
             @click="()=>confirmDelete(row.original)"
             :loading="deleteREQ.status.value === 'pending'"
+            v-if="row.original.connectedGamesCount === 0"
           >
             حذف
           </UButton>
@@ -108,12 +110,21 @@
 import type { ITable } from '~/features/tournament/models/Table';
 import UpdateModal from './UpdateModal.vue';
 import AddModal from './AddModal.vue';
-
+import { TournamentDetailedState } from '~/features/tournament/models/tournament';
 const overlay = useOverlay()
 const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 const tour_id = route.params.id.toString()
+const tourREQ =  useTournament().getSingelTournament(tour_id)
+
+const tour = computed(() => {
+  if (tourREQ.data.value)
+    return tourREQ.data.value.data.tournament
+})
+const canAddTable = computed(() => {
+  return tour.value?.detailedState!=TournamentDetailedState.Finished
+})
 
 // Get tables
 const getTableREQ = useTournamentTable().getTable(tour_id)

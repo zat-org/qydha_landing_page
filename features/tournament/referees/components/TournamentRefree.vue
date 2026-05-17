@@ -11,14 +11,14 @@
         </h1>
         </div>
 
-      <UButton label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
+      <UButton v-if="canAddRefree" label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
 
       </div>
     </template>
 
     <UTable :data="refrees" :columns="cols" >
       <template #actions-cell="{row}">
-        <UButton icon="material-symbols:delete" color="error" @click="deleteref(row.original)"/>
+        <UButton v-if="row.original.connectedGamesCount === 0" icon="material-symbols:delete" color="error" @click="deleteref(row.original)"/>
       </template>
     </UTable>
     
@@ -35,6 +35,7 @@
 <script lang="ts" setup>
 import type { MinUser } from '~/models/user';
 import RefereeAddForm from './AddForm.vue';
+import { TournamentDetailedState } from '~/features/tournament/models/tournament';
 
 const route = useRoute()
 const router = useRouter()
@@ -49,6 +50,9 @@ const isDrawerOpen = ref(false)
 const tour = computed(() => {
  if (tourREQ.data.value)
     return tourREQ.data.value.data.tournament
+})
+const canAddRefree = computed(() => {
+  return tour.value?.detailedState!=TournamentDetailedState.Finished
 })
 
 const refreeGetREQ = await useTournamentRefree().getTournamentRefree()

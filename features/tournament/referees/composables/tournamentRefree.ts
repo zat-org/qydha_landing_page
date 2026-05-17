@@ -1,10 +1,10 @@
-import type { MinUser } from "~/models/user";
+import type { IRefre } from "~/features/tournament/models/Refre";
 
 export const useTournamentRefree = () => {
   const { $api } = useNuxtApp();
   const getTournamentRefree = async () => {
     const tourId = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: MinUser[], message: string }>(
+    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: IRefre[], message: string }>(
       'getTournamentRefree',
       () => $api(`/tournaments/${tourId.value}/referees`), { immediate: false }
     );

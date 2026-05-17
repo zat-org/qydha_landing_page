@@ -16,8 +16,8 @@
       </UForm>
       <template #footer>
         <div class="flex justify-between">
-          <UButton label="اغلاق" color="error" @click="emit('close')" />
           <UButton label="اضافة" @click="refreeForm?.submit()" />
+          <UButton label="اغلاق" color="error" @click="emit('close')" />
         </div>
       </template>
     </UCard>
