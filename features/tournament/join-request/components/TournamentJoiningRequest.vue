@@ -16,24 +16,11 @@
 
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <UButton
-            v-if="canAction && showActions"
-            size="md"
-            color="success"
-            variant="subtle"
-            :loading="finalApprovePatching"
-            :disabled="finalApprovePatching"
-            @click="approveOpen = true"
-          >
+          <UButton v-if="canAction && showActions" size="md" color="success" variant="subtle"
+            :loading="finalApprovePatching" :disabled="finalApprovePatching" @click="approveOpen = true">
             موافقة نهائية علي الطلبات
           </UButton>
-          <UButton
-            color="primary"
-            variant="ghost"
-            size="md"
-            icon="i-heroicons-arrow-path"
-            @click="refreshBothPanels"
-          />
+          <UButton color="primary" variant="ghost" size="md" icon="i-heroicons-arrow-path" @click="refreshBothPanels" />
         </div>
 
       </div>
@@ -43,10 +30,8 @@
       :unmount-on-hide="false">
       <template #requests-main>
         <Suspense>
-          <TeamJoinRequestsPanel ref="mainPanelRef"
-          
-          :show-actions="showActions" :number-of-teams="numberOfTeams" :tournament-id="id" :can-action="canAction" mode="main"
-            @mutated="refreshBothPanels" />
+          <TeamJoinRequestsPanel ref="mainPanelRef" :show-actions="showActions" :number-of-teams="numberOfTeams"
+            :tournament-id="id" :can-action="canAction" mode="main" @mutated="refreshBothPanels" />
           <template #fallback>
             <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
           </template>
@@ -55,10 +40,8 @@
 
       <template #requests-consider>
         <Suspense>
-          <TeamJoinRequestsPanel ref="considerPanelRef" 
-          
-          :show-actions="showActions" :number-of-teams="numberOfTeams" :tournament-id="id" :can-action="canAction" mode="consider"
-            @mutated="refreshBothPanels" />
+          <TeamJoinRequestsPanel ref="considerPanelRef" :show-actions="showActions" :number-of-teams="numberOfTeams"
+            :tournament-id="id" :can-action="canAction" mode="consider" @mutated="refreshBothPanels" />
           <template #fallback>
             <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
           </template>
@@ -72,10 +55,10 @@
       </template>
       <template #body>
         <p class="text-lg leading-relaxed ">
-          الموافقة على  عدد 
+          الموافقة على عدد
           <span class="font-medium text-primary">
 
-            {{ considerPanelRef?.totalCount }} 
+            {{ considerPanelRef?.totalCount }}
           </span>
           طلب فريق بشكل نهائي.
           <br>
@@ -101,10 +84,10 @@ import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
 
 const router = useRouter();
-const id = useRoute().params.id.toString();
+const id = useRoute().params.id?.toString() ?? "";
 
 const { getSingelTournament } = useTournament();
-const getTournamentReq =  getSingelTournament(id);
+const getTournamentReq = getSingelTournament(id);
 
 const tournament = computed(() => getTournamentReq.data.value?.data.tournament ?? null);
 const tournamneState = computed(() => tournament.value?.state ?? null);
@@ -155,6 +138,7 @@ async function confirmFinalApprove() {
 const refreshBothPanels = async () => {
   await nextTick();
   await Promise.all([
+    getTournamentReq.refresh() ?? Promise.resolve(),
     mainPanelRef.value?.refresh?.() ?? Promise.resolve(),
     considerPanelRef.value?.refresh?.() ?? Promise.resolve(),
   ]);

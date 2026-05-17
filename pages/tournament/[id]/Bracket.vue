@@ -8,6 +8,7 @@
       @edit-round="onEditRoundFromHeader"
       @finish-tournament="finishTournament"
       @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
+      @open-start-confirm-map="openStartTournamentConfirmMap"
       />
       <UButtonGroup  v-else-if="tourStore.tournament.length > 0" orientation="horizontal" class="flex flex-wrap">
       <UButton v-for="item in tourStore.tournament" :key="item.data.id" class="basis-[20px] grow"
@@ -68,6 +69,12 @@
       :pending="isStartFinalGroupPending"
       @confirm="confirmAndStartTournament"
     />
+    
+    <TournamentGetApprovePlanConfirmModal
+      v-model:open="startTournamentConfirmMapOpen"
+      :pending="isStartFinalGroupPending"
+      @confirm="confirmAndStartTournamentMap"
+    />
   </div>
 </template>
 
@@ -80,6 +87,7 @@ import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatc
 import TournamentGetStartConfirmModal from "~/features/tournament/core/components/TournamentGet/TournamentGetStartConfirmModal.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
+import TournamentGetApprovePlanConfirmModal from "~/features/tournament/core/components/TournamentGet/TournamentGetApprovePlanConfirmModal.vue";
 
 definePageMeta({
   layout: "custom",
@@ -206,6 +214,31 @@ const resumeFinalGroupAfterFinish = async () => {
     });
   }
 }
+
+const startTournamentConfirmMapOpen = ref(false);
+
+const openStartTournamentConfirmMap = () => {
+  if (tourStore.selectedGroup?.data.type !== GroupType.Final) return;
+  startTournamentConfirmMapOpen.value = true;
+};
+const approveReq = await useTournament().approveTournamentPlan();
+const confirmAndStartTournamentMap = async () => {
+  await approveReq.fetchREQ(tourid);
+  if (approveReq.status.value === "success") {
+    toast.add({
+      title: "تمت الموافقة على مخطط البطولة",
+      color: "success",
+    });
+    startTournamentConfirmMapOpen.value = false;
+    await tourStore.refreshBracket(tourid);
+  } else {
+    toast.add({
+      title: "تعذّرت الموافقة على المخطط",
+      color: "error",
+    });
+  }
+};
+
 
 
 const roundBeingEdited = ref<RoundGroupDetails['rounds'][0] | null>(null);

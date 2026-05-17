@@ -13,6 +13,10 @@
         :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined" :disabled="!isFinalGroupSelected"
         @click="emit('regenerate-final-matches')" />
 
+        <UButton v-if="showRegenerateFinalMatchesButton" label="التاكيد علي  الخريطة" icon="i-mdi-play-circle" size="sm" color="primary"
+        variant="solid" class="min-h-9" :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+        :disabled="!isFinalGroupSelected" @click="emit('open-start-confirm-map')" />
+
       <UButton v-if="showStartTournamentCta" label="بدء البطولة" icon="i-mdi-play" size="sm" color="primary"
         variant="solid" class="min-h-9" :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
         :disabled="!isFinalGroupSelected" @click="emit('open-start-confirm')" />
@@ -60,6 +64,7 @@ const emit = defineEmits<{
   "edit-round": [round: RoundGroupDetails["rounds"][0]];
   "finish-tournament": [];
   "resume-final-group-after-finish": [];
+  "open-start-confirm-map": [];
 }>();
 
 const userStore = useMyAuthStore();
@@ -105,7 +110,7 @@ const showRegenerateFinalMatchesButton = computed(
 const showStartTournamentCta = computed(
   () =>
     tour.value?.tournament?.state === TournamentState.Upcoming &&
-    finalGroup.value?.state === GroupState.MatchesGenerated,
+    finalGroup.value?.state === GroupState.WaitingMatchesStarting,
 );
 
 const showFinishTournamentCta = computed(
