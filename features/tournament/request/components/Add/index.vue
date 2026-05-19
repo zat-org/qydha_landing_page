@@ -1,54 +1,119 @@
 <template>
-  <UCard :ui="{ root: 'relative', body: 'p-1 sm:p-1', header: 'p-1 sm:p-1', footer: 'p-1 sm:p-1' }">
+  <UCard
+    class="flex min-h-0 flex-col overflow-hidden shadow-none ring-0"
+    :ui="cardUi"
+  >
     <template #header>
-      <div class="sticky top-0 flex w-full items-center justify-around bg-white dark:bg-gray-900">
-        <div class="flex flex-1 gap-2">
-          <UButton to="/tournament/request" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1">
-            العودة
-          </UButton>
-          <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle" variant="ghost">
-            دليل انشاء البطولة
-          </UButton>
-          <UButton variant="outline" color="primary" icon="i-lucide-calculator" to="/tournament/request/calcaulator" label="حاسبة البطولة" class="px-6" />
+      <div class="flex flex-col gap-1.5">
+        <div class="flex flex-wrap items-center gap-1">
+          <UButton
+            to="/tournament/request"
+            size="xs"
+            icon="i-heroicons-arrow-left"
+            variant="ghost"
+            label="العودة"
+          />
+          <UButton
+            to="/tournament/request/info"
+            size="xs"
+            icon="i-heroicons-information-circle"
+            variant="ghost"
+            label="دليل انشاء البطولة"
+          />
+          <UButton
+            variant="outline"
+            color="primary"
+            icon="i-lucide-calculator"
+            to="/tournament/request/calcaulator"
+            label="حاسبة البطولة"
+            size="xs"
+            class="ms-auto"
+          />
         </div>
-        <UStepper size="sm" :items="stepperItems" class="flex-4" v-model="currentStepValue" />
+
+        <div class="flex flex-col items-center gap-1 text-center">
+          <p class="text-[11px] font-medium leading-tight text-primary-600 dark:text-primary-400">
+            الخطوة {{ currentStepValue + 1 }} من {{ steps.length }} — {{ currentStep.title }}
+          </p>
+          <div class="flex w-full justify-center [&_[data-slot=title]]:text-xs">
+            <UStepper
+              v-model="currentStepValue"
+              size="xs"
+              :items="stepperItems"
+              class="w-full max-w-2xl"
+            />
+          </div>
+        </div>
       </div>
     </template>
 
-    <div class="h-[75vh] overflow-y-auto" ref="scrollContainer">
-      <KeepAlive>
-        <TournamentRequestFormTourForm
-          v-show="currentStepValue === 0"
-          v-model="formData"
-          :errors="visibleErrors"
-          :on-field-blur="onFieldBlur"
-        />
-      </KeepAlive>
-      <KeepAlive>
-        <TournamentRequestFormTourDetailForm
-          v-show="currentStepValue === 1"
-          v-model="formData"
-          :errors="visibleErrors"
-          :on-field-blur="onFieldBlur"
-        />
-      </KeepAlive>
-      <KeepAlive>
-        <TournamentRequestFormRulesForm
-          v-show="currentStepValue === 2"
-          v-model="formData"
-          :errors="visibleErrors"
-          :on-field-blur="onFieldBlur"
-        />
-      </KeepAlive>
+    <div
+      ref="scrollContainer"
+      class="form-scroll-area min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-1 sm:px-4 sm:py-1"
+    >
+      <div class="mx-auto w-full max-w-7xl">
+          <KeepAlive>
+            <TournamentRequestFormTourForm
+              v-show="currentStepValue === 0"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+          <KeepAlive>
+            <TournamentRequestFormTourDetailForm
+              v-show="currentStepValue === 1"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+          <KeepAlive>
+            <TournamentRequestFormRulesForm
+              v-show="currentStepValue === 2"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+      </div>
     </div>
 
     <template #footer>
-      <div class="sticky bottom-0 flex items-center justify-between bg-white px-6 dark:bg-gray-900">
-        <UButton v-if="canGoBack" variant="outline" @click="previousStep" label="السابق" size="xl" />
-        <UButton v-if="canGoNext" color="primary" @click="validateAndNext" label="التالي" size="xl" class="ms-auto" />
-        <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit" size="xl">
-          إرسال
-        </UButton>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-center text-xs text-gray-500 dark:text-gray-400 sm:text-start">
+          {{ footerHint }}
+        </p>
+        <div class="flex items-center justify-between gap-3 sm:justify-end">
+          <UButton
+            v-if="canGoBack"
+            variant="outline"
+            size="lg"
+            label="السابق"
+            icon="i-heroicons-arrow-right"
+            class="min-w-28"
+            @click="previousStep"
+          />
+          <UButton
+            v-if="canGoNext"
+            color="primary"
+            size="lg"
+            label="التالي"
+            trailing-icon="i-heroicons-arrow-left"
+            class="min-w-28 ms-auto"
+            @click="validateAndNext"
+          />
+          <UButton
+            v-else-if="isLastStep"
+            color="primary"
+            size="lg"
+            label="إرسال الطلب"
+            icon="i-heroicons-paper-airplane"
+            class="min-w-32 ms-auto"
+            :loading="isSubmittingValue"
+            @click="handelSubmit"
+          />
+        </div>
       </div>
     </template>
   </UCard>
@@ -65,7 +130,15 @@ import TournamentRequestFormTourForm from '~/features/tournament/request/compone
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 
+const cardUi = {
+  root: 'flex flex-col max-h-[calc(100dvh-6vh)] min-h-[min(640px,calc(100dvh-6vh))] overflow-hidden shadow-none ring-0 p-0',
+  header: 'border-b border-gray-200/90 bg-white/95 px-2 py-1.5 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-3 sm:py-2',
+  body: 'flex min-h-0 flex-1 flex-col p-0',
+  footer: 'border-t border-gray-200/90 bg-white/95 px-3 py-3 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-5 sm:py-4',
+};
+
 const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");
+
 const toast = useToast();
 const { AddTournamentRequest } = useTournamentRequest();
 const addREq = AddTournamentRequest();
@@ -166,6 +239,8 @@ const completedSteps = ref<Set<number>>(new Set());
 const touchedFields = ref<Set<string>>(new Set());
 const attemptedSteps = ref<Set<number>>(new Set());
 
+const currentStep = computed(() => steps[currentStepValue.value]!);
+
 const fieldStepMap = computed(() => {
   const map = new Map<string, number>();
   Object.entries(stepFieldMap).forEach(([step, fields]) => {
@@ -190,6 +265,35 @@ const visibleErrors = computed(() => {
   return result;
 });
 
+const footerHint = computed(() => {
+  if (isLastStep.value) return 'راجع البيانات ثم اضغط «إرسال الطلب» لإتمام التقديم.';
+  return 'أكمل الحقول المطلوبة ثم انتقل للخطوة التالية.';
+});
+
+const scrollToTop = async () => {
+  await nextTick();
+  scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const scrollToFirstInvalidField = async (fields: string[]) => {
+  await nextTick();
+  const container = scrollContainer.value;
+  if (!container) return;
+
+  for (const field of fields) {
+    if (!errors.value[field as keyof typeof errors.value]) continue;
+    const target =
+      container.querySelector<HTMLElement>(`[name="${field}"]`) ??
+      container.querySelector<HTMLElement>(`[data-field="${field}"]`) ??
+      container.querySelector<HTMLElement>(`#${field}`);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+      return;
+    }
+  }
+};
+
 const onFieldBlur = async (field: string) => {
   touchedFields.value.add(field);
   await validateField(field as any);
@@ -206,9 +310,11 @@ const validateCurrentStep = async () => {
 };
 
 const validateAndNext = async () => {
+  const fields = stepFieldMap[currentStepValue.value] ?? [];
   const isValid = await validateCurrentStep();
   if (!isValid) {
     attemptedSteps.value.add(currentStepValue.value);
+    await scrollToFirstInvalidField(fields);
     toast.add({ title: "يرجى تصحيح أخطاء الخطوة الحالية", color: "error" });
     return;
   }
@@ -246,12 +352,13 @@ const submitForm = async () => {
     }
     if (!stepValid) {
       currentStepValue.value = idx;
+      await scrollToTop();
+      await scrollToFirstInvalidField(fields);
       toast.add({ title: "يرجى إكمال الحقول المطلوبة", color: "error" });
       return;
     }
   }
   currentStepValue.value = currentStepBeforeSubmit;
-
   await addREq.fetchREQ(formData);
   if (addREq.status.value == 'success') {
     await navigateTo("/tournament/request");
@@ -266,6 +373,9 @@ const submitForm = async () => {
     }
   }
   currentStepValue.value = getStepForField(apiData);
+  await nextTick();
+  const invalidFields = stepFieldMap[currentStepValue.value] ?? [];
+  await scrollToFirstInvalidField(invalidFields);
   toast.add({ title: `خطاء في بيانات ${Object.keys(apiErrors ?? {}).join(", ")}`, color: "error" });
 };
 
@@ -275,7 +385,7 @@ const stepperItems = computed(() => steps.map((step, idx) => ({
 })));
 
 watch(currentStepValue, () => {
-  scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+  void scrollToTop();
 });
 
 const totalStepsValue = computed(() => steps.length);
@@ -289,4 +399,27 @@ const handelSubmit = () => {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-scroll-area {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225 / 0.8) transparent;
+}
+
+.form-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-scroll-area::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: rgb(203 213 225 / 0.8);
+}
+
+.dark .form-scroll-area {
+  scrollbar-color: rgb(71 85 105 / 0.8) transparent;
+}
+
+.dark .form-scroll-area::-webkit-scrollbar-thumb {
+  background-color: rgb(71 85 105 / 0.8);
+}
+</style>

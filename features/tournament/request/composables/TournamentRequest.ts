@@ -72,7 +72,6 @@ export const useTournamentRequest = () => {
     // Helper function to convert object to FormData
 
     const fetchREQ = async (_body: TournamentCreationRequest) => {
-      console.log(_body)
       body.value = new FormData();
       body.value.append("title", _body.title);
       body.value.append("description", _body.description);

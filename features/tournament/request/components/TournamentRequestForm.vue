@@ -1,6 +1,6 @@
 <template>
     <Suspense>
-    <component :is="FormComponent" />
+    <component :is="FormComponent" class="flex min-h-0 flex-1 flex-col" />
     <template #fallback>
         <loading class="mt-10" />
     </template>

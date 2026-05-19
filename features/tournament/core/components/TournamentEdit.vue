@@ -1,79 +1,149 @@
 <template>
-  <Loading v-if="getReq.status.value == 'pending'" />
-  <UCard v-else-if="getReq.status.value == 'success'" :ui="{
-    body: 'p-1 sm:p-1',
-    header: 'p-1 sm:p-1',
-    footer: 'p-1 sm:p-1',
-
-  }">
+  <div v-if="getReq.status.value === 'pending'" class="flex justify-center py-16">
+    <Loading />
+  </div>
+  <UCard
+    v-else-if="getReq.status.value === 'success'"
+    class="flex min-h-0 flex-col overflow-hidden shadow-none ring-0"
+    :ui="cardUi"
+  >
     <template #header>
-      <div class="flex justify-around  items-center w-full">
-        <div class=" flex-1 flex  gap-2">
-          <UButton to="/tournament" size="sm" icon="i-heroicons-arrow-left" variant="ghost" class="flex-1">
-            العودة
-          </UButton>
-          <!-- <UButton to="/tournament/request/info" size="sm" icon="i-heroicons-information-circle"
-                        variant="ghost">
-                        دليل انشاء البطولة
-                    </UButton> -->
+      <div class="flex flex-col gap-1.5">
+        <div class="flex flex-wrap items-center gap-1">
+          <UButton
+            to="/tournament"
+            size="xs"
+            icon="i-heroicons-arrow-left"
+            variant="ghost"
+            label="العودة"
+          />
         </div>
-        <UStepper size="sm" :items="stepperItems" class="flex-4 " v-model="currentStepValue" />
 
+        <div class="flex flex-col items-center gap-1 text-center">
+          <p class="text-[11px] font-medium leading-tight text-primary-600 dark:text-primary-400">
+            الخطوة {{ currentStepValue + 1 }} من {{ steps.length }} — {{ currentStep.title }}
+          </p>
+          <div class="flex w-full justify-center [&_[data-slot=title]]:text-xs">
+            <UStepper
+              v-model="currentStepValue"
+              size="xs"
+              :items="stepperItems"
+              class="w-full max-w-2xl"
+            />
+          </div>
+        </div>
       </div>
     </template>
 
-    <template #default>
-      <TournamentEditPanels v-model="formData" :current-step="currentStepValue" :errors="visibleErrors"
-        :on-field-blur="onFieldBlur" :disabled-fields="disabledFields"
-        :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
-        :owner="getReq.data.value?.data.tournament?.owner ?? null" />
-    </template>
+    <div
+      ref="scrollContainer"
+      class="form-scroll-area min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-1 sm:px-4 sm:py-1"
+    >
+      <div class="mx-auto w-full max-w-7xl">
+        <TournamentEditPanels
+          v-model="formData"
+          :current-step="currentStepValue"
+          :errors="visibleErrors"
+          :on-field-blur="onFieldBlur"
+          :disabled-fields="disabledFields"
+          :initial-logo-url="getReq.data.value?.data.tournament?.logoUrl"
+          :owner="getReq.data.value?.data.tournament?.owner ?? null"
+        />
+      </div>
+    </div>
+
     <template #footer>
-      <div class="flex justify-between items-center px-6">
-        <UButton v-if="canGoBack" variant="outline" @click="previousStep" label="السابق" size="xl" />
-        <UButton v-if="canGoNext" color="primary" @click="validateAndNext" label="التالي" size="xl" class="ms-auto" />
-        <UButton v-else-if="isLastStep" color="primary" :loading="isSubmittingValue" @click="handelSubmit" size="xl">
-          إرسال
-        </UButton>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-center text-xs text-gray-500 dark:text-gray-400 sm:text-start">
+          {{ footerHint }}
+        </p>
+        <div class="flex items-center justify-between gap-3 sm:justify-end">
+          <UButton
+            v-if="canGoBack"
+            variant="outline"
+            size="lg"
+            label="السابق"
+            icon="i-heroicons-arrow-right"
+            class="min-w-28"
+            @click="previousStep"
+          />
+          <UButton
+            v-if="canGoNext"
+            color="primary"
+            size="lg"
+            label="التالي"
+            trailing-icon="i-heroicons-arrow-left"
+            class="min-w-28 ms-auto"
+            @click="validateAndNext"
+          />
+          <UButton
+            v-else-if="isLastStep"
+            color="primary"
+            size="lg"
+            label="حفظ التعديلات"
+            icon="i-heroicons-paper-airplane"
+            class="min-w-32 ms-auto"
+            :loading="isSubmittingValue"
+            @click="handelSubmit"
+          />
+        </div>
       </div>
     </template>
   </UCard>
-
+  <UAlert
+    v-else-if="getReq.status.value === 'error'"
+    color="error"
+    variant="soft"
+    icon="i-heroicons-exclamation-triangle"
+    class="m-4"
+  >
+    <template #title>خطأ في تحميل البيانات</template>
+    <template #description>تعذر تحميل بيانات البطولة للتعديل</template>
+  </UAlert>
 </template>
 
 <script setup lang="ts">
-import { object, string, number, boolean, array, mixed } from "yup";
-import { useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/yup";
+import { object, string, number, boolean, array, mixed } from 'yup';
+import { useForm } from 'vee-validate';
+import { toTypedSchema } from '@vee-validate/yup';
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/features/tournament/models/tournamentPrize';
 import { TournamentType } from '~/features/tournament/models/tournamenetType';
-import { TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
 import { TournamentDetailedState, type TournamentUpdate } from '~/features/tournament/models/tournament';
 import { useTournamentLogic } from '~/features/tournament/core/composables/tournament.logic';
-import Loading from "~/components/loading.vue";
+import Loading from '~/components/loading.vue';
 import TournamentEditPanels from '~/features/tournament/core/components/TournamentEditForm/Panels.vue';
 
 type TournamentEditForm = TournamentUpdate & {
   type: TournamentType;
 };
 
+const cardUi = {
+  root: 'flex flex-col max-h-[calc(100dvh-6vh)] min-h-[min(640px,calc(100dvh-6vh))] overflow-hidden shadow-none ring-0 p-0',
+  header: 'border-b border-gray-200/90 bg-white/95 px-2 py-1.5 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-3 sm:py-2',
+  body: 'flex min-h-0 flex-1 flex-col p-0',
+  footer: 'border-t border-gray-200/90 bg-white/95 px-3 py-3 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-5 sm:py-4',
+};
+
+const scrollContainer = useTemplateRef<HTMLDivElement>('scrollContainer');
+
 const { getSingelTournament, updateTournament } = useTournament();
 const { canUpdateTournament } = useTournamentLogic();
 
 const tournamentEditFreezeFieldKeys = [
-  "title", "description", "logo", "showInQydha", "contactPhone", "isContactPhoneCall", "isContactPhoneWhatsapp",
-  "locationDescription", "location", "type", "tournamentPrivatePassword", "sponsors", "startAt", "endAt",
-  "prizes",
-  "teamsCount", "tablesCount", "rules", "ownerId",
+  'title', 'description', 'logo', 'showInQydha', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp',
+  'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors', 'startAt', 'endAt',
+  'prizes',
+  'teamsCount', 'tablesCount', 'rules', 'ownerId',
 ] as const;
+
 const route = useRoute();
 const router = useRouter();
-const id = route.params.id.toString();
+const id = route.params.id?.toString() ?? '';
 const toast = useToast();
 
 const formData = reactive<TournamentEditForm>({
-  title: "",
-  description: "",
+  title: '',
+  description: '',
   logo: undefined,
   remainingSponsorsUrls: [],
   contactPhone: '',
@@ -86,61 +156,59 @@ const formData = reactive<TournamentEditForm>({
   type: TournamentType.public,
   teamsCount: 16,
   tablesCount: 8,
-  tournamentPrivatePassword: "",
-  locationDescription: "",
+  tournamentPrivatePassword: '',
+  locationDescription: '',
   location: { latitude: 0, longitude: 0 },
-  prizes: [
-    {
-      isFinancial: true,
-      isNonFinancial: false,
-      type: TournamentPrizeType.one,
-      financialPrizeAmount: 100,
-      financialPrizeCurrency: TournamentPrizeCurrency.SAR,
-      nonFinancialPrizes: [],
-    }
-  ],
+  prizes: [{
+    isFinancial: true,
+    isNonFinancial: false,
+    type: TournamentPrizeType.one,
+    financialPrizeAmount: 100,
+    financialPrizeCurrency: TournamentPrizeCurrency.SAR,
+    nonFinancialPrizes: [],
+  }],
   rules: [],
-  ownerId: "",
+  ownerId: '',
 });
 
 const steps = [
-  { id: 0, title: "معلومات البطولة", slot: "TourInfo", icon: "i-heroicons-trophy" },
-  { id: 1, title: "تفاصيل البطولة", slot: "TourDetail", icon: "i-heroicons-clipboard-document-list" },
-  { id: 2, title: "قوانين البطولة", slot: "TourRules", icon: "i-heroicons-scale" },
+  { id: 0, title: 'معلومات البطولة', slot: 'TourInfo', icon: 'i-heroicons-trophy' },
+  { id: 1, title: 'تفاصيل البطولة', slot: 'TourDetail', icon: 'i-heroicons-clipboard-document-list' },
+  { id: 2, title: 'قوانين البطولة', slot: 'TourRules', icon: 'i-heroicons-scale' },
 ];
 
 const stepFieldMap: Record<number, string[]> = {
   0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors'],
-  1: [ 'ownerId', 'startAt', 'endAt', 'prizes', 'teamsCount', 'tablesCount'],
+  1: ['ownerId', 'startAt', 'endAt', 'prizes', 'teamsCount', 'tablesCount'],
   2: ['rules'],
 };
 
-const contactMethodMessage = "يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)";
+const contactMethodMessage = 'يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)';
 
 const editSchema = object({
-  title: string().required("اسم البطولة مطلوب"),
+  title: string().required('اسم البطولة مطلوب'),
   description: string(),
   logo: mixed(),
-  ownerId: string().required("يجب اختيار منظم البطولة").trim().min(1, "يجب اختيار منظم البطولة"),
-  type: string().required("نوع البطولة مطلوب"),
-  tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  locationDescription: string().required("عنوان البطولة مطلوب"),
+  ownerId: string().required('يجب اختيار منظم البطولة').trim().min(1, 'يجب اختيار منظم البطولة'),
+  type: string().required('نوع البطولة مطلوب'),
+  tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required('رمز البطولة الخاصة مطلوب'), otherwise: (schema) => schema.notRequired() }),
+  locationDescription: string().required('عنوان البطولة مطلوب'),
   location: object({ latitude: number(), longitude: number() }).test('location-selected', 'يرجى اختيار الموقع', (value) => !!value && value.latitude !== 0 && value.longitude !== 0),
-  contactPhone: string().required("رقم للتواصل للاعبين مطلوب").min(10, "رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام"),
-  isContactPhoneCall: boolean().test("at-least-one-contact-method", contactMethodMessage, function () {
+  contactPhone: string().required('رقم للتواصل للاعبين مطلوب').min(10, 'رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام'),
+  isContactPhoneCall: boolean().test('at-least-one-contact-method', contactMethodMessage, function () {
     const parent = this.parent as TournamentEditForm;
     return !!(parent.isContactPhoneWhatsapp || parent.isContactPhoneCall);
   }),
-  isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method", contactMethodMessage, function () {
+  isContactPhoneWhatsapp: boolean().test('at-least-one-contact-method', contactMethodMessage, function () {
     const parent = this.parent as TournamentEditForm;
     return !!(parent.isContactPhoneWhatsapp || parent.isContactPhoneCall);
   }),
   sponsors: array().of(mixed()),
-  startAt: string().required("تاريخ بداية البطولة مطلوب"),
-  endAt: string().required("تاريخ نهاية البطولة مطلوب"),
-  prizes: array().min(1, "يجب إضافة جائزة واحدة على الأقل"),
-  teamsCount: number().typeError("عدد الفرق مطلوب").required("عدد الفرق مطلوب").min(2, "يجب أن يكون عدد الفرق على الأقل 2"),
-  tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
+  startAt: string().required('تاريخ بداية البطولة مطلوب'),
+  endAt: string().required('تاريخ نهاية البطولة مطلوب'),
+  prizes: array().min(1, 'يجب إضافة جائزة واحدة على الأقل'),
+  teamsCount: number().typeError('عدد الفرق مطلوب').required('عدد الفرق مطلوب').min(2, 'يجب أن يكون عدد الفرق على الأقل 2'),
+  tablesCount: number().typeError('عدد الطاولات مطلوب').required('عدد الطاولات مطلوب').min(1, 'يجب ادخال عدد الطاولات'),
   rules: array().of(string()),
 });
 
@@ -153,13 +221,15 @@ watch(formData, (value) => setValues({ ...value }, false), { deep: true, immedia
 
 const currentStepValue = ref(0);
 
-if (route.query.step === "join") {
+if (route.query.step === 'join') {
   currentStepValue.value = 1;
 }
 
 const completedSteps = ref<Set<number>>(new Set());
 const touchedFields = ref<Set<string>>(new Set());
 const attemptedSteps = ref<Set<number>>(new Set());
+
+const currentStep = computed(() => steps[currentStepValue.value]!);
 
 const fieldStepMap = computed(() => {
   const map = new Map<string, number>();
@@ -183,13 +253,42 @@ const visibleErrors = computed(() => {
   return result;
 });
 
+const footerHint = computed(() => {
+  if (isLastStep.value) return 'راجع البيانات ثم اضغط «حفظ التعديلات» لإتمام التحديث.';
+  return 'أكمل الحقول المطلوبة ثم انتقل للخطوة التالية.';
+});
+
+const scrollToTop = async () => {
+  await nextTick();
+  scrollContainer.value?.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+const scrollToFirstInvalidField = async (fields: string[]) => {
+  await nextTick();
+  const container = scrollContainer.value;
+  if (!container) return;
+
+  for (const field of fields) {
+    if (!errors.value[field as keyof typeof errors.value]) continue;
+    const target =
+      container.querySelector<HTMLElement>(`[name="${field}"]`) ??
+      container.querySelector<HTMLElement>(`[data-field="${field}"]`) ??
+      container.querySelector<HTMLElement>(`#${field}`);
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+      return;
+    }
+  }
+};
+
 const onFieldBlur = async (field: string) => {
   touchedFields.value.add(field);
   await validateField(field as any);
 };
 
 const getReq = await getSingelTournament(id);
-if (getReq.status.value == "error") {
+if (getReq.status.value === 'error') {
   toast.add({ title: 'حدث خطاء في جلب بينات البطوله ' });
   await navigateTo('/tournamnent');
 }
@@ -233,10 +332,10 @@ const assignData = () => {
   formData.ownerId = data.owner.id;
 };
 
+if (getReq.status.value === 'success') assignData();
 watch(() => getReq.status.value, () => {
-  if (getReq.status.value == "success") assignData();
+  if (getReq.status.value === 'success') assignData();
 });
-// if (getReq.status.value == "success") assignData();
 
 const validateCurrentStep = async () => {
   const fields = stepFieldMap[currentStepValue.value] ?? [];
@@ -249,10 +348,12 @@ const validateCurrentStep = async () => {
 };
 
 const validateAndNext = async () => {
+  const fields = stepFieldMap[currentStepValue.value] ?? [];
   const isValid = await validateCurrentStep();
   if (!isValid) {
     attemptedSteps.value.add(currentStepValue.value);
-    toast.add({ title: "يرجى تصحيح أخطاء الخطوة الحالية", color: "error" });
+    await scrollToFirstInvalidField(fields);
+    toast.add({ title: 'يرجى تصحيح أخطاء الخطوة الحالية', color: 'error' });
     return;
   }
   completedSteps.value.add(currentStepValue.value);
@@ -263,7 +364,22 @@ const previousStep = () => {
   if (currentStepValue.value > 0) currentStepValue.value -= 1;
 };
 
+const getStepForField = (error: any): number => {
+  if (!error || typeof error !== 'object') return 0;
+  const step0Fields = new Set(stepFieldMap[0]);
+  const step1Fields = new Set(stepFieldMap[1]);
+  const step2Fields = new Set(stepFieldMap[2]);
+  const errorKeys = Object.keys(error.errors ?? {});
+  for (const key of errorKeys) {
+    if (step0Fields.has(key)) return 0;
+    if (step1Fields.has(key)) return 1;
+    if (step2Fields.has(key)) return 2;
+  }
+  return 0;
+};
+
 const updateReq = await updateTournament(id);
+
 const submitForm = async () => {
   const currentStepBeforeSubmit = currentStepValue.value;
   for (let idx = 0; idx < steps.length; idx++) {
@@ -276,7 +392,9 @@ const submitForm = async () => {
     }
     if (!stepValid) {
       currentStepValue.value = idx;
-      toast.add({ title: "يرجى إكمال الحقول المطلوبة", color: "error" });
+      await scrollToTop();
+      await scrollToFirstInvalidField(fields);
+      toast.add({ title: 'يرجى إكمال الحقول المطلوبة', color: 'error' });
       return;
     }
   }
@@ -288,7 +406,7 @@ const submitForm = async () => {
   };
 
   await updateReq.fetchREQ(payload);
-  if (updateReq.status.value == 'success') {
+  if (updateReq.status.value === 'success') {
     router.back();
     return;
   }
@@ -300,22 +418,54 @@ const submitForm = async () => {
       setFieldError(key as any, Array.isArray(value) ? value[0] : String(value));
     }
   }
+  currentStepValue.value = getStepForField(apiData);
+  await nextTick();
+  const invalidFields = stepFieldMap[currentStepValue.value] ?? [];
+  await scrollToFirstInvalidField(invalidFields);
+  toast.add({ title: `خطاء في بيانات ${Object.keys(apiErrors ?? {}).join(', ')}`, color: 'error' });
 };
 
 const stepperItems = computed(() => steps.map((step, idx) => ({
   ...step,
-  color: currentStepValue.value === idx ? "primary" : completedSteps.value.has(idx) ? "success" : "neutral",
+  color: currentStepValue.value === idx ? 'primary' : completedSteps.value.has(idx) ? 'success' : 'neutral',
 })));
 
+watch(currentStepValue, () => {
+  void scrollToTop();
+});
+
 const totalStepsValue = computed(() => steps.length);
-const isSubmittingValue = computed(() => updateReq.status.value === "pending");
+const isSubmittingValue = computed(() => updateReq.status.value === 'pending');
 const canGoBack = computed(() => currentStepValue.value >= 1);
 const canGoNext = computed(() => currentStepValue.value < totalStepsValue.value - 1);
-const isLastStep = computed(() => currentStepValue.value == totalStepsValue.value - 1);
+const isLastStep = computed(() => currentStepValue.value === totalStepsValue.value - 1);
 
 const handelSubmit = () => {
   void submitForm();
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.form-scroll-area {
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(203 213 225 / 0.8) transparent;
+}
+
+.form-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.form-scroll-area::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: rgb(203 213 225 / 0.8);
+}
+
+.dark .form-scroll-area {
+  scrollbar-color: rgb(71 85 105 / 0.8) transparent;
+}
+
+.dark .form-scroll-area::-webkit-scrollbar-thumb {
+  background-color: rgb(71 85 105 / 0.8);
+}
+</style>
