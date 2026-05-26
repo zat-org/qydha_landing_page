@@ -3,25 +3,19 @@
     <div class="flex flex-wrap items-center justify-between gap-3">
       <UButton label="عودة" color="neutral" variant="soft" size="sm" icon="i-mdi-arrow-right" @click="$emit('back')" />
       <div class="flex flex-wrap items-center justify-end gap-2">
-        <USwitch :model-value="showInQydha" :loading="showInQydhaPending" :disabled="showInQydhaPending" size="md"
-          label="عرض البطولة في قيدها" @update:model-value="onShowInQydhaChange" @click.stop />
-
-        <UButton
-          v-if="tournament.addPlayersByQydha"
-          label="إعدادات طلبات الانضمام"
-          icon="i-mdi-calendar-edit"
-          color="primary"
-          variant="soft"
-          size="xs"
-          class="min-h-9"
-          @click="openJoinSettingsDrawer"
-        />
-        <UButton v-if="isAdmin" color="warning" label="تعديل" icon="i-mdi-pencil" size="sm"
-          :to="`/tournament/${id}/edit`" />
-        <UButton label="خريطة البطولة" :to="`/tournament/${id}/bracket`" icon="i-mdi-tournament" target="_blank"
-          color="primary" variant="soft" size="sm" />
-        <UButton label="إحصائيات البطولة" icon="i-mdi-chart-box" color="primary" variant="solid" size="sm"
-          :to="`/tournament/${id}/statistics`" target="_blank" />
+        <UDropdownMenu
+          :items="settingsMenuItems"
+          :popper="{ placement: 'bottom-end' }"
+        >
+          <UButton
+            label="الإعدادات"
+            icon="i-heroicons-cog-6-tooth"
+            color="neutral"
+            variant="soft"
+            size="sm"
+            trailing-icon="i-heroicons-chevron-down"
+          />
+        </UDropdownMenu>
       </div>
     </div>
 
@@ -35,8 +29,9 @@
 </template>
 
 <script lang="ts" setup>
-import TournamentJoinRequestSettingsDrawer from "./TournamentJoinRequestSettingsDrawer.vue";
-import type { DetailTournament } from "~/features/tournament/models/tournament";
+import type { DropdownMenuItem } from '@nuxt/ui';
+import TournamentJoinRequestSettingsDrawer from './TournamentJoinRequestSettingsDrawer.vue';
+import type { DetailTournament } from '~/features/tournament/models/tournament';
 
 const props = defineProps<{
   id: string;
@@ -73,6 +68,68 @@ const joinSettingsDrawer = useTemplateRef<InstanceType<typeof TournamentJoinRequ
 function openJoinSettingsDrawer() {
   if (joinSettingsDrawer.value) joinSettingsDrawer.value.open = true;
 }
+
+function openInNewTab(path: string) {
+  if (import.meta.client) {
+    window.open(path, '_blank', 'noopener,noreferrer');
+  }
+}
+
+const settingsMenuItems = computed(() => {
+  const visibilityItem = {
+    label: 'عرض البطولة في قيدها',
+    type: 'checkbox' as const,
+    icon: 'i-heroicons-globe-alt',
+    checked: showInQydha.value,
+    disabled: showInQydhaPending.value,
+    onUpdateChecked: (checked: boolean) => {
+      void onShowInQydhaChange(checked);
+    },
+  } satisfies DropdownMenuItem;
+
+  const items: DropdownMenuItem[] = [];
+
+  if (props.tournament.addPlayersByQydha) {
+    items.push({
+      label: 'إعدادات طلبات الانضمام',
+      icon: 'i-mdi-calendar-edit',
+      onSelect: openJoinSettingsDrawer,
+    });
+  }
+
+  if (props.isAdmin) {
+    items.push({
+      label: 'تعديل',
+      icon: 'i-mdi-pencil',
+      onSelect: () => { void navigateTo(`/tournament/${props.id}/edit`); },
+    });
+  }
+
+  items.push(
+    {
+      label: 'الطاولات',
+      icon: 'i-mdi-table',
+      onSelect: () => { void navigateTo(`/tournament/${props.id}/table`); },
+    },
+    {
+      label: 'الحكام',
+      icon: 'i-mdi-gavel',
+      onSelect: () => { void navigateTo(`/tournament/${props.id}/refree`); },
+    },
+    {
+      label: 'خريطة البطولة',
+      icon: 'i-mdi-tournament',
+      onSelect: () => openInNewTab(`/tournament/${props.id}/bracket`),
+    },
+    {
+      label: 'إحصائيات البطولة',
+      icon: 'i-mdi-chart-box',
+      onSelect: () => openInNewTab(`/tournament/${props.id}/statistics`),
+    },
+  );
+
+  return [[visibilityItem], items];
+});
 
 async function onShowInQydhaChange(value: boolean) {
   const previous = showInQydha.value;

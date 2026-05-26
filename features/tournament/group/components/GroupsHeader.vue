@@ -2,7 +2,12 @@
     <div class="flex items-center  justify-between w-full ">
         <div class="flex flex-col gap-6 ">
             <div class="flex items-center gap-4">
-                <UButton @click="router.back()" icon="i-heroicons-arrow-right" variant="ghost">
+                <UButton
+                    v-if="!embedded"
+                    icon="i-heroicons-arrow-right"
+                    variant="ghost"
+                    @click="router.back()"
+                >
                     عودة
                 </UButton>
                 <div>
@@ -12,16 +17,25 @@
             </div>
         </div>
         <div>
-            <UButton label="عرض الخريطه " v-if="showBracketButton" target="_blank" :to="`/tournament/${tournamentId}/bracket`" />
+            <UButton
+                v-if="showBracketButton"
+                label="عرض الخريطه "
+                target="_blank"
+                :to="`/tournament/${tournamentId}/bracket`"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{
+import { useTournamentEmbedded } from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
+
+defineProps<{
     showBracketButton?: boolean;
 }>();
+
 const router = useRouter();
 const route = useRoute();
 const tournamentId = route.params.id.toString();
+const embedded = useTournamentEmbedded();
 </script>

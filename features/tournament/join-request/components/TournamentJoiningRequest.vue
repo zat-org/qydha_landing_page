@@ -7,8 +7,15 @@
     <template #header>
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
-          <UButton class="min-h-11 shrink-0 self-start touch-manipulation sm:min-h-0 sm:self-center"
-            icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral" @click="router.back()" />
+          <UButton
+            v-if="!embedded"
+            class="min-h-11 shrink-0 self-start touch-manipulation sm:min-h-0 sm:self-center"
+            icon="i-heroicons-arrow-right"
+            label="عوده"
+            variant="ghost"
+            color="neutral"
+            @click="router.back()"
+          />
           <h1 class="min-w-0 break-words text-lg font-bold leading-snug sm:text-xl md:text-2xl">
             طلبات انضمام الفرق
           </h1>
@@ -79,17 +86,29 @@
 </template>
 
 <script lang="ts" setup>
-import { TournamentDetailedState, TournamentState } from "~/features/tournament/models/tournament";
+import type { DetailTournament } from '~/features/tournament/models/tournament';
+import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
+import {
+  useTournamentEmbedded,
+  useTournamentGetWorkspace,
+} from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
 
 const router = useRouter();
+const embedded = useTournamentEmbedded();
+const workspace = useTournamentGetWorkspace();
 const id = useRoute().params.id?.toString() ?? "";
 
-const { getSingelTournament } = useTournament();
-const getTournamentReq = getSingelTournament(id);
+const tournamentDashboardKey = `getSingelTournament-${id}` as const;
+const { data: tournamentDashboardData } = useNuxtData<{ data: DetailTournament }>(tournamentDashboardKey);
+const getTourREQ = await useTournament().getSingelTournament(id, { immediate: false });
 
-const tournament = computed(() => getTournamentReq.data.value?.data.tournament ?? null);
+if (!tournamentDashboardData.value?.data?.tournament) {
+  await getTourREQ.refresh();
+}
+
+const tournament = computed(() => tournamentDashboardData.value?.data.tournament ?? null);
 const tournamneState = computed(() => tournament.value?.state ?? null);
 const showActions = computed(() => {
   if (tournamneState.value === null) return false;
@@ -128,7 +147,11 @@ async function confirmFinalApprove() {
     if (ok) {
       approveOpen.value = false;
       await refreshBothPanels();
-      router.back()
+      if (embedded && workspace) {
+        workspace.closeView();
+      } else {
+        router.back();
+      }
     }
   } finally {
     finalApprovePatching.value = false;
@@ -138,7 +161,7 @@ async function confirmFinalApprove() {
 const refreshBothPanels = async () => {
   await nextTick();
   await Promise.all([
-    getTournamentReq.refresh() ?? Promise.resolve(),
+    getTourREQ.refresh() ?? Promise.resolve(),
     mainPanelRef.value?.refresh?.() ?? Promise.resolve(),
     considerPanelRef.value?.refresh?.() ?? Promise.resolve(),
   ]);

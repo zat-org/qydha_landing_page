@@ -2,7 +2,7 @@
   
   
   <ClientOnly>
-    <div class="bracket-container">
+    <div class="bracket-container bg-gray-50 dark:bg-gray-950">
  
 
       <VueFlow
@@ -28,7 +28,6 @@
 import { defineAsyncComponent, computed } from "vue";
 import type { Group } from "@/features/tournament/models/group";
 import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
-import { useColorMode } from "@vueuse/core";
 
 const VueFlow = defineAsyncComponent(() => import("@vue-flow/core").then((m) => m.VueFlow));
 const MatchNode = defineAsyncComponent(() => import("./MatchNode.vue"));
@@ -46,12 +45,14 @@ const direction = computed(() => {
 });
 
 const OrderedNodes = computed(() => {
-  if (!matchesTree.value || !loserMatches.value) return undefined;
-  return layoutFromMatchesTree(matchesTree.value, loserMatches.value, direction.value);
-});
-
-onUnmounted(() => {
-  tourStore.closeConnection();
+  if (matchesTree.value === undefined || loserMatches.value === undefined) {
+    return undefined;
+  }
+  return layoutFromMatchesTree(
+    matchesTree.value,
+    loserMatches.value,
+    direction.value,
+  );
 });
 </script>
 
@@ -63,11 +64,23 @@ onUnmounted(() => {
   position: relative;
   width: 100%;
   height: 100%;
+  min-height: inherit;
 }
 
 .bracket-flow {
   width: 100%;
   height: 100%;
+}
+
+/* Vue Flow default theme uses a light canvas — match bracket in dark mode */
+html.dark .bracket-container .vue-flow {
+  background-color: rgb(3 7 18);
+}
+
+/* OBS overlay: keep canvas transparent for chroma/stream */
+html.bracket-obs .bracket-container,
+html.bracket-obs .bracket-container .vue-flow {
+  background-color: transparent !important;
 }
 
 .bracket-logo-theme {

@@ -1,6 +1,6 @@
 ﻿<template>
   <UCard
-    class="max-w-7xl mx-auto shadow-lg shadow-gray-900/5 dark:shadow-none ring-1 ring-gray-200/80 dark:ring-gray-800/80"
+    class="mx-auto w-full max-w-[min(100%,96rem)] shadow-lg shadow-gray-900/5 dark:shadow-none ring-1 ring-gray-200/80 dark:ring-gray-800/80"
     :ui="{
       root: 'overflow-hidden rounded-2xl',
       header: 'p-0 border-b border-gray-200/90 dark:border-gray-800/90 bg-gray-50/40 dark:bg-gray-950/30',
@@ -17,7 +17,7 @@
       />
     </template>
     
-    <Loading v-if="pending" class="py-20" />
+    <Loading v-if="pending && !tour" class="py-20" />
     <div v-else-if="tour" class="flex flex-col">
       <TournamentGetHero
         v-model:hero-accordion-open="heroAccordionOpen"
@@ -59,10 +59,6 @@
       <TournamentGetManagementBoard
         :id="id"
         :detailed-state="detailedState"
-        :phase-order="phaseOrder"
-        :current-phase-index="currentPhaseIndex"
-        :phase-circle-class="phaseCircleClass"
-        :phase-step-status="phaseStepStatus"
         :is-admin="isAdmin"
         :tournament-state="tour.tournament.state"
         :final-group-state="finalGroup?.state"
@@ -74,9 +70,10 @@
 </template>
 
 <script lang="ts" setup>
-import TournamentGetHeader from "./TournamentGetHeader.vue";
-import TournamentGetHero from "./TournamentGetHero.vue";
-import TournamentGetManagementBoard from "./TournamentGetManagementBoard.vue";
+import TournamentGetHeader from './TournamentGetHeader.vue';
+import TournamentGetHero from './TournamentGetHero.vue';
+import TournamentGetManagementBoard from './TournamentGetManagementBoard.vue';
+import { provideTournamentGetWorkspace } from './useTournamentGetWorkspace';
 import { useMyAuthStore } from "~/store/Auth";
 import Loading from "~/components/loading.vue";
 import {
@@ -87,12 +84,6 @@ import type { TournamentType } from "~/features/tournament/models/tournamenetTyp
 import type { TournamentPrizeCurrency } from "~/features/tournament/models/tournamentPrize";
 import { GroupType } from "~/features/tournament/models/group";
 import { useSingleTournamnetMangmentStore } from "~/store/SingleTournamnetMangment";
-import {
-  getVisiblePhaseOrder,
-  getPhaseIndex,
-  getPhaseStepStatus,
-  type PhaseStepStatus,
-} from "~/features/tournament/core/composables/useTournamentDashboardPhase";
 
 const userStore = useMyAuthStore();
 const tournamentManagementStore = useSingleTournamnetMangmentStore();
@@ -120,6 +111,9 @@ const heroAccordionItems = [
 const detailsSectionsOpen = ref<string[]>([]);
 
 const props = defineProps<{ id: string }>();
+
+provideTournamentGetWorkspace(props.id);
+
 const { getSingelTournament, getTournamnetStateOptions } = useTournament();
 const { getTournamentTypeOptions, getTournamentPrizeCurrency } =
   useTournamentRequest();
@@ -183,28 +177,6 @@ const showWinnersSection = computed(
 );
 
 const detailedState = computed(() => tour.value?.tournament?.detailedState);
-
-const phaseOrder = computed(() =>
-  getVisiblePhaseOrder(!!tour.value?.tournament?.addPlayersByQydha),
-);
-
-const currentPhaseIndex = computed(() =>
-  getPhaseIndex(detailedState.value, phaseOrder.value),
-);
-
-const phaseStepStatus = (idx: number): PhaseStepStatus =>
-  getPhaseStepStatus(idx, currentPhaseIndex.value);
-
-const phaseCircleClass = (idx: number) => {
-  const s = phaseStepStatus(idx);
-  if (s === "done") {
-    return "border-primary bg-primary/15 text-primary dark:bg-primary/25";
-  }
-  if (s === "current") {
-    return "border-primary bg-primary text-white ring-2 ring-primary/40 ring-offset-2 ring-offset-white dark:ring-offset-gray-950";
-  }
-  return "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-900 text-gray-400";
-};
 
 const states = getTournamnetStateOptions();
 const getState = (value: TournamentState) => {

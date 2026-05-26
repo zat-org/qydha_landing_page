@@ -3,26 +3,6 @@
     description="ولّد المباريات وراجع الخريطة قبل الموافقة على المخطط وبدء اللعب."
   >
     <UButton
-      :to="links.group.value"
-      label="المجموعات والمباريات"
-      icon="i-mdi-user-group"
-      size="lg"
-      variant="soft"
-      class="w-full min-h-12 justify-center sm:flex-1"
-      block
-    />
-    <UButton
-      :to="links.bracket.value"
-      label="خريطة البطولة"
-      icon="i-mdi-tournament"
-      target="_blank"
-      size="lg"
-      variant="solid"
-      color="primary"
-      class="w-full min-h-12 justify-center sm:flex-1"
-      block
-    />
-    <UButton
       v-if="showApprovePlan"
       label="الموافقة على مخطط البطولة"
       icon="i-mdi-check-decagram"
@@ -44,43 +24,41 @@
 </template>
 
 <script lang="ts" setup>
-import { GroupState } from "~/features/tournament/models/group";
-import { TournamentState } from "~/features/tournament/models/tournament";
-import TournamentGetApprovePlanConfirmModal from "../TournamentGetApprovePlanConfirmModal.vue";
-import TournamentPhaseContent from "./TournamentPhaseContent.vue";
-import type { TournamentPhaseContext } from "./types";
-import { useTournamentPhaseLinks } from "./useTournamentPhaseLinks";
+import { GroupState } from '~/features/tournament/models/group';
+import { TournamentState } from '~/features/tournament/models/tournament';
+import TournamentGetApprovePlanConfirmModal from '../TournamentGetApprovePlanConfirmModal.vue';
+import TournamentPhaseContent from './TournamentPhaseContent.vue';
+import type { TournamentPhaseContext } from './types';
 
 const props = defineProps<{ context: TournamentPhaseContext }>();
 const emit = defineEmits<{ refreshed: [] }>();
 
-const links = useTournamentPhaseLinks(() => props.context.tournamentId);
 const toast = useToast();
 const approveConfirmOpen = ref(false);
 const approveReq = await useTournament().approveTournamentPlan();
 
-const approvePending = computed(() => approveReq.status.value === "pending");
+const approvePending = computed(() => approveReq.status.value === 'pending');
 
 const showApprovePlan = computed(
   () =>
-    props.context.isAdmin &&
-    props.context.tournamentState === TournamentState.Upcoming &&
-    props.context.finalGroupState === GroupState.MatchesGenerated,
+    props.context.isAdmin
+    && props.context.tournamentState === TournamentState.Upcoming
+    && props.context.finalGroupState === GroupState.MatchesGenerated,
 );
 
 const confirmApprovePlan = async () => {
   await approveReq.fetchREQ(props.context.tournamentId);
-  if (approveReq.status.value === "success") {
+  if (approveReq.status.value === 'success') {
     toast.add({
-      title: "تمت الموافقة على مخطط البطولة",
-      color: "success",
+      title: 'تمت الموافقة على مخطط البطولة',
+      color: 'success',
     });
     approveConfirmOpen.value = false;
-    emit("refreshed");
+    emit('refreshed');
   } else {
     toast.add({
-      title: "تعذّرت الموافقة على المخطط",
-      color: "error",
+      title: 'تعذّرت الموافقة على المخطط',
+      color: 'error',
     });
   }
 };

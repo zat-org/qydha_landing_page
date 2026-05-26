@@ -2,7 +2,7 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div dir="rtl"
-      class=" flex w-[450px] flex-col gap-2 p-2 overflow-hidden rounded-2xl  text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:ring-white/10"
+      class=" flex w-[450px] flex-col gap-2 p-2 overflow-hidden rounded-2xl  text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:ring-white/10 dark:bg-gray-800"
       :class="[cardToneClass, roundOpacityClass]">
 
 

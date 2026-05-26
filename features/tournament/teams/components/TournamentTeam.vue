@@ -8,8 +8,14 @@
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-        <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
-            @click="router.back()" />
+        <UButton
+          v-if="!embedded"
+          icon="i-heroicons-arrow-right"
+          label="عوده"
+          variant="ghost"
+          color="neutral"
+          @click="router.back()"
+        />
         
         <h1 class="text-2xl font-bold">     
           {{ tour.title }}
@@ -85,9 +91,12 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
+import { useTournamentEmbedded } from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
+
 const tablekey = ref(Date.now())
 const router = useRouter()
 const route = useRoute()
+const embedded = useTournamentEmbedded()
 const tour_id = route.params.id.toString()
 const toast = useToast()
 
