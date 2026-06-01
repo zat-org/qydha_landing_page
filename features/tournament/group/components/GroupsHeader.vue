@@ -17,12 +17,12 @@
             </div>
         </div>
         <div>
-            <UButton
+            <!-- <UButton
                 v-if="showBracketButton"
                 label="عرض الخريطه "
                 target="_blank"
                 :to="`/tournament/${tournamentId}/bracket`"
-            />
+            /> -->
         </div>
     </div>
 </template>
@@ -36,6 +36,6 @@ defineProps<{
 
 const router = useRouter();
 const route = useRoute();
-const tournamentId = route.params.id.toString();
+const tournamentId = route.params.id?.toString() ?? "";
 const embedded = useTournamentEmbedded();
 </script>

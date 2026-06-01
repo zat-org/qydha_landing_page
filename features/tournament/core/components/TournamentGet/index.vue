@@ -32,7 +32,7 @@
       />
       <section
         v-if="showWinnersSection"
-        class="mx-4 mt-5 rounded-2xl border border-amber-200/80 bg-gradient-to-b from-amber-50/85 to-white p-4 shadow-sm dark:border-amber-700/40 dark:from-amber-900/20 dark:to-gray-950/30 sm:mx-8 sm:p-5"
+        class="mx-4 mt-5 rounded-2xl border border-amber-200/80 bg-linear-to-b from-amber-50/85 to-white p-4 shadow-sm dark:border-amber-700/40 dark:from-amber-900/20 dark:to-gray-950/30 sm:mx-8 sm:p-5"
       >
         <div class="mb-3 flex items-center gap-2">
           <UIcon name="i-mdi-trophy-award" class="size-5 text-amber-500 dark:text-amber-400" />
@@ -56,6 +56,7 @@
           </article>
         </div>
       </section>
+      
       <TournamentGetManagementBoard
         :id="id"
         :detailed-state="detailedState"

@@ -25,7 +25,7 @@
                         </p>
                     </div>
 
-                    <div class="flex flex-wrap items-stretch gap-2 sm:justify-end">
+                    <div class="flex flex-wrap items-stretch gap-2 sm:justify-end" >
                         <UButton color="success" variant="soft" size="sm" icon="i-mdi-tournament"
                             label="إنشاء المباريات" class="min-h-10" @click="groupDetailsActions.createMatches" />
                         <template v-if="isTeamsLinking">
@@ -93,11 +93,13 @@ import {
 } from "~/features/tournament/group/group-details/constants";
 import type { GroupDetailsActions } from "~/features/tournament/group/group-details/types";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
+import type { TournamentDetailedState } from "~/features/tournament/models/tournament";
 
 const LinkTeamDrawer = defineAsyncComponent(() => import("./LinkTeamDrawer.vue"));
 
 interface Props {
     group: Group;
+    state: TournamentDetailedState;
 }
 
 const props = defineProps<Props>();

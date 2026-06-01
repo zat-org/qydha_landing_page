@@ -19,11 +19,15 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex flex-wrap items-center gap-2 sm:justify-end">
+                <!-- LinkingFinalGroupTeams = "LinkingFinalGroupTeams",
+  ManagingFinalGroupBracket = "ManagingFinalGroupBracket",
+  WaitingFinalGroupStarting -->
+                <div class="flex flex-wrap items-center gap-2 sm:justify-end" v-if="state == TournamentDetailedState.LinkingFinalGroupTeams|| state == TournamentDetailedState.ManagingFinalGroupBracket|| state == TournamentDetailedState.WaitingFinalGroupStarting">
                     <UBadge v-if="roundsGroupDetails && (roundsGroupDetails.rounds?.length ?? 0) > 0" color="primary"
                         variant="subtle" size="md" class="rounded-full px-3">
                         {{ roundsGroupDetails.rounds?.length ?? 0 }} جولة
                     </UBadge>
+
                     <UButton icon="i-mdi-refresh" color="primary" variant="soft" size="sm"
                         label="اعادة الإنشاء للمباريات" class="min-h-9" :disabled="isRevertPending"
                         @click="openRegenerateMatchesDrawer" />
@@ -186,11 +190,13 @@ import type { TableColumn } from "@nuxt/ui";
 import UpdateRoundDrawer from "./Round/UpdateRoundDrawer.vue";
 import UpdateMatchDrawer from "./Match/UpdateMatchDrawer.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";
+import  { TournamentDetailedState } from "~/features/tournament/models/tournament";
 
 const route = useRoute();
-const tour_id = route.params.id.toString();
+const tour_id = route.params.id?.toString() ?? "";
 const props = defineProps<{
     group: Group;
+    state: TournamentDetailedState;
 }>();
 
 const rounGroupDetailsREQ = await useGroup().getRoundsGroupDetails(tour_id, props.group.id);

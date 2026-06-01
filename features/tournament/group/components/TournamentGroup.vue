@@ -1,5 +1,6 @@
 <template>
     <UCard class="flex flex-col flex-1 [&_[data-slot=body]]:flex-1">
+        
         <template #header>
             <GroupsHeader :showBracketButton="showBracketButton" />
         </template>
@@ -14,13 +15,17 @@
         <UAccordion v-else :items="accordionItems"  class="w-full  border border-gray-200 dark:border-gray-700 rounded-lg px-2" v-model="active">
             <template v-for="(item, index) in accordionItems" :key="`slot-${index}`" v-slot:[item.slot] class="px-4">
                 <Suspense>
-                    <GroupDetails :group="groups[index]" v-if="groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created"  />
+                    <GroupDetails :group="groups[index]" 
+                    :state="tournamentState!"
+                    v-if=" groups[index]&& (groups[index].state == GroupState.TeamsLinking || groups[index].state == GroupState.Created)"  />
                     <RoundsGroupDetails
                         :group="groups[index]"
+                        :state="tournamentState!"
                         v-else-if="
-                            groups[index].state == GroupState.MatchesGenerated
+                            groups[index]&&
+                            (groups[index].state == GroupState.MatchesGenerated
                             || groups[index].state == GroupState.MatchesRunning
-                            || groups[index].state == GroupState.MatchesFinished
+                            || groups[index].state == GroupState.MatchesFinished)
                         "
                     />
                     <template #fallback>   
@@ -45,10 +50,12 @@ interface Props {
 }
 const active = ref("0")
 const props = defineProps<Props>();
-
+const tourReq =  useTournament().getSingelTournament(props.tournamentId);
+const tournamentState = computed(() => tourReq.data.value?.data.tournament.detailedState);
 const groupApi = useGroup();
 
 const { data, pending, error, refresh, status } =  groupApi.getGroups(props.tournamentId);
+
 
 const groups = computed(() => {
     return data.value?.data.groups || []

@@ -4,15 +4,7 @@
     :class="{ 'bracket-page--obs': obsMode }"
     :tabindex="obsMode ? -1 : undefined"
   >
-    <!-- OBS: invisible hit area — double-click top-left toggles theme (stream-safe) -->
-    <button
-      v-if="obsMode"
-      type="button"
-      class="bracket-obs-theme-hit"
-      aria-label="تبديل الثيم (نقر مزدوج)"
-      @dblclick.prevent="toggleTheme"
-    />
-
+<!-- header -->
     <div v-if="!obsMode" class="bracket-page__toolbar shrink-0">
       <BracketPageHeader
         v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
@@ -44,6 +36,7 @@
       />
     </div>
 
+    <!-- logo  and theme toggle button -->
     <ClientOnly class="bracket-page__content flex min-h-0 flex-1 flex-col">
       <div v-if="!obsMode" class="bracket-logo-theme">
         <img
@@ -64,6 +57,7 @@
         </button>
       </div>
 
+      <!-- bracket -->
       <div
         v-if="canShowBracket"
         class="bracket-page__bracket-wrap relative min-h-0 w-full flex-1"
@@ -133,9 +127,7 @@ useHead({
   meta: [{ name: 'description', content: 'خريطة البطولة' }],
 });
 
-/** Query: ?obsMode=true | ?obsMode=false | ?obsMode=1 | ?obsMode=yes */
 const OBS_MODE_QUERY = 'obsMode';
-/** Query: ?theme=dark | ?theme=light (works in OBS without keyboard) */
 const THEME_QUERY = 'theme';
 const BRACKET_OBS_THEME_KEY = 'bracket-overlay-theme';
 
@@ -191,31 +183,6 @@ function toggleTheme() {
   }
 }
 
-function handleThemeShortcut(e: KeyboardEvent) {
-  const target = e.target;
-  if (target instanceof HTMLElement) {
-    const tag = target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable) return;
-  }
-
-  const ctrlOrCmdM =
-    e.code === 'KeyM' && (e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey;
-  /** Alt+M and [ ] — reliable in OBS after "Interact" on the browser source */
-  const obsAltM =
-    obsMode.value && e.code === 'KeyM' && e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey;
-  const obsBracketKey =
-    obsMode.value
-    && (e.code === 'BracketRight' || e.code === 'BracketLeft')
-    && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey;
-
-  if (!ctrlOrCmdM && !obsAltM && !obsBracketKey) return;
-
-  e.preventDefault();
-  e.stopPropagation();
-  toggleTheme();
-}
-
-useEventListener(window, 'keydown', handleThemeShortcut, { capture: true });
 
 watch(
   () => route.query[THEME_QUERY],
@@ -243,7 +210,6 @@ const showBracketByState = computed(
 
 const canShowBracket = computed(() => {
   if (!tourStore.selectedGroup) return false;
-  if (obsMode.value) return true;
   return showBracketByState.value;
 });
 
@@ -404,7 +370,7 @@ onUnmounted(() => {
 .bracket-page__bracket-wrap :deep(.bracket-flow) {
   width: 100%;
   height: 100%;
-  min-height: calc(100vh - 11rem);
+  min-height: 100vh;
 }
 
 .bracket-page--obs {
@@ -417,32 +383,6 @@ onUnmounted(() => {
   height: 100vh;
 }
 
-/* OBS overlay: fully invisible control — not visible on stream */
-.bracket-obs-theme-hit {
-  position: fixed;
-  top: 0;
-  inset-inline-start: 0;
-  z-index: 9999;
-  width: 48px;
-  height: 48px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  opacity: 0;
-  background: transparent;
-  cursor: default;
-  pointer-events: auto;
-}
-</style>
 
-<style>
-html.bracket-obs,
-html.bracket-obs body,
-html.bracket-obs #__nuxt,
-html.bracket-obs #__nuxt > div,
-html.bracket-obs main {
-  background: transparent !important;
-  background-color: transparent !important;
-}
 </style>
 

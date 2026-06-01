@@ -1,11 +1,11 @@
 <template>
   <div class="mt-4 px-4 pb-8 sm:px-6 lg:px-8">
     <section
-      class="rounded-2xl border border-gray-200/90 bg-gradient-to-b from-white/95 to-gray-50/70 p-4 shadow-md shadow-gray-900/5 ring-1 ring-gray-200/60 dark:border-gray-800 dark:from-gray-950/50 dark:to-gray-950/80 dark:shadow-none dark:ring-gray-800/80 sm:p-6"
+      class="rounded-2xl border border-gray-200/90 bg-linear-to-b from-white/95 to-gray-50/70 p-4 shadow-md shadow-gray-900/5 ring-1 ring-gray-200/60 dark:border-gray-800 dark:from-gray-950/50 dark:to-gray-950/80 dark:shadow-none dark:ring-gray-800/80 sm:p-6"
       aria-label="المرحلة الحالية"
     >
       <div
-        class="space-y-5 rounded-2xl border-2 border-primary/25 bg-gradient-to-b from-primary/[0.06] to-white/90 p-5 shadow-inner dark:border-primary/35 dark:from-primary/15 dark:to-gray-950/90 sm:p-6"
+        class="space-y-5 rounded-2xl border-2 border-primary/25 bg-linear-to-b from-primary/6 to-white/90 p-5 shadow-inner dark:border-primary/35 dark:from-primary/15 dark:to-gray-950/90 sm:p-6"
       >
         <div
           class="flex flex-wrap items-center gap-3 border-b border-gray-200/80 pb-3 dark:border-gray-800/80"
