@@ -1,5 +1,5 @@
 <template>
-    <UCard class="flex flex-col flex-1 [&_[data-slot=body]]:flex-1">
+    <UCard class="flex flex-col flex-1 ">
         
         <template #header>
             <GroupsHeader :showBracketButton="showBracketButton" />
