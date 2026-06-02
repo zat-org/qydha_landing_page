@@ -14,7 +14,7 @@
       </UFormField>
       <div class="flex flex-col gap-3">
         <UFormField v-show="prize.isFinancial" :label="`قيمة الجائزة`" :name="`prizes[${index}].financialPrizeAmount`">
-          <UInput v-model.number="prize.financialPrizeAmount" type="number" @update:model-value="updatePrizeMoney(index, $event)" />
+          <UInput dir="ltr" v-model.number="prize.financialPrizeAmount" type="number" @update:model-value="updatePrizeMoney(index, $event)" />
         </UFormField>
         <UFormField v-show="prize.isFinancial" :label="`العملة`" :name="`prizes[${index}].financialPrizeCurrency`">
           <CurrencyInput v-model="prize.financialPrizeCurrency as any" />

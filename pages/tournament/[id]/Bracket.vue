@@ -5,7 +5,7 @@
     :tabindex="obsMode ? -1 : undefined"
   >
 <!-- header -->
-    <div v-if="!obsMode" class="bracket-page__toolbar shrink-0">
+    <div v-if="!obsMode" class=" shrink-0">
       <BracketPageHeader
         v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
@@ -37,7 +37,7 @@
     </div>
 
     <!-- logo  and theme toggle button -->
-    <ClientOnly class="bracket-page__content flex min-h-0 flex-1 flex-col">
+    <ClientOnly class=" flex min-h-0 flex-1 flex-col">
       <div v-if="!obsMode" class="bracket-logo-theme">
         <img
           :src="QydhaLogo"
@@ -64,7 +64,7 @@
       >
         <Bracket :group="tourStore.selectedGroup!.data" />
       </div>
-      <div v-else-if="!obsMode" class="flex flex-1 flex-col items-center justify-center">
+      <div v-if ="!canShowBracket" class="flex flex-1 flex-col items-center justify-center">
         <UIcon name="i-heroicons-exclamation-triangle" class="text-4xl text-warning-500" />
         <h1 class="text-2xl font-bold">لا يمكن عرض الخريطة حاليا</h1>
         <p class="text-gray-500">يجب عليك ان تنتظر ان يبدأ المباريات</p>
@@ -193,24 +193,17 @@ watch(
   { immediate: true },
 );
 
-useEventListener(window, 'storage', (e: StorageEvent) => {
-  if (!obsMode.value || e.key !== BRACKET_OBS_THEME_KEY) return;
-  if (e.newValue === 'dark' || e.newValue === 'light') applyTheme(e.newValue);
-});
+
 
 const userStore = useMyAuthStore();
 const tourStore = useMyTournamentStore();
 
-const showBracketByState = computed(
-  () =>
-    tourStore.selectedGroup?.data.state != GroupState.WaitingMatchesStarting
-    || userStore.isStaffAdmin
-    || userStore.isSuperAdmin,
-);
 
 const canShowBracket = computed(() => {
   if (!tourStore.selectedGroup) return false;
-  return showBracketByState.value;
+  return tourStore.selectedGroup?.data.state != GroupState.WaitingMatchesStarting
+    || userStore.isStaffAdmin
+    || userStore.isSuperAdmin;
 });
 
 const toast = useToast();
@@ -257,14 +250,6 @@ const confirmAndStartTournament = async () => {
   }
 };
 onMounted(async () => {
-  if (obsMode.value && import.meta.client) {
-    if (!parseThemeQuery(route.query[THEME_QUERY])) {
-      const stored = localStorage.getItem(BRACKET_OBS_THEME_KEY);
-      if (stored === 'dark' || stored === 'light') applyTheme(stored);
-    }
-    await nextTick();
-    document.querySelector<HTMLElement>('.bracket-obs-theme-hit')?.focus({ preventScroll: true });
-  }
   await tourStore.initStore();
 });
 

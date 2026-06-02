@@ -1,42 +1,36 @@
 <template>
-  
-  
-  <ClientOnly>
-    <div class="bracket-container bg-gray-50 dark:bg-gray-950">
- 
-
-      <VueFlow
-        v-if="OrderedNodes"
-        :nodes="OrderedNodes.nodes"
-        :fit-view-on-init="true"
-        :edges="OrderedNodes.edges"
-        :default-zoom="1"
-        :min-zoom="0.2"
-        :max-zoom="4"
-        class="bracket-flow"
-      >
-        <!-- <Background /> -->
-        <template #node-match="matchProps">
-          <MatchNode v-bind="matchProps" />
-        </template>
-      </VueFlow>
-    </div>
-  </ClientOnly>
+  <div class="bracket-container bg-gray-50 dark:bg-gray-950">
+    <VueFlow
+      v-if="OrderedNodes"
+      :nodes="OrderedNodes.nodes"
+      :edges="OrderedNodes.edges"
+      :min-zoom="0.2"
+      :max-zoom="4"
+      class="bracket-flow"
+      @init="onFlowInit"
+      @nodes-initialized="scheduleFit"
+    >
+      <template #node-match="matchProps">
+        <MatchNode v-bind="matchProps" />
+      </template>
+    </VueFlow>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, computed } from "vue";
+import { computed, watch, nextTick } from "vue";
+import { VueFlow, type VueFlowStore } from "@vue-flow/core";
 import type { Group } from "@/features/tournament/models/group";
 import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
-
-const VueFlow = defineAsyncComponent(() => import("@vue-flow/core").then((m) => m.VueFlow));
-const MatchNode = defineAsyncComponent(() => import("./MatchNode.vue"));
+import MatchNode from "./MatchNode.vue";
 
 const props = defineProps<{ group: Group }>();
 
 const tourStore = useMyTournamentStore();
 const { layoutFromMatchesTree } = useLayout();
 const { matchesTree, loserMatches, games } = storeToRefs(tourStore);
+
+let flow: VueFlowStore | null = null;
 
 const direction = computed(() => {
   return ((props.group.type.toLowerCase() == "final" && games.value.length > 32) || (loserMatches.value?.length && loserMatches.value.length > 0))
@@ -54,6 +48,40 @@ const OrderedNodes = computed(() => {
     direction.value,
   );
 });
+
+function onFlowInit(instance: VueFlowStore) {
+  flow = instance;
+  void scheduleFit();
+}
+
+async function scheduleFit() {
+  if (!flow || !OrderedNodes.value?.nodes?.length) return;
+
+  await nextTick();
+  requestAnimationFrame(() => {
+    flow?.fitView({
+      padding: 0.2,
+      includeHiddenNodes: false,
+      duration: 300,
+    });
+  });
+
+  setTimeout(() => {
+    flow?.fitView({
+      padding: 0.2,
+      includeHiddenNodes: false,
+      duration: 0,
+    });
+  }, 120);
+}
+
+
+watch(
+  () => OrderedNodes.value?.nodes.length,
+  () => {
+    void scheduleFit();
+  },
+);
 </script>
 
 <style>
@@ -64,7 +92,7 @@ const OrderedNodes = computed(() => {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: inherit;
+  min-height: 100dvh;
 }
 
 .bracket-flow {
