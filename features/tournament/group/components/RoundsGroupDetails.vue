@@ -152,7 +152,9 @@
                                         </div>
                                     </template>
                                     <template #actions-cell="{ row: m }">
-                                        <UButton icon="i-mdi-pencil-outline" color="warning" variant="soft" size="sm"
+                                        <UButton 
+                                        v-if="m.original.state == 'created'"
+                                        icon="i-mdi-pencil-outline" color="warning" variant="soft" size="sm"
                                             square aria-label="تعديل المباراة" class="rounded-lg"
                                             @click="openUpdateMatchDrawer(m.original.id)" />
                                     </template>
@@ -187,6 +189,7 @@
 import type { Group, RoundGroupDetails, Match } from "~/features/tournament/models/group";
 import { formatDateTime } from "~/utils/formatDate";
 import type { TableColumn } from "@nuxt/ui";
+// import { MatchStateEnum } from "~/features/tournament/models/match";
 import UpdateRoundDrawer from "./Round/UpdateRoundDrawer.vue";
 import UpdateMatchDrawer from "./Match/UpdateMatchDrawer.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";

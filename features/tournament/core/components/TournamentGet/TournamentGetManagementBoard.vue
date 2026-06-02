@@ -33,10 +33,10 @@
           @refreshed="emit('refreshed')"
         />
 
-        <TournamentGetExternalLinks
+        <!-- <TournamentGetExternalLinks
           :tournament-id="id"
           :detailed-state="detailedState"
-        />
+        /> -->
 
         <TournamentGetPhaseTabs
           :tournament-id="id"
