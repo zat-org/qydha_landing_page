@@ -259,7 +259,7 @@ const resetBoard = async () => {
 
 watch(
     state,
-    async (n, o) => {
+    async (n: any, o: any) => {
         try {
             const body = {
                 boardId: props.boardID,
