@@ -24,7 +24,7 @@ export async function useUserSearchSelect(
   const hasNext = ref(false);
   const loadingMore = ref(false);
 
-  const exactSearch = ref(false);
+  const exactSearch = ref(true);
 
   const loading = computed(() => getusers.status.value === "pending");
 
