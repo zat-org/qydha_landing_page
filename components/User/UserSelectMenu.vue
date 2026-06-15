@@ -17,6 +17,14 @@
     :ui="{ viewport: viewportUiClass }"
     @update:open="onMenuOpenChange"
   >
+    <template #content-top>
+      <div
+        class="px-2 py-1.5 border-b border-gray-200 dark:border-gray-700"
+        @click.stop
+      >
+        <UCheckbox v-model="exactSearch" label="البحث الدقيق" />
+      </div>
+    </template>
     <template #content-bottom>
       <div
         v-if="loadingMore"
@@ -60,6 +68,7 @@ const props = withDefaults(
 
 const {
   searchTerm,
+  exactSearch,
   items,
   loading,
   loadingMore,

@@ -24,6 +24,8 @@ export async function useUserSearchSelect(
   const hasNext = ref(false);
   const loadingMore = ref(false);
 
+  const exactSearch = ref(false);
+
   const loading = computed(() => getusers.status.value === "pending");
 
   async function fetchPage(page: number, append: boolean) {
@@ -37,7 +39,7 @@ export async function useUserSearchSelect(
     }
 
     try {
-      await getusers.fetchREQ(q, page, false, role);
+      await getusers.fetchREQ(q, page, exactSearch.value, role);
 
       const data = getusers.data.value?.data;
       const newItems = data?.items ?? [];
@@ -60,7 +62,7 @@ export async function useUserSearchSelect(
   }
 
   watch(
-    [() => toValue(enabled), searchTermDebounced, () => toValue(options?.roleFilter)],
+    [() => toValue(enabled), searchTermDebounced, () => toValue(options?.roleFilter), exactSearch],
     async ([isEnabled]) => {
       if (!isEnabled) {
         accumulatedItems.value = [];
@@ -84,6 +86,7 @@ export async function useUserSearchSelect(
 
   return {
     searchTerm,
+    exactSearch,
     items,
     loading,
     loadingMore,
