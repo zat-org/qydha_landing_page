@@ -6,7 +6,7 @@ import { useTournamentGetWorkspace } from './useTournamentGetWorkspace';
 export type TournamentOutletView = 'team' | 'joinRequest' | 'group';
 
 /** Views that always open in a new browser tab */
-export type TournamentTabView = 'bracket' | 'statistics';
+export type TournamentTabView = 'bracket' | 'statistics' | 'refree' | 'tables';
 
 export type TournamentPhaseView = TournamentOutletView | TournamentTabView;
 
@@ -25,11 +25,15 @@ export const OUTLET_VIEW_ICONS: Record<TournamentOutletView, string> = {
 export const TAB_VIEW_LABELS: Record<TournamentTabView, string> = {
   bracket: 'خريطة البطولة',
   statistics: 'إحصائيات البطولة',
+  refree: 'الحكام',
+  tables: 'الطاولات',
 };
 
 export const TAB_VIEW_ICONS: Record<TournamentTabView, string> = {
   bracket: 'i-mdi-tournament',
   statistics: 'i-mdi-chart-box',
+  refree: 'i-mdi-account-group',
+  tables: 'i-mdi-table-chair',
 };
 
 const PHASE_OUTLET_VIEWS: Record<TournamentDetailedState, TournamentOutletView[]> = {
@@ -52,14 +56,14 @@ const PHASE_TAB_VIEWS: Record<TournamentDetailedState, TournamentTabView[]> = {
   [TournamentDetailedState.LinkingFinalGroupTeams]: [],
   [TournamentDetailedState.ManagingFinalGroupBracket]: ['bracket'],
   [TournamentDetailedState.WaitingFinalGroupStarting]: ['bracket'],
-  [TournamentDetailedState.FinalGroupRunning]: ['bracket', 'statistics'],
+  [TournamentDetailedState.FinalGroupRunning]: ['bracket', 'statistics', 'refree', 'tables'],
   [TournamentDetailedState.Finished]: ['bracket', 'statistics'],
 };
 
 const UNKNOWN_OUTLET_VIEWS: TournamentOutletView[] = ['team', 'group'];
 
 export function isTabView(view: TournamentPhaseView): view is TournamentTabView {
-  return view === 'bracket' || view === 'statistics';
+  return view === 'bracket' || view === 'statistics' || view === 'refree' || view === 'tables';
 }
 
 export function getOutletViewsForPhase(
@@ -87,6 +91,8 @@ export function getPhaseViewPath(
     group: `${base}/group`,
     bracket: `${base}/bracket`,
     statistics: `${base}/statistics`,
+    refree: `${base}/refree`,
+    tables: `${base}/table`,
   };
   return paths[view];
 }

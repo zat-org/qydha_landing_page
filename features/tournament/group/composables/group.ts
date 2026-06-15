@@ -206,11 +206,9 @@ export const useGroup = () => {
       await result.execute();
       if (result.status.value == "success") {
         refreshNuxtData(["getGroups", tour_id.value].join("-"));
-        if (_group_id) {
-          refreshNuxtData(
-            ["getRoundsGroupDetails", _tour_id, _group_id].join("-"),
-          );
-        }
+        // refreshNuxtData(["getGroupDetails", tour_id.value, _group_id ].join("-"));
+        // refreshNuxtData(["getRoundsGroupDetails", tour_id.value, _group_id ].join("-"));
+        refreshNuxtData(["getSingelTournament", tour_id.value ].join("-"));
       }
     };
     return { result, fetchREQ };
@@ -263,6 +261,7 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
+        refreshNuxtData(["getSingelTournament", tourId.value ].join("-"));
       }
     };
     return { ...result, fetchREQ };
@@ -284,6 +283,7 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
+        refreshNuxtData(["getSingelTournament", tour_id ].join("-"));
       }
     };
     return { ...result, fetchREQ };
