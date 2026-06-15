@@ -46,15 +46,23 @@
           decoding="async"
           class="bracket-logo"
         >
-        <button
-          class="theme-toggle-btn mt-2 rounded border px-3 py-1 text-xs font-semibold"
-          :class="isDark ? 'bg-gray-900 text-white border-gray-800' : 'bg-white text-gray-900 border-gray-300'"
-          aria-label="تبديل الثيم"
-          @click="toggleTheme"
+        <UDropdownMenu
+          :items="themeMenuItems"
+          :popper="{ placement: 'bottom-start' }"
         >
-          <template v-if="isDark">☀️</template>
-          <template v-else>🌙</template>
-        </button>
+          <button
+            type="button"
+            class="theme-toggle-btn mt-2 rounded border px-3 py-1 text-xs font-semibold"
+            :class="isDark ? 'bg-gray-900 text-white border-gray-800' : 'bg-white text-gray-900 border-gray-300'"
+            aria-label="اختيار الثيم"
+          >
+            <span class="inline-flex items-center gap-1">
+              <template v-if="isDark">🌙</template>
+              <template v-else>☀️</template>
+              <UIcon name="i-heroicons-chevron-down-20-solid" class="size-3.5 opacity-70" />
+            </span>
+          </button>
+        </UDropdownMenu>
       </div>
 
       <!-- bracket -->
@@ -115,8 +123,8 @@ import TournamentGetStartConfirmModal from '~/features/tournament/core/component
 import { GroupState } from '~/features/tournament/models/group';
 import QydhaLogo from '@/assets/images/qydha-logo.svg';
 import TournamentGetApprovePlanConfirmModal from '~/features/tournament/core/components/TournamentGet/TournamentGetApprovePlanConfirmModal.vue';
+import type { DropdownMenuItem } from '@nuxt/ui';
 import { useMyAuthStore } from '~/store/Auth';
-import { useEventListener } from '@vueuse/core';
 
 definePageMeta({
   layout: 'custom',
@@ -168,20 +176,60 @@ function applyTheme(theme: BracketTheme) {
   colorMode.preference = theme;
 }
 
-function persistObsTheme(theme: BracketTheme) {
-  if (!import.meta.client || !obsMode.value) return;
-  localStorage.setItem(BRACKET_OBS_THEME_KEY, theme);
+function setTheme(theme: BracketTheme) {
+  if (colorMode?.forced) return;
+  applyTheme(theme);
 }
 
-function toggleTheme() {
-  if (colorMode?.forced) return;
-  const next: BracketTheme = colorMode.value === 'dark' ? 'light' : 'dark';
-  applyTheme(next);
-  if (obsMode.value) {
-    persistObsTheme(next);
-    void router.replace({ query: { ...route.query, [THEME_QUERY]: next } });
-  }
+function goToObsMode(theme: BracketTheme) {
+  if (!import.meta.client) return;
+  localStorage.setItem(BRACKET_OBS_THEME_KEY, theme);
+  const resolved = router.resolve({
+    path: route.path,
+    query: { ...route.query, [OBS_MODE_QUERY]: 'true', [THEME_QUERY]: theme },
+  });
+  window.open(resolved.href, '_blank', 'noopener,noreferrer');
 }
+
+const userStore = useMyAuthStore();
+
+const canUseObsMode = computed(
+  () => !!userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin),
+);
+
+const themeMenuItems = computed<DropdownMenuItem[][]>(() => {
+  const items: DropdownMenuItem[][] = [
+    [
+      {
+        label: 'فاتح',
+        icon: 'i-heroicons-sun-20-solid',
+        onSelect: () => setTheme('light'),
+      },
+      {
+        label: 'داكن',
+        icon: 'i-heroicons-moon-20-solid',
+        onSelect: () => setTheme('dark'),
+      },
+    ],
+  ];
+
+  if (canUseObsMode.value) {
+    items.push([
+      {
+        label: 'OBS فاتح',
+        icon: 'i-heroicons-tv',
+        onSelect: () => goToObsMode('light'),
+      },
+      {
+        label: 'OBS داكن',
+        icon: 'i-heroicons-tv',
+        onSelect: () => goToObsMode('dark'),
+      },
+    ]);
+  }
+
+  return items;
+});
 
 
 watch(
@@ -195,7 +243,6 @@ watch(
 
 
 
-const userStore = useMyAuthStore();
 const tourStore = useMyTournamentStore();
 
 
