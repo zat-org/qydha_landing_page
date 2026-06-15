@@ -285,7 +285,7 @@ const adminActionItems = computed(() => {
   if (isMatchEnded.value && isGroupRunning.value &&  (match.value.level ==1 || match.value.parentMatch?.state == "Created" )) {
 
     items.push(
-      { label: "عودة المباراة", icon: "i-heroicons-arrow-left", onSelect: openBackConfirm },
+      { label: "مسح اخر  مشتري", icon: "i-heroicons-arrow-left", onSelect: openBackConfirm },
     );
   }
 
