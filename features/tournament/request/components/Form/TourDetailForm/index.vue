@@ -31,6 +31,7 @@
             <div class="grid grid-cols-3 gap-4">
                 <UFormField label=" عدد الفرق" name="teamsCount" :error="errors?.teamsCount"><div class="flex flex-col items-center gap-2"><USelect v-model="TeamsCount" :disabled="disabledFields?.teamsCount" :items=TeamsCountOptions @update:model-value="onFieldBlur?.('teamsCount')" /><UInput v-if="TeamsCount === 'custom'" :disabled="disabledFields?.teamsCount" v-model="model.teamsCount" type="number" min="1" placeholder="0" @input="validatePositiveNumber" @blur="onFieldBlur?.('teamsCount')" /></div></UFormField>
                 <UFormField label=" عدد الطاولات" name="tablesCount" :error="errors?.tablesCount"><UInput :disabled="disabledFields?.tablesCount" v-model="model.tablesCount" type="number" placeholder="0" @blur="onFieldBlur?.('tablesCount')" /></UFormField>
+              
                 <UFormField label="عدد الأيام" name="dayNumber"><UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" /></UFormField>
                 <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime"><UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" /></UFormField>
                 <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3"><UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" /></UFormField>
@@ -56,7 +57,15 @@ const TeamsCount = ref<number | string>(model.value.teamsCount);
 watch(TeamsCount, (newVal) => { if (newVal !== "custom") model.value.teamsCount = newVal as number; });
 const TeamsCountOptions = [{ label: "16 فريق", value: 16 },{ label: "32 فريق", value: 32 },{ label: "64 فريق", value: 64 },{ label: "128 فريق", value: 128 },{ label: "عدد اخر", value: "custom" }]
 const { rounds, teamsCount, tablesCount, sakkTime, sakkTime3, sakkTime5, totalTime, timePerDay, totalMatches, dayNumber } = useTourCalc();
-teamsCount.value = model.value.teamsCount; tablesCount.value = model.value.tablesCount;
+// teamsCount.value = model.value.teamsCount; tablesCount.value = model.value.tablesCount;
+watch(()=>model.value.tablesCount,(newavlue)=>{
+    tablesCount.value = newavlue;
+},{immediate: true})
+
+watch(()=>model.value.teamsCount,(newavlue)=>{
+    teamsCount.value = newavlue;
+},{immediate: true})
+
 const sakkaOptions = [{ label: '1', value: 1 },{ label: '3', value: 3 },{ label: '5', value: 5 }];
 const formatTime = (minutes: number): string => { if (minutes < 60) return `${minutes.toFixed(0)} دقيقة`; const hours = Math.floor(minutes / 60); const mins = minutes % 60; if (mins === 0) return `${hours.toFixed(0)} ساعة`; return `${hours.toFixed(0)} ساعة و ${mins.toFixed(0)} دقيقة`; };
 const validatePositiveNumber = (event: Event) => { const input = event.target as HTMLInputElement; const value = parseInt(input.value); if (value < 1) input.value = '1'; }

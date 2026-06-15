@@ -192,8 +192,14 @@ const TeamsCountOptions = [
 ];
 
 const { rounds, teamsCount, tablesCount, sakkTime, sakkTime3, sakkTime5, totalTime, timePerDay, totalMatches, dayNumber } = useTourCalc();
-teamsCount.value = model.value.teamsCount;
-tablesCount.value = model.value.tablesCount;
+// teamsCount.value = model.value.teamsCount;
+// tablesCount.value = model.value.tablesCount;
+watch(()=>model.value.teamsCount,(newavlue)=>{
+  teamsCount.value = newavlue;
+},{immediate: true})
+watch(()=>model.value.tablesCount,(newavlue)=>{
+  tablesCount.value = newavlue;
+},{immediate: true})
 
 const sakkaOptions = [
   { label: "1", value: 1 },
