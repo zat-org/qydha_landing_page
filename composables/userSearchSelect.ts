@@ -9,7 +9,7 @@ export type UseUserSearchSelectOptions = {
 
 /**
  * Debounced user search backed by useUsers().getAllUsers().
- * When `enabled` is false, no network requests are made.
+ * Accumulates pages when loading more; resets on new search or role change.
  */
 export async function useUserSearchSelect(
   enabled: MaybeRefOrGetter<boolean>,
@@ -19,21 +19,75 @@ export async function useUserSearchSelect(
   const searchTerm = ref("");
   const searchTermDebounced = refDebounced(searchTerm, 500);
 
-  const items = computed<User[]>(() => getusers.data.value?.data.items ?? []);
+  const accumulatedItems = ref<User[]>([]);
+  const currentPage = ref(1);
+  const hasNext = ref(false);
+  const loadingMore = ref(false);
+
   const loading = computed(() => getusers.status.value === "pending");
+
+  async function fetchPage(page: number, append: boolean) {
+    if (!toValue(enabled)) return;
+
+    const role = toValue(options?.roleFilter) ?? "User";
+    const q = searchTermDebounced.value ?? "";
+
+    if (append) {
+      loadingMore.value = true;
+    }
+
+    try {
+      await getusers.fetchREQ(q, page, false, role);
+
+      const data = getusers.data.value?.data;
+      const newItems = data?.items ?? [];
+
+      if (append) {
+        const seen = new Set(accumulatedItems.value.map((u) => u.id));
+        accumulatedItems.value = [
+          ...accumulatedItems.value,
+          ...newItems.filter((u) => !seen.has(u.id)),
+        ];
+      } else {
+        accumulatedItems.value = newItems;
+      }
+
+      currentPage.value = data?.currentPage ?? page;
+      hasNext.value = data?.hasNext ?? false;
+    } finally {
+      loadingMore.value = false;
+    }
+  }
 
   watch(
     [() => toValue(enabled), searchTermDebounced, () => toValue(options?.roleFilter)],
-    async ([isEnabled, q, role]) => {
-      if (!isEnabled) return;
-      await getusers.fetchREQ(q ?? "", undefined, false, role ?? "User");
+    async ([isEnabled]) => {
+      if (!isEnabled) {
+        accumulatedItems.value = [];
+        currentPage.value = 1;
+        hasNext.value = false;
+        return;
+      }
+      await fetchPage(1, false);
     },
     { immediate: true },
   );
+
+  async function loadMore() {
+    if (!toValue(enabled) || loadingMore.value || loading.value || !hasNext.value) {
+      return;
+    }
+    await fetchPage(currentPage.value + 1, true);
+  }
+
+  const items = computed<User[]>(() => accumulatedItems.value);
 
   return {
     searchTerm,
     items,
     loading,
+    loadingMore,
+    hasNext,
+    loadMore,
   };
 }
