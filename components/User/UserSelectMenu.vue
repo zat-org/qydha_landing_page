@@ -1,7 +1,6 @@
 <template>
   <USelectMenu
     v-if="remoteSearch"
-    ref="selectMenuRef"
     v-bind="$attrs"
     :reset-search-term-on-blur="false"
     :reset-search-term-on-select="false"
@@ -13,14 +12,26 @@
     :label-key="labelKey"
     :value-key="valueKey"
     searchable
+    ignore-filter
     :placeholder="placeholder"
+    :ui="{ viewport: viewportUiClass }"
     @update:open="onMenuOpenChange"
-  />
+  >
+    <template #content-bottom>
+      <div
+        v-if="loadingMore"
+        class="px-3 py-2 text-center text-xs text-gray-500 dark:text-gray-400"
+      >
+        جاري تحميل المزيد...
+      </div>
+    </template>
+  </USelectMenu>
   <UInput v-else v-model="model" v-bind="$attrs" />
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onUnmounted, toRef } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
+import { computed, nextTick, toRef } from "vue";
 import type { User } from "~/models/user";
 
 defineOptions({ inheritAttrs: false });
@@ -44,7 +55,7 @@ const props = withDefaults(
     labelKey: "username",
     valueKey: "username",
     roleFilter: "User",
-  }
+  },
 );
 
 const {
@@ -65,64 +76,37 @@ const mergedItems = computed(() => {
   return [...extra.filter((u) => u?.id && !seen.has(u.id)), ...base];
 });
 
-const selectMenuRef = useTemplateRef<{ viewportRef?: HTMLElement | null }>("selectMenuRef");
+/** Unique class on the dropdown list viewport (not the trigger input). */
+const viewportMarker = `user-select-viewport-${Math.random().toString(36).slice(2, 10)}`;
+const viewportUiClass = `max-h-[200px] overflow-y-auto ${viewportMarker}`;
+
 const menuOpen = ref(false);
-let scrollViewport: HTMLElement | null = null;
-let removeScrollListener: (() => void) | null = null;
-
-function resolveViewport(): HTMLElement | null {
-  const exposed = selectMenuRef.value?.viewportRef;
-  if (exposed instanceof HTMLElement) return exposed;
-
-  const candidates = document.querySelectorAll<HTMLElement>(
-    "[data-reka-combobox-viewport], [data-slot=\"viewport\"], [role=\"listbox\"]",
-  );
-
-  for (let i = candidates.length - 1; i >= 0; i--) {
-    const el = candidates[i];
-    if (el.offsetParent !== null) return el;
-  }
-
-  return null;
-}
-
-function onViewportScroll(event: Event) {
-  const el = event.target as HTMLElement;
-  if (el.scrollTop + el.clientHeight < el.scrollHeight - 48) return;
-  if (!hasNext.value || loadingMore.value || loading.value) return;
-  void loadMore();
-}
-
-function bindScrollListener() {
-  removeScrollListener?.();
-  scrollViewport = resolveViewport();
-  if (!scrollViewport) return;
-
-  scrollViewport.addEventListener("scroll", onViewportScroll, { passive: true });
-  removeScrollListener = () => {
-    scrollViewport?.removeEventListener("scroll", onViewportScroll);
-    scrollViewport = null;
-  };
-}
+const scrollEl = ref<HTMLElement | null>(null);
 
 async function onMenuOpenChange(open: boolean) {
   menuOpen.value = open;
+
   if (!open) {
-    removeScrollListener?.();
-    removeScrollListener = null;
+    scrollEl.value = null;
     return;
   }
 
   await nextTick();
-  bindScrollListener();
-
-  if (!scrollViewport) {
-    await nextTick();
-    bindScrollListener();
-  }
+  scrollEl.value = document.querySelector<HTMLElement>(`.${viewportMarker}`);
 }
 
-onUnmounted(() => {
-  removeScrollListener?.();
-});
+useInfiniteScroll(
+  () => scrollEl.value,
+  () => {
+    void loadMore();
+  },
+  {
+    distance: 48,
+    canLoadMore: () =>
+      menuOpen.value
+      && hasNext.value
+      && !loadingMore.value
+      && !loading.value,
+  },
+);
 </script>
