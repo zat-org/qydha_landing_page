@@ -6,7 +6,7 @@
     @submit="onSubmit"
     class="flex flex-col gap-2"
   >
-    <UButtonGroup class="mx-auto">
+    <UFieldGroup class="mx-auto">
       <UButton
         :color="target == 'All' ? 'primary' : 'neutral'"
         @click="target = 'All'"
@@ -23,7 +23,7 @@
         @click="target = 'User'"
         label="مستخدم"
       />
-    </UButtonGroup>
+    </UFieldGroup>
     <UFormField label="المستخدم" name="user" v-if="target == 'User'">
       <UInputMenu
         v-model="state.user"

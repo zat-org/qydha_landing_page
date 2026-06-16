@@ -1,11 +1,11 @@
 <template>
   <div class="flex flex-col fixed top-0 left-0 right-0 z-50">
-    <UButtonGroup v-if="tourStore.tournament.length > 0" orientation="horizontal" class="flex flex-wrap">
+    <UFieldGroup v-if="tourStore.tournament.length > 0" orientation="horizontal" class="flex flex-wrap">
       <UButton v-for="item in tourStore.tournament" :key="item.data.id" class="basis-[20px] grow"
         :label="`${item.data.name}`" block
         :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'"
         @click="handleGroupSelection(item.data.id.toString())" />
-    </UButtonGroup>
+    </UFieldGroup>
     <div v-if="isAdminOrStaff && tourStore.selectedGroup"
       class="flex flex-wrap items-center gap-2 border-b border-gray-200/80 bg-white/90 p-2 dark:border-gray-800 dark:bg-gray-950/60">
       <UButton v-if="showRegenerateFinalMatchesButton" icon="i-mdi-refresh" color="primary" variant="soft" size="sm"

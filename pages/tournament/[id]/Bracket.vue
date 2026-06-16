@@ -15,7 +15,7 @@
         @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
         @open-start-confirm-map="openStartTournamentConfirmMap"
       />
-      <UButtonGroup
+      <UFieldGroup
         v-else-if="tourStore.tournament.length > 0"
         orientation="horizontal"
         class="flex flex-wrap"
@@ -29,7 +29,7 @@
           :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'"
           @click="handleGroupSelection(item.data.id.toString())"
         />
-      </UButtonGroup>
+      </UFieldGroup>
 
       <loading
         v-if="tourStore.groupsREQ?.status && tourStore.groupsREQ?.status == 'pending'"

@@ -18,10 +18,7 @@
           </UFormField>
         </div>
         <UFormField label="تاريخ الانتهاء" name="expireAt" class="flex-1">
-          <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right" />
-
-
-
+          <AsyncDatePicker v-model="state.expireAt" :enable-time="false" />
         </UFormField>
       </UForm>
     </template>
@@ -40,9 +37,6 @@
 
 
 <script lang="ts" setup>
-
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 
 import { object, string, number, date } from 'yup'
 import type { IPromoCodeCreate } from '~/models/PromoCode';

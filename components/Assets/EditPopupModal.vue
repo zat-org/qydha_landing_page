@@ -1,9 +1,9 @@
 <template>
   <UModal title="تعديل الاشعار" description="تعديل الاشعار">
     <template #body>
-      <UButtonGroup>
+      <UFieldGroup>
         <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" @click="onChangeindex(item.id)" :color="tabindex == item.id ? 'primary' : 'neutral'" />
-      </UButtonGroup>
+      </UFieldGroup>
         <template v-if="tabindex == 0">
           <UForm :state="state" :schema="schema" ref="poupForm" @submit="onSubmit" class="flex flex-col gap-2">
             <UFormField label="الظهور في قيدها" name=" show ">

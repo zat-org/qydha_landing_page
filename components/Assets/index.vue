@@ -1,10 +1,10 @@
 <template>
 
   <UCard>
-    <UButtonGroup>
+    <UFieldGroup>
       <UButton v-for="item in assetItems" :key="item.id" :label="item.label" :value="item.id"
         @click="tabChange(item.id)" :color="tabindex == item.id ? 'primary' : 'neutral'" />
-    </UButtonGroup>
+    </UFieldGroup>
     <template v-if="tabindex == 0">
       <AssetsBook />
     </template>

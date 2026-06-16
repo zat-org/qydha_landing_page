@@ -20,7 +20,7 @@
            </UFormField>
          </div>
          <UFormField label="تاريخ الانتهاء" name="expireAt" class="">
-          <VueDatePicker v-model="state.expireAt" :enable-time-picker="false" dir="ltr" position="right"/>
+          <AsyncDatePicker v-model="state.expireAt" :enable-time="false" />
           </UFormField>
   
         </UForm>
@@ -39,9 +39,6 @@
 <script lang="ts" setup>
 import {string,object,number,date} from 'yup'
 import type { InfluncerCodeCreate } from '~/models/influncerCode';
-
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css';
 
 const emit = defineEmits(['close'])
 const toast =useToast()

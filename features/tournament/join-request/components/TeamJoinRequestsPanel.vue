@@ -9,14 +9,14 @@
         <USelect v-model="params.GetOnlyStates" class="w-full" multiple :items="stateOptions" value-key="value"
           label-key="label" placeholder="اختر حالة أو أكثر" />
       </UFormField>
-      <UButtonGroup  v-if="showActions">
+      <UFieldGroup  v-if="showActions">
         <UInput v-model="numberOfTeams" type="number" placeholder="ادخل عدد الفرق" :min="1" :max="props.numberOfTeams">
           <template #trailing>
             <span class="text-gray-500 text-sm">فريق</span>
           </template>
         </UInput>
         <UButton color="primary" size="md" label="موافقة اوليه " :disabled="!showActions" :loading="patching" @click="IntialApproveRandomTeams" />
-      </UButtonGroup>
+      </UFieldGroup>
     </div>
     <div v-else-if="canAction" class="flex flex-col gap-3">
 

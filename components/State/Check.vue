@@ -2,13 +2,13 @@
   <div class="flex flex-col gap-5">
     <UForm :state="state" :schema="schema" @submit="onSubmit" ref="form" class="flex flex-col gap-3">
       <div class="flex justify-center">
-        <UButtonGroup size="xs" orientation="horizontal">
+        <UFieldGroup size="xs" orientation="horizontal">
           <UButton :color="index == 0 ? 'success' : 'neutral'" label="الهاتف" icon="ic:baseline-phone"
             @click="searchWith(0)" />
           <UButton :color="index == 1 ? 'success' : 'neutral'" label=" الايميل" icon="ic:baseline-email"
             @click="searchWith(1)" />
           <UButton :color="index == 2 ? 'success' : 'neutral'" label="الرقم المرجعي" icon="mdi:key" @click="searchWith(2)" />
-        </UButtonGroup>
+        </UFieldGroup>
       </div>
       <UFormField v-show="index == 0" help="برجاء ادخال الرقم بدون الكود" class="duration-300 transition-all grow"
         label="ادخل رقم الهاتف المسجل في البطولة" name="phonenumber">

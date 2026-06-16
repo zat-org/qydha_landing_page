@@ -14,7 +14,7 @@
       :columns="cols"
     >
       <template #action-cell="{ row }">
-        <UButtonGroup size="sm">
+        <UFieldGroup size="sm">
           <UButton
             color="primary"
             icon="i-heroicons-plus"
@@ -44,7 +44,7 @@
               base: 'hover:bg-[var(--color-danger-light)]/10 dark:hover:bg-[var(--color-danger)]/20'
             }"
           />
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
     </UTable>
 

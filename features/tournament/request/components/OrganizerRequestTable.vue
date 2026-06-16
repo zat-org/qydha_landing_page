@@ -31,11 +31,11 @@
         </template>
 
         <template #actions-cell="{row}">
-            <UButtonGroup >
+            <UFieldGroup >
                 <UButton   icon="i-lucide-eye"   :to="'/tournament/request/'+row.original.id" />
                 <UButton  v-if="row.original.state == TournamentRequestState.Pending"  icon="i-lucide-x" color="error" @click="handelCancel(row.original.id)" />
                 <UButton  v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-edit-2" color="warning" :to="'/tournament/request/'+row.original.id+'/update'" />
-            </UButtonGroup>
+            </UFieldGroup>
         </template>
     </UTable>
 </template>

@@ -1,23 +1,23 @@
 <template>
     <div class="flex gap-5">
         <UFormField label="النتيجة">
-            <UButtonGroup class="control-panel direction-controls" size="xs">
+            <UFieldGroup class="control-panel direction-controls" size="xs">
                 <StreamHoldButton icon="heroicons:arrow-small-up-20-solid" :step="1"
                     class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) => (topMargin -= step)
                         "></StreamHoldButton>
                 <StreamHoldButton icon="heroicons:arrow-small-down-20-solid"
                     class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (topMargin += step)
                         "></StreamHoldButton>
-            </UButtonGroup>
+            </UFieldGroup>
         </UFormField>
 
         <UFormField label="اللوجو">
-            <UButtonGroup size="xs" class="control-panel direction-controls">
+            <UFieldGroup size="xs" class="control-panel direction-controls">
                 <StreamHoldButton icon="heroicons:arrow-right-16-solid" :step="1"
                     class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) => (positionLeft += step)
                         "></StreamHoldButton>
 
-                <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                     <StreamHoldButton icon="heroicons:arrow-up-16-solid" :step="1"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) =>
                             (positionTop -= step)
@@ -26,7 +26,7 @@
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) =>
                             (positionTop += step)
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
 
                 <StreamHoldButton icon="heroicons:arrow-left-16-solid" :step="1"
                     class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) => (positionLeft -= step)
@@ -40,7 +40,7 @@
                     class="control-btn hover:bg-green-100 active:bg-green-200" :action="(step: number) =>
                         (positionScale -= step)
                         "></StreamHoldButton>
-            </UButtonGroup>
+            </UFieldGroup>
         </UFormField>
     </div>
 </template>

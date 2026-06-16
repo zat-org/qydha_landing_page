@@ -77,12 +77,12 @@
             :color="row.original.showInQydha ? 'success' : 'neutral'" variant="outline" size="xl" />
         </template>
         <template #actions-cell="{ row }">
-          <UButtonGroup>
+          <UFieldGroup>
          
             <UButton   v-if="isAdmin "  icon="i-lucide-edit-2" :to="`/tournament/${row.original.id}/edit`"  variant="outline"/>
   
 
-          </UButtonGroup>
+          </UFieldGroup>
         </template>
       </UTable>
       <UPagination v-if="getReq.status.value == 'success' && data && data.length > 0" v-model:page="filters.PageNumber" :page-count="getReq.data.value?.data.totalPages" :total="getReq.data.value?.data.totalCount" class="mx-auto" />

@@ -14,11 +14,11 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: true,
   modules: [
+    "@nuxt/eslint",
     "@nuxt/ui",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
     "nuxt-aos",
-    "@unlok-co/nuxt-stripe",
     "@nuxtjs/seo",
     "@nuxtjs/robots",
     "nuxt-og-image",
@@ -76,7 +76,7 @@ export default defineNuxtConfig({
     sitemap: "https://qydha.com/sitemap.xml",
   },
 
-  compatibilityDate: "2024-08-20",
+  compatibilityDate: "2026-06-01",
 
   imports: {
     dirs: [
@@ -88,7 +88,6 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     // Private keys (only available on server-side)
-    // stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     apiSecret: process.env.API_SECRET || process.env.QydhaToken || 'default-secret-change-in-production', // Secret for request validation
     qydhaapiBase: process.env.QydhaApiBase,
     
@@ -101,10 +100,6 @@ export default defineNuxtConfig({
       logo: LogoURL,
       title: Title,
       description: Description,
-      apiKey: process.env.apiKey,
-      authDomain: process.env.authDomain,
-      projectId: process.env.projectId,
-      appId: process.env.appId,
       /** In-memory banner list (no API). Dev: on unless NUXT_PUBLIC_MOCK_ASSET_BANNERS=false. Prod: only if env true. */
       mockAssetBanners:
         process.env.NODE_ENV === "development"

@@ -215,15 +215,15 @@
             <span>تم الإنشاء في: {{ formatDateTime(data.createdAt) }}</span>
           </div>
           
-          <UButtonGroup v-if="(userStore.isStaffAdmin || userStore.isSuperAdmin ) && currentState === TournamentRequestState.Pending">
+          <UFieldGroup v-if="(userStore.isStaffAdmin || userStore.isSuperAdmin ) && currentState === TournamentRequestState.Pending">
             <UButton color="success" icon="i-heroicons-check" @click="handleApprove" :loading="approveStatus =='pending'">موافقة</UButton>
             <UButton color="error" icon="i-heroicons-x-mark" @click="handleReject" :loading="rejectStatus=='pending'">رفض</UButton>
             <UButton color="primary" icon="i-heroicons-pencil" variant="outline" @click="handleEdit">تعديل</UButton>
-          </UButtonGroup>
-          <UButtonGroup v-if="userStore.isOrganizer && currentState === TournamentRequestState.Pending">
+          </UFieldGroup>
+          <UFieldGroup v-if="userStore.isOrganizer && currentState === TournamentRequestState.Pending">
             <UButton color="error" icon="i-heroicons-x-mark" @click="handleCancel" :loading="cancelStatus =='pending'">الغاء</UButton>
             <UButton color="primary" icon="i-heroicons-pencil" variant="outline" @click="handleEdit">تعديل</UButton>
-          </UButtonGroup>
+          </UFieldGroup>
         </div>
       </template>
     </UCard>

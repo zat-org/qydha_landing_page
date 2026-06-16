@@ -2,24 +2,24 @@
     <div class="flex flex-col gap-3">
         <div class="flex justify-between gap-3">
             <UFormField label=" اللاعب الايمن">
-                <UButtonGroup size="xs" class="control-panel direction-controls"  >
+                <UFieldGroup size="xs" class="control-panel direction-controls"  >
                     <StreamHoldButton icon="heroicons:arrow-right-16-solid" 
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (rightPlayerRight! -= step)
                             "></StreamHoldButton>
 
-                    <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                    <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                         <StreamHoldButton icon="heroicons:arrow-up-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (rightPlayerTop! += step)
                                 "></StreamHoldButton>
                         <StreamHoldButton icon="heroicons:arrow-down-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (rightPlayerTop! -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
 
                     <StreamHoldButton icon="heroicons:arrow-left-16-solid"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (rightPlayerRight! += step)
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
             </UFormField>
 
             <div class="flex flex-col gap-2 items-center justify-end">
@@ -37,44 +37,44 @@
                         " />
             </div>
             <UFormField label=" اللاعب الايسر">
-                <UButtonGroup size="xs" class="control-panel direction-controls">
+                <UFieldGroup size="xs" class="control-panel direction-controls">
                     <StreamHoldButton icon="heroicons:arrow-right-16-solid"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (leftPlayerLeft! += step)
                             "></StreamHoldButton>
 
-                    <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                    <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                         <StreamHoldButton icon="heroicons:arrow-up-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (leftPlayerTop! += step)
                                 "></StreamHoldButton>
                         <StreamHoldButton icon="heroicons:arrow-down-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (leftPlayerTop! -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
 
                     <StreamHoldButton icon="heroicons:arrow-left-16-solid"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (leftPlayerLeft! -= step)
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
             </UFormField>
 
             <UFormField label=" اللاعب المنتصف">
-                <UButtonGroup size="xs" class="control-panel direction-controls">
+                <UFieldGroup size="xs" class="control-panel direction-controls">
                     <StreamHoldButton icon="heroicons:arrow-right-16-solid"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (bottomPlayerLeft!         -= step)
                             "></StreamHoldButton>
-                    <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                    <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                         <StreamHoldButton icon="heroicons:arrow-up-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (bottomPlayerBottom! += step)
                                 "></StreamHoldButton>
                         <StreamHoldButton icon="heroicons:arrow-down-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (bottomPlayerBottom! -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
 
                     <StreamHoldButton icon="heroicons:arrow-left-16-solid"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) => (bottomPlayerLeft! += step)
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
             </UFormField>
         </div>
         <UFormField label="حجم صور الاعبين" name="playerImageWidth">

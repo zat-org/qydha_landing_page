@@ -10,7 +10,7 @@
     </template>
 
     <div class="overflow-x-auto">
-      <UButtonGroup class="flex flex-wrap sm:flex-nowrap gap-2">
+      <UFieldGroup class="flex flex-wrap sm:flex-nowrap gap-2">
         <UButton 
           v-for="item in items" 
           :key="item.id" 
@@ -20,7 +20,7 @@
           :color="tabIndex == item.id ? 'primary' : 'neutral'"
           class="flex-1 sm:flex-none text-sm sm:text-base"
         />
-      </UButtonGroup>
+      </UFieldGroup>
     </div>
 
     <div class="mt-4">
@@ -82,7 +82,7 @@ const openModal = () => {
 }
 
 @media (max-width: 640px) {
-  .UButtonGroup {
+  .UFieldGroup {
     gap: 0.5rem;
   }
 }

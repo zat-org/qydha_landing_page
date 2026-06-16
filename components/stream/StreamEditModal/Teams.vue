@@ -1,8 +1,8 @@
 <template>
     <div class="flex justify-center gap-5 w-[90%] mb-[10px]">
         <UFormField label="اسماء الفرق">
-            <UButtonGroup size="xs" class="control-panel direction-controls">
-                <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+            <UFieldGroup size="xs" class="control-panel direction-controls">
+                <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                     <StreamHoldButton icon="heroicons:arrow-up-16-solid" :step="1"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) => {
                             leftTeamNameTop -= step;
@@ -15,7 +15,7 @@
                             rightTeamNameTop += step;
                         }
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
                 <StreamHoldButton icon="lucide:expand" :step="1"
                     class="control-btn hover:bg-green-100 active:bg-green-200" :action="(step: number) => {
                         leftTeamNameSize += step;
@@ -28,11 +28,11 @@
                         rightTeamNameSize -= step;
                     }
                         "></StreamHoldButton>
-            </UButtonGroup>
+            </UFieldGroup>
         </UFormField>
         <UFormField label="النتيجة">
-            <UButtonGroup size="xs" class="control-panel direction-controls">
-                <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+            <UFieldGroup size="xs" class="control-panel direction-controls">
+                <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                     <StreamHoldButton icon="heroicons:arrow-up-16-solid" :step="1"
                         class="control-btn hover:bg-blue-100 active:bg-blue-200" :action="(step: number) => {
                             leftTeamScoreTop -= step;
@@ -45,7 +45,7 @@
                             rightTeamScoreTop += step;
                         }
                             "></StreamHoldButton>
-                </UButtonGroup>
+                </UFieldGroup>
                 <StreamHoldButton icon="lucide:expand" :step="1"
                     class="control-btn hover:bg-green-100 active:bg-green-200" :action="(step: number) => {
                         leftTeamScoreSize += step;
@@ -58,20 +58,20 @@
                         rightTeamScoreSize -= step;
                     }
                         "></StreamHoldButton>
-            </UButtonGroup>
+            </UFieldGroup>
         </UFormField>
     </div>
     <UAccordion :items="Teamsitems">
         <template #leftTeam>
             <div class="flex justify-between">
                 <UFormField label="اسم الفريق">
-                    <UButtonGroup size="xs" class="control-panel direction-controls">
+                    <UFieldGroup size="xs" class="control-panel direction-controls">
                         <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                             icon="heroicons:arrow-right-16-solid" :step="1" :action="(step: number) =>
                                 (leftTeamNameLeft += step)
                                 "></StreamHoldButton>
 
-                        <UButtonGroup class="vertical-controls" orientation="vertical" size="xs">
+                        <UFieldGroup class="vertical-controls" orientation="vertical" size="xs">
                             <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                                 icon="heroicons:arrow-up-16-solid" :step="1" :action="(step: number) =>
                                     (leftTeamNameTop -= step)
@@ -80,7 +80,7 @@
                                 icon="heroicons:arrow-down-16-solid" :step="1" :action="(step: number) =>
                                     (leftTeamNameTop += step)
                                     "></StreamHoldButton>
-                        </UButtonGroup>
+                        </UFieldGroup>
                         <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                             icon="heroicons:arrow-left-16-solid" :step="1" :action="(step: number) =>
                                 (leftTeamNameLeft -= step)
@@ -94,16 +94,16 @@
                             :step="1" :action="(step: number) =>
                                 (leftTeamNameSize -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
                 </UFormField>
                 <UFormField label="النتيجة">
-                    <UButtonGroup size="xs" class="control-panel direction-controls">
+                    <UFieldGroup size="xs" class="control-panel direction-controls">
                         <StreamHoldButton icon="heroicons:arrow-right-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                 (leftTeamScoreLeft += step)
                                 "></StreamHoldButton>
 
-                        <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                        <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                             <StreamHoldButton icon="heroicons:arrow-up-16-solid"
                                 class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                     (leftTeamScoreTop -= step)
@@ -112,7 +112,7 @@
                                 class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                     (leftTeamScoreTop += step)
                                     "></StreamHoldButton>
-                        </UButtonGroup>
+                        </UFieldGroup>
                         <StreamHoldButton icon="heroicons:arrow-left-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                 (leftTeamScoreLeft -= step)
@@ -126,20 +126,20 @@
                             :step="1" :action="(step: number) =>
                                 (leftTeamScoreSize -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
                 </UFormField>
             </div>
         </template>
         <template #rightTeam>
             <div class="flex justify-between">
                 <UFormField label="اسم الفريق">
-                    <UButtonGroup size="xs" class="control-panel direction-controls">
+                    <UFieldGroup size="xs" class="control-panel direction-controls">
                         <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                             icon="heroicons:arrow-right-16-solid" :step="1" :action="(step: number) =>
                                 (rightTeamNameLeft += step)
                                 "></StreamHoldButton>
 
-                        <UButtonGroup class="vertical-controls" orientation="vertical" size="xs">
+                        <UFieldGroup class="vertical-controls" orientation="vertical" size="xs">
                             <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                                 icon="heroicons:arrow-up-16-solid" :step="1" :action="(step: number) =>
                                     (rightTeamNameTop -= step)
@@ -148,7 +148,7 @@
                                 icon="heroicons:arrow-down-16-solid" :step="1" :action="(step: number) =>
                                     (rightTeamNameTop += step)
                                     "></StreamHoldButton>
-                        </UButtonGroup>
+                        </UFieldGroup>
                         <StreamHoldButton class="control-btn hover:bg-blue-100 active:bg-blue-200"
                             icon="heroicons:arrow-left-16-solid" :step="1" :action="(step: number) =>
                                 (rightTeamNameLeft -= step)
@@ -162,16 +162,16 @@
                             :step="1" :action="(step: number) =>
                                 (rightTeamNameSize -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
                 </UFormField>
                 <UFormField label="النتيجة">
-                    <UButtonGroup size="xs" class="control-panel direction-controls">
+                    <UFieldGroup size="xs" class="control-panel direction-controls">
                         <StreamHoldButton icon="heroicons:arrow-right-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                 (rightTeamScoreLeft += step)
                                 "></StreamHoldButton>
 
-                        <UButtonGroup orientation="vertical" size="xs" class="vertical-controls">
+                        <UFieldGroup orientation="vertical" size="xs" class="vertical-controls">
                             <StreamHoldButton icon="heroicons:arrow-up-16-solid"
                                 class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                     (rightTeamScoreTop -= step)
@@ -180,7 +180,7 @@
                                 class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                     (rightTeamScoreTop += step)
                                     "></StreamHoldButton>
-                        </UButtonGroup>
+                        </UFieldGroup>
                         <StreamHoldButton icon="heroicons:arrow-left-16-solid"
                             class="control-btn hover:bg-blue-100 active:bg-blue-200" :step="1" :action="(step: number) =>
                                 (rightTeamScoreLeft -= step)
@@ -194,7 +194,7 @@
                             :step="1" :action="(step: number) =>
                                 (rightTeamScoreSize -= step)
                                 "></StreamHoldButton>
-                    </UButtonGroup>
+                    </UFieldGroup>
                 </UFormField>
             </div>
         </template>

@@ -1,9 +1,9 @@
 <template>
   <div class="flex justify-center w-full">
     <UCard class="w-[95%] max-w-[1000px]">
-      <UButtonGroup>
+      <UFieldGroup>
         <UButton v-for="item in items" :key="item.id" :label="item.label" :value="item.id" @click="selectedTab = item.id" :color="selectedTab == item.id ? 'primary' : 'neutral'" />
-      </UButtonGroup>
+      </UFieldGroup>
       <template v-if="selectedTab == 0">
           <div class="flex flex-col gap-5 justify-center items-center w-full">
             <h1 class="text-xl text-center md:text-2xl font-bold">
@@ -21,20 +21,20 @@
                   <UFormField
                     label="الرقم المرجعي للاعب الاول"
                     name="firstPlayerId">
-                    <UButtonGroup orientation="horizontal">
+                    <UFieldGroup orientation="horizontal">
                       <UButton  disabled icon="ri:number-1" />
                       <UInput v-model="regesterationState.firstPlayerId" />
-                    </UButtonGroup>
+                    </UFieldGroup>
                   </UFormField>
                 </div>
                 <div class="rounded-xl">
                   <UFormField
                     label="الرقم المرجعي للاعب الثاني"
                     name="secondPlayerId">
-                    <UButtonGroup orientation="horizontal">
+                    <UFieldGroup orientation="horizontal">
                       <UButton disabled icon="ri:number-2" />
                       <UInput v-model="regesterationState.secondPlayerId" />
-                    </UButtonGroup>
+                    </UFieldGroup>
                   </UFormField>
                 </div>
               </div>

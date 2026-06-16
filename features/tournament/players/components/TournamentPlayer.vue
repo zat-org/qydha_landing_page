@@ -6,14 +6,14 @@
       class="[&_td]:p-1 [&_th]:p-1"
     >
       <template #action-data="{ row }">
-        <UButtonGroup>
+        <UFieldGroup>
           <UButton color="warning" @click="openUpdateModal(row.original)">
             <IconSetting class="text-lg" />
           </UButton>
           <UButton color="error" @click="onDeletePlayer(row.original)">
             <IconDelete class="text-lg" />
           </UButton>
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
       <template #qydha-data="{ row }">
         <p v-if="row.original.qydhaUserData">{{ row.original.qydhaUserData.username }}</p>

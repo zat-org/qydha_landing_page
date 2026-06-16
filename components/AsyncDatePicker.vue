@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
     <VDatePicker v-bind="$attrs" dir="ltr" v-model="internalDate" :is-dark="isDark" :mode="enableTime ? 'dateTime' : 'date'"
-      :masks="{ input: 'DD/MM/YYYY HH:mm' }" class="z-100">
+      :masks="{ input: enableTime ? 'DD/MM/YYYY HH:mm' : 'DD/MM/YYYY' }" class="z-100">
       <template #default="{ inputValue, inputEvents }">
         <UInput :value="inputValue" v-on="disabled ? {} : inputEvents" :disabled="disabled" />
       </template>

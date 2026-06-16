@@ -54,7 +54,7 @@
       </template>
       <template #actions-cell="{ row }">
 
-        <UButtonGroup v-if="isTeamNotJoinRequest(row.original)">
+        <UFieldGroup v-if="isTeamNotJoinRequest(row.original)">
           <UButton icon="material-symbols:delete" color="error" @click="deleteTeam(row.original)" />
           <UButton icon="material-symbols:settings" color="warning" @click="openUpdateModal(row.original)" />
           <UButton @click="openAddPlayerModal(row.original.id)" v-if="row.original.players.length < 2">
@@ -62,7 +62,7 @@
               <IconAddUser class="text-xl" />
             </template>
           </UButton>
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
     </UTable>
     <UPagination v-model:page="page" :page-count="10" :total="total" class="mx-auto" />

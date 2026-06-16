@@ -1,9 +1,9 @@
 <template>
   <UModal prevent-close title="اضافة اشعار" description="اضافة اشعار">
     <template #body>
-      <UButtonGroup>
+      <UFieldGroup>
         <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" @click="index = item.id" :color="index == item.id ? 'primary' : 'neutral'" />
-      </UButtonGroup>
+      </UFieldGroup>
       <template v-if="index == 0">
           <NotificationForm ref="notForm" />
         </template>

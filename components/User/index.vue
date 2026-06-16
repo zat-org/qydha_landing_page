@@ -30,12 +30,12 @@
           </div>
         </template>
         <template #action-cell="{ row }" dir="ltr">
-          <UButtonGroup>
+          <UFieldGroup>
             <UButton color="primary" variant="outline" size="md" icon="i-heroicons-eye"
               :to="`/user/${row.original.id}`" />
             <UButton color="secondary" variant="outline" size="md" icon="i-heroicons-clipboard"
               @click="copyToClipboard(row.original.id)" />
-          </UButtonGroup>
+          </UFieldGroup>
         </template>
       </UTable>
       <UPagination v-model:page="page" :page-count="10" :total="items" class="mx-auto" />

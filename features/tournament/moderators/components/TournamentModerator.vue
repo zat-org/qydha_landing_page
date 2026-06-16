@@ -9,11 +9,11 @@
     </template>
     <UTable :data="moderators" >
       <template #action-data="{ row }">
-        <UButtonGroup>
+        <UFieldGroup>
           <UButton icon="material-symbols:settings" color="warning" @click="openUpdateModal(row.original)" />
           <UButton icon="material-symbols:delete" color="error" @click="onDeleteModerator(row.original)" />
 
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
     </UTable>
     <template #footer>

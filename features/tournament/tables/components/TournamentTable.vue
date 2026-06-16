@@ -71,7 +71,7 @@
       class="w-full"
     >
       <template #actions-cell="{ row }">
-        <UButtonGroup>
+        <UFieldGroup>
           <UButton 
             color="warning" 
             icon="i-heroicons-pencil-square"
@@ -89,7 +89,7 @@
           >
             حذف
           </UButton>
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
     </UTable>
 

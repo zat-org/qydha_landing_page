@@ -3,12 +3,12 @@
 
     <UTable :data="serviceAccounts" :columns="cols">
       <template #actions-cell="{ row }">
-        <UButtonGroup>
+        <UFieldGroup>
           <UButton icon="material-symbols:info" color="success" @click="openInfo(row.original)" />
           <UButton icon="material-symbols:edit" color="warning" @click="updateAccout(row.original)" />
           <UButton icon="material-symbols:delete" color="error" @click="delteAccount(row.original)" />
 
-        </UButtonGroup>
+        </UFieldGroup>
       </template>
     </UTable>
     <UPagination v-model="page" :page-count="10" :total="items" class="mx-auto mt-auto" />

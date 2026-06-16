@@ -31,7 +31,7 @@
         </template>
 
         <template #actions-cell="{ row }">
-            <UButtonGroup>
+            <UFieldGroup>
                 <UButton icon="i-lucide-eye" :to="'/tournament/request/' + row.original.id" />
                 <UButton v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-check"
                     color="success" @click="handelApprove(row.original.id)" />
@@ -39,7 +39,7 @@
                     @click="handelReject(row.original.id)" />
                 <UButton v-if="row.original.state == TournamentRequestState.Pending" icon="i-lucide-edit-2"
                     color="warning" :to="'/tournament/request/' + row.original.id + '/update'" />
-            </UButtonGroup>
+            </UFieldGroup>
         </template>
     </UTable>
 </template>
