@@ -14,7 +14,8 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    "@nuxt/eslint",
+    "@netlify/nuxt",
+    ...(process.env.NETLIFY !== "true" ? ["@nuxt/eslint" as const] : []),
     "@nuxt/ui",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
@@ -109,7 +110,22 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: true,
+    enabled: process.env.NODE_ENV === "development",
+  },
+
+  sourcemap: {
+    server: false,
+    client: false,
+  },
+
+  vite: {
+    build: {
+      sourcemap: false,
+    },
+  },
+
+  nitro: {
+    minify: true,
   },
 
   image: {
