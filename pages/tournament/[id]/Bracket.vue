@@ -70,7 +70,7 @@
         v-if="canShowBracket"
         class="bracket-page__bracket-wrap relative min-h-0 w-full flex-1"
       >
-        <Bracket :group="tourStore.selectedGroup!.data" />
+        <Bracket :group="tourStore.selectedGroup!.data" :obs-mode="obsMode" />
       </div>
       <div v-if ="!canShowBracket" class="flex flex-1 flex-col items-center justify-center">
         <UIcon name="i-heroicons-exclamation-triangle" class="text-4xl text-warning-500" />
@@ -406,15 +406,35 @@ onUnmounted(() => {
 }
 
 .bracket-page--obs {
-  background: transparent;
+  background: transparent !important;
+}
+
+.bracket-page--obs .bracket-page__bracket-wrap {
+  background: transparent !important;
 }
 
 .bracket-page--obs .bracket-page__bracket-wrap :deep(.bracket-container),
 .bracket-page--obs .bracket-page__bracket-wrap :deep(.bracket-flow) {
   min-height: 100vh;
   height: 100vh;
+  background: transparent !important;
 }
-
 
 </style>
 
+<style>
+/* OBS overlay: transparent page chrome for browser source (light + dark) */
+html.bracket-obs,
+html.bracket-obs body {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.bracket-obs #__nuxt,
+html.bracket-obs #__nuxt > div,
+html.bracket-obs [data-vaul-drawer-wrapper],
+html.bracket-obs main {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+</style>

@@ -126,12 +126,12 @@
               :help="formData.location.latitude != 0 && formData.location.longitude != 0 ? '✓ تم الاختيار' : 'اختر الموقع'"
             >
               <div class="flex flex-col sm:flex-row sm:items-center gap-2">
-                <MapInputModal
-                  v-model="formData.location"
-                  :show-inputs="false"
-                  name="location" 
-                  label="مكان البطولة" 
-                />
+              <MapGoogleMapsUrlInput
+                v-model:location="formData.location"
+                v-model:location-name="formData.locationDescription"
+                name="location"
+                label="رابط Google Maps"
+              />
                 <div v-if="formData.location.latitude != 0 && formData.location.longitude != 0" 
                      class="flex items-center gap-1 text-green-600 dark:text-green-400 text-xs">
                   <UIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />

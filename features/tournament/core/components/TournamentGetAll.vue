@@ -205,10 +205,7 @@ async function onDeleteTournament(tournament: Tournament) {
         description: `تم حذف البطولة "${tournament.title}" بنجاح`,
         color: "success",
       });
-      clearNuxtData((key) => key.startsWith("getAllTournament"));
-      await refreshNuxtData(
-        buildAppDataKey("getAllTournament", unref(filters)),
-      );
+        await getReq.refresh();
     } else if (deleteREQ.status.value === "error") {
       toast.add({
         title: "خطأ في الحذف",

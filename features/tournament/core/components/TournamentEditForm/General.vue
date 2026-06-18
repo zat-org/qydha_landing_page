@@ -112,13 +112,13 @@
         :error="errors?.location"
         :help="modelValue.location.latitude != 0 && modelValue.location.longitude != 0 ? 'تم اختيار الموقع' : 'يرجى اختيار الموقع'"
       >
-        <MapInputModal
-          v-model="modelValue.location"
+        <MapGoogleMapsUrlInput
+          v-model:location="modelValue.location"
+          v-model:location-name="modelValue.locationDescription"
           :disabled="disabledFields?.location"
           name="location"
-          label="مكان البطولة"
-          required
-          @update:model-value="onFieldBlur?.('location')"
+          label="رابط Google Maps"
+          @parsed="onFieldBlur?.('location')"
         />
       </UFormField>
       <UFormField label="نوع البطولة" name="type" required :error="errors?.type">

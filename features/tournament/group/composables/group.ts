@@ -20,20 +20,19 @@ export const useGroup = () => {
   const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
   const getGroups = (tourid: string) => {
-    const { data, pending, error, refresh, status, execute } =
-      useAsyncData<{
-        message: string;
-        data: {
-          groups: Group[];
-          requesterPrivilege: {
-            permissions: string[] | null;
-            privilege: Privilege;
-          };
+    const { data, pending, error, refresh, status, execute } = useAsyncData<{
+      message: string;
+      data: {
+        groups: Group[];
+        requesterPrivilege: {
+          permissions: string[] | null;
+          privilege: Privilege;
         };
-      }>(
-        () => ["getGroups", tourid].join("-"),
-        () => $api(`/tournaments/${tourid}/groups`),
-      );
+      };
+    }>(
+      () => ["getGroups", tourid].join("-"),
+      () => $api(`/tournaments/${tourid}/groups`),
+    );
     watch(status, () => {
       if (status.value == "success" && data.value && data.value.data) {
         userStore.permissions =
@@ -64,7 +63,8 @@ export const useGroup = () => {
     }>(
       () => ["getRoundsGroupDetails", tour_id, group_id].join("-"),
       () => $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/rounds`),
-    {immediate: options.immediate});
+      { immediate: options.immediate },
+    );
     const fetchREQ = async (_tour_id: string, _group_id: string) => {
       TOURID.value = _tour_id;
       GROUPID.value = _group_id;
@@ -179,6 +179,7 @@ export const useGroup = () => {
       await result.execute();
       if (result.status.value == "success") {
         refreshNuxtData(["getGroups", tour_id.value].join("-"));
+        refreshNuxtData(["getSingelTournament", tour_id.value].join("-"));
       }
     };
     return { result, fetchREQ };
@@ -206,9 +207,13 @@ export const useGroup = () => {
       await result.execute();
       if (result.status.value == "success") {
         refreshNuxtData(["getGroups", tour_id.value].join("-"));
-        // refreshNuxtData(["getGroupDetails", tour_id.value, _group_id ].join("-"));
-        // refreshNuxtData(["getRoundsGroupDetails", tour_id.value, _group_id ].join("-"));
-        refreshNuxtData(["getSingelTournament", tour_id.value ].join("-"));
+        refreshNuxtData(
+          ["getGroupDetails", tour_id.value, _group_id].join("-"),
+        );
+        refreshNuxtData(
+          ["getRoundsGroupDetails", tour_id.value, _group_id].join("-"),
+        );
+        refreshNuxtData(["getSingelTournament", tour_id.value].join("-"));
       }
     };
     return { result, fetchREQ };
@@ -261,7 +266,7 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
-        refreshNuxtData(["getSingelTournament", tourId.value ].join("-"));
+        refreshNuxtData(["getSingelTournament", tourId.value].join("-"));
       }
     };
     return { ...result, fetchREQ };
@@ -283,7 +288,7 @@ export const useGroup = () => {
       if (result.status.value == "success") {
         refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
         refreshNuxtData(["getGroups", tour_id].join("-"));
-        refreshNuxtData(["getSingelTournament", tour_id ].join("-"));
+        refreshNuxtData(["getSingelTournament", tour_id].join("-"));
       }
     };
     return { ...result, fetchREQ };

@@ -63,8 +63,8 @@ export const useTournament = () => {
 
     const { data, pending, error, refresh, status } =
       await useAppLazyData<getTournamentResponse>(
-        () => buildAppDataKey('getAllTournament', unref(param)),
-        () => $api('/tournaments/dashboard', { query: unref(param) }),
+        () => buildAppDataKey("getAllTournament", unref(param)),
+        () => $api("/tournaments/dashboard", { query: unref(param) }),
         { watch: [param], server: false },
       );
 
@@ -343,8 +343,7 @@ export const useTournament = () => {
       { message?: string; code: string }
     >(
       () => `deleteTournament-${tournamentId.value}`,
-      () =>
-        $api(`/tournaments/${tournamentId.value}`, { method: "DELETE" }),
+      () => $api(`/tournaments/${tournamentId.value}`, { method: "DELETE" }),
       { immediate: false },
     );
 

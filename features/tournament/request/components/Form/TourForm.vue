@@ -166,7 +166,11 @@
         name="location"
         required
         :error="errors?.location"
-        
+        :help="
+          modelValue.location.latitude != 0 &&
+          modelValue.location.longitude != 0
+            ? `الإحداثيات: ${modelValue.location.latitude}, ${modelValue.location.longitude}`
+            : 'يرجى لصق رابط Google Maps واستخراج الموقع'
         "
       >
         <MapGoogleMapsUrlInput

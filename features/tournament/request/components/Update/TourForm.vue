@@ -32,7 +32,15 @@
         </div>
       </UFormField>
       <UFormField label="مكان البطولة" name="locationDescription" required :error="errors?.locationDescription"><UInput v-model="modelValue.locationDescription" @blur="onFieldBlur?.('locationDescription')" /></UFormField>
-      <UFormField label="موقع البطولة" name="location" required :error="errors?.location"><MapInputModal v-model="modelValue.location" name="location" label="مكان البطولة" required @update:model-value="onFieldBlur?.('location')" /></UFormField>
+      <UFormField label="موقع البطولة" name="location" required :error="errors?.location">
+        <MapGoogleMapsUrlInput
+          v-model:location="modelValue.location"
+          v-model:location-name="modelValue.locationDescription"
+          name="location"
+          label="رابط Google Maps"
+          @parsed="onFieldBlur?.('location')"
+        />
+      </UFormField>
       <UFormField label="نوع البطولة" name="type" required :error="errors?.type"><USelect v-model="modelValue.type" :items="TournamentTypeOptions" @update:model-value="onFieldBlur?.('type')" /></UFormField>
       <UFormField label="رمز سري" name="tournamentPrivatePassword" v-if="modelValue.type == TournamentType.private" required :error="errors?.tournamentPrivatePassword"><UInput v-model="modelValue.tournamentPrivatePassword" @blur="onFieldBlur?.('tournamentPrivatePassword')" /></UFormField>
       <div class="flex items-center justify-between">

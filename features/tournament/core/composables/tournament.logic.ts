@@ -20,7 +20,7 @@ export const useTournamentLogic = () => {
 
   const canUpdateTournament  =(detailedState:TournamentDetailedState)=>{
     
-    return hasAdminOrStaffRole.value && updatableStates.has(detailedState);
+    return hasAdminOrStaffRole.value ;
 
   }
 

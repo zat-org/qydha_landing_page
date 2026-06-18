@@ -115,6 +115,18 @@ export async function resolveGoogleMapsUrl(input: string): Promise<string> {
   return resolvedUrl;
 }
 
+export function buildGoogleMapsUrl(
+  latitude: number,
+  longitude: number,
+  name?: string | null,
+): string {
+  if (name?.trim()) {
+    return `https://www.google.com/maps/place/${encodeURIComponent(name.trim())}/@${latitude},${longitude},15z`;
+  }
+
+  return `https://www.google.com/maps?q=${latitude},${longitude}`;
+}
+
 export function parseGoogleMapsUrl(input: string): ParsedGoogleMapsLocation | null {
   const trimmed = input.trim();
   if (!trimmed) return null;

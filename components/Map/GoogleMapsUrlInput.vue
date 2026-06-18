@@ -45,6 +45,7 @@
 
 <script lang="ts" setup>
 import {
+  buildGoogleMapsUrl,
   parseGoogleMapsUrlAsync,
   type ParsedGoogleMapsLocation,
 } from "~/utils/parseGoogleMapsUrl";
@@ -111,6 +112,37 @@ const displayData = computed(() => {
   };
 });
 
+const syncFromExistingLocation = () => {
+  if (!hasValidCoords(location.value)) return;
+
+  parsedPreview.value = {
+    latitude: location.value.latitude,
+    longitude: location.value.longitude,
+    name: locationName.value ?? null,
+  };
+
+  url.value = buildGoogleMapsUrl(
+    location.value.latitude,
+    location.value.longitude,
+    locationName.value,
+  );
+};
+
+watch(
+  () => [location.value.latitude, location.value.longitude, locationName.value],
+  () => {
+    if (!hasValidCoords(location.value)) {
+      parsedPreview.value = null;
+      return;
+    }
+
+    if (url.value.trim()) return;
+
+    syncFromExistingLocation();
+  },
+  { immediate: true },
+);
+
 const applyParsed = (parsed: ParsedGoogleMapsLocation) => {
   parsedPreview.value = parsed;
   errorMessage.value = null;
@@ -131,10 +163,10 @@ const applyParsed = (parsed: ParsedGoogleMapsLocation) => {
 
 const parseUrl = async () => {
   errorMessage.value = null;
-  parsedPreview.value = null;
 
   const value = url.value.trim();
   if (!value) {
+    parsedPreview.value = null;
     errorMessage.value = "يرجى إدخال رابط Google Maps";
     emit("error", errorMessage.value);
     return;
@@ -146,6 +178,7 @@ const parseUrl = async () => {
     const parsed = await parseGoogleMapsUrlAsync(value);
 
     if (!parsed) {
+      parsedPreview.value = null;
       errorMessage.value =
         "تعذر استخراج الموقع. تأكد أن الرابط من Google Maps ويحتوي على إحداثيات.";
       emit("error", errorMessage.value);
@@ -154,6 +187,7 @@ const parseUrl = async () => {
 
     applyParsed(parsed);
   } catch {
+    parsedPreview.value = null;
     errorMessage.value =
       "تعذر فتح الرابط القصير. جرّب نسخ الرابط الكامل من Google Maps.";
     emit("error", errorMessage.value);

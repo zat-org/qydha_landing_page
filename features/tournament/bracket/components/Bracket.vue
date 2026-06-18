@@ -1,5 +1,8 @@
 <template>
-  <div class="bracket-container bg-gray-50 dark:bg-gray-950">
+  <div
+    class="bracket-container"
+    :class="{ 'bg-gray-50 dark:bg-gray-950': !obsMode }"
+  >
     <VueFlow
       v-if="OrderedNodes"
       :nodes="OrderedNodes.nodes"
@@ -24,7 +27,7 @@ import type { Group } from "@/features/tournament/models/group";
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import MatchNode from "./MatchNode.vue";
 
-const props = defineProps<{ group: Group }>();
+const props = defineProps<{ group: Group; obsMode?: boolean }>();
 
 const tourStore = useTournamentBracketStore();
 const { layoutFromMatchesTree } = useLayout();
@@ -107,7 +110,10 @@ html.dark .bracket-container .vue-flow {
 
 /* OBS overlay: keep canvas transparent for chroma/stream */
 html.bracket-obs .bracket-container,
-html.bracket-obs .bracket-container .vue-flow {
+html.bracket-obs .bracket-container .vue-flow,
+html.bracket-obs .bracket-container .vue-flow__viewport,
+html.bracket-obs .bracket-container .vue-flow__pane {
+  background: transparent !important;
   background-color: transparent !important;
 }
 
