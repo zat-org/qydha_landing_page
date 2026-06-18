@@ -8,7 +8,7 @@
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
           <UButton
-            v-if="!embedded"
+            v-if="showBackButton"
             class="min-h-11 shrink-0 self-start touch-manipulation sm:min-h-0 sm:self-center"
             icon="i-heroicons-arrow-right"
             label="عوده"
@@ -90,15 +90,23 @@ import type { DetailTournament } from '~/features/tournament/models/tournament';
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
-import {
-  useTournamentEmbedded,
-  useTournamentGetWorkspace,
-} from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
+import type { TournamentOutletMode } from '~/features/tournament/core/types';
+import { shouldShowBackButton, shouldCompleteWithEmit } from '~/features/tournament/core/utils';
+
+const props = withDefaults(
+  defineProps<{
+    mode?: TournamentOutletMode;
+    tournamentId?: string;
+  }>(),
+  { mode: DEFAULT_TOURNAMENT_OUTLET_MODE },
+);
+
+const emit = defineEmits<{ done: [] }>();
 
 const router = useRouter();
-const embedded = useTournamentEmbedded();
-const workspace = useTournamentGetWorkspace();
-const id = useRoute().params.id?.toString() ?? "";
+const showBackButton = computed(() => shouldShowBackButton(props.mode));
+const id = props.tournamentId ?? useRoute().params.id?.toString() ?? "";
 
 const tournamentDashboardKey = `getSingelTournament-${id}` as const;
 const { data: tournamentDashboardData } = useNuxtData<{ data: DetailTournament }>(tournamentDashboardKey);
@@ -147,8 +155,8 @@ async function confirmFinalApprove() {
     if (ok) {
       approveOpen.value = false;
       await refreshBothPanels();
-      if (embedded && workspace) {
-        workspace.closeView();
+      if (shouldCompleteWithEmit(props.mode)) {
+        emit('done');
       } else {
         router.back();
       }

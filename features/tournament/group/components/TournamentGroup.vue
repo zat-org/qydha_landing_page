@@ -2,7 +2,7 @@
     <UCard class="flex flex-col flex-1 ">
         
         <template #header>
-            <GroupsHeader :showBracketButton="showBracketButton" />
+            <GroupsHeader :mode="props.mode" />
         </template>
 
         <div v-if="status == 'pending'" class="flex justify-center items-center py-8">
@@ -44,12 +44,19 @@ import Loading from "~/components/loading.vue";
 import GroupDetails from "./GroupDetails.vue";
 import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
-// Props
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
+import type { TournamentOutletMode } from '~/features/tournament/core/types';
+import { shouldShowBackButton } from '~/features/tournament/core/utils';
+
 interface Props {
-    tournamentId: string;
+  tournamentId: string;
+  mode?: TournamentOutletMode;
 }
+
+const props = withDefaults(defineProps<Props>(), {
+  mode: DEFAULT_TOURNAMENT_OUTLET_MODE,
+});
 const active = ref("0")
-const props = defineProps<Props>();
 const tourReq =  useTournament().getSingelTournament(props.tournamentId);
 const tournamentState = computed(() => tourReq.data.value?.data.tournament.detailedState);
 const groupApi = useGroup();
@@ -59,9 +66,6 @@ const { data, pending, error, refresh, status } =  groupApi.getGroups(props.tour
 
 const groups = computed(() => {
     return data.value?.data.groups || []
-})
-const showBracketButton = computed(() => {
-    return groups.value.some((group) => group.state == GroupState.MatchesGenerated || group.state == GroupState.MatchesRunning || group.state == GroupState.MatchesFinished)
 })
 
 const accordionItems = computed(() => {

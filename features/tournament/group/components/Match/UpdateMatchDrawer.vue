@@ -134,7 +134,7 @@ import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/features/tournament
 import loading from "~/components/loading.vue";
 
 const route = useRoute();
-const tour_id = route.params.id.toString();
+const tour_id = route.params.id?.toString() ?? '';
 const toast = useToast();
 const emit = defineEmits(['close']);
 // Use useState to get shared state
@@ -261,7 +261,7 @@ const selectedTableDisplay = computed(() => {
 // }, { immediate: true });
 
 // Update match function
-const updateREQ = await updateMatch();
+const updateREQ = updateMatch();
 
 const onSubmit = async () => {
     if (!matchId) {

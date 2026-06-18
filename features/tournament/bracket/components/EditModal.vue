@@ -86,9 +86,9 @@ const schema = object({
   isMarked: boolean(),
 });
 
-const { choicesREQ, state, matchChoices, refereeItems, tableItems, selectedRefereeDisplay, selectedTableDisplay } = await useMatchEditChoices(tour_id, props.match.id, props.match);
+const { choicesREQ, state, matchChoices, refereeItems, tableItems, selectedRefereeDisplay, selectedTableDisplay } = useMatchEditChoices(tour_id, props.match.id, props.match);
 
-const updateREQ = await updateMatch();
+const updateREQ = updateMatch();
 const onSubmit = async () => {
   if (!props.match.id) {
     toast.add({ title: "خطأ", description: "معرف المباراة غير موجود", color: "error" });
@@ -104,7 +104,7 @@ const onSubmit = async () => {
   }
 };
 
-const MatchResetREQ = await MatchReset();
+const MatchResetREQ = MatchReset();
 const onReset = async () => {
   await MatchResetREQ.fetchREQ(props.match.qydhaGameId);
   if (MatchResetREQ.status.value === "success") {
@@ -113,7 +113,7 @@ const onReset = async () => {
   }
 };
 
-const MatchWithdrawREQ = await MatchWithdraw();
+const MatchWithdrawREQ = MatchWithdraw();
 
 const withdrawItems = [[
   {

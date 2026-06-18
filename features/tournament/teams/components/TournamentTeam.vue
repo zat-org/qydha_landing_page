@@ -9,7 +9,7 @@
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
         <UButton
-          v-if="!embedded"
+          v-if="showBackButton"
           icon="i-heroicons-arrow-right"
           label="عوده"
           variant="ghost"
@@ -91,13 +91,23 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
-import { useTournamentEmbedded } from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
+import type { TournamentOutletMode } from '~/features/tournament/core/types';
+import { shouldShowBackButton } from '~/features/tournament/core/utils';
+
+const props = withDefaults(
+  defineProps<{
+    mode?: TournamentOutletMode;
+    tournamentId?: string;
+  }>(),
+  { mode: DEFAULT_TOURNAMENT_OUTLET_MODE },
+);
 
 const tablekey = ref(Date.now())
 const router = useRouter()
 const route = useRoute()
-const embedded = useTournamentEmbedded()
-const tour_id = route.params.id.toString()
+const showBackButton = computed(() => shouldShowBackButton(props.mode))
+const tour_id = props.tournamentId ?? route.params.id.toString()
 const toast = useToast()
 
 

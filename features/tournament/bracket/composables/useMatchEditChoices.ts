@@ -1,10 +1,14 @@
-import { useMatch } from "~/features/tournament/core/composables/match";
+import { useMatch } from '~/features/tournament/shared/composables/match';
 import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/features/tournament/models/match";
 import type { Match } from "~/features/tournament/models/group";
 
-export const useMatchEditChoices = async (tour_id: string, match_id: string, match: Match) => {
+export function useMatchEditChoices(
+  tour_id: string,
+  match_id: string,
+  match: Match,
+) {
   const { getUpdateChoicesForMatch } = useMatch();
-  const choicesREQ = await getUpdateChoicesForMatch(tour_id, match_id);
+  const choicesREQ = getUpdateChoicesForMatch(tour_id, match_id);
 
   const state = reactive<IMatchUpdate>({
     refereeId: undefined,

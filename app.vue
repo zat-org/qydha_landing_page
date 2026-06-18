@@ -9,6 +9,7 @@
       'text-gray-900 dark:text-gray-100'
     ]"
   >
+  <NuxtLoadingIndicator color="#f59e0b" :height="3" />
   <UApp >   
     <div  class="w-full h-full flex flex-col flex-1" data-vaul-drawer-wrapper>
       <NuxtLayout >

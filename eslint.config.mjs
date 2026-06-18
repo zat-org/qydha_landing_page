@@ -1,6 +1,6 @@
 // @ts-check
 import withNuxt from './.nuxt/eslint.config.mjs'
-
+import eslintConfigPrettier from 'eslint-config-prettier/flat'
 export default withNuxt(
   {
     ignores: ['.nuxt/**', '.output/**', 'node_modules/**'],
@@ -15,4 +15,5 @@ export default withNuxt(
       'vue/html-self-closing': 'warn',
     },
   },
+  eslintConfigPrettier,
 )

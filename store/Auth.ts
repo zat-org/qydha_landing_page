@@ -28,6 +28,10 @@ export const useMyAuthStore = defineStore(
       return roles.value?.includes("StaffAdmin");
     });
 
+    const isAdmin = computed(
+      () => !!isSuperAdmin.value || !!isStaffAdmin.value,
+    );
+
     const isStreamer = computed(() => {
       return roles.value?.includes("Streamer");
     });
@@ -43,6 +47,7 @@ export const useMyAuthStore = defineStore(
       roles,
       isSuperAdmin,
       isStaffAdmin,
+      isAdmin,
       isStreamer,
       isOrganizer,
       BalootBoardSettings,

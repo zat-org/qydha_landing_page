@@ -21,12 +21,12 @@
 import { computed, watch, nextTick } from "vue";
 import { VueFlow, type VueFlowStore } from "@vue-flow/core";
 import type { Group } from "@/features/tournament/models/group";
-import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
+import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import MatchNode from "./MatchNode.vue";
 
 const props = defineProps<{ group: Group }>();
 
-const tourStore = useMyTournamentStore();
+const tourStore = useTournamentBracketStore();
 const { layoutFromMatchesTree } = useLayout();
 const { matchesTree, loserMatches, games } = storeToRefs(tourStore);
 

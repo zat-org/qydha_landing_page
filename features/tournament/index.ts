@@ -1,5 +1,6 @@
 export * from "./models";
 export * from "./core";
+export * from "./shared";
 export * from "./join-request";
 export * from "./teams";
 export * from "./group";

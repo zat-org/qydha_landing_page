@@ -23,7 +23,6 @@ const config: KnipConfig = {
     'store/**/*.ts',
     'models/**/*.ts',
     'mocks/**/*.ts',
-    'server/**/*.ts',
   ],
   ignoreDependencies: [
     // Nuxt module runtime deps (not imported directly in source)
@@ -31,7 +30,6 @@ const config: KnipConfig = {
     'tailwindcss',
     'postcss',
     'autoprefixer',
-    'h3',
     'ofetch',
     '@vueuse/core',
     '@tanstack/vue-table',

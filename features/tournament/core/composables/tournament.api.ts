@@ -1,6 +1,5 @@
 import {
   type GetTournamentParams,
-  type Tournament,
   OrderByStartAtDirection,
   type getTournamentResponse,
   TournamentState,
@@ -9,7 +8,6 @@ import {
   type TournamentStatistics,
   type UpdateJoinRequestSeetingsBody,
 } from "~/features/tournament/models/tournament";
-import { useMyAuthStore } from "~/store/Auth";
 import { TournamentPlayerJoinRequestType } from "../..";
 
 export const useTournament = () => {
@@ -58,39 +56,27 @@ export const useTournament = () => {
     const param = ref(unref(params));
     watch(
       [() => param.value.States, () => param.value.OrderByStartAtDirection],
-      (newValue, oldValue) => {
+      () => {
         param.value.PageNumber = 1;
       },
     );
 
     const { data, pending, error, refresh, status } =
-      await useLazyAsyncData<getTournamentResponse>(
-        "getAllTournament",
-        () => $api("/tournaments/dashboard", { query: unref(param) }),
-        { watch: [unref(param)], server: false },
+      await useAppLazyData<getTournamentResponse>(
+        () => buildAppDataKey('getAllTournament', unref(param)),
+        () => $api('/tournaments/dashboard', { query: unref(param) }),
+        { watch: [param], server: false },
       );
-    watch(
-      status,
-      () => {
-        if (status.value == "success") {
-          const tournaments = data.value?.data.items as Tournament[];
-          // useMyTournamentStore().setSelectedTournament(tournaments)
-        }
-      },
-      { immediate: true },
-    );
 
     return { data, pending, error, refresh, status };
   };
-  const getSingelTournament =  (
+  const getSingelTournament = (
     tournamentId: string,
     options?: { immediate?: boolean },
   ) => {
-    return  useLazyAsyncData<{ data: DetailTournament }>(
+    return useAppLazyData<{ data: DetailTournament }>(
       `getSingelTournament-${tournamentId}`,
-      () => {
-        return $api(`/tournaments/${tournamentId}/dashboard`);
-      },
+      () => $api(`/tournaments/${tournamentId}/dashboard`),
       { immediate: options?.immediate ?? true },
     );
   };
@@ -222,10 +208,17 @@ export const useTournament = () => {
     });
     const result = useAsyncData(
       `UpdateJoinRequestSeetings-${tournamentId.value}`,
-      () => $api(`/tournaments/${tournamentId.value}/add-players-by-qydha`, { method: "PUT", body: unref(body) }),
+      () =>
+        $api(`/tournaments/${tournamentId.value}/add-players-by-qydha`, {
+          method: "PUT",
+          body: unref(body),
+        }),
       { immediate: false },
     );
-    const fetchREQ = async (_tournamentId: string, _body: UpdateJoinRequestSeetingsBody) => {
+    const fetchREQ = async (
+      _tournamentId: string,
+      _body: UpdateJoinRequestSeetingsBody,
+    ) => {
       tournamentId.value = _tournamentId;
       body.value = _body;
       await result.execute();
@@ -235,8 +228,8 @@ export const useTournament = () => {
     };
     return { ...result, fetchREQ };
   };
-  const startTournament = async (tournamentId: string) => {
-    const result = await useAsyncData(
+  const startTournament = (tournamentId: string) => {
+    const result = useAsyncData(
       `startTournament-${tournamentId}`,
       () => $api(`/tournaments/${tournamentId}/start`, { method: "POST" }),
       { immediate: false },
@@ -249,8 +242,8 @@ export const useTournament = () => {
     return { result, fetchREQ };
   };
 
-  const startFinalGroupTournament = async (tournamentId: string) => {
-    const result = await useLazyAsyncData(
+  const startFinalGroupTournament = (tournamentId: string) => {
+    const result = useLazyAsyncData(
       `startFinalGroupTournament-${tournamentId}`,
       () =>
         $api(`/tournaments/${tournamentId}/start-final-group-matches`, {
@@ -270,8 +263,11 @@ export const useTournament = () => {
   };
 
   /** POST — يعيد البطولة لمرحلة إدارة خريطة المجموعة النهائية (`ManagingFinalGroupBracket`). */
-  const resetFinalGroupMatches = async (tournamentId: string) => {
-    const result = await useAsyncData<any, { message?: string; code: string }>(
+  const resetFinalGroupMatches = (tournamentId: string) => {
+    const result = useAsyncData<
+      { data: null },
+      { message?: string; code: string }
+    >(
       `resetFinalGroupMatches-${tournamentId}`,
       () =>
         $api(`/tournaments/${tournamentId}/reset-final-group-matches`, {
@@ -289,9 +285,12 @@ export const useTournament = () => {
 
     return { result, fetchREQ };
   };
-  const finishTournament = async () => {
+  const finishTournament = () => {
     const tour_id = ref("");
-    const result = await useAsyncData<any, { message?: string; code: string }>(
+    const result = useAsyncData<
+      { data: null },
+      { message?: string; code: string }
+    >(
       `finishTournament-${tour_id.value}`,
       () => $api(`/tournaments/${tour_id.value}/finish`, { method: "POST" }),
       { immediate: false },
@@ -307,16 +306,19 @@ export const useTournament = () => {
     return { ...result, fetchREQ };
   };
 
-  const getTournamentStatistics =  (tournamentId: string) => {
-    return  useAsyncData<{ data: TournamentStatistics }>(
+  const getTournamentStatistics = (tournamentId: string) => {
+    return useAsyncData<{ data: TournamentStatistics }>(
       `getTournamentStatistics-${tournamentId}`,
       () => $qaydhaapi(`/tournaments/${tournamentId}/statistics`),
     );
   };
 
-  const resumeFinalGroupAfterFinish = async () => {
+  const resumeFinalGroupAfterFinish = () => {
     const tour_id = ref();
-    const result = await useAsyncData<any, { message?: string; code: string }>(
+    const result = useAsyncData<
+      { data: null },
+      { message?: string; code: string }
+    >(
       `resumeTournamentAfterFinish-${tour_id.value}`,
       () =>
         $api(`/tournaments/${tour_id.value}/resume-final-group-matches`, {
@@ -334,9 +336,32 @@ export const useTournament = () => {
     return { ...result, fetchREQ };
   };
 
-  const approveTournamentPlan = async () => {
+  const deleteTournament = () => {
+    const tournamentId = ref<string>();
+    const result = useAsyncData<
+      { data: null },
+      { message?: string; code: string }
+    >(
+      () => `deleteTournament-${tournamentId.value}`,
+      () =>
+        $api(`/tournaments/${tournamentId.value}`, { method: "DELETE" }),
+      { immediate: false },
+    );
+
+    const fetchREQ = async (_tournamentId: string) => {
+      tournamentId.value = _tournamentId;
+      await result.execute();
+    };
+
+    return { ...result, fetchREQ };
+  };
+
+  const approveTournamentPlan = () => {
     const tour_id = ref();
-    const result = await useAsyncData<any, { message?: string; code: string }>(
+    const result = useAsyncData<
+      { data: null },
+      { message?: string; code: string }
+    >(
       `approveTournamentPlan-${tour_id.value}`,
       () =>
         $api(`/tournaments/${tour_id.value}/confirm-final-group-bracket`, {
@@ -354,7 +379,6 @@ export const useTournament = () => {
     return { ...result, fetchREQ };
   };
 
-
   return {
     getAllTournament,
     getSingelTournament,
@@ -371,5 +395,6 @@ export const useTournament = () => {
     finishTournament,
     resumeFinalGroupAfterFinish,
     approveTournamentPlan,
+    deleteTournament,
   };
 };

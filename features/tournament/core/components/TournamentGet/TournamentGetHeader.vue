@@ -31,12 +31,28 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from '@nuxt/ui';
 import TournamentJoinRequestSettingsDrawer from './TournamentJoinRequestSettingsDrawer.vue';
+import { TAB_VIEW_CONFIG } from '~/features/tournament/core/constants';
+import {
+  getPhaseViewPath,
+  openTournamentViewInNewTab,
+} from '~/features/tournament/core/utils';
+import type { TournamentTabView } from '~/features/tournament/core/types';
 import type { DetailTournament } from '~/features/tournament/models/tournament';
+
+const HEADER_TAB_VIEWS: {
+  view: TournamentTabView;
+  openInNewTab: boolean;
+}[] = [
+  { view: 'tables', openInNewTab: false },
+  { view: 'refree', openInNewTab: false },
+  { view: 'bracket', openInNewTab: true },
+  { view: 'statistics', openInNewTab: true },
+];
 
 const props = defineProps<{
   id: string;
   isAdmin: boolean;
-  tournament: DetailTournament["tournament"];
+  tournament: DetailTournament['tournament'];
 }>();
 
 const emit = defineEmits<{
@@ -58,21 +74,24 @@ watch(
 );
 
 const showInQydhaPending = computed(
-  () => showInQydhaReq.status.value === "pending",
+  () => showInQydhaReq.status.value === 'pending',
 );
 
 const joinSettingsDrawer = useTemplateRef<InstanceType<typeof TournamentJoinRequestSettingsDrawer>>(
-  "joinSettingsDrawer",
+  'joinSettingsDrawer',
 );
 
 function openJoinSettingsDrawer() {
   if (joinSettingsDrawer.value) joinSettingsDrawer.value.open = true;
 }
 
-function openInNewTab(path: string) {
-  if (import.meta.client) {
-    window.open(path, '_blank', 'noopener,noreferrer');
+function navigateToTabView(view: TournamentTabView) {
+  const item = HEADER_TAB_VIEWS.find((entry) => entry.view === view);
+  if (item?.openInNewTab) {
+    openTournamentViewInNewTab(view, props.id);
+    return;
   }
+  void navigateTo(getPhaseViewPath(view, props.id));
 }
 
 const settingsMenuItems = computed(() => {
@@ -106,26 +125,11 @@ const settingsMenuItems = computed(() => {
   }
 
   items.push(
-    {
-      label: 'الطاولات',
-      icon: 'i-mdi-table',
-      onSelect: () => { void navigateTo(`/tournament/${props.id}/table`); },
-    },
-    {
-      label: 'الحكام',
-      icon: 'i-mdi-gavel',
-      onSelect: () => { void navigateTo(`/tournament/${props.id}/refree`); },
-    },
-    {
-      label: 'خريطة البطولة',
-      icon: 'i-mdi-tournament',
-      onSelect: () => openInNewTab(`/tournament/${props.id}/bracket`),
-    },
-    {
-      label: 'إحصائيات البطولة',
-      icon: 'i-mdi-chart-box',
-      onSelect: () => openInNewTab(`/tournament/${props.id}/statistics`),
-    },
+    ...HEADER_TAB_VIEWS.map(({ view }) => ({
+      label: TAB_VIEW_CONFIG[view].label,
+      icon: TAB_VIEW_CONFIG[view].icon,
+      onSelect: () => navigateToTabView(view),
+    })),
   );
 
   return [[visibilityItem], items];
@@ -137,19 +141,19 @@ async function onShowInQydhaChange(value: boolean) {
 
   await showInQydhaReq.fetchREQ(props.id, value);
 
-  if (showInQydhaReq.status.value === "success") {
+  if (showInQydhaReq.status.value === 'success') {
     toast.add({
-      title: value ? "تم تفعيل الظهور في قيدها" : "تم إخفاء البطولة من قيدها",
-      color: "success",
+      title: value ? 'تم تفعيل الظهور في قيدها' : 'تم إخفاء البطولة من قيدها',
+      color: 'success',
     });
-    emit("refreshed");
+    emit('refreshed');
     return;
   }
 
   showInQydha.value = previous;
   toast.add({
-    title: "تعذّر تحديث إعداد الظهور",
-    color: "error",
+    title: 'تعذّر تحديث إعداد الظهور',
+    color: 'error',
   });
 }
 </script>

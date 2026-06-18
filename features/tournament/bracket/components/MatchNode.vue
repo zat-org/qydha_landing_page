@@ -135,13 +135,13 @@ import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "./StatusModal.vue";
 import EditModal from "./EditModal.vue";
 import MatchAdminActionConfirmModal from "./MatchAdminActionConfirmModal.vue";
-import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
+import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import { useMatchNodeUi } from "~/features/tournament/bracket/composables/useMatchNodeUi";
 
 const userStore = useMyAuthStore();
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
 
-const tourStore = useMyTournamentStore();
+const tourStore = useTournamentBracketStore();
 const { selectedRound } = storeToRefs(tourStore);
 const useStore = useMyAuthStore();
 const { privilege } = storeToRefs(useStore);
@@ -215,8 +215,8 @@ const onclick = () => {
 };
 
 const { MatchReset, MatchBack } = useMatch();
-const MatchResetREQ = await MatchReset();
-const MatchBackREQ = await MatchBack();
+const MatchResetREQ = MatchReset();
+const MatchBackREQ = MatchBack();
 
 const resetConfirmOpen = ref(false);
 const backConfirmOpen = ref(false);

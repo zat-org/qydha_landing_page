@@ -1,19 +1,13 @@
 import {
-
   type DetailTournamentRequest,
   type GetTournamentRequestParams,
   type getTournamentRequestResponse,
   type TournamentCreationRequest,
-  type TournamentRequest,
   type UpdateTournamentCreationRequest,
-  TournamentRequestState
+  TournamentRequestState,
 } from "~/features/tournament/models/tournamentRequest";
-import {
-  TournamentPrizeCurrency,
-} from "~/features/tournament/models/tournamentPrize";
-import {
-  TournamentType,
-} from "~/features/tournament/models/tournamenetType";
+import { TournamentPrizeCurrency } from "~/features/tournament/models/tournamentPrize";
+import { TournamentType } from "~/features/tournament/models/tournamenetType";
 
 import { useMyAuthStore } from "~/store/Auth";
 const tournamentStateLabels: Record<TournamentRequestState, string> = {
@@ -22,25 +16,27 @@ const tournamentStateLabels: Record<TournamentRequestState, string> = {
   [TournamentRequestState.Rejected]: "تم الرفض",
   [TournamentRequestState.Canceled]: "تم الالغاء",
 };
-const tournamentStateColors: Record<TournamentRequestState,'warning'|'success'|'error'|'neutral'> = {
-  [TournamentRequestState.Pending]:"warning", // Tailwind yellow for pending
-  [TournamentRequestState.Approved]:"success", // Tailwind green for approved
-  [TournamentRequestState.Rejected]:"error", // Tailwind red for rejected
-  [TournamentRequestState.Canceled]:"neutral", // Tailwind gray for canceled
+const tournamentStateColors: Record<
+  TournamentRequestState,
+  "warning" | "success" | "error" | "neutral"
+> = {
+  [TournamentRequestState.Pending]: "warning", // Tailwind yellow for pending
+  [TournamentRequestState.Approved]: "success", // Tailwind green for approved
+  [TournamentRequestState.Rejected]: "error", // Tailwind red for rejected
+  [TournamentRequestState.Canceled]: "neutral", // Tailwind gray for canceled
 };
 
 const getStateColor = (state: TournamentRequestState) => {
-  return tournamentStateColors[state]
-}
+  return tournamentStateColors[state];
+};
 const tournamentTypeLabels: Record<TournamentType, string> = {
   [TournamentType.public]: "عامة",
   [TournamentType.private]: "خاصة ",
 };
 
-
-const tournamentTypeColors: Record<TournamentType, 'info'|'neutral'> = {
-  [TournamentType.public]:"info",
-  [TournamentType.private]:"neutral",
+const tournamentTypeColors: Record<TournamentType, "info" | "neutral"> = {
+  [TournamentType.public]: "info",
+  [TournamentType.private]: "neutral",
 };
 const tournamentprizeCurrencyLable: Record<TournamentPrizeCurrency, string> = {
   [TournamentPrizeCurrency.USD]: "دولار أمريكي ",
@@ -56,18 +52,17 @@ const tournamentprizeCurrencyLable: Record<TournamentPrizeCurrency, string> = {
 
 export const useTournamentRequest = () => {
   const { $api } = useNuxtApp();
-  const user = useMyAuthStore();
 
   const AddTournamentRequest = () => {
     const body = ref(new FormData());
     const { data, status, execute, pending, error } = useAsyncData(
       "Crearetrequest",
       () =>
-        $api("/tournaments/creation-requests",
-           {  method: "post",
+        $api("/tournaments/creation-requests", {
+          method: "post",
           body: body.value,
         }),
-      { immediate: false }
+      { immediate: false },
     );
     // Helper function to convert object to FormData
 
@@ -83,12 +78,9 @@ export const useTournamentRequest = () => {
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
       body.value.append(
         "isContactPhoneWhatsapp",
-        String(_body.isContactPhoneWhatsapp)
+        String(_body.isContactPhoneWhatsapp),
       );
-      body.value.append(
-        "AddPlayersByQydha",
-        String(_body.isAddPlayersByQydha)
-      );
+      body.value.append("AddPlayersByQydha", String(_body.isAddPlayersByQydha));
       body.value.append("teamsCount", String(_body.teamsCount));
       body.value.append("tablesCount", String(_body.tablesCount));
       if (_body.isAddPlayersByQydha) {
@@ -99,19 +91,28 @@ export const useTournamentRequest = () => {
           body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
         }
         if (_body.joinRequestMaxCount) {
-          body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));
+          body.value.append(
+            "joinRequestMaxCount",
+            String(_body.joinRequestMaxCount),
+          );
         }
         if (_body.allowedJoinRequestType) {
-          body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType);
+          body.value.append(
+            "allowedJoinRequestType",
+            _body.allowedJoinRequestType,
+          );
         }
         // if (_body.minimumSubscriptionDays) {
-          body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays));
+        body.value.append(
+          "minimumSubscriptionDays",
+          String(_body.minimumSubscriptionDays),
+        );
         // }
       }
       if (_body.tournamentPrivatePassword) {
         body.value.append(
           "tournamentPrivatePassword",
-          _body.tournamentPrivatePassword
+          _body.tournamentPrivatePassword,
         );
       }
 
@@ -124,10 +125,9 @@ export const useTournamentRequest = () => {
       body.value.append("prizes", JSON.stringify(_body.prizes));
       if (_body.rules.length > 0) {
         body.value!.append(`rules`, JSON.stringify(_body.rules));
-      }else{
+      } else {
         body.value!.append("rules", "[]");
       }
-
 
       await execute();
     };
@@ -163,9 +163,9 @@ export const useTournamentRequest = () => {
       "OrganizerCancelRequest",
       () =>
         $api(`/tournaments/creation-requests/${unref(id)}/cancel`, {
-          method: "post",  
+          method: "post",
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (_id: string) => {
       id.value = _id;
@@ -173,43 +173,53 @@ export const useTournamentRequest = () => {
       if (unref(status) == "success") {
         refreshNuxtData("AdminTourReqests");
         // refreshNuxtData("OrganizerTourReqests");
-
       }
     };
     return { data, status, pending, fetchREQ };
   };
   // admin
-  const AdminGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
+  const AdminGetTournamentRequests = (
+    params: Ref<GetTournamentRequestParams>,
+  ) => {
     const param = ref(params.value);
-    watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
-      param.value.pageNumber=1
-    })
-
-    const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
-      "AdminTourReqests",
-      () => $api("tournaments/creation-requests", { params: unref(param) }),
-      {
-        watch: [unref(param)],
-        deep: true,
-      }
+    watch(
+      [
+        () => param.value.searchToken,
+        () => param.value.state,
+        () => param.value.type,
+      ],
+      () => {
+        param.value.pageNumber = 1;
+      },
     );
+
+    const { data, status, pending } =
+      useAsyncData<getTournamentRequestResponse>(
+        "AdminTourReqests",
+        () => $api("tournaments/creation-requests", { params: unref(param) }),
+        {
+          watch: [unref(param)],
+          deep: true,
+        },
+      );
     return { data, status, pending };
   };
   const AdminApproveRequest = () => {
     const id = ref();
     const { data, status, execute, pending } = useAsyncData(
-      ()=>['AdminApproveRequest',id.value].join('-'),
+      () => ["AdminApproveRequest", id.value].join("-"),
       () =>
         $api(`/tournaments/creation-requests/${unref(id)}/approve`, {
           method: "post",
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (_id: string) => {
       id.value = _id;
       await execute();
       if (unref(status) == "success") {
         refreshNuxtData("AdminTourReqests");
+        clearNuxtData((key)=>key.startsWith("getAllTournament"));
       }
     };
     return { data, status, pending, fetchREQ };
@@ -217,12 +227,12 @@ export const useTournamentRequest = () => {
   const AdminRejectRequest = () => {
     const id = ref();
     const { data, status, execute, pending } = useAsyncData(
-      ()=>['AdminRejectRequest',id.value].join('-'),
+      () => ["AdminRejectRequest", id.value].join("-"),
       () =>
         $api(`/tournaments/creation-requests/${unref(id)}/reject`, {
           method: "post",
         }),
-      { immediate: false }
+      { immediate: false },
     );
     const fetchREQ = async (_id: string) => {
       id.value = _id;
@@ -237,7 +247,7 @@ export const useTournamentRequest = () => {
     return useLazyAsyncData<{ data: DetailTournamentRequest }>(
       `AdminGetSingleTournamentRequest-${id}`,
       () => $api(`/tournaments/creation-requests/${unref(id)}`),
-      { server: false }
+      { server: false },
     );
   };
 
@@ -252,7 +262,7 @@ export const useTournamentRequest = () => {
           method: "put",
           body: unref(body),
         }),
-      { server: false, immediate: false }
+      { server: false, immediate: false },
     );
     const fetchReq = async (_body: UpdateTournamentCreationRequest) => {
       body.value = new FormData();
@@ -266,61 +276,70 @@ export const useTournamentRequest = () => {
       body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
       body.value.append(
         "isContactPhoneWhatsapp",
-        String(_body.isContactPhoneWhatsapp)
+        String(_body.isContactPhoneWhatsapp),
       );
       body.value.append(
         "isAddPlayersByQydha",
-        String(_body.isAddPlayersByQydha)
+        String(_body.isAddPlayersByQydha),
       );
       body.value.append("teamsCount", String(_body.teamsCount));
       body.value.append("tablesCount", String(_body.tablesCount));
       if (_body.isAddPlayersByQydha) {
         if (_body.joinRequestStartAt) {
-          console.log()
+          console.log();
           body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
         }
         if (_body.joinRequestEndAt) {
           body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
         }
         if (_body.joinRequestMaxCount) {
-          body.value.append("joinRequestMaxCount", String(_body.joinRequestMaxCount));
+          body.value.append(
+            "joinRequestMaxCount",
+            String(_body.joinRequestMaxCount),
+          );
         }
         if (_body.allowedJoinRequestType) {
-          body.value.append("allowedJoinRequestType", _body.allowedJoinRequestType);
+          body.value.append(
+            "allowedJoinRequestType",
+            _body.allowedJoinRequestType,
+          );
         }
         if (_body.minimumSubscriptionDays) {
-          body.value.append("minimumSubscriptionDays", String(_body.minimumSubscriptionDays));
+          body.value.append(
+            "minimumSubscriptionDays",
+            String(_body.minimumSubscriptionDays),
+          );
         }
       }
       if (_body.tournamentPrivatePassword) {
         body.value.append(
           "tournamentPrivatePassword",
-          _body.tournamentPrivatePassword
+          _body.tournamentPrivatePassword,
         );
       }
 
       body.value.append("location", JSON.stringify(_body.location));
       if (_body.logo) body.value.append("logo", _body.logo);
 
-      body.value.append('remainingSponsorsUrls',JSON.stringify(_body.remainingSponsorsUrls))
+      body.value.append(
+        "remainingSponsorsUrls",
+        JSON.stringify(_body.remainingSponsorsUrls),
+      );
       _body.sponsors.forEach((sponsor, index) => {
         body.value!.append(`sponsors[${index}]`, sponsor);
       });
       body.value.append("prizes", JSON.stringify(_body.prizes));
       if (_body.rules.length > 0) {
-          body.value!.append(`rules`, JSON.stringify(_body.rules));
-      }else{
+        body.value!.append(`rules`, JSON.stringify(_body.rules));
+      } else {
         body.value!.append("rules", "[]");
       }
 
-
       await execute();
-      if(status.value=='success'){
+      if (status.value == "success") {
         // refreshNuxtData("OrganizerTourReqests")
-        refreshNuxtData("AdminTourReqests")
-
+        refreshNuxtData("AdminTourReqests");
       }
-
     };
     return { data, fetchReq, status, error };
   };
@@ -369,6 +388,6 @@ export const useTournamentRequest = () => {
     getTournamnetStateOptions,
     getTournamentTypeOptions,
     getTournamentPrizeCurrency,
-    getStateColor
+    getStateColor,
   };
 };

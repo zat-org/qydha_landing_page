@@ -3,7 +3,7 @@
         <div class="flex flex-col gap-6 ">
             <div class="flex items-center gap-4">
                 <UButton
-                    v-if="!embedded"
+                    v-if="showBackButton"
                     icon="i-heroicons-arrow-right"
                     variant="ghost"
                     @click="router.back()"
@@ -28,14 +28,17 @@
 </template>
 
 <script lang="ts" setup>
-import { useTournamentEmbedded } from '~/features/tournament/core/components/TournamentGet/useTournamentGetWorkspace';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
+import type { TournamentOutletMode } from '~/features/tournament/core/types';
+import { shouldShowBackButton } from '~/features/tournament/core/utils';
 
-defineProps<{
-    showBracketButton?: boolean;
-}>();
+const props = withDefaults(
+  defineProps<{
+    mode?: TournamentOutletMode;
+  }>(),
+  { mode: DEFAULT_TOURNAMENT_OUTLET_MODE },
+);
 
 const router = useRouter();
-const route = useRoute();
-const tournamentId = route.params.id?.toString() ?? "";
-const embedded = useTournamentEmbedded();
+const showBackButton = computed(() => shouldShowBackButton(props.mode));
 </script>

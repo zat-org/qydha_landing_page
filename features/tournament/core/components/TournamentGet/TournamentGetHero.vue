@@ -74,7 +74,7 @@
                     {{ getState(tour.tournament.state)?.label }}
                   </UBadge>
                   <UBadge v-if="detailedState" color="neutral" variant="outline" size="lg">
-                    {{ PHASE_LABELS_AR[detailedState] }}
+                    {{ getPhaseLabel(detailedState) }}
                   </UBadge>
                   <UBadge v-if="tour.tournament?.tournamentType"
                     :color="toBadgeColor(getType(tour.tournament.tournamentType)?.color, 'primary')" variant="soft"
@@ -271,29 +271,70 @@
 <script lang="ts" setup>
 import {
   type DetailTournament,
-  TournamentState,
-  type TournamentDetailedState,
 } from "~/features/tournament/models/tournament";
-import type { TournamentType } from "~/features/tournament/models/tournamenetType";
-import type { TournamentPrizeCurrency } from "~/features/tournament/models/tournamentPrize";
+import { useTournamentLookups } from '~/features/tournament/core/composables/useTournamentLookups';
 import { formatDate } from "~/utils/formatDate";
-import { PHASE_LABELS_AR } from "~/features/tournament/core/composables/useTournamentDashboardPhase";
+import { getPhaseLabel } from '~/features/tournament/core/utils';
 
-type TournamentGetHeroAccordionItem = { value: string; slot: string; label: string };
-type TournamentGetDetailsAccordionItem = { label: string; slot: string; icon: string };
+const HERO_ACCORDION_ITEM_VALUE = 'tournament-hero';
 
-defineProps<{
+const props = defineProps<{
   tour: DetailTournament;
-  heroAccordionItems: TournamentGetHeroAccordionItem[];
-  detailsAccordionItems: TournamentGetDetailsAccordionItem[];
-  detailedState: TournamentDetailedState | undefined;
-  getState: (v: TournamentState) => { label: string; color: string } | undefined;
-  getType: (v: TournamentType) => { label: string; color?: string | null } | undefined;
-  getCurrency: (v: TournamentPrizeCurrency) => { label: string } | undefined;
 }>();
 
-const heroAccordionOpen = defineModel<string | undefined>("heroAccordionOpen", { required: true });
-const detailsSectionsOpen = defineModel<string[]>("detailsSectionsOpen", { required: true });
+const { getState, getType, getCurrency } = useTournamentLookups();
+
+const heroAccordionOpen = ref<string | undefined>(undefined);
+const detailsSectionsOpen = ref<string[]>([]);
+
+const heroAccordionItems = [
+  {
+    value: HERO_ACCORDION_ITEM_VALUE,
+    slot: 'tournament-hero',
+    label: '',
+  },
+];
+
+const detailedState = computed(() => props.tour.tournament?.detailedState);
+
+const detailsAccordionItems = computed(() => {
+  const t = props.tour?.tournament;
+  if (!t) return [] as { label: string; slot: string; icon: string }[];
+
+  const items: { label: string; slot: string; icon: string }[] = [];
+
+  if (t.sponsors?.length) {
+    items.push({
+      label: 'الرعاة',
+      slot: 'acc-sponsors',
+      icon: 'i-mdi-handshake-outline',
+    });
+  }
+
+  items.push({
+    label: 'الجوائز',
+    slot: 'acc-prizes',
+    icon: 'i-mdi-trophy-variant-outline',
+  });
+
+  if (t.tournamentRules?.length) {
+    items.push({
+      label: 'قواعد البطولة',
+      slot: 'acc-rules',
+      icon: 'i-mdi-book-open-page-variant',
+    });
+  }
+
+  if (t.moderators?.length) {
+    items.push({
+      label: 'المشرفون',
+      slot: 'acc-moderators',
+      icon: 'i-mdi-account-supervisor-outline',
+    });
+  }
+
+  return items;
+});
 
 type BadgeColor = "neutral" | "success" | "warning" | "error" | "primary" | "secondary" | "info";
 

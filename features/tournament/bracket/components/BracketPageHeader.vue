@@ -55,7 +55,7 @@ import {
   TournamentDetailedState,
   TournamentState,
 } from "~/features/tournament/models/tournament";
-import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
+import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import { useMyAuthStore } from "~/store/Auth";
 
 const emit = defineEmits<{
@@ -70,7 +70,7 @@ const emit = defineEmits<{
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 
-const tourStore = useMyTournamentStore();
+const tourStore = useTournamentBracketStore();
 const route = useRoute();
 const tourid = route.params.id?.toString() || '';
 const getTourRequest = await useTournament().getSingelTournament(tourid);

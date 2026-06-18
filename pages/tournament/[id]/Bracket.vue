@@ -98,13 +98,13 @@
         @success="onCreateMatchDrawerSuccess"
       />
 
-      <TournamentGetStartConfirmModal
+      <TournamentStartConfirmModal
         v-model:open="startTournamentConfirmOpen"
         :pending="isStartFinalGroupPending"
         @confirm="confirmAndStartTournament"
       />
 
-      <TournamentGetApprovePlanConfirmModal
+      <TournamentApprovePlanConfirmModal
         v-model:open="startTournamentConfirmMapOpen"
         :pending="isStartFinalGroupPending"
         @confirm="confirmAndStartTournamentMap"
@@ -115,14 +115,14 @@
 
 <script lang="ts" setup>
 import { GroupType, type RoundGroupDetails } from '~/features/tournament/models/group';
-import { useMyTournamentStore } from '~/features/tournament/core/stores/tournament';
+import { useTournamentBracketStore } from '~/features/tournament/bracket/stores';
 import { Bracket, BracketPageHeader } from '~/features/tournament/bracket/components';
 import UpdateRoundDrawer from '~/features/tournament/group/components/Round/UpdateRoundDrawer.vue';
 import CreateMatchDrawer from '~/features/tournament/group/components/CreateMatchDrawer.vue';
-import TournamentGetStartConfirmModal from '~/features/tournament/core/components/TournamentGet/TournamentGetStartConfirmModal.vue';
+import TournamentStartConfirmModal from '~/features/tournament/core/components/shared/TournamentStartConfirmModal.vue';
 import { GroupState } from '~/features/tournament/models/group';
 import QydhaLogo from '@/assets/images/qydha-logo.svg';
-import TournamentGetApprovePlanConfirmModal from '~/features/tournament/core/components/TournamentGet/TournamentGetApprovePlanConfirmModal.vue';
+import TournamentApprovePlanConfirmModal from '~/features/tournament/core/components/shared/TournamentApprovePlanConfirmModal.vue';
 import type { DropdownMenuItem } from '@nuxt/ui';
 import { useMyAuthStore } from '~/store/Auth';
 
@@ -243,7 +243,7 @@ watch(
 
 
 
-const tourStore = useMyTournamentStore();
+const tourStore = useTournamentBracketStore();
 
 
 const canShowBracket = computed(() => {
@@ -255,7 +255,7 @@ const canShowBracket = computed(() => {
 
 const toast = useToast();
 const createMatchDrawer = useTemplateRef<InstanceType<typeof CreateMatchDrawer>>('createMatchDrawer');
-const startFinalGroupTournamentReq = await useTournament().startFinalGroupTournament(tourid);
+const startFinalGroupTournamentReq = useTournament().startFinalGroupTournament(tourid);
 const startTournamentConfirmOpen = ref(false);
 
 const isStartFinalGroupPending = computed(
@@ -310,7 +310,7 @@ const onCreateMatchDrawerSuccess = async () => {
   await tourStore.refreshBracket(tourid);
 };
 
-const finishReq = await useTournament().finishTournament();
+const finishReq = useTournament().finishTournament();
 const finishTournament = async () => {
   await finishReq.fetchREQ(tourid);
   if (finishReq.status.value == 'success') {
@@ -329,7 +329,7 @@ const finishTournament = async () => {
   }
 };
 
-const resumeReq = await useTournament().resumeFinalGroupAfterFinish();
+const resumeReq = useTournament().resumeFinalGroupAfterFinish();
 const resumeFinalGroupAfterFinish = async () => {
   await resumeReq.fetchREQ(tourid);
   if (resumeReq.status.value == 'success') {
@@ -356,7 +356,7 @@ const openStartTournamentConfirmMap = () => {
   startTournamentConfirmMapOpen.value = true;
 };
 
-const approveReq = await useTournament().approveTournamentPlan();
+const approveReq = useTournament().approveTournamentPlan();
 const confirmAndStartTournamentMap = async () => {
   await approveReq.fetchREQ(tourid);
   if (approveReq.status.value === 'success') {

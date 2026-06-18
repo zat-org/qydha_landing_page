@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="linkItems.length"
-    class="flex  flex-wrap gap-3 sm:flex-row"
+    class="flex flex-wrap gap-3 sm:flex-row"
   >
     <UButton
       v-for="item in linkItems"
@@ -19,24 +19,20 @@
 </template>
 
 <script lang="ts" setup>
-import type { TournamentDetailedState } from '~/features/tournament/models/tournament';
-import {
-  getPhaseViewPath,
-  getTabViewsForPhase,
-  TAB_VIEW_ICONS,
-  TAB_VIEW_LABELS,
-} from './useTournamentPhaseNavigation';
+import { getPhaseViewPath } from '~/features/tournament/core/utils';
+import { TAB_VIEW_CONFIG } from '~/features/tournament/core/constants';
+import type { TournamentTabView } from '~/features/tournament/core/types';
 
 const props = defineProps<{
   tournamentId: string;
-  detailedState: TournamentDetailedState | undefined;
+  tabs: TournamentTabView[];
 }>();
 
 const linkItems = computed(() =>
-  getTabViewsForPhase(props.detailedState).map((view) => ({
+  props.tabs.map((view) => ({
     view,
-    label: TAB_VIEW_LABELS[view],
-    icon: TAB_VIEW_ICONS[view],
+    label: TAB_VIEW_CONFIG[view].label,
+    icon: TAB_VIEW_CONFIG[view].icon,
     to: getPhaseViewPath(view, props.tournamentId),
   })),
 );

@@ -6,8 +6,8 @@ const Description = `مكنك الآن عبر تطبيق "قيدها" إدارة
                 جميع الباقات الخاصة بتطبيق "قيدها". كما تتوفر خدمات خاصة في الباقات المميزة. اشترك الآن واحصل على هذه
                 المميزات الاستثنائية!
 `;
-const Keywords =
-  "زات , سام , بلوت , ورقة , لعب ,قيدها ,بلوت ,هاند , تريكس , كنكان ,تسجيل متقدم , حكام , شات , اوساسيونا , الادهم , طويق , دوري , الحزام , كاس , سوبر , اوراق , zat , baloot , sam , calculator";
+// const Keywords =
+  // "زات , سام , بلوت , ورقة , لعب ,قيدها ,بلوت ,هاند , تريكس , كنكان ,تسجيل متقدم , حكام , شات , اوساسيونا , الادهم , طويق , دوري , الحزام , كاس , سوبر , اوراق , zat , baloot , sam , calculator";
 const LogoURL =
   "https://storage.googleapis.com/qydha_bucket/qydha_assets/qydha.com-assets/qydha-logo.svg";
 const WebsiteUrl = "https://qydha.com/";
@@ -51,11 +51,30 @@ export default defineNuxtConfig({
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { charset: "utf-8" },
       ],
+      link: [
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        {
+          rel: "preconnect",
+          href: "https://fonts.gstatic.com",
+          crossorigin: "anonymous",
+        },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap",
+        },
+      ],
     },
+  },
+
+  aos: {
+    once: true,
+    duration: 400,
+    debounceDelay: 50,
+    throttleDelay: 99,
   },
   ogImage: {
     defaults: {
-      component: "NuxtSeo",
+      // component: "NuxtSeo",
       // title: "Welcome to Nuxt OG Image",
       // description: "You can modify the og:image by changing these props.",
       // colorMode: "dark",
@@ -79,6 +98,7 @@ export default defineNuxtConfig({
 
   compatibilityDate: "2026-06-01",
 
+
   imports: {
     dirs: [
       "composables",
@@ -88,14 +108,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Private keys (only available on server-side)
-    apiSecret: process.env.API_SECRET || process.env.QydhaToken || 'default-secret-change-in-production', // Secret for request validation
-    qydhaapiBase: process.env.QydhaApiBase,
-    
     public: {
       qydhaapiBase: process.env.QydhaApiBase,
       qydhaToken: process.env.QydhaToken,
-      // apiBase: "/api",
       apiBase: process.env.QydhaApiBase,
 
       logo: LogoURL,
@@ -110,7 +125,9 @@ export default defineNuxtConfig({
   },
 
   devtools: {
-    enabled: process.env.NODE_ENV === "development",
+    enabled:
+      process.env.NODE_ENV === "development"
+      && process.env.NUXT_DEVTOOLS === "true",
   },
 
   sourcemap: {

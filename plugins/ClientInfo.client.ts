@@ -1,7 +1,13 @@
 import { useMyClientInfoStore } from "~/store/ClientInfo";
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin(() => {
   const clientInfoStore = useMyClientInfoStore();
-  clientInfoStore.Init();
-  console.log(clientInfoStore.clientInfo)
+
+  const runInit = () => clientInfoStore.Init();
+
+  if (typeof requestIdleCallback === "function") {
+    requestIdleCallback(runInit);
+  } else {
+    setTimeout(runInit, 0);
+  }
 });

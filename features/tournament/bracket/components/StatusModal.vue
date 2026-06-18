@@ -135,11 +135,11 @@
 <script lang="ts" setup>
 import type { Match } from "~/features/tournament/models/group";
 import type { IMathStat } from "~/features/tournament/models/MatchStat";
-import { useMyTournamentStore } from "~/features/tournament/core/stores/tournament";
+import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import qydhaLogo from "~/assets/images/qydha-logo.svg";
 
 const props = defineProps<{ m: Match }>();
-const gameStore = useMyTournamentStore();
+const gameStore = useTournamentBracketStore();
 
 const start = async () => {
   const selectedGame = gameStore.games.find((g) => g.id === props.m.qydhaGameId);
