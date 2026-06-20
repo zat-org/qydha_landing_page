@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center">
         <div class="flex items-center gap-4">
           <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
-            @click="router.back()" />
+            @click="navigateTo(`/tournament/${tour_id}`)" />
           <h1 class="text-2xl font-bold">     
           <span>الطاولات</span>
           ({{ tablesNumber }})
@@ -113,14 +113,13 @@ import AddModal from './AddModal.vue';
 import { TournamentDetailedState } from '~/features/tournament/models/tournament';
 const overlay = useOverlay()
 const route = useRoute()
-const router = useRouter()
 const toast = useToast()
 const tour_id = route.params.id.toString()
-const tourREQ =  useTournament().getSingelTournament(tour_id)
+const tourREQ =  useSingleTournament().getSingelTournament(tour_id)
 
 const tour = computed(() => {
   if (tourREQ.data.value)
-    return tourREQ.data.value.data.tournament
+    return tourREQ.data.value.tournament
 })
 const canAddTable = computed(() => {
   return tour.value?.detailedState!=TournamentDetailedState.Finished

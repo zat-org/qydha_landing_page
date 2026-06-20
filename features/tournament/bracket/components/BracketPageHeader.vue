@@ -50,13 +50,10 @@
 </template>
 
 <script lang="ts" setup>
-import { GroupState, GroupType, type RoundGroupDetails } from "~/features/tournament/models/group";
-import {
-  TournamentDetailedState,
-  TournamentState,
-} from "~/features/tournament/models/tournament";
+import { GroupType, type RoundGroupDetails } from "~/features/tournament/models/group";
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import { useMyAuthStore } from "~/store/Auth";
+import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -68,13 +65,22 @@ const emit = defineEmits<{
 }>();
 
 const userStore = useMyAuthStore();
-const { user } = storeToRefs(userStore);
+const { user, isAdmin } = storeToRefs(userStore);
+const phaseStore = useTournamentPhaseStore();
 
 const tourStore = useTournamentBracketStore();
 const route = useRoute();
 const tourid = route.params.id?.toString() || '';
-const getTourRequest = await useTournament().getSingelTournament(tourid);
-const tour = computed(() => getTourRequest.data.value?.data);
+const getTourRequest = await useSingleTournament().getSingelTournament(tourid);
+const tour = computed(() => getTourRequest.data.value);
+
+watch(
+  [tour, isAdmin],
+  ([nextTour, admin]) => {
+    if (nextTour) phaseStore.syncFromTour(nextTour, admin);
+  },
+  { immediate: true },
+);
 
 const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selectedGroup?.data.id ?? "",{immediate: false});
 // const rounds = computed(() => getRounds.data.value?.data.rounds);
@@ -93,39 +99,24 @@ const isAdminOrStaff = computed(() => {
   return !!roles?.includes("SuperAdmin") || !!roles?.includes("StaffAdmin");
 });
 
-const finalGroup = computed(() =>
-  tour.value?.tournament?.groups?.find((g) => g.type === GroupType.Final),
-);
-
 const isFinalGroupSelected = computed(
   () => tourStore.selectedGroup?.data.type === GroupType.Final,
 );
 
-const showRegenerateFinalMatchesButton = computed(
-  () =>
-    tour.value?.tournament?.detailedState ===
-    TournamentDetailedState.ManagingFinalGroupBracket,
+const showRegenerateFinalMatchesButton = computed(() =>
+  phaseStore.checkGuard('showRegenerateFinalMatches'),
 );
 
-const showStartTournamentCta = computed(
-  () =>
-    tour.value?.tournament?.state === TournamentState.Upcoming &&
-    finalGroup.value?.state === GroupState.WaitingMatchesStarting,
+const showStartTournamentCta = computed(() =>
+  phaseStore.checkGuard('showStartTournamentCta'),
 );
 
-const showFinishTournamentCta = computed(
-  () =>
-    tour.value?.tournament?.state === TournamentState.Running &&
-    finalGroup.value?.state === GroupState.MatchesRunning
-
+const showFinishTournamentCta = computed(() =>
+  phaseStore.checkGuard('showFinishTournamentCta'),
 );
 
-
-const showResumeFinalGroupAfterFinishCta = computed(
-  () =>
-    tour.value?.tournament?.state === TournamentState.Finished &&
-    finalGroup.value?.state === GroupState.MatchesFinished
-
+const showResumeFinalGroupAfterFinishCta = computed(() =>
+  phaseStore.checkGuard('showResumeAfterFinishCta'),
 );
 
 const selectedRoundId = ref<string | undefined>(tourStore.selectedRound?.id);

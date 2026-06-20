@@ -3,27 +3,45 @@
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <UButton icon="i-heroicons-arrow-right" label="عوده" variant="ghost" color="neutral"
-            @click="router.back()" />
-          <h1 class="text-2xl font-bold">     
-          <span>الحكام</span>
-          ({{ refreesNumber }})
-        </h1>
+          <UButton
+            icon="i-heroicons-arrow-right"
+            label="عوده"
+            variant="ghost"
+            color="neutral"
+            @click="navigateTo(`/tournament/${tour_id}`)"
+          />
+          <h1 class="text-2xl font-bold">
+            <span>الحكام</span>
+            ({{ refreesNumber }})
+          </h1>
         </div>
 
-      <UButton v-if="canAddRefree" label="اضافة حكم " @click="openAddModal" icon ="material-symbols:add"/>
-
+        <UButton
+          v-if="canAddRefree"
+          label="اضافة حكم "
+          @click="openAddModal"
+          icon="material-symbols:add"
+        />
       </div>
     </template>
 
-    <UTable :data="refrees" :columns="cols" >
-      <template #actions-cell="{row}">
-        <UButton v-if="row.original.connectedGamesCount === 0" icon="material-symbols:delete" color="error" @click="deleteref(row.original)"/>
+    <UTable :data="refrees" :columns="cols">
+      <template #actions-cell="{ row }">
+        <UButton
+          v-if="row.original.connectedGamesCount === 0"
+          icon="material-symbols:delete"
+          color="error"
+          @click="deleteref(row.original)"
+        />
       </template>
     </UTable>
-    
   </UCard>
-  <UDrawer v-model:open="isDrawerOpen" title="اضافة حكم" description="اضافة حكم جديد" direction="left"> 
+  <UDrawer
+    v-model:open="isDrawerOpen"
+    title="اضافة حكم"
+    description="اضافة حكم جديد"
+    direction="left"
+  >
     <template #content>
       <div class="min-w-[600px]">
         <RefereeAddForm @close="isDrawerOpen = false" />
@@ -33,64 +51,62 @@
 </template>
 
 <script lang="ts" setup>
-import type { MinUser } from '~/models/user';
-import RefereeAddForm from './AddForm.vue';
-import { TournamentDetailedState } from '~/features/tournament/models/tournament';
+import type { MinUser } from "~/models/user";
+import RefereeAddForm from "./AddForm.vue";
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 
-const route = useRoute()
-const router = useRouter()
-const tour_id = route.params.id.toString()
-const toast = useToast()
-const tourREQ= await useTournament().getSingelTournament(tour_id)
-if (tourREQ.status.value =="error"){
-navigateTo('/tournament')
+const route = useRoute();
+const tour_id = route.params.id?.toString() || "";
+const toast = useToast();
+const tourREQ = await useSingleTournament().getSingelTournament(tour_id);
+if (tourREQ.status.value == "error") {
+  navigateTo("/tournament");
 }
-const isDrawerOpen = ref(false)
+const isDrawerOpen = ref(false);
 
 const tour = computed(() => {
- if (tourREQ.data.value)
-    return tourREQ.data.value.data.tournament
-})
+  if (tourREQ.data.value) return tourREQ.data.value?.tournament;
+  return undefined;
+});
 const canAddRefree = computed(() => {
-  return tour.value?.detailedState!=TournamentDetailedState.Finished
-})
+  return tour.value?.detailedState != TournamentDetailedState.Finished;
+});
 
-const refreeGetREQ = await useTournamentRefree().getTournamentRefree()
-await refreeGetREQ.fetchREQ(tour_id)
-
+const refreeGetREQ = await useTournamentRefree().getTournamentRefree();
+await refreeGetREQ.fetchREQ(tour_id);
 
 const refrees = computed(() => {
-  if (refreeGetREQ.data.value)
-    return refreeGetREQ.data.value.data
-})
+  if (refreeGetREQ.data.value) return refreeGetREQ.data.value.data;
+  return [];
+});
 
 const refreesNumber = computed(() => {
-  return refrees.value?.length || 0
-})
-const cols= [
-   {accessorKey:"username",header:"الاسم"},
-  {accessorKey:"phone",header:"الهاتف"},
-  {accessorKey:"actions",header:"#"},
-]
+  return refrees.value?.length || 0;
+});
+const cols = [
+  { accessorKey: "username", header: "الاسم" },
+  { accessorKey: "phone", header: "الهاتف" },
+  { accessorKey: "actions", header: "#" },
+];
 
 const openAddModal = () => {
-  isDrawerOpen.value = true
+  isDrawerOpen.value = true;
   // overlay.create(AddModal).open()
-}
-const refreDeleteREQ = await useTournamentRefree().deleteTourRefree()
-const deleteref=async (row:MinUser)=>{
-  await refreDeleteREQ.fetchREQ(tour_id , row.id)
-  if (refreDeleteREQ.status.value=="success"){
+};
+const refreDeleteREQ = await useTournamentRefree().deleteTourRefree();
+const deleteref = async (row: MinUser) => {
+  await refreDeleteREQ.fetchREQ(tour_id, row.id);
+  if (refreDeleteREQ.status.value == "success") {
     // refreeGetREQ.fetchREQ(tour_id)
     toast.add({
       title: "تم حذف الحكم بنجاح",
       color: "success",
       icon: "material-symbols:check",
-    })
+    });
   }
   // if (refreDeleteREQ.status.value=="success"){
   // }
-}
+};
 </script>
 
 <style></style>

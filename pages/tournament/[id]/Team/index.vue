@@ -1,22 +1,10 @@
-<template>  
-  <TournamentTeam/>
+<template>
+  <TournamentTeam mode="embedded" :tournament-id="tournamentId" />
 </template>
 
 <script lang="ts" setup>
-import TournamentTeam from '~/features/tournament/teams/components/TournamentTeam.vue';
-definePageMeta({ middleware: ['auth','role'],
-  requiredRoles: ['StaffAdmin', 'SuperAdmin','Organizer'],
- });
- useHead({
-  title:' الفرق في البطولة',
-  meta:[
-    {name:'description',content:'الفرق في البطولة'},
-    { property: 'og:title', content: 'قيدها |Qydha' },
-    { property: 'og:image', content: '/images/preview.PNG'}
-  ]
- })
+import TournamentTeam from "~/features/tournament/teams/components/TournamentTeam.vue";
+
+const route = useRoute();
+const tournamentId = route.params.id?.toString() ?? "";
 </script>
-
-<style>
-
-</style>

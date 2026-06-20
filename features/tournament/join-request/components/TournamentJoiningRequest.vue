@@ -90,9 +90,12 @@ import type { DetailTournament } from '~/features/tournament/models/tournament';
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
-import type { TournamentOutletMode } from '~/features/tournament/core/types';
-import { shouldShowBackButton, shouldCompleteWithEmit } from '~/features/tournament/core/utils';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
+import {
+  shouldShowBackButton,
+  shouldCompleteWithEmit,
+} from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{
@@ -109,14 +112,14 @@ const showBackButton = computed(() => shouldShowBackButton(props.mode));
 const id = props.tournamentId ?? useRoute().params.id?.toString() ?? "";
 
 const tournamentDashboardKey = `getSingelTournament-${id}` as const;
-const { data: tournamentDashboardData } = useNuxtData<{ data: DetailTournament }>(tournamentDashboardKey);
-const getTourREQ = await useTournament().getSingelTournament(id, { immediate: false });
+const { data: tournamentDashboardData } = useNuxtData<DetailTournament>(tournamentDashboardKey);
+const getTourREQ = await useSingleTournament().getSingelTournament(id, { immediate: false });
 
-if (!tournamentDashboardData.value?.data?.tournament) {
+if (!tournamentDashboardData.value?.tournament) {
   await getTourREQ.refresh();
 }
 
-const tournament = computed(() => tournamentDashboardData.value?.data.tournament ?? null);
+const tournament = computed(() => tournamentDashboardData.value?.tournament ?? null);
 const tournamneState = computed(() => tournament.value?.state ?? null);
 const showActions = computed(() => {
   if (tournamneState.value === null) return false;

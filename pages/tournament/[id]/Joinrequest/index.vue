@@ -1,27 +1,10 @@
 <template>
-  <TournamentJoiningRequest :tournamentId="id"/>
+  <TournamentJoiningRequest mode="embedded" :tournament-id="tournamentId" />
 </template>
 
 <script lang="ts" setup>
-import TournamentJoiningRequest from '~/features/tournament/join-request/components';
+import TournamentJoiningRequest from "~/features/tournament/join-request/components/TournamentJoiningRequest.vue";
+
 const route = useRoute();
-const id = route.params.id.toString();
-
-definePageMeta({ 
-  middleware: ['auth','role'],
-  requiredRoles: ['Organizer','StaffAdmin', 'SuperAdmin'],
-});
-
-useHead({
-  title:' طلبات البطولة',
-  meta:[
-    {name:'description',content:'طلبات البطولة'},
-    { property: 'og:title', content: 'قيدها |Qydha' },
-    { property: 'og:image', content: '/images/preview.PNG'}
-  ]
-})
+const tournamentId = route.params.id?.toString() ?? "";
 </script>
-
-<style>
-
-</style> 

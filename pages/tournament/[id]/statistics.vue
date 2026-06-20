@@ -469,8 +469,7 @@ import type { TournamentStatistics } from "~/features/tournament/models/tourname
 const route = useRoute();
 const id = route.params.id?.toString() || '';
 
-const { getTournamentStatistics } = useTournament();
-const statsReq = await getTournamentStatistics(id);
+const statsReq = await useTournamentStatistics(id);
 
 const pending = computed(() => statsReq.pending.value);
 const error = computed(() => statsReq.error.value);

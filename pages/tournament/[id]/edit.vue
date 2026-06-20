@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import TournamentEdit from '~/features/tournament/core/components/TournamentEdit.vue';
+import TournamentEdit from '~/features/tournament/edit/components/TournamentEdit.vue';
 useHead({
   title:'تعديل البطولة',
   meta:[

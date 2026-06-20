@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
-import type { TournamentOutletMode } from '~/features/tournament/core/types';
-import { shouldShowBackButton } from '~/features/tournament/core/utils';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
+import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{

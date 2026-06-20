@@ -2,7 +2,7 @@
   <UCard class="h-full flex flex-col">
     <template #header>
       <p>
-        {{ tourREQ.data.value?.data.tournament.title }}
+        {{ tourREQ.data.value?.tournament.title }}
         /
         المديرين
       </p>
@@ -34,7 +34,7 @@ import EditModal from './EditModal.vue';
 const route = useRoute()
 const overlay = useOverlay()
 const tour_id = route.params.id.toString()
-const tourREQ = await useTournament().getSingelTournament(tour_id)
+const tourREQ = await useSingleTournament().getSingelTournament(tour_id)
 if (tourREQ.status.value == "error") {
   navigateTo('/tournament')
 }

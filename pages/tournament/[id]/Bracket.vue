@@ -153,10 +153,10 @@ import {
 } from "~/features/tournament/bracket/components";
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
-import TournamentStartConfirmModal from "~/features/tournament/core/components/shared/TournamentStartConfirmModal.vue";
+import TournamentStartConfirmModal from "~/features/tournament/detail/components/shared/TournamentStartConfirmModal.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
-import TournamentApprovePlanConfirmModal from "~/features/tournament/core/components/shared/TournamentApprovePlanConfirmModal.vue";
+import TournamentApprovePlanConfirmModal from "~/features/tournament/detail/components/shared/TournamentApprovePlanConfirmModal.vue";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useMyAuthStore } from "~/store/Auth";
 
@@ -292,12 +292,11 @@ const canShowBracket = computed(() => {
 const toast = useToast();
 const createMatchDrawer =
   useTemplateRef<InstanceType<typeof CreateMatchDrawer>>("createMatchDrawer");
-const startFinalGroupTournamentReq =
-  useTournament().startFinalGroupTournament(tourid);
+const startFinalGroupTournamentReq = useStartFinalGroupTournament(tourid);
 const startTournamentConfirmOpen = ref(false);
 
 const isStartFinalGroupPending = computed(
-  () => startFinalGroupTournamentReq.result.status.value === "pending",
+  () => startFinalGroupTournamentReq.pending.value,
 );
 
 const handleGroupSelection = (group_id: string) => {
@@ -314,7 +313,7 @@ const openStartTournamentConfirm = () => {
 
 const confirmAndStartTournament = async () => {
   await startFinalGroupTournamentReq.fetchREQ();
-  if (startFinalGroupTournamentReq.result.status.value === "success") {
+  if (startFinalGroupTournamentReq.status.value === "success") {
     toast.add({
       title: "تم بدء المباريات في المجموعة النهائية",
       description: "تم بدء المباريات في المجموعة النهائية بنجاح",
@@ -323,7 +322,7 @@ const confirmAndStartTournament = async () => {
     startTournamentConfirmOpen.value = false;
     await tourStore.refreshBracket(tourid);
   } else {
-    const err = startFinalGroupTournamentReq.result.error.value as
+    const err = startFinalGroupTournamentReq.error.value as
       | { message?: string }
       | null
       | undefined;
@@ -348,7 +347,7 @@ const onCreateMatchDrawerSuccess = async () => {
   await tourStore.refreshBracket(tourid);
 };
 
-const finishReq = useTournament().finishTournament();
+const finishReq = useFinishTournament();
 const finishTournament = async () => {
   await finishReq.fetchREQ(tourid);
   if (finishReq.status.value == "success") {
@@ -367,7 +366,7 @@ const finishTournament = async () => {
   }
 };
 
-const resumeReq = useTournament().resumeFinalGroupAfterFinish();
+const resumeReq = useResumeFinalGroupAfterFinish();
 const resumeFinalGroupAfterFinish = async () => {
   await resumeReq.fetchREQ(tourid);
   if (resumeReq.status.value == "success") {
@@ -397,7 +396,7 @@ const openStartTournamentConfirmMap = () => {
   startTournamentConfirmMapOpen.value = true;
 };
 
-const approveReq = useTournament().approveTournamentPlan();
+const approveReq = useApproveTournamentPlan();
 const confirmAndStartTournamentMap = async () => {
   await approveReq.fetchREQ(tourid);
   if (approveReq.status.value === "success") {

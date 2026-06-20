@@ -1,0 +1,15 @@
+[
+    {
+      "relation": [
+        "delegate_permission/common.handle_all_urls",
+        "delegate_permission/common.get_login_creds"
+      ],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.qydha",
+        "sha256_cert_fingerprints": [
+          "B2:FD:16:34:F9:6F:91:D1:1D:75:43:E9:A2:E2:8A:66:31:F1:38:BB:54:0B:10:33:43:C9:4C:7D:E9:72:67:F0"
+        ]
+      }
+    }
+  ]

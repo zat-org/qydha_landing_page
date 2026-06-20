@@ -3,26 +3,18 @@
 </template>
 
 <script lang="ts" setup>
-import { useMyAuthStore } from '~/store/Auth';
-import TournamentGetAll from '~/features/tournament/core/components/TournamentGetAll.vue';
+import TournamentGetAll from '~/features/tournament/list/components/TournamentGetAll.vue';
 
-const userStore = useMyAuthStore();
-
-// Set layout dynamically based on auth state
-onMounted(() => {
-  const layout = userStore.logedin ? 'default' : 'tournament';
-  setPageLayout(layout);
+definePageMeta({
+  middleware: ['auth'],
 });
 
 useHead({
-  title:'البطولات',
-  meta:[
-    {name:'description',content:'البطولات'},
+  title: 'البطولات',
+  meta: [
+    { name: 'description', content: 'البطولات' },
     { property: 'og:title', content: 'قيدها |Qydha' },
-    { property: 'og:image', content: '/images/preview.PNG'}
-  ]
-})
-
+    { property: 'og:image', content: '/images/preview.PNG' },
+  ],
+});
 </script>
-
-<style></style>

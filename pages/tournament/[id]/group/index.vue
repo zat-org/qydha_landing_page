@@ -1,24 +1,10 @@
 <template>
-    <TournamentGroup :tournamentId="id"/>
-    </template>
-    
-    <script lang="ts" setup>
-    import TournamentGroup from '~/features/tournament/group/components/TournamentGroup.vue';
-    const route = useRoute();
-    const id = route.params.id.toString();
-    definePageMeta({ middleware: ['auth','role'],
-      requiredRoles: ['StaffAdmin', 'SuperAdmin'],
-     });
-     useHead({
-      title:' مجموعات البطولة',
-      meta:[
-        {name:'description',content:'مجموعات البطولة'},
-    { property: 'og:title', content: 'قيدها |Qydha' },
-    { property: 'og:image', content: '/images/preview.PNG'}
-      ]
-     })
-    </script>
-    
-    <style>
-    
-    </style>
+  <TournamentGroup mode="embedded" :tournament-id="id" />
+</template>
+
+<script lang="ts" setup>
+import TournamentGroup from "~/features/tournament/group/components/TournamentGroup.vue";
+
+const route = useRoute();
+const id = route.params.id?.toString() ?? "";
+</script>

@@ -1,28 +1,9 @@
 <template>
-  <TournamentGet :id="id"/>
+  <span class="sr-only" aria-hidden="true" />
 </template>
 
 <script lang="ts" setup>
-import { useMyAuthStore } from '~/store/Auth';
-import TournamentGet from "~/features/tournament/core/components/TournamentGet/index.vue";
-
-const route = useRoute();
-const id = route.params.id?.toString() ?? '';
-
-onMounted(() => {
-  const userStore = useMyAuthStore();
-  console.log(userStore.logedin);
-  const layout = userStore.logedin ? 'default' : 'tournament';
-  setPageLayout(layout);
+definePageMeta({
+  middleware: ["auth"],
 });
-useHead({
-  title:'البطولة',
-  meta:[
-    {name:'description',content:'البطولة'}
-  ]
-})
 </script>
-
-<style>
-
-</style>

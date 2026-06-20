@@ -103,7 +103,9 @@ export default defineNuxtConfig({
     dirs: [
       "composables",
       "utils",
-      "features/tournament/*/composables",
+      "features/tournament/**/composables",
+      "features/tournament/**/composables/api",
+      "features/tournament/**/composables/logic",
     ],
   },
 

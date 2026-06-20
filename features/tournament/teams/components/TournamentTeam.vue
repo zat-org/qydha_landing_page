@@ -91,9 +91,9 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
-import type { TournamentOutletMode } from '~/features/tournament/core/types';
-import { shouldShowBackButton } from '~/features/tournament/core/utils';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
+import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{
@@ -114,15 +114,15 @@ const toast = useToast()
 
 
 const tournamentDashboardKey = `getSingelTournament-${tour_id}` as const
-const { data: tournamentDashboardData } = useNuxtData<{ data: DetailTournament }>(tournamentDashboardKey)
+const { data: tournamentDashboardData } = useNuxtData<DetailTournament>(tournamentDashboardKey)
 
-const getTourREQ = await useTournament().getSingelTournament(tour_id, { immediate: false })
+const getTourREQ = await useSingleTournament().getSingelTournament(tour_id, { immediate: false })
 
-if (!tournamentDashboardData.value?.data?.tournament) {
+if (!tournamentDashboardData.value?.tournament) {
   await getTourREQ.refresh()
 }
 
-const tour = computed(() => tournamentDashboardData.value?.data.tournament)
+const tour = computed(() => tournamentDashboardData.value?.tournament)
 const page = ref(1)
 
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams()

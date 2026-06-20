@@ -44,9 +44,9 @@ import Loading from "~/components/loading.vue";
 import GroupDetails from "./GroupDetails.vue";
 import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/core/constants';
-import type { TournamentOutletMode } from '~/features/tournament/core/types';
-import { shouldShowBackButton } from '~/features/tournament/core/utils';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
+import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 interface Props {
   tournamentId: string;
@@ -57,8 +57,8 @@ const props = withDefaults(defineProps<Props>(), {
   mode: DEFAULT_TOURNAMENT_OUTLET_MODE,
 });
 const active = ref("0")
-const tourReq =  useTournament().getSingelTournament(props.tournamentId);
-const tournamentState = computed(() => tourReq.data.value?.data.tournament.detailedState);
+const tourReq = useSingleTournament().getSingelTournament(props.tournamentId);
+const tournamentState = computed(() => tourReq.data.value?.tournament.detailedState);
 const groupApi = useGroup();
 
 const { data, pending, error, refresh, status } =  groupApi.getGroups(props.tournamentId);
