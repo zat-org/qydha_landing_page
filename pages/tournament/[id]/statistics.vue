@@ -622,6 +622,7 @@ watch([leftColumnItems, rightColumnItems], ([leftItems, rightItems]) => {
 
 definePageMeta({
   layout: "custom",
+  public: true,
 });
 
 useHead({

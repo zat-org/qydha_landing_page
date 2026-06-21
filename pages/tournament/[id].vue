@@ -9,10 +9,6 @@
 import TournamentGet from "~/features/tournament/detail/components/TournamentGet/index.vue";
 import { shouldShowTournamentDetailShell } from "~/features/tournament/detail/utils/tournamentNavigation.utils";
 
-definePageMeta({
-  middleware: ["auth"],
-});
-
 const route = useRoute();
 const id = computed(() => route.params.id?.toString() ?? "");
 

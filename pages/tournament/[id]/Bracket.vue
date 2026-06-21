@@ -162,6 +162,7 @@ import { useMyAuthStore } from "~/store/Auth";
 
 definePageMeta({
   layout: "custom",
+  public: true,
 });
 
 useHead({
