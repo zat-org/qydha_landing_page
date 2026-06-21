@@ -167,6 +167,7 @@ export interface GetTournamentParams {
 
 export interface TournamentStatistics {
   matchesCount: number;
+  totalGames: number;
   statistics: {
     sra: number;
     baloot: number;

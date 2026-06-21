@@ -90,12 +90,8 @@ import type { DetailTournament } from '~/features/tournament/models/tournament';
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE, TOURNAMENT_OUTLET_MODES } from '~/features/tournament/detail/constants/tournamentEmbed.config';
 import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
-import {
-  shouldShowBackButton,
-  shouldCompleteWithEmit,
-} from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{
@@ -108,7 +104,7 @@ const props = withDefaults(
 const emit = defineEmits<{ done: [] }>();
 
 const router = useRouter();
-const showBackButton = computed(() => shouldShowBackButton(props.mode));
+const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton);
 const id = props.tournamentId ?? useRoute().params.id?.toString() ?? "";
 
 const tournamentDashboardKey = `getSingelTournament-${id}` as const;
@@ -158,7 +154,7 @@ async function confirmFinalApprove() {
     if (ok) {
       approveOpen.value = false;
       await refreshBothPanels();
-      if (shouldCompleteWithEmit(props.mode)) {
+      if (TOURNAMENT_OUTLET_MODES[props.mode].completeWithEmit) {
         emit('done');
       } else {
         router.back();

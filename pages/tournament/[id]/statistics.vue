@@ -13,9 +13,14 @@
           </div>
         </div>
 
-        <UBadge v-if="matchesCount !== null" color="primary" size="lg" variant="soft">
-          عدد المباريات: {{ matchesCount }}
-        </UBadge>
+        <div class="flex items-center gap-2">
+          <UBadge v-if="totalGames !== null" color="primary" size="xl" variant="soft">
+            عدد المباريات: {{ totalGames }}
+          </UBadge>
+          <UBadge v-if="matchesCount !== null" color="primary" size="lg" variant="soft">
+            عدد المباريات: {{ matchesCount }}
+          </UBadge>
+        </div>
       </div>
     </template>
 
@@ -474,12 +479,15 @@ const statsReq = await useTournamentStatistics(id);
 const pending = computed(() => statsReq.pending.value);
 const error = computed(() => statsReq.error.value);
 
-// API raw response: { data: { statistics: {...}, matchesCount }, message }
+// API raw response: { data: { statistics: {...}, matchesCount, totalGames }, message }
 const apiData = computed(() => statsReq.data.value as any || null);
 const statistics = computed<TournamentStatistics['statistics']>(
   () => { 
     console.log(apiData)
     return apiData.value?.data ?? {}}
+);
+const totalGames = computed<number | null>(
+  () => (apiData.value?.data?.totalGames ?? null) as number | null
 );
 const matchesCount = computed<number | null>(
   () => (apiData.value?.data?.matchesCount ?? null) as number | null

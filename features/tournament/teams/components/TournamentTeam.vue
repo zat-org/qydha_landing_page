@@ -91,9 +91,8 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE, TOURNAMENT_OUTLET_MODES } from '~/features/tournament/detail/constants/tournamentEmbed.config';
 import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
-import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{
@@ -106,7 +105,7 @@ const props = withDefaults(
 const tablekey = ref(Date.now())
 const router = useRouter()
 const route = useRoute()
-const showBackButton = computed(() => shouldShowBackButton(props.mode))
+const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton)
 const tour_id = props.tournamentId ?? route.params.id.toString()
 const toast = useToast()
 

@@ -46,7 +46,6 @@ import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
 import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
-import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 interface Props {
   tournamentId: string;

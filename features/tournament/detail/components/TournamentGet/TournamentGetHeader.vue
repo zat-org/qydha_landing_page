@@ -38,23 +38,12 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from '@nuxt/ui';
 import TournamentJoinRequestSettingsDrawer from './TournamentJoinRequestSettingsDrawer.vue';
-import { TAB_VIEW_CONFIG } from '~/features/tournament/detail/constants/tournamentNavigation.config';
+import { SETTINGS_MENU_TAB_VIEWS } from '~/features/tournament/detail/constants/tournamentNavigation.config';
 import {
-  getPhaseViewPath,
-  openTournamentViewInNewTab,
+  buildTabNavItems,
+  navigateToTabView,
 } from '~/features/tournament/detail/utils/tournamentNavigation.utils';
-import type { TournamentTabView } from '~/features/tournament/detail/types/navigation.types';
 import type { DetailTournament } from '~/features/tournament/models/tournament';
-
-const HEADER_TAB_VIEWS: {
-  view: TournamentTabView;
-  openInNewTab: boolean;
-}[] = [
-  { view: 'tables', openInNewTab: false },
-  { view: 'refree', openInNewTab: false },
-  { view: 'bracket', openInNewTab: true },
-  { view: 'statistics', openInNewTab: true },
-];
 
 const props = defineProps<{
   id: string;
@@ -89,15 +78,6 @@ function openJoinSettingsDrawer() {
   if (joinSettingsDrawer.value) joinSettingsDrawer.value.open = true;
 }
 
-function navigateToTabView(view: TournamentTabView) {
-  const item = HEADER_TAB_VIEWS.find((entry) => entry.view === view);
-  if (item?.openInNewTab) {
-    openTournamentViewInNewTab(view, props.id);
-    return;
-  }
-  void navigateTo(getPhaseViewPath(view, props.id));
-}
-
 const settingsMenuItems = computed(() => {
   const visibilityItem = {
     label: 'عرض البطولة في قيدها',
@@ -129,10 +109,10 @@ const settingsMenuItems = computed(() => {
   }
 
   items.push(
-    ...HEADER_TAB_VIEWS.map(({ view }) => ({
-      label: TAB_VIEW_CONFIG[view].label,
-      icon: TAB_VIEW_CONFIG[view].icon,
-      onSelect: () => navigateToTabView(view),
+    ...buildTabNavItems(SETTINGS_MENU_TAB_VIEWS, props.id).map((item) => ({
+      label: item.label,
+      icon: item.icon,
+      onSelect: () => navigateToTabView(item.view, props.id),
     })),
   );
 

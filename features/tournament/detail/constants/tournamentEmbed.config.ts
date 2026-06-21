@@ -14,5 +14,3 @@ export const TOURNAMENT_OUTLET_MODES = {
 } as const satisfies Record<TournamentOutletMode, TournamentOutletModeConfig>;
 
 export const DEFAULT_TOURNAMENT_OUTLET_MODE: TournamentOutletMode = 'page';
-
-export const EMBEDDED_TOURNAMENT_OUTLET_MODE: TournamentOutletMode = 'embedded';

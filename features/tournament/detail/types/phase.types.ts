@@ -3,7 +3,7 @@ import type {
   TournamentDetailedState,
   TournamentState,
 } from '~/features/tournament/models/tournament';
-import type { PhaseNavigationConfig, TournamentOutletView, TournamentTabView } from './navigation.types';
+import type { TournamentOutletView, TournamentTabView } from './navigation.types';
 
 export interface PhaseAlertConfig {
   color: 'info' | 'success' | 'warning' | 'neutral';
@@ -60,7 +60,7 @@ export interface PhaseConfig {
   actions: PhaseActionConfig[];
 }
 
-export interface ResolvedPhaseAction extends Omit<PhaseActionConfig, 'guard'> {}
+export type ResolvedPhaseAction = Omit<PhaseActionConfig, 'guard'>
 
 export interface ResolvedPhaseView {
   label: string;
@@ -68,17 +68,4 @@ export interface ResolvedPhaseView {
   outlets: TournamentOutletView[];
   externalTabs: TournamentTabView[];
   actions: ResolvedPhaseAction[];
-}
-
-/** @deprecated Use PhaseConfig from tournamentPhase.config.ts */
-export interface PhaseActionDefinition extends PhaseActionConfig {
-  when: (ctx: TournamentPhaseContext) => boolean;
-}
-
-/** @deprecated Use PhaseConfig from tournamentPhase.config.ts */
-export interface PhaseDefinition {
-  label: string;
-  ui: PhaseUiConfig;
-  navigation: PhaseNavigationConfig;
-  actions: PhaseActionDefinition[];
 }

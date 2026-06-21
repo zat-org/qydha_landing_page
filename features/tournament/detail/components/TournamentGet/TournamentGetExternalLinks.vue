@@ -10,7 +10,7 @@
       :icon="item.icon"
       size="lg"
       variant="soft"
-      target="_blank"
+      :target="item.openInNewTab ? '_blank' : undefined"
       :to="item.to"
       class="w-full min-h-12 justify-center sm:w-auto"
       block
@@ -19,8 +19,7 @@
 </template>
 
 <script lang="ts" setup>
-import { getPhaseViewPath } from '~/features/tournament/detail/utils/tournamentNavigation.utils';
-import { TAB_VIEW_CONFIG } from '~/features/tournament/detail/constants/tournamentNavigation.config';
+import { buildTabNavItems } from '~/features/tournament/detail/utils/tournamentNavigation.utils';
 import type { TournamentTabView } from '~/features/tournament/detail/types/navigation.types';
 
 const props = defineProps<{
@@ -29,11 +28,6 @@ const props = defineProps<{
 }>();
 
 const linkItems = computed(() =>
-  props.tabs.map((view) => ({
-    view,
-    label: TAB_VIEW_CONFIG[view].label,
-    icon: TAB_VIEW_CONFIG[view].icon,
-    to: getPhaseViewPath(view, props.tournamentId),
-  })),
+  buildTabNavItems(props.tabs, props.tournamentId),
 );
 </script>

@@ -1,5 +1,8 @@
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
-import { resolveOutletRouteForPhase } from "~/features/tournament/detail/utils/tournamentNavigation.utils";
+import {
+  normalizeRoutePath,
+  resolveOutletRouteForPhase,
+} from "~/features/tournament/detail/utils/tournamentNavigation.utils";
 
 export function useTournamentOutletRouteSync(
   tournamentId: MaybeRefOrGetter<string>,
@@ -16,8 +19,8 @@ export function useTournamentOutletRouteSync(
       const target = resolveOutletRouteForPhase(route, id, view.outlets);
       if (!target) return;
 
-      const currentPath = route.path.replace(/\/+$/, "");
-      const nextPath = target.replace(/\/+$/, "");
+      const currentPath = normalizeRoutePath(route.path);
+      const nextPath = normalizeRoutePath(target);
       if (currentPath === nextPath) return;
 
       navigateTo(target, { replace: true });

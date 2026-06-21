@@ -12,7 +12,14 @@ export interface ViewMeta {
   pathSegment: string;
 }
 
-export interface PhaseNavigationConfig {
-  outlets: TournamentOutletView[];
-  tabs: TournamentTabView[];
+export interface TabViewMeta extends ViewMeta {
+  openInNewTab: boolean;
+}
+
+export interface TournamentTabNavItem {
+  view: TournamentTabView;
+  label: string;
+  icon: string;
+  to: string;
+  openInNewTab: boolean;
 }

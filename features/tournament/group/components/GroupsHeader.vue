@@ -28,9 +28,8 @@
 </template>
 
 <script lang="ts" setup>
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
+import { DEFAULT_TOURNAMENT_OUTLET_MODE, TOURNAMENT_OUTLET_MODES } from '~/features/tournament/detail/constants/tournamentEmbed.config';
 import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
-import { shouldShowBackButton } from '~/features/tournament/detail/utils/tournamentOutlet.utils';
 
 const props = withDefaults(
   defineProps<{
@@ -40,5 +39,5 @@ const props = withDefaults(
 );
 
 const router = useRouter();
-const showBackButton = computed(() => shouldShowBackButton(props.mode));
+const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton);
 </script>
