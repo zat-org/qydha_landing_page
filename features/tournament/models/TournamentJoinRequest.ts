@@ -1,3 +1,5 @@
+import type { TournamentDetailedState } from "~/features/tournament/models/tournament";
+
 export interface GetTournamentJoinRequestParams {
   type: TournamentJoinRequestType | null;
   state: TournamentJoinRequestState | null;
@@ -126,17 +128,25 @@ export interface GetTeamJoinRequestsParams {
 
 
 export interface TeamJoinRequestListItem {
-  joinRequestId: string;  
-  requesterUserId?: string;
-  teammateId?: string;
-  teammateUsername?: string;
-  teamName?: string;
+  requesterUserId: string;
+  joinRequestId: string;
+  tournamentId: string;
+  tournamentName: string;
+  tournamentDetailedState: TournamentDetailedState;
+  teamName: string;
+  state: TeamJoinRequestWorkflowState;
   createdAt: string;
-  createorId?: string;
-  creatorUsername?: string;
-  creatorName?: string;
-  overallStatus?: string;
-  state: TeamJoinRequestWorkflowState | string;
+  creatorId: string;
+  creatorUsername: string;
+  creatorName: string | null;
+  creatorBirthDate: string | null;
+  teammateId: string;
+  teammateUsername: string;
+  teammateName: string | null;
+  teammateBirthDate: string | null;
+  creatorAge: number | null;
+  teammateAge: number | null;
+  overallStatus: string;
 }
 
 export interface GetTeamJoinRequestsResponse {

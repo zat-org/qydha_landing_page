@@ -42,6 +42,12 @@
         <template #teammateUsername-cell="{ row }">
           <span dir="ltr">{{ row.original.teammateUsername || "—" }}</span>
         </template>
+        <template #creatorAge-cell="{ row }">
+          <span>{{ row.original.creatorAge ?? "—" }}</span>
+        </template>
+        <template #teammateAge-cell="{ row }">
+          <span>{{ row.original.teammateAge ?? "—" }}</span>
+        </template>
         <template #state-cell="{ row }">
           <UBadge :color="stateColor(row.original.state)" variant="subtle" size="sm">{{ stateLabel(row.original.state)
             }}</UBadge>
@@ -142,7 +148,9 @@ const columns = computed(() => {
   return [
     { accessorKey: "teamName", header: "الفريق" },
     { accessorKey: "creatorUsername", header: "المالك" },
+    { accessorKey: "creatorAge", header: "عمر المالك" },
     { accessorKey: "teammateUsername", header: "الزميل" },
+    { accessorKey: "teammateAge", header: "عمر الزميل" },
     { accessorKey: "state", header: "الحالة" },
     { accessorKey: "createdAt", header: "التاريخ" },
     ...(props.showActions ? [{ id: "actions", header: "الإجراءات", accessorKey: "actions" }] : []),
