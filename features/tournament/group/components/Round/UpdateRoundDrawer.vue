@@ -79,7 +79,7 @@
                                 <div
                                     class="flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-white/80 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-950/50"
                                 >
-                                    <label class="text-sm font-medium">عرض من فاز عند التعادل</label>
+                                    <label class="text-sm font-medium">التعادل  فوق  152 , المشتري  فائز؟ </label>
                                     <USwitch v-model="formState.gameSettings.showWhoWonDialogOnDraw" />
                                 </div>
                             </UFormField>
