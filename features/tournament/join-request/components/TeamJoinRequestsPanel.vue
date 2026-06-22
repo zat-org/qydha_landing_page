@@ -1,5 +1,9 @@
 <template>
   <div class="flex flex-col gap-4 py-2">
+    <UBadge color="primary" size="lg" variant="soft" class="w-fit">
+      عدد المشتركين: {{ participantsCount }}
+    </UBadge>
+
     <div v-if="mode === 'main'"
       class="flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/40 sm:flex-row sm:items-end">
       <UFormField class="min-w-0 flex-1" label="تصفية حسب الفريق">
@@ -131,7 +135,7 @@ const params = ref<GetTeamJoinRequestsParams>({
   GetOnlyStates:
     props.mode === "consider"
       ? [TeamJoinRequestWorkflowState.WaitingOrganizerApproval]
-      : [...TEAM_JOIN_MAIN_TAB_STATES],
+      : [TeamJoinRequestWorkflowState.WaitingOrganizerConsideration],
 });
 
 
@@ -144,6 +148,7 @@ const { data, pending, refresh } = getTeamJoinRequests(props.tournamentId, param
 
 const items = computed(() => data.value?.data?.items ?? []);
 const totalCount = computed(() => data.value?.data?.totalCount ?? 0);
+const participantsCount = computed(() => totalCount.value * 2);
 const columns = computed(() => {
   return [
     { accessorKey: "teamName", header: "الفريق" },
