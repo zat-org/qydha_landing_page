@@ -1,8 +1,11 @@
 <template>
   <div class="flex flex-col gap-4 py-2">
-    <UBadge color="primary" size="lg" variant="soft" class="w-fit">
-      عدد المشتركين: {{ participantsCount }}
-    </UBadge>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <UBadge color="primary" size="lg" variant="soft" class="w-fit">
+        عدد المشتركين: {{ participantsCount }}
+      </UBadge>
+      <UPagination v-model:page="params.pageNumber" :total="totalCount" :page-size="params.pageSize" />
+    </div>
 
     <div v-if="mode === 'main'"
       class="flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/40 sm:flex-row sm:items-end">
@@ -86,10 +89,6 @@
 
         </template>
       </UTable>
-    </div>
-
-    <div class="flex justify-center sm:justify-end">
-      <UPagination v-model:page="params.pageNumber" :total="totalCount" :page-size="params.pageSize" />
     </div>
 
   </div>
