@@ -284,7 +284,7 @@ const tourStore = useTournamentBracketStore();
 const canShowBracket = computed(() => {
   if (!tourStore.selectedGroup) return false;
   return (
-    tourStore.selectedGroup?.data.state != GroupState.WaitingMatchesStarting ||
+    tourStore.selectedGroup?.data.state != GroupState.MatchesGenerated ||
     userStore.isStaffAdmin ||
     userStore.isSuperAdmin
   );
