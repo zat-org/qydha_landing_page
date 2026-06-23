@@ -276,7 +276,7 @@ const isGroupRunning = computed(() =>{
   return   tourStore.selectedGroup?.data.state == GroupState.MatchesRunning});
 const adminActionItems = computed(() => {
   const items: { label: string; icon: string; onSelect: () => void }[] = [];
-  if ((isMatchCreated.value || isMatchPaused.value ) && isGroupRunning.value) {
+  if ((isMatchCreated.value || isMatchPaused.value ) ) {
     items.push({ label: "تعديل المباراة", icon: "i-heroicons-cog-6-tooth", onSelect: onEdit });
   }
     if ((isMatchEnded.value || isMatchPaused.value) && isGroupRunning.value) {
