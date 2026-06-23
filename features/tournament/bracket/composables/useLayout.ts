@@ -10,12 +10,12 @@ interface GraphData {
 }
 
 export function useLayout() {
-  const CreateDagreGraph = (direction: GraphDirection) => {
+  const CreateDagreGraph = (direction: GraphDirection, obsMode = false) => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     dagreGraph.setGraph({
       rankdir: direction,
-      nodesep: 10,
+      nodesep: obsMode ? 35:   10,
     });
     return dagreGraph;
   };
@@ -29,7 +29,7 @@ export function useLayout() {
     const nodeWidth = obsMode ? 580 : 460;
     const nodeHeight = obsMode ? 88 : 100;
     let graphData: GraphData = { nodes: [], edges: [] };
-    let dagreGraph = CreateDagreGraph("LR");
+    let dagreGraph = CreateDagreGraph("LR", obsMode);
 
     const createMatchEdge = (
       sourceId: string | number,

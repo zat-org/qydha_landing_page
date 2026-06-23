@@ -1,90 +1,298 @@
 <template>
-  <UCard class="w-full mx-auto" :ui="{ root: 'w-full min-h-screen flex flex-col', body: 'flex-1 overflow-y-auto' }">
-    <template #header>
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-4">
-          <img
-            :src="qydhaLogo"
-            alt="قيدها"
-            class="h-16 w-16 object-contain sm:h-20 sm:w-20"
-          />
-          <h1 class="text-2xl font-bold">إحصائيات البطولة</h1>
-        </div>
+  <div
+    class="statistics-page"
+    :class="obsMode ? 'statistics-page--obs' : 'min-h-screen'"
+  >
+    <UCard v-if="!obsMode" class="mx-auto w-full" :ui="cardUi">
+      <template #header>
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <img
+              :src="qydhaLogo"
+              alt="قيدها"
+              class="h-16 w-16 object-contain sm:h-20 sm:w-20"
+            />
+            <h1 class="text-2xl font-bold">إحصائيات البطولة</h1>
+          </div>
 
-        <div class="flex flex-wrap items-center gap-2">
-          <UBadge v-if="totalGames !== null" color="primary" size="lg" variant="soft">
-            عدد الألعاب: {{ totalGames }}
-          </UBadge>
-          <UBadge v-if="matchesCount !== null" color="primary" size="lg" variant="soft">
-            عدد المباريات: {{ matchesCount }}
-          </UBadge>
-        </div>
-      </div>
-    </template>
-
-    <div v-if="error" class="flex flex-col items-center justify-center py-12">
-      <UIcon name="i-mdi-alert-circle" class="mb-4 h-16 w-16 text-red-500" />
-      <p class="text-lg text-gray-600 dark:text-gray-400">
-        حدث خطأ أثناء تحميل الإحصائيات
-      </p>
-      <UButton class="mt-4" color="primary" variant="soft" @click="refresh">
-        إعادة المحاولة
-      </UButton>
-    </div>
-
-    <div v-else-if="hasStatistics" class="mx-auto w-full max-w-4xl space-y-4 p-2 sm:p-4">
-      <div
-        v-for="section in statSections"
-        :key="section.id"
-        dir="rtl"
-        class="stats-panel w-full max-w-full"
-      >
-        <h2
-          v-if="section.title"
-          class="mb-2 px-1 text-sm font-bold text-slate-700 dark:text-slate-200 sm:text-base"
-        >
-          {{ section.title }}
-        </h2>
-
-        <div class="stats-panel__frame">
-          <div class="flex flex-col gap-1">
-            <div
-              v-for="row in section.rows"
-              :key="row.key"
-              class="stats-panel__row"
+          <div class="flex flex-wrap items-center gap-2">
+            <UBadge
+              v-if="totalGames !== null"
+              color="primary"
+              size="xl"
+              variant="soft"
+              class="px-4 py-2 text-base font-bold sm:text-xl md:text-2xl"
             >
-              <div class="stats-panel__value stats-panel__value--muted" aria-hidden="true">
-                —
-              </div>
-              <div class="stats-panel__label">
-                {{ row.label }}
-              </div>
-              <div class="stats-panel__value">
-                {{ row.value }}
+              عدد الألعاب: {{ totalGames }}
+            </UBadge>
+            <UBadge v-if="matchesCount !== null" color="primary" size="lg" variant="soft">
+              عدد المباريات: {{ matchesCount }}
+            </UBadge>
+            <ClientOnly>
+              <UDropdownMenu
+                :items="themeMenuItems"
+                :popper="{ placement: 'bottom-start' }"
+              >
+                <button
+                  type="button"
+                  class="rounded border px-3 py-1.5 text-xs font-semibold transition-colors"
+                  :class="
+                    isDark
+                      ? 'border-gray-800 bg-gray-900 text-white'
+                      : 'border-gray-300 bg-white text-gray-900'
+                  "
+                  aria-label="اختيار الثيم"
+                >
+                  <span class="inline-flex items-center gap-1">
+                    <template v-if="isDark">🌙</template>
+                    <template v-else>☀️</template>
+                    <UIcon
+                      name="i-heroicons-chevron-down-20-solid"
+                      class="size-3.5 opacity-70"
+                    />
+                  </span>
+                </button>
+              </UDropdownMenu>
+            </ClientOnly>
+          </div>
+        </div>
+      </template>
+
+      <div v-if="error" class="flex flex-col items-center justify-center py-12">
+        <UIcon name="i-mdi-alert-circle" class="mb-4 h-16 w-16 text-red-500" />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          حدث خطأ أثناء تحميل الإحصائيات
+        </p>
+        <UButton class="mt-4" color="primary" variant="soft" @click="refresh">
+          إعادة المحاولة
+        </UButton>
+      </div>
+
+      <div
+        v-else-if="hasStatistics"
+        class="mx-auto w-full max-w-4xl p-2 sm:p-4"
+        dir="rtl"
+      >
+        <div class="stats-panel w-full max-w-full">
+          <div class="stats-panel__frame">
+            <div class="flex flex-col gap-2 sm:gap-3">
+              <div
+                v-for="row in statRows"
+                :key="row.key"
+                class="stats-panel__row"
+              >
+                <div class="stats-panel__label">
+                  {{ row.label }}
+                </div>
+                <div class="stats-panel__value">
+                  {{ row.value }}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div v-else class="flex flex-col items-center justify-center py-12">
-      <UIcon name="i-mdi-chart-box-outline" class="mb-4 h-16 w-16 text-gray-400" />
-      <p class="text-lg text-gray-600 dark:text-gray-400">
-        لا توجد إحصائيات متاحة
-      </p>
+      <div v-else class="flex flex-col items-center justify-center py-12">
+        <UIcon name="i-mdi-chart-box-outline" class="mb-4 h-16 w-16 text-gray-400" />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          لا توجد إحصائيات متاحة
+        </p>
+      </div>
+    </UCard>
+
+    <div v-else class="statistics-page__obs-content">
+      <div v-if="error" class="flex flex-col items-center justify-center py-12">
+        <UIcon name="i-mdi-alert-circle" class="mb-4 h-16 w-16 text-red-500" />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          حدث خطأ أثناء تحميل الإحصائيات
+        </p>
+        <UButton class="mt-4" color="primary" variant="soft" @click="refresh">
+          إعادة المحاولة
+        </UButton>
+      </div>
+
+      <div
+        v-else-if="hasStatistics"
+        class="statistics-page__obs-body mx-auto w-full max-w-4xl"
+        dir="rtl"
+      >
+        <div class="stats-panel stats-panel--obs w-full max-w-full">
+          <div class="stats-panel__frame stats-panel__frame--obs">
+            <div class="stats-panel__obs-header">
+              <img
+                :src="qydhaLogo"
+                alt="قيدها"
+                class="stats-panel__obs-logo"
+                loading="lazy"
+                decoding="async"
+              />
+              <h1 class="stats-panel__obs-title">احصائيات البطوله</h1>
+              <UBadge
+                v-if="totalGames !== null"
+                color="primary"
+                size="lg"
+                variant="soft"
+                class="stats-panel__obs-badge shrink-0"
+              >
+                عدد الألعاب: {{ totalGames }}
+              </UBadge>
+            </div>
+            <div class="stats-panel__obs-rows">
+              <div
+                v-for="row in statRows"
+                :key="row.key"
+                class="stats-panel__row stats-panel__row--obs"
+              >
+                <div class="stats-panel__label">
+                  {{ row.label }}
+                </div>
+                <div class="stats-panel__value">
+                  {{ row.value }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="flex flex-col items-center justify-center py-12">
+        <UIcon name="i-mdi-chart-box-outline" class="mb-4 h-16 w-16 text-gray-400" />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          لا توجد إحصائيات متاحة
+        </p>
+      </div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
+import type { DropdownMenuItem } from "@nuxt/ui";
 import qydhaLogo from "~/assets/images/qydha-logo.svg";
 import type { TournamentStatistics } from "~/features/tournament/models/tournament";
+import { useMyAuthStore } from "~/store/Auth";
 
 type StatKey = keyof TournamentStatistics["statistics"];
+type PageTheme = "dark" | "light";
+
+const OBS_MODE_QUERY = "obsMode";
+const THEME_QUERY = "theme";
+const STATISTICS_OBS_THEME_KEY = "statistics-overlay-theme";
+
+function parseObsModeQuery(value: unknown): boolean {
+  if (value === true || value === 1) return true;
+  if (value === false || value === 0) return false;
+  if (Array.isArray(value)) return parseObsModeQuery(value[0]);
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (normalized === "true" || normalized === "1" || normalized === "yes") return true;
+    if (normalized === "false" || normalized === "0" || normalized === "no") return false;
+  }
+  return false;
+}
+
+function parseThemeQuery(value: unknown): PageTheme | null {
+  if (Array.isArray(value)) return parseThemeQuery(value[0]);
+  if (typeof value !== "string") return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "dark" || normalized === "light") return normalized;
+  return null;
+}
 
 const route = useRoute();
+const router = useRouter();
 const id = route.params.id?.toString() || "";
+
+const obsMode = computed<boolean>(() =>
+  parseObsModeQuery(route.query[OBS_MODE_QUERY]),
+);
+
+const cardUi = {
+  root: "w-full min-h-screen flex flex-col",
+  body: "flex-1 overflow-y-auto",
+};
+
+const colorMode = useColorMode();
+const isDark = computed(() => colorMode.value === "dark");
+
+function applyTheme(theme: PageTheme) {
+  if (colorMode?.forced) return;
+  colorMode.preference = theme;
+}
+
+function setTheme(theme: PageTheme) {
+  if (colorMode?.forced) return;
+  applyTheme(theme);
+}
+
+function goToObsMode(theme: PageTheme) {
+  if (!import.meta.client) return;
+  localStorage.setItem(STATISTICS_OBS_THEME_KEY, theme);
+  const resolved = router.resolve({
+    path: route.path,
+    query: { ...route.query, [OBS_MODE_QUERY]: "true", [THEME_QUERY]: theme },
+  });
+  window.open(resolved.href, "_blank", "noopener,noreferrer");
+}
+
+const userStore = useMyAuthStore();
+const canUseObsMode = computed(
+  () => !!userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin),
+);
+
+const themeMenuItems = computed<DropdownMenuItem[][]>(() => {
+  const items: DropdownMenuItem[][] = [
+    [
+      {
+        label: "فاتح",
+        icon: "i-heroicons-sun-20-solid",
+        onSelect: () => setTheme("light"),
+      },
+      {
+        label: "داكن",
+        icon: "i-heroicons-moon-20-solid",
+        onSelect: () => setTheme("dark"),
+      },
+    ],
+  ];
+
+  if (canUseObsMode.value) {
+    items.push([
+      {
+        label: "OBS فاتح",
+        icon: "i-heroicons-tv",
+        onSelect: () => goToObsMode("light"),
+      },
+      {
+        label: "OBS داكن",
+        icon: "i-heroicons-tv",
+        onSelect: () => goToObsMode("dark"),
+      },
+    ]);
+  }
+
+  return items;
+});
+
+watch(
+  () => route.query[THEME_QUERY],
+  (raw) => {
+    const theme = parseThemeQuery(raw);
+    if (theme) applyTheme(theme);
+  },
+  { immediate: true },
+);
+
+function applyObsDocumentClass(active: boolean) {
+  if (!import.meta.client) return;
+  document.documentElement.classList.toggle("statistics-obs", active);
+}
+
+watch(obsMode, (active) => applyObsDocumentClass(active), { immediate: true });
+
+onUnmounted(() => {
+  applyObsDocumentClass(false);
+});
 
 const statsReq = await useTournamentStatistics(id);
 
@@ -134,20 +342,23 @@ const labels: Record<StatKey, string> = {
   hokmKaboot: "كبوت حكم",
 };
 
-const statSectionConfig: Array<{
-  id: string;
-  title: string;
-  keys: StatKey[];
-}> = [
-  { id: "matches", title: "المباريات", keys: ["playedSakkas", "winnedSakkas", "lostSakka"] },
-  {
-    id: "moshtara",
-    title: "المشتريات",
-    keys: ["moshtaraSunCount", "moshtaraHokmCount", "wonMoshtaraCount", "lostMoshtaraCount"],
-  },
-  { id: "kaboot", title: "الكبابيت", keys: ["sunKaboot", "hokmKaboot"] },
-  { id: "masharee", title: "مشاريع", keys: ["sra", "baloot", "khamsen", "me2a", "rob3ome2a"] },
-  { id: "ekakAklat", title: "الاكك و الاكلات", keys: ["ekak", "aklat"] },
+const statKeys: StatKey[] = [
+  "playedSakkas",
+  "winnedSakkas",
+  "lostSakka",
+  "moshtaraSunCount",
+  "moshtaraHokmCount",
+  "wonMoshtaraCount",
+  "lostMoshtaraCount",
+  "sunKaboot",
+  "hokmKaboot",
+  "sra",
+  "baloot",
+  "khamsen",
+  "me2a",
+  "rob3ome2a",
+  "ekak",
+  "aklat",
 ];
 
 const hasStat = (key: StatKey): boolean => {
@@ -155,22 +366,17 @@ const hasStat = (key: StatKey): boolean => {
   return stats[key] !== undefined && stats[key] !== null;
 };
 
-const statSections = computed(() =>
-  statSectionConfig
-    .map((section) => ({
-      ...section,
-      rows: section.keys
-        .filter((key) => hasStat(key))
-        .map((key) => ({
-          key,
-          label: labels[key],
-          value: statistics.value[key] ?? 0,
-        })),
-    }))
-    .filter((section) => section.rows.length > 0),
+const statRows = computed(() =>
+  statKeys
+    .filter((key) => hasStat(key))
+    .map((key) => ({
+      key,
+      label: labels[key],
+      value: statistics.value[key] ?? 0,
+    })),
 );
 
-const hasStatistics = computed(() => statSections.value.length > 0);
+const hasStatistics = computed(() => statRows.value.length > 0);
 
 definePageMeta({
   layout: "custom",
@@ -224,39 +430,28 @@ useHead({
 
 .stats-panel__row {
   display: grid;
-  gap: 0.25rem;
-  grid-template-columns:
-    minmax(2rem, 1fr)
-    minmax(0, 1.45fr)
-    minmax(2rem, 1fr);
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
 }
 
 @media (min-width: 480px) {
   .stats-panel__row {
-    gap: 0.375rem;
-    grid-template-columns:
-      minmax(2.5rem, 1fr)
-      minmax(0, 1.55fr)
-      minmax(2.5rem, 1fr);
+    gap: 0.625rem;
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
   }
 }
 
 @media (min-width: 640px) {
   .stats-panel__row {
-    gap: 0.5rem;
-    grid-template-columns:
-      minmax(0, 1fr)
-      minmax(0, 1.65fr)
-      minmax(0, 1fr);
+    gap: 0.75rem;
+    grid-template-columns: minmax(0, 1.75fr) minmax(0, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
   .stats-panel__row {
-    grid-template-columns:
-      minmax(0, 1.1fr)
-      minmax(0, 1.85fr)
-      minmax(0, 1.1fr);
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
   }
 }
 
@@ -265,46 +460,53 @@ useHead({
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 2rem;
+  min-height: 2.5rem;
   text-align: center;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
   transition: background-color 0.3s, color 0.3s;
 }
 
 @media (min-width: 640px) {
   .stats-panel__value,
   .stats-panel__label {
-    min-height: 2.25rem;
-    border-radius: 0.5rem;
+    min-height: 3rem;
+    border-radius: 0.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats-panel__value,
+  .stats-panel__label {
+    min-height: 3.25rem;
   }
 }
 
 .stats-panel__value {
-  padding: 0 0.25rem;
+  padding: 0 0.5rem;
   background: white;
   color: rgb(15 23 42);
   border: 1px solid rgb(226 232 240 / 0.9);
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   font-weight: 800;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 @media (min-width: 640px) {
   .stats-panel__value {
-    padding: 0 0.5rem;
-    font-size: 1rem;
+    padding: 0 0.75rem;
+    font-size: 1.375rem;
   }
 }
 
 @media (min-width: 768px) {
   .stats-panel__value {
-    font-size: 1.125rem;
+    font-size: 1.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .stats-panel__value {
-    font-size: 1.25rem;
+    font-size: 1.75rem;
   }
 }
 
@@ -315,31 +517,197 @@ useHead({
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
-.stats-panel__value--muted {
-  opacity: 0.35;
-  font-weight: 700;
-}
-
 .stats-panel__label {
-  padding: 0 0.375rem;
+  padding: 0 0.5rem;
   background: linear-gradient(to bottom, rgb(30 41 59), rgb(15 23 42));
   color: white;
-  font-size: 0.625rem;
+  font-size: 0.875rem;
   font-weight: 700;
-  line-height: 1.25;
+  line-height: 1.3;
   overflow-wrap: anywhere;
   hyphens: auto;
 }
 
 @media (min-width: 640px) {
   .stats-panel__label {
-    font-size: 0.75rem;
+    padding: 0 0.75rem;
+    font-size: 1.125rem;
   }
 }
 
 @media (min-width: 768px) {
   .stats-panel__label {
-    font-size: 0.875rem;
+    font-size: 1.25rem;
   }
+}
+
+@media (min-width: 1024px) {
+  .stats-panel__label {
+    font-size: 1.375rem;
+  }
+}
+
+.stats-panel__obs-header {
+  display: flex;
+  flex-shrink: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgb(30 41 59 / 0.2);
+}
+
+:global(.dark) .stats-panel__obs-header {
+  border-bottom-color: rgb(255 255 255 / 0.15);
+}
+
+.stats-panel__obs-logo {
+  width: 4.5rem;
+  height: 4.5rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.stats-panel__obs-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+  color: rgb(15 23 42);
+}
+
+:global(.dark) .stats-panel__obs-title {
+  color: rgb(248 250 252);
+}
+
+.stats-panel__obs-badge {
+  padding: 0.35rem 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+/* OBS: fixed 1080px canvas — compact header, stat rows fill remaining height */
+.statistics-page--obs {
+  height: 1080px;
+  max-height: 1080px;
+  min-height: 1080px;
+  overflow: hidden;
+  background: none !important;
+  background-color: transparent !important;
+}
+
+.statistics-page__obs-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  padding: 0.75rem 1rem;
+  box-sizing: border-box;
+  background: none !important;
+  background-color: transparent !important;
+}
+
+.statistics-page__obs-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.stats-panel--obs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  background: transparent !important;
+}
+
+.stats-panel__frame--obs {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0.75rem 1rem;
+  border-width: 3px;
+  border-radius: 1rem;
+}
+
+.stats-panel__obs-rows {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-height: 0;
+}
+
+.statistics-page--obs .stats-panel__row--obs {
+  flex: 1;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+.statistics-page--obs .stats-panel__value,
+.statistics-page--obs .stats-panel__label {
+  min-height: 0;
+  height: 100%;
+  font-size: 1.25rem;
+}
+
+.statistics-page--obs .stats-panel__value {
+  font-size: 1.375rem;
+}
+
+.statistics-page--obs,
+.statistics-page__obs-content {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.statistics-page--obs :deep(.bg-default),
+.statistics-page--obs :deep(.bg-elevated),
+.statistics-page--obs :deep([data-slot="root"]),
+.statistics-page--obs :deep([data-slot="body"]),
+.statistics-page--obs :deep([data-slot="header"]) {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+}
+</style>
+
+<style>
+/* OBS overlay: 1080px canvas, transparent chrome */
+html.statistics-obs,
+html.statistics-obs body,
+html.statistics-obs #__nuxt,
+html.statistics-obs #__nuxt > div,
+html.statistics-obs [data-vaul-drawer-wrapper],
+html.statistics-obs main {
+  height: 1080px;
+  max-height: 1080px;
+  overflow: hidden;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+html.statistics-obs .statistics-page,
+html.statistics-obs .statistics-page--obs,
+html.statistics-obs .statistics-page__obs-content,
+html.statistics-obs .statistics-page__obs-body,
+html.statistics-obs .stats-panel--obs,
+html.statistics-obs .bg-default,
+html.statistics-obs .bg-elevated,
+html.statistics-obs .bg-muted {
+  background: none !important;
+  background-color: transparent !important;
 }
 </style>
