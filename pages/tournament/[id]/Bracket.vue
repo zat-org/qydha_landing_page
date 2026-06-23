@@ -154,11 +154,11 @@ import {
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
 import TournamentStartConfirmModal from "~/features/tournament/detail/components/shared/TournamentStartConfirmModal.vue";
-import { GroupState } from "~/features/tournament/models/group";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
 import TournamentApprovePlanConfirmModal from "~/features/tournament/detail/components/shared/TournamentApprovePlanConfirmModal.vue";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useMyAuthStore } from "~/store/Auth";
+import { GroupState } from "~/features/tournament/models/group";
 
 definePageMeta({
   layout: "custom",
@@ -281,10 +281,20 @@ watch(
 
 const tourStore = useTournamentBracketStore();
 
+const BRACKET_VISIBLE_GROUP_STATES = new Set<GroupState>([
+  GroupState.MatchesGenerated,
+  GroupState.MatchesRunning,
+  GroupState.MatchesFinished,
+  GroupState.WaitingMatchesStarting,
+]);
+
 const canShowBracket = computed(() => {
   if (!tourStore.selectedGroup) return false;
+
+  const groupState = tourStore.selectedGroup.data.state;
+
   return (
-    tourStore.selectedGroup?.data.state != GroupState.MatchesGenerated ||
+    BRACKET_VISIBLE_GROUP_STATES.has(groupState) ||
     userStore.isStaffAdmin ||
     userStore.isSuperAdmin
   );
