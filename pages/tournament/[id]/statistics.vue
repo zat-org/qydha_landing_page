@@ -16,7 +16,7 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
-            <UBadge
+            <!-- <UBadge
               v-if="totalGames !== null"
               color="primary"
               size="xl"
@@ -24,10 +24,7 @@
               class="px-4 py-2 text-base font-bold sm:text-xl md:text-2xl"
             >
               عدد الألعاب: {{ totalGames }}
-            </UBadge>
-            <UBadge v-if="matchesCount !== null" color="primary" size="lg" variant="soft">
-              عدد المباريات: {{ matchesCount }}
-            </UBadge>
+            </UBadge> -->
             <ClientOnly>
               <UDropdownMenu
                 :items="themeMenuItems"
@@ -119,7 +116,7 @@
       >
         <div class="stats-panel stats-panel--obs w-full max-w-full">
           <div class="stats-panel__frame stats-panel__frame--obs">
-            <div class="stats-panel__obs-header">
+            <div class="stats-panel__obs-header  justify-center">
               <img
                 :src="qydhaLogo"
                 alt="قيدها"
@@ -127,8 +124,8 @@
                 loading="lazy"
                 decoding="async"
               />
-              <h1 class="stats-panel__obs-title">احصائيات البطوله</h1>
-              <UBadge
+              <h1 class="stats-panel__obs-title ">احصائيات البطوله</h1>
+              <!-- <UBadge
                 v-if="totalGames !== null"
                 color="primary"
                 size="lg"
@@ -136,7 +133,7 @@
                 class="stats-panel__obs-badge shrink-0"
               >
                 عدد الألعاب: {{ totalGames }}
-              </UBadge>
+              </UBadge> -->
             </div>
             <div class="stats-panel__obs-rows">
               <div
@@ -305,10 +302,6 @@ const statistics = computed<Partial<TournamentStatistics["statistics"]>>(
 const totalGames = computed<number | null>(
   () => (apiData.value?.data?.totalGames ?? null) as number | null,
 );
-const matchesCount = computed<number | null>(
-  () => (apiData.value?.data?.matchesCount ?? null) as number | null,
-);
-
 const refresh = () => {
   refreshNuxtData(`getTournamentStatistics-${id}`);
 };
@@ -552,7 +545,7 @@ useHead({
   flex-shrink: 0;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   gap: 0.75rem;
   margin-bottom: 0.5rem;
   padding-bottom: 0.5rem;
@@ -571,7 +564,7 @@ useHead({
 }
 
 .stats-panel__obs-title {
-  flex: 1;
+  
   min-width: 0;
   font-size: 1.5rem;
   font-weight: 800;
