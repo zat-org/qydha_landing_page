@@ -23,8 +23,11 @@ export function useLayout() {
   function layoutFromMatchesTree(
     matchesHeads: Match[],
     loserMatches: Match[],
-    direction: GraphDirection
+    direction: GraphDirection,
+    obsMode = false,
   ) {
+    const nodeWidth = obsMode ? 580 : 460;
+    const nodeHeight = obsMode ? 88 : 100;
     let graphData: GraphData = { nodes: [], edges: [] };
     let dagreGraph = CreateDagreGraph("LR");
 
@@ -62,8 +65,8 @@ export function useLayout() {
       };
       graphData.nodes.push(node);
       dagreGraph.setNode(node.id.toString(), {
-        width: 460  ,
-        height: 100,
+        width: nodeWidth,
+        height: nodeHeight,
       });
       return node;
     };

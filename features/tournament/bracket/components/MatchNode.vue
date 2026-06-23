@@ -2,37 +2,53 @@
   <div>
     <Handle type="target" :position="Position.Left" style="opacity: 0" />
     <div dir="rtl"
-      class=" flex w-[450px] flex-col gap-2 p-2 overflow-hidden rounded-2xl  text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:ring-white/10 dark:bg-gray-800"
-      :class="[cardToneClass, roundOpacityClass]">
+      class="flex flex-col overflow-hidden rounded-2xl font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 dark:ring-white/10 dark:bg-gray-800"
+      :class="[
+        cardToneClass,
+        roundOpacityClass,
+        obsMode ? 'match-node--obs w-[580px] gap-0 p-3 text-lg' : 'w-[450px] gap-2 p-2 text-sm hover:shadow-xl',
+      ]">
 
 
-      <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-1.5">
-        <div :class="firstTeamSurfaceClass"
-          class="group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10">
-          <div class="flex h-full items-center justify-center gap-1 min-h-[30px]">
-            <div class="flex flex-col h-full items-center justify-center grow ">
-              <span class="truncate text-center  text-[11px] font-bold leading-tight" :class="firstTeamNameClasses">{{
+      <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-1.5"
+        :class="obsMode ? 'gap-3' : 'gap-1.5'">
+        <div
+          :class="[
+            firstTeamSurfaceClass,
+            'group min-w-0 rounded-xl ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10',
+            obsMode ? 'px-3 py-3' : 'px-1.5 py-1.5',
+          ]">
+          <div class="flex h-full items-center justify-center gap-1" :class="obsMode ? 'min-h-[52px]' : 'min-h-[30px]'">
+            <div class="flex h-full grow flex-col items-center justify-center">
+              <span class="truncate text-center font-bold leading-tight" :class="[firstTeamNameClasses, obsMode ? 'text-xl' : 'text-[11px]']">{{
                 usTeamPrimary }}</span>
-              <p class="truncate text-center text-[11px] font-bold leading-tight">
+              <p v-if="!obsMode || usTeamSecondary.trim()" class="truncate text-center font-bold leading-tight"
+                :class="obsMode ? 'text-lg' : 'text-[11px]'">
                 {{ usTeamSecondary }}
               </p>
             </div>
-            <UIcon name="i-mdi-cards-spade" class="size-3.5 shrink-0 text-indigo-700 dark:text-indigo-300" />
+            <UIcon v-if="!obsMode" name="i-mdi-cards-spade" class="size-3.5 shrink-0 text-indigo-700 dark:text-indigo-300" />
           </div>
         </div>
         <div
-          class="inline-flex items-center justify-center self-center rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10">
+          class="inline-flex items-center justify-center self-center rounded-full bg-white/80 font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10"
+          :class="obsMode ? 'px-4 py-2 text-base' : 'px-2.5 py-1 text-[10px]'">
           VS
         </div>
 
-        <div :class="secondTeamSurfaceClass"
-          class="group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10">
-          <div class="flex items-center justify-center gap-1 min-h-[30px]">
-            <UIcon name="i-mdi-cards-club" class="size-3.5 shrink-0 text-fuchsia-700 dark:text-fuchsia-300" />
-            <div class="flex flex-col h-full items-center justify-center grow">
-              <span class="truncate text-center  text-[11px] font-bold leading-tight" :class="secondTeamNameClasses">{{
+        <div
+          :class="[
+            secondTeamSurfaceClass,
+            'group min-w-0 rounded-xl ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10',
+            obsMode ? 'px-3 py-3' : 'px-1.5 py-1.5',
+          ]">
+          <div class="flex items-center justify-center gap-1" :class="obsMode ? 'min-h-[52px]' : 'min-h-[30px]'">
+            <UIcon v-if="!obsMode" name="i-mdi-cards-club" class="size-3.5 shrink-0 text-fuchsia-700 dark:text-fuchsia-300" />
+            <div class="flex h-full grow flex-col items-center justify-center">
+              <span class="truncate text-center font-bold leading-tight" :class="[secondTeamNameClasses, obsMode ? 'text-xl' : 'text-[11px]']">{{
                 themTeamPrimary }}</span>
-              <p class="truncate text-center text-[11px] font-bold leading-tight">
+              <p v-if="!obsMode || themTeamSecondary.trim()" class="truncate text-center font-bold leading-tight"
+                :class="obsMode ? 'text-lg' : 'text-[11px]'">
                 {{ themTeamSecondary }}
               </p>
             </div>
@@ -40,7 +56,7 @@
         </div>
       </div>
 
-      <div class="flex items-center  gap-1.5 *:grow">
+      <div v-if="!obsMode" class="flex items-center gap-1.5 *:grow">
         <span
           class="inline-flex min-w-0 items-center justify-center gap-1 rounded-lg bg-white/75 px-2 py-1 text-[10px] font-semibold text-slate-800 ring-1 ring-black/5 dark:bg-black/25 dark:text-slate-100 dark:ring-white/10">
           <IconTable class="shrink-0 text-[12px] text-slate-700 dark:text-slate-200" />
@@ -106,6 +122,7 @@
     <Handle type="source" :position="Position.Right" style="opacity: 0" />
 
     <MatchAdminActionConfirmModal
+      v-if="!obsMode"
       v-model:open="resetConfirmOpen"
       title="تأكيد إعادة الضبط"
       description="سيتم إعادة ضبط المباراة إلى حالتها الأولية. تأكد من تنفيذ الخطوات التالية قبل المتابعة."
@@ -116,6 +133,7 @@
       @confirm="confirmReset"
     />
     <MatchAdminActionConfirmModal
+      v-if="!obsMode"
       v-model:open="backConfirmOpen"
       title="تأكيد عودة المباراة"
       description="سيتم إرجاع المباراة إلى حالة سابقة. تأكد من تنفيذ الخطوات التالية قبل المتابعة."
@@ -140,6 +158,11 @@ import { useMatchNodeUi } from "~/features/tournament/bracket/composables/useMat
 
 const userStore = useMyAuthStore();
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
+
+const obsMode = inject<ComputedRef<boolean>>(
+  "bracketObsMode",
+  computed(() => false),
+);
 
 const tourStore = useTournamentBracketStore();
 const { selectedRound } = storeToRefs(tourStore);

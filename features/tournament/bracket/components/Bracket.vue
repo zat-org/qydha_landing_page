@@ -1,7 +1,10 @@
 <template>
   <div
     class="bracket-container"
-    :class="{ 'bg-gray-50 dark:bg-gray-950': !obsMode }"
+    :class="{
+      'bg-gray-50 dark:bg-gray-950': !obsMode,
+      'bracket-container--obs': obsMode,
+    }"
   >
     <VueFlow
       v-if="OrderedNodes"
@@ -9,7 +12,7 @@
       :edges="OrderedNodes.edges"
       :min-zoom="0.2"
       :max-zoom="4"
-      class="bracket-flow"
+      :class="['bracket-flow', { 'bracket-flow--obs': obsMode }]"
       @init="onFlowInit"
       @nodes-initialized="scheduleFit"
     >
@@ -29,6 +32,11 @@ import MatchNode from "./MatchNode.vue";
 
 const props = defineProps<{ group: Group; obsMode?: boolean }>();
 
+provide(
+  "bracketObsMode",
+  computed(() => !!props.obsMode),
+);
+
 const tourStore = useTournamentBracketStore();
 const { layoutFromMatchesTree } = useLayout();
 const { matchesTree, loserMatches, games } = storeToRefs(tourStore);
@@ -45,11 +53,22 @@ const OrderedNodes = computed(() => {
   if (matchesTree.value === undefined || loserMatches.value === undefined) {
     return undefined;
   }
-  return layoutFromMatchesTree(
+  const layout = layoutFromMatchesTree(
     matchesTree.value,
     loserMatches.value,
     direction.value,
+    props.obsMode,
   );
+
+  if (!props.obsMode) return layout;
+
+  return {
+    ...layout,
+    edges: layout.edges.map((edge) => ({
+      ...edge,
+      style: { strokeWidth: 5 },
+    })),
+  };
 });
 
 function onFlowInit(instance: VueFlowStore) {
@@ -115,6 +134,22 @@ html.bracket-obs .bracket-container .vue-flow__viewport,
 html.bracket-obs .bracket-container .vue-flow__pane {
   background: transparent !important;
   background-color: transparent !important;
+}
+
+html.bracket-obs .bracket-container .vue-flow__edge-path {
+  stroke-width: 5px !important;
+}
+
+html.bracket-obs .bracket-container .vue-flow__edge {
+  stroke-width: 5px;
+}
+
+.bracket-flow--obs :deep(.vue-flow__edge-path) {
+  stroke-width: 5px !important;
+}
+
+.bracket-flow--obs :deep(.vue-flow__edge) {
+  stroke-width: 5px;
 }
 
 .bracket-logo-theme {

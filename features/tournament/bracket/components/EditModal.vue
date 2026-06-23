@@ -27,7 +27,10 @@
 
           <UFormField label="الطاولة" name="tableId" class="w-full">
             <div class="flex flex-col gap-2">
-              <div class="flex gap-2 items-center">
+              <div v-if="hasSingleTableChoice" class="flex min-h-9 items-center rounded-md border border-gray-200 bg-gray-50 px-3 text-sm dark:border-gray-800 dark:bg-gray-900/40">
+                {{ singleTable?.name || "—" }}
+              </div>
+              <div v-else class="flex gap-2 items-center">
                 <USelectMenu v-model="state.tableId" :items="tableItems" label-key="name" value-key="id"
                   :search-attributes="['name']" :popper="{ placement: 'left-end' }" class="flex-1"
                   :placeholder="selectedTableDisplay || 'اختر الطاولة'" />
@@ -86,7 +89,7 @@ const schema = object({
   isMarked: boolean(),
 });
 
-const { choicesREQ, state, matchChoices, refereeItems, tableItems, selectedRefereeDisplay, selectedTableDisplay } = useMatchEditChoices(tour_id, props.match.id, props.match);
+const { choicesREQ, state, matchChoices, refereeItems, tableItems, hasSingleTableChoice, singleTable, selectedRefereeDisplay, selectedTableDisplay } = useMatchEditChoices(tour_id, props.match.id, props.match);
 
 const updateREQ = updateMatch();
 const onSubmit = async () => {

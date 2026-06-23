@@ -16,11 +16,19 @@ export function useMatchEditChoices(
     isMarked: false,
   });
 
-  if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
-    state.refereeId = choicesREQ.data.value.data.selectedReferee?.id || undefined;
-    state.tableId = choicesREQ.data.value.data.selectedTable?.id || undefined;
+  const syncStateFromChoices = (choices: IUpdateChoicesForMatch) => {
+    state.refereeId = choices.selectedReferee?.id || undefined;
+    state.tableId = choices.selectedTable?.id || undefined;
     state.isMarked = match.isMarked || false;
-  }
+  };
+
+  watch(
+    () => choicesREQ.data.value?.data,
+    (choices) => {
+      if (choices) syncStateFromChoices(choices);
+    },
+    { immediate: true },
+  );
 
   const matchChoices = computed<IUpdateChoicesForMatch | null>(() => {
     if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
@@ -29,11 +37,20 @@ export function useMatchEditChoices(
     return null;
   });
 
+  const dedupeById = <T extends { id: string }>(items: T[]) => {
+    const seen = new Set<string>();
+    return items.filter((item) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
+  };
+
   const refereeItems = computed(() => {
     if (!matchChoices.value) return [];
     const available = matchChoices.value.availableReferee || [];
     const selected = matchChoices.value.selectedReferee;
-    if (selected) return [selected, ...available];
+    if (selected) return dedupeById([selected, ...available]);
     return available;
   });
 
@@ -41,9 +58,22 @@ export function useMatchEditChoices(
     if (!matchChoices.value) return [];
     const available = matchChoices.value.availableTable || [];
     const selected = matchChoices.value.selectedTable;
-    if (selected) return [selected, ...available];
+    if (selected) return dedupeById([selected, ...available]);
     return available;
   });
+
+  const hasSingleTableChoice = computed(() => tableItems.value.length === 1);
+  const singleTable = computed(() =>
+    hasSingleTableChoice.value ? tableItems.value[0] : null,
+  );
+
+  watch(
+    singleTable,
+    (table) => {
+      if (table) state.tableId = table.id;
+    },
+    { immediate: true },
+  );
 
   const selectedRefereeDisplay = computed(() => {
     if (!matchChoices.value || !state.refereeId) return null;
@@ -65,5 +95,15 @@ export function useMatchEditChoices(
     return found?.name || state.tableId;
   });
 
-  return { state, matchChoices, refereeItems, tableItems, selectedRefereeDisplay, selectedTableDisplay, choicesREQ };
+  return {
+    state,
+    matchChoices,
+    refereeItems,
+    tableItems,
+    hasSingleTableChoice,
+    singleTable,
+    selectedRefereeDisplay,
+    selectedTableDisplay,
+    choicesREQ,
+  };
 };
