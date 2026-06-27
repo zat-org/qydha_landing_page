@@ -106,7 +106,7 @@ export interface CreateMatch {
     isVoiceRecording: boolean;
   };
 }
-
+export type MatchLifecycleState = "Created" | "Running" | "Paused" | "Ended";
 export interface Match {
   groupId: string;
   id: string;
@@ -123,7 +123,7 @@ export interface Match {
   qydhaGameId: string;
   referee: { id: string; username: string };
   startAt: string;
-  state: string;
+  state: MatchLifecycleState;
   tableName: string;
   tableId: string;
   usTeamId: string;
