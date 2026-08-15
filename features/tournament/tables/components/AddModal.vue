@@ -17,6 +17,20 @@
           />
         </UFormField>
 
+        <UFormField
+          v-if="hasPlaces"
+          name="placeId"
+          label="مكان التصفيات"
+          required
+        >
+          <USelect
+            v-model="state.placeId"
+            :items="placeOptions"
+            placeholder="اختر المكان"
+            :disabled="AddREQ.status.value === 'pending'"
+          />
+        </UFormField>
+
         <UAlert
           v-if="AddREQ.error.value"
           color="error"
@@ -51,6 +65,7 @@
 <script lang="ts" setup>
 import type { ITableCreate } from '~/features/tournament/models/Table';
 import { object, string } from 'yup'
+import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces'
 
 const props = defineProps<{
   tourId: string
@@ -61,10 +76,34 @@ const toast = useToast()
 
 const AddTableForm = ref<any>()
 
-const state = reactive<ITableCreate>({ name: "" })
-const schema = object({
-  name: string().required('اسم الطاولة مطلوب')
+const tourREQ = await useSingleTournament().getSingelTournament(props.tourId)
+const { placeOptions, hasPlaces, places } = useTournamentPlaces(
+  () => tourREQ.data.value,
+)
+
+const state = reactive<ITableCreate>({
+  name: '',
+  placeId: places.value[0]?.id ?? '',
 })
+
+watch(
+  places,
+  (list) => {
+    if (list.length && !state.placeId) {
+      state.placeId = list[0]!.id
+    }
+  },
+  { immediate: true },
+)
+
+const schema = computed(() =>
+  object({
+    name: string().required('اسم الطاولة مطلوب'),
+    placeId: hasPlaces.value
+      ? string().required('مكان التصفيات مطلوب')
+      : string().nullable(),
+  }),
+)
 
 const AddREQ = useTournamentTable().addTable()
 
@@ -78,8 +117,20 @@ const onSubmit = async () => {
     })
     return
   }
+
+  if (hasPlaces.value && !state.placeId) {
+    toast.add({
+      title: 'مكان مطلوب',
+      description: 'اختر مكان التصفيات للطاولة',
+      color: 'warning',
+    })
+    return
+  }
   
-  await AddREQ.fetchREQ(props.tourId, state)
+  await AddREQ.fetchREQ(props.tourId, {
+    name: state.name,
+    ...(state.placeId ? { placeId: state.placeId } : {}),
+  })
   
   if (AddREQ.status.value === "success") {
     toast.add({ 
@@ -88,7 +139,6 @@ const onSubmit = async () => {
       color: 'success',
       icon: 'i-heroicons-check-circle'
     })
-    // Reset form
     state.name = ""
     emit('close')
   } else if (AddREQ.status.value === "error") {
@@ -101,5 +151,3 @@ const onSubmit = async () => {
   }
 }
 </script>
-
-<style></style>

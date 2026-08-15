@@ -1,17 +1,28 @@
+import type { SetupQualificationGroup } from "~/features/tournament/models/place";
+
+export type SetupTournamentPayload =
+  | { type: "direct" }
+  | { type: "qualifications"; groups: SetupQualificationGroup[] };
+
 export function useSetupTournament(tournamentId: string) {
   const toast = useToast();
   const { $api } = useNuxtApp();
   const { pending, status, error, execute } = useMutationRequest();
 
-  const fetchREQ = async (type: string) => {
+  const fetchREQ = async (payload: SetupTournamentPayload) => {
     await execute(async () => {
       const body =
-        type === "direct"
+        payload.type === "direct"
           ? {
               hasQualificationsStage: false,
               qualificationsStageData: null,
             }
-          : undefined;
+          : {
+              hasQualificationsStage: true,
+              qualificationsStageData: {
+                groups: payload.groups,
+              },
+            };
 
       await $api(`/tournaments/${tournamentId}/setup-stages`, {
         method: "POST",

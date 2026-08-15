@@ -70,7 +70,7 @@
           :class="banner.id === activeBannerId ? 'ring-2 ring-primary-500' : ''"
         >
           <div class="flex flex-col gap-3">
-            <div class="relative aspect-[21/9] w-full overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+            <div class="relative aspect-21/9 w-full overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
               <img
                 :src="banner.imageUrl"
                 :alt="`بنر ${banner.id}`"

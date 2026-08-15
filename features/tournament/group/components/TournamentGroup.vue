@@ -46,6 +46,7 @@ import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
 import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
+import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces';
 
 interface Props {
   tournamentId: string;
@@ -67,13 +68,20 @@ const groups = computed(() => {
     return data.value?.groups || []
 })
 
+const { placeLabel } = useTournamentPlaces(() => tourReq.data.value);
+
 const accordionItems = computed(() => {
-    return groups.value.map((group, index) => ({
-        label: group.name || `Group ${index + 1}`,
-        slot: `group-${index}`,
-        defaultOpen: false
-    }))
-})
+    return groups.value.map((group, index) => {
+        const place = group.placeId ? placeLabel(group.placeId) : null;
+        return {
+            label: place
+                ? `${group.name || `Group ${index + 1}`} · ${place}`
+                : group.name || `Group ${index + 1}`,
+            slot: `group-${index}`,
+            defaultOpen: false,
+        };
+    });
+});
 
 </script>
 

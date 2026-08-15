@@ -103,6 +103,22 @@
         <template #createdAt-cell="{ row }">
           <span>{{ formatDate(row.original.createdAt) }}</span>
         </template>
+        <template #selectedPlace-cell="{ row }">
+          <span>{{
+            placeLabel(row.original.selectedQualificationsPlaceId)
+          }}</span>
+        </template>
+        <template #acceptsWaitingList-cell="{ row }">
+          <UBadge
+            :color="
+              row.original.acceptsWaitingListPlacement ? 'success' : 'neutral'
+            "
+            variant="subtle"
+            size="sm"
+          >
+            {{ row.original.acceptsWaitingListPlacement ? "نعم" : "لا" }}
+          </UBadge>
+        </template>
         <template #actions-cell="{ row }">
           <div class="flex items-center gap-2">
             <UButton
@@ -176,6 +192,7 @@ import {
   type GetTeamJoinRequestsParams,
   type TeamJoinRequestPatchAction,
 } from "~/features/tournament/models/TournamentJoinRequest";
+import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 
 const debouncedSearch = useDebounceFn((value: Event) => {
   const input = value.target as HTMLInputElement;
@@ -195,6 +212,11 @@ const props = withDefaults(
 const numberOfTeams = ref(props.numberOfTeams);
 
 const emit = defineEmits<{ mutated: [] }>();
+
+const tourREQ = await useSingleTournament().getSingelTournament(
+  props.tournamentId,
+);
+const { placeLabel } = useTournamentPlaces(() => tourREQ.data.value);
 
 const params = ref<GetTeamJoinRequestsParams>({
   pageNumber: 1,
@@ -227,6 +249,8 @@ const columns = computed(() => {
     { accessorKey: "creatorAge", header: "عمر المالك" },
     { accessorKey: "teammateUsername", header: "الزميل" },
     { accessorKey: "teammateAge", header: "عمر الزميل" },
+    { accessorKey: "selectedPlace", header: "مكان التصفيات" },
+    { accessorKey: "acceptsWaitingList", header: "قائمة الانتظار" },
     { accessorKey: "state", header: "الحالة" },
     { accessorKey: "createdAt", header: "التاريخ" },
     ...(props.showActions

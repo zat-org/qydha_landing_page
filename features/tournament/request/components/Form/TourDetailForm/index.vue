@@ -37,6 +37,7 @@
                 <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3"><UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" /></UFormField>
                 <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5"><UInput v-model="sakkTime5" type="number" min="1" placeholder="وقت 5 صكات" size="xs" /></UFormField>
             </div>
+
             <TournamentRequestCalculatorRounds :rounds="rounds" :sakka-options="sakkaOptions" :format-time="formatTime" />
             <TournamentRequestCalculatorSummary :rounds="rounds" :total-time="totalTime" :time-per-day="timePerDay" :total-matches="totalMatches" :day-number="dayNumber" :format-time="formatTime" />
         </UForm>

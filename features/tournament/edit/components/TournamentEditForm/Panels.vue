@@ -21,8 +21,17 @@
     />
   </KeepAlive>
   <KeepAlive>
-    <TournamentEditRulesForm
+    <TournamentRequestFormQualificationsForm
       v-show="currentStep === 2"
+      v-model="form"
+      :errors="errors"
+      :on-field-blur="onFieldBlur"
+      :disabled-fields="disabledFields"
+    />
+  </KeepAlive>
+  <KeepAlive>
+    <TournamentEditRulesForm
+      v-show="currentStep === 3"
       v-model="form"
       :errors="errors"
       :on-field-blur="onFieldBlur"
@@ -36,6 +45,7 @@ import type { TournamentOwner } from '~/features/tournament/models/tournamentOwn
 import TournamentEditGeneralForm from './General.vue';
 import TournamentEditDetailForm from './Detail.vue';
 import TournamentEditRulesForm from './Rules.vue';
+import TournamentRequestFormQualificationsForm from '~/features/tournament/request/components/Form/QualificationsForm.vue';
 
 defineProps<{
   currentStep: number;

@@ -17,6 +17,20 @@
           />
         </UFormField>
 
+        <UFormField
+          v-if="hasPlaces"
+          name="placeId"
+          label="مكان التصفيات"
+          required
+        >
+          <USelect
+            v-model="state.placeId"
+            :items="placeOptions"
+            placeholder="اختر المكان"
+            :disabled="UpdateREQ.status.value === 'pending'"
+          />
+        </UFormField>
+
         <UAlert
           v-if="UpdateREQ.error.value"
           color="error"
@@ -51,6 +65,7 @@
 <script lang="ts" setup>
 import type { ITable, ITableCreate } from '~/features/tournament/models/Table';
 import { object, string } from 'yup'
+import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces'
 
 const props = defineProps<{ table: ITable }>()
 const emit = defineEmits(['close'])
@@ -60,10 +75,24 @@ const tour_id = route.params.id.toString()
 
 const UpdateTableForm = ref<any>()
 
-const state = reactive<ITableCreate>({ name: props.table.name })
-const schema = object({
-  name: string().required('اسم الطاولة مطلوب')
+const tourREQ = await useSingleTournament().getSingelTournament(tour_id)
+const { placeOptions, hasPlaces } = useTournamentPlaces(
+  () => tourREQ.data.value,
+)
+
+const state = reactive<ITableCreate>({
+  name: props.table.name,
+  placeId: props.table.placeId ?? '',
 })
+
+const schema = computed(() =>
+  object({
+    name: string().required('اسم الطاولة مطلوب'),
+    placeId: hasPlaces.value
+      ? string().required('مكان التصفيات مطلوب')
+      : string().nullable(),
+  }),
+)
 
 const UpdateREQ = useTournamentTable().updateTable()
 
@@ -88,5 +117,3 @@ const onSubmit = async () => {
   }
 }
 </script>
-
-<style></style>

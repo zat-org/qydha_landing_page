@@ -31,6 +31,12 @@ function buildUpdateFormData(body: TournamentUpdate) {
   formData.append("prizes", JSON.stringify(body.prizes));
   formData.append("ownerId", body.ownerId);
   formData.append("rules", body.rules.length > 0 ? JSON.stringify(body.rules) : "[]");
+  formData.append(
+    "qualificationsStageInfo",
+    body.qualificationsStageInfo
+      ? JSON.stringify(body.qualificationsStageInfo)
+      : "null",
+  );
 
   return formData;
 }

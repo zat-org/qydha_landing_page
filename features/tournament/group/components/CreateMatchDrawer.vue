@@ -377,7 +377,15 @@ const getTableREQ = getTable(tour_id);
 
 const tables = computed<ITable[]>(() => {
     const list = getTableREQ.data.value ?? [];
-    return [...list].sort((a, b) =>
+    const placeId = props.group.placeId;
+    const scoped =
+        placeId
+            ? (() => {
+                  const filtered = list.filter((t) => t.placeId === placeId);
+                  return filtered.length > 0 ? filtered : list;
+              })()
+            : list;
+    return [...scoped].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }),
     );
 });

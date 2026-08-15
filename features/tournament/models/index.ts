@@ -10,6 +10,7 @@ export * from "./group";
 export * from "./match";
 export * from "./MatchStat";
 export * from "./Table";
+export * from "./place";
 export * from "./tournamenetType";
 export * from "./Player";
 export * from "./Refre";

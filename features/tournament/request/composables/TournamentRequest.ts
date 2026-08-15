@@ -118,6 +118,12 @@ export const useTournamentRequest = () => {
         } else {
           body.append("rules", "[]");
         }
+        body.append(
+          "qualificationsStageInfo",
+          _body.qualificationsStageInfo
+            ? JSON.stringify(_body.qualificationsStageInfo)
+            : "null",
+        );
 
         await $api("/tournaments/creation-requests", {
           method: "post",
@@ -278,6 +284,12 @@ export const useTournamentRequest = () => {
         } else {
           body.append("rules", "[]");
         }
+        body.append(
+          "qualificationsStageInfo",
+          _body.qualificationsStageInfo
+            ? JSON.stringify(_body.qualificationsStageInfo)
+            : "null",
+        );
 
         await $api(`/tournaments/creation-requests/${unref(id)}`, {
           method: "put",

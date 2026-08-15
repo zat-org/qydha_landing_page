@@ -4,6 +4,7 @@ import type { TournamentOwner } from "./tournamentOwner";
 import type { TournamentPrize } from "./tournamentPrize";
 import type { TournamentPlayerJoinRequestType } from "./tournamentRequest";
 import type { Group } from "./group";
+import type { GetTournamentPlace, QualificationsStageInfo } from "./place";
 
 // export interface ITournamentCreate {
 //   name: string;
@@ -63,6 +64,8 @@ export interface TournamentUpdate {
   sponsors: File[];
   rules: string[];
   ownerId: string;
+  /** null = no qualifications stage */
+  qualificationsStageInfo: QualificationsStageInfo | null;
 }
 export interface UpdateJoinRequestSeetingsBody {
   joinRequestStartAt: string;
@@ -129,6 +132,7 @@ export interface DetailTournament {
     sponsors: string[];
     tournamentPrivatePassword: null | string;
     hasQualificationsStage: boolean | null;
+    qualificationStagePlaces?: GetTournamentPlace[];
     allowedJoinRequestType: TournamentPlayerJoinRequestType | null;
     minimumSubscriptionDays: number | null;
     groups: Group[];

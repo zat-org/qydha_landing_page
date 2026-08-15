@@ -44,7 +44,7 @@
               v-model="currentStepValue"
               size="xs"
               :items="stepperItems"
-              class="w-full max-w-2xl"
+              class="w-full max-w-3xl"
             />
           </div>
         </div>
@@ -73,8 +73,16 @@
           />
         </KeepAlive>
         <KeepAlive>
-          <TournamentRequestFormRulesForm
+          <TournamentRequestFormQualificationsForm
             v-show="currentStepValue === 2"
+            v-model="formData"
+            :errors="visibleErrors"
+            :on-field-blur="onFieldBlur"
+          />
+        </KeepAlive>
+        <KeepAlive>
+          <TournamentRequestFormRulesForm
+            v-show="currentStepValue === 3"
             v-model="formData"
             :errors="visibleErrors"
             :on-field-blur="onFieldBlur"
@@ -142,6 +150,7 @@ import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/yup';
 import TournamentRequestUpdateTourForm from '~/features/tournament/request/components/Update/TourForm.vue';
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
+import TournamentRequestFormQualificationsForm from '~/features/tournament/request/components/Form/QualificationsForm.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 
 const cardUi = {
@@ -188,6 +197,7 @@ const formData = reactive<UpdateTournamentCreationRequest>({
   rules: [],
   allowedJoinRequestType: TournamentPlayerJoinRequestType.All,
   minimumSubscriptionDays: 0,
+  qualificationsStageInfo: null,
 });
 
 const assignData = () => {
@@ -215,6 +225,7 @@ const assignData = () => {
     formData.joinRequestStartAt = data.joinRequestStartAt;
     formData.allowedJoinRequestType = data.allowedJoinRequestType ?? TournamentPlayerJoinRequestType.All;
     formData.minimumSubscriptionDays = data.minimumSubscriptionDays;
+    formData.qualificationsStageInfo = data.qualificationsStageInfo ?? null;
   }
 };
 
@@ -226,13 +237,15 @@ watch(getReq.status, (newValue) => {
 const steps = [
   { id: 0, title: 'معلومات البطولة', slot: 'TourInfo', icon: 'i-heroicons-trophy' },
   { id: 1, title: 'تفاصيل البطولة', slot: 'TourDetail', icon: 'i-heroicons-clipboard-document-list' },
-  { id: 2, title: 'قوانين البطولة', slot: 'TourRules', icon: 'i-heroicons-scale' },
+  { id: 2, title: 'أماكن التصفيات', slot: 'TourPlaces', icon: 'i-heroicons-map-pin' },
+  { id: 3, title: 'قوانين البطولة', slot: 'TourRules', icon: 'i-heroicons-scale' },
 ];
 
 const stepFieldMap: Record<number, string[]> = {
   0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors', 'remainingSponsorsUrls'],
   1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
-  2: ['rules'],
+  2: ['qualificationsStageInfo'],
+  3: ['rules'],
 };
 
 const requestSchema = object({
@@ -269,6 +282,30 @@ const requestSchema = object({
       then: (schema) => schema.min(0, 'الحد الأدنى يجب أن يكون 0 أو أكثر'),
       otherwise: (schema) => schema.nullable().notRequired(),
     }),
+  qualificationsStageInfo: object({
+    places: array()
+      .of(
+        object({
+          startAt: string().required('تاريخ بداية المكان مطلوب'),
+          endAt: string().required('تاريخ نهاية المكان مطلوب'),
+          locationDescription: string()
+            .required('وصف المكان مطلوب')
+            .max(255, 'وصف المكان يجب ألا يتجاوز 255 حرفاً'),
+          location: object({ latitude: number(), longitude: number() }).test(
+            'place-location-selected',
+            'يرجى اختيار موقع المكان',
+            (value) => !!value && value.latitude !== 0 && value.longitude !== 0,
+          ),
+          availableTablesCount: number()
+            .typeError('عدد الطاولات مطلوب')
+            .required('عدد الطاولات مطلوب')
+            .min(1, 'يجب أن يكون عدد الطاولات على الأقل 1'),
+        }),
+      )
+      .min(1, 'يجب إضافة مكان تصفيات واحد على الأقل'),
+  })
+    .nullable()
+    .default(null),
 });
 
 const { validateField, setValues, setFieldError, errors } = useForm<UpdateTournamentCreationRequest>({
@@ -379,11 +416,13 @@ const getStepForField = (error: any): number => {
   const step0Fields = new Set(stepFieldMap[0]);
   const step1Fields = new Set(stepFieldMap[1]);
   const step2Fields = new Set(stepFieldMap[2]);
+  const step3Fields = new Set(stepFieldMap[3]);
   const errorKeys = Object.keys(error.errors ?? {});
   for (const key of errorKeys) {
     if (step0Fields.has(key)) return 0;
     if (step1Fields.has(key)) return 1;
     if (step2Fields.has(key)) return 2;
+    if (step3Fields.has(key)) return 3;
   }
   return 0;
 };

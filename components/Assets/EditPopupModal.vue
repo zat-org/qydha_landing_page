@@ -2,10 +2,10 @@
   <UModal title="تعديل الاشعار" description="تعديل الاشعار">
     <template #body>
       <UFieldGroup>
-        <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" @click="onChangeindex(item.id)" :color="tabindex == item.id ? 'primary' : 'neutral'" />
+        <UButton v-for="item in tabItems" :key="item.id" :label="item.label" :value="item.id" :color="tabindex == item.id ? 'primary' : 'neutral'" @click="onChangeindex(item.id)" />
       </UFieldGroup>
         <template v-if="tabindex == 0">
-          <UForm :state="state" :schema="schema" ref="poupForm" @submit="onSubmit" class="flex flex-col gap-2">
+          <UForm ref="poupForm" :state="state" :schema="schema" class="flex flex-col gap-2" @submit="onSubmit">
             <UFormField label="الظهور في قيدها" name=" show ">
               <USwitch v-model="state.show" color="primary"></USwitch>
             </UFormField>
@@ -14,31 +14,33 @@
               <USelect v-model="state.actionType" :items="notificationActionsArray as any" />
             </UFormField>
 
-            <UFormField label="التارجيت" name="actionPath" v-if="
+            <UFormField
+v-if="
               state.actionType != AssetPopUpActionType.PopUpWithNoAction &&
               state.actionType
-            ">
-              <UInput v-model="state.actionPath" v-if="state.actionType == AssetPopUpActionType.PopUpWithGoToURL" />
-              <USelect class="w-full" v-model="state.actionPath" :items="state.actionType == AssetPopUpActionType.PopUpWithGoToScreen
-                  ? screenOptions
-                  : tabOptions
-                " v-if="
+            " label="التارجيت" name="actionPath">
+              <UInput v-if="state.actionType == AssetPopUpActionType.PopUpWithGoToURL" v-model="state.actionPath" />
+              <USelect
+v-if="
                   state.actionType ==
                   AssetPopUpActionType.PopUpWithGoToScreen ||
                   state.actionType == AssetPopUpActionType.PopUpWithGoToTab
+                " v-model="state.actionPath" class="w-full" :items="state.actionType == AssetPopUpActionType.PopUpWithGoToScreen
+                  ? screenOptions
+                  : tabOptions
                 " />
             </UFormField>
           </UForm>
         </template>
         <template v-if="tabindex == 1">
-          <UForm :state="imageState" :schema="imageSchema" ref="imageForm" @submit="onSubmitImage">
+          <UForm ref="imageForm" :state="imageState" :schema="imageSchema" @submit="onSubmitImage">
             <div class="flex justify-between items-center">
               <UFormField label="الصورة" name="image">
-                <UInput type="file" @change="onChange($event)" accept=".jpg , .png , .jpeg " v-model="imageState.image">
+                <UInput v-model="imageState.image" type="file" accept=".jpg , .png , .jpeg " @change="onChange($event)">
                 </UInput>
               </UFormField>
 
-              <img v-if="imageUrl" :src="imageUrl" class="w-[200px] h-[200px]" alt="selected image for  new popup" />
+              <img v-if="imageUrl" :src="imageUrl" class="w-50 h-50" alt="selected image for  new popup" />
             </div>
           </UForm>
         </template>
@@ -171,7 +173,7 @@ const notificationActionsArray = Object.values(AssetPopUpActionType).map(
 
 watch(
   () => state.actionType,
-  (newValue, oldValue) => {
+  (newValue) => {
     if (newValue == AssetPopUpActionType.PopUpWithNoAction) {
       schema.fields.actionPath = string();
       state.actionPath = "_";

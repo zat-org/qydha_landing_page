@@ -158,6 +158,45 @@
           </div>
         </div>
 
+        <div
+          v-if="data.qualificationsStageInfo?.places?.length"
+          class="space-y-4"
+        >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            أماكن مرحلة التصفيات
+          </h3>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <UCard
+              v-for="(place, index) in data.qualificationsStageInfo.places"
+              :key="index"
+              class="p-4"
+            >
+              <div class="space-y-2">
+                <p class="font-medium text-gray-900 dark:text-gray-100">
+                  {{ place.locationDescription || `مكان ${index + 1}` }}
+                </p>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  من {{ formatDate(place.startAt) }} إلى {{ formatDate(place.endAt) }}
+                </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  عدد الطاولات: {{ place.availableTablesCount }}
+                </div>
+                <UButton
+                  v-if="place.location"
+                  variant="soft"
+                  color="primary"
+                  size="xs"
+                  icon="i-heroicons-map"
+                  target="blank"
+                  :to="`https://www.google.com/maps?q=${place.location.latitude},${place.location.longitude}`"
+                >
+                  عرض على الخريطة
+                </UButton>
+              </div>
+            </UCard>
+          </div>
+        </div>
+
         <div v-if="data.sponsorsUrls && data.sponsorsUrls.length > 0" class="space-y-4">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">الرعاة</h3>
           <div class="flex gap-4">

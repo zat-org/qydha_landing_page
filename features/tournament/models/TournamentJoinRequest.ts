@@ -147,6 +147,8 @@ export interface TeamJoinRequestListItem {
   creatorAge: number | null;
   teammateAge: number | null;
   overallStatus: string;
+  selectedQualificationsPlaceId: string | null;
+  acceptsWaitingListPlacement: boolean;
 }
 
 export interface GetTeamJoinRequestsResponse {

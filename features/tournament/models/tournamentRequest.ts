@@ -1,5 +1,6 @@
 import type { TournamentType } from "./tournamenetType";
 import type { TournamentPrize } from "./tournamentPrize";
+import type { QualificationsStageInfo } from "./place";
 
 export enum TournamentRequestState {
   Pending = "Pending",
@@ -54,6 +55,8 @@ export interface TournamentCreationRequest {
   rules: string[];
   allowedJoinRequestType: TournamentPlayerJoinRequestType;
   minimumSubscriptionDays: number;
+  /** null = no qualifications stage */
+  qualificationsStageInfo: QualificationsStageInfo | null;
 }
 
 export interface UpdateTournamentCreationRequest {
@@ -84,6 +87,8 @@ export interface UpdateTournamentCreationRequest {
   rules: string[];
   allowedJoinRequestType: TournamentPlayerJoinRequestType;
   minimumSubscriptionDays: number;
+  /** null = no qualifications stage */
+  qualificationsStageInfo: QualificationsStageInfo | null;
 }
 
 export interface TournamentRequest {
@@ -142,4 +147,5 @@ export interface DetailTournamentRequest {
   joinRequestMaxCount: number;
   allowedJoinRequestType: TournamentPlayerJoinRequestType;
   minimumSubscriptionDays: number;
+  qualificationsStageInfo: QualificationsStageInfo | null;
 }

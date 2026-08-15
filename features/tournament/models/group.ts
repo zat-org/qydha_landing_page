@@ -20,6 +20,7 @@ export interface Group {
   type: string;
   withThirdPlaceMatch: boolean;
   state: GroupState;
+  placeId?: string;
 }
 
 export interface DetailGroup {
@@ -28,6 +29,7 @@ export interface DetailGroup {
   name: string;
   startPlayAt: string;
   state: GroupState;
+  placeId?: string;
   teams: {
     id: string;
     name: string;

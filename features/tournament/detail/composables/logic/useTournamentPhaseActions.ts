@@ -1,8 +1,10 @@
 import SetupTournamentModal from "~/features/tournament/detail/components/SetupTournamentModal.vue";
+import SetupQualificationsModal from "~/features/tournament/detail/components/SetupQualificationsModal.vue";
 import type {
   PhaseActionId,
   ResolvedPhaseAction,
 } from "~/features/tournament/detail/types/phase.types";
+import type { SetupTournamentPayload } from "~/features/tournament/detail/composables/api/useSetupTournament";
 
 export function useTournamentPhaseActions(
   tournamentId: string,
@@ -10,7 +12,12 @@ export function useTournamentPhaseActions(
 ) {
   const toast = useToast();
   const overlay = useOverlay();
-  const setupModal = overlay.create(SetupTournamentModal);
+  const setupModal = overlay.create(SetupTournamentModal, {
+    props: { tournamentId },
+  });
+  const qualsModal = overlay.create(SetupQualificationsModal, {
+    props: { tournamentId },
+  });
 
   const approveConfirmOpen = ref(false);
   const startConfirmOpen = ref(false);
@@ -35,12 +42,8 @@ export function useTournamentPhaseActions(
     resume: resumePending.value,
   }));
 
-  async function handleOrganizeTournament() {
-    const instance = setupModal.open();
-    const confirmed = await instance.result;
-    if (!confirmed) return;
-
-    await setupReq.fetchREQ(confirmed);
+  async function runSetup(payload: SetupTournamentPayload) {
+    await setupReq.fetchREQ(payload);
     if (setupReq.status.value === "success") {
       onRefreshed();
     } else {
@@ -48,6 +51,24 @@ export function useTournamentPhaseActions(
         title: "تعذّر تنظيم البطولة",
         color: "error",
       });
+    }
+  }
+
+  async function handleOrganizeTournament() {
+    const instance = setupModal.open();
+    const confirmed = await instance.result;
+    if (!confirmed) return;
+
+    if (confirmed === "direct") {
+      await runSetup({ type: "direct" });
+      return;
+    }
+
+    if (confirmed === "qualifications") {
+      const qualsInstance = qualsModal.open();
+      const groups = await qualsInstance.result;
+      if (!groups) return;
+      await runSetup({ type: "qualifications", groups });
     }
   }
 

@@ -105,6 +105,27 @@
                     tour.tournament.locationDescription }}</p>
                 </div>
                 <div
+                  v-if="qualificationPlaces.length"
+                  class="rounded-xl border border-gray-200/80 bg-white/85 p-3 dark:border-gray-700/80 dark:bg-gray-900/50 sm:col-span-2"
+                >
+                  <p class="text-xs text-gray-500 dark:text-gray-400">أماكن مرحلة التصفيات</p>
+                  <ul class="mt-2 space-y-2">
+                    <li
+                      v-for="place in qualificationPlaces"
+                      :key="place.id"
+                      class="flex flex-col gap-0.5 rounded-lg border border-gray-100 bg-gray-50/80 px-3 py-2 text-sm dark:border-gray-800 dark:bg-gray-950/40"
+                    >
+                      <span class="font-semibold text-gray-900 dark:text-gray-100">
+                        {{ place.locationDescription }}
+                      </span>
+                      <span class="text-xs text-gray-500 dark:text-gray-400">
+                        {{ formatDate(place.startAt) }} — {{ formatDate(place.endAt) }}
+                        · {{ place.availableTablesCount }} طاولة
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div
                   class="rounded-xl border border-gray-200/80 bg-white/85 p-3 dark:border-gray-700/80 dark:bg-gray-900/50">
                   <p class="text-xs text-gray-500 dark:text-gray-400">الفترة الزمنية</p>
                   <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -274,6 +295,7 @@ import {
 } from "~/features/tournament/models/tournament";
 import { formatDate } from "~/utils/formatDate";
 import { useTournamentPhaseStore } from '~/store/tournamentPhase';
+import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 
 const HERO_ACCORDION_ITEM_VALUE = 'tournament-hero';
 
@@ -285,6 +307,8 @@ const { getState, getType, getCurrency } = useTournamentLookups();
 
 const phaseStore = useTournamentPhaseStore();
 const phaseLabel = computed(() => phaseStore.phaseLabel);
+
+const { places: qualificationPlaces } = useTournamentPlaces(() => props.tour);
 
 const heroAccordionOpen = ref<string | undefined>(undefined);
 const detailsSectionsOpen = ref<string[]>([]);

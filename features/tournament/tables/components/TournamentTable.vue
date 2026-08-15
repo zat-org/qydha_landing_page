@@ -21,6 +21,16 @@
       </div>
     </template>
 
+    <div v-if="hasPlaces" class="mb-4 max-w-xs">
+      <UFormField label="تصفية حسب المكان">
+        <USelect
+          v-model="placeFilter"
+          :items="placeFilterItems"
+          placeholder="كل الأماكن"
+        />
+      </UFormField>
+    </div>
+
     <!-- Loading State -->
     <div v-if="getTableREQ.pending.value" class="flex justify-center items-center py-12">
       <div class="flex flex-col items-center gap-4">
@@ -50,7 +60,7 @@
     </UAlert>
 
     <!-- Empty State -->
-    <div v-else-if="!tables || tables.length === 0" class="flex flex-col items-center justify-center py-12">
+    <div v-else-if="!tableRows || tableRows.length === 0" class="flex flex-col items-center justify-center py-12">
       <UIcon name="i-heroicons-table-cells" class="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
       <p class="text-lg text-gray-500 dark:text-gray-400 mb-2">لا توجد طاولات</p>
       <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">ابدأ بإضافة طاولة جديدة</p>
@@ -65,7 +75,7 @@
     <!-- Table Data -->
     <UTable 
       v-else
-      :data="tables" 
+      :data="tableRows" 
       :columns="cols"
       :loading="getTableREQ.status.value === 'pending'"
       class="w-full"
@@ -111,6 +121,7 @@ import type { ITable } from '~/features/tournament/models/Table';
 import UpdateModal from './UpdateModal.vue';
 import AddModal from './AddModal.vue';
 import { TournamentDetailedState } from '~/features/tournament/models/tournament';
+import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces';
 const overlay = useOverlay()
 const route = useRoute()
 const toast = useToast()
@@ -121,6 +132,9 @@ const tour = computed(() => {
   if (tourREQ.data.value)
     return tourREQ.data.value.tournament
 })
+
+const { placeLabel, hasPlaces } = useTournamentPlaces(() => tourREQ.data.value)
+
 const canAddTable = computed(() => {
   return tour.value?.detailedState!=TournamentDetailedState.Finished
 })
@@ -149,11 +163,38 @@ const tablesNumber = computed(() => {
   return tables.value?.length || 0
 })
 
+const placeFilter = ref<string | null>(null)
+const placeFilterItems = computed(() => [
+  { label: 'كل الأماكن', value: null },
+  ...((tourREQ.data.value?.tournament.qualificationStagePlaces ?? []).map((p) => ({
+    label: p.locationDescription,
+    value: p.id,
+  }))),
+])
+
+const filteredTables = computed(() => {
+  if (!placeFilter.value) return tables.value
+  return tables.value.filter((t) => t.placeId === placeFilter.value)
+})
+
 // Table columns
-const cols = [
-  { accessorKey: 'name', header: 'الاسم' },
-  { accessorKey: 'actions', header: 'الإجراءات' }
-]
+const cols = computed(() => {
+  const base = [
+    { accessorKey: 'name', header: 'الاسم' },
+  ]
+  if (hasPlaces.value) {
+    base.push({ accessorKey: 'placeLabel', header: 'المكان' })
+  }
+  base.push({ accessorKey: 'actions', header: 'الإجراءات' })
+  return base
+})
+
+const tableRows = computed(() =>
+  filteredTables.value.map((t) => ({
+    ...t,
+    placeLabel: placeLabel(t.placeId),
+  })),
+)
 
 // Delete table
 const deleteREQ = useTournamentTable().deleteTable()

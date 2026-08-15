@@ -27,10 +27,12 @@ export interface IUpdateChoicesForMatch {
     id: string;
     name: string;
     tournamentId: string;
+    placeId?: string;
   };
   availableTable: {
     id: string;
     name: string;
     tournamentId: string;
+    placeId?: string;
   }[];
 }
