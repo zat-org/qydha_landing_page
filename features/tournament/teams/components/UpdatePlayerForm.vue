@@ -34,6 +34,6 @@ const toast = useToast()
 const updatePlayerREQ = await useTournamentPlayer().updatePlayer();
 const onSubmit = async () => {
   await updatePlayerREQ.fetchREQ(tour_id, props.player.id, state);
-  if (updatePlayerREQ.status.value == "success") { refreshNuxtData('getAllTourTeams'); toast.add({ title: "تم تعديل بيانات اللاعب بنجاح", color: "success" }); emit('close') }
+  if (updatePlayerREQ.status.value == "success") { refreshAppData(appKeys.tournamentTeams); toast.add({ title: "تم تعديل بيانات اللاعب بنجاح", color: "success" }); emit('close') }
 }
 </script>

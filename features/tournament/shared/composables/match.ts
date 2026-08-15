@@ -1,18 +1,23 @@
-import type { Match } from '~/features/tournament/models/group';
-import type { IMatchUpdate, IUpdateChoicesForMatch } from '~/features/tournament/models/match';
-import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
+import type { Match } from "~/features/tournament/models/group";
+import type {
+  IMatchUpdate,
+  IUpdateChoicesForMatch,
+} from "~/features/tournament/models/match";
+import type { IMatchData, IMathStat } from "~/features/tournament/models/MatchStat";
 
 export const useMatch = () => {
   const { $qaydhaapi, $api } = useNuxtApp();
 
   const getMatchData = () => {
-    const game_id = ref('');
-    const { data, pending, error, refresh, status, execute } =
-      useAsyncData<{ data: { state: IMatchData; statistics: IMathStat }; message: string }>(
-        'getMatchData',
-        () => $qaydhaapi(`baloot-games/${game_id.value}/data`),
-        { immediate: false },
-      );
+    const game_id = ref("");
+    const { data, pending, error, refresh, status, execute } = useAppApiData<{
+      state: IMatchData;
+      statistics: IMathStat;
+    }>(
+      appKeys.match("getMatchData"),
+      () => $qaydhaapi(`baloot-games/${game_id.value}/data`),
+      { immediate: false },
+    );
     const fetchREQ = async (_game_id: string) => {
       game_id.value = _game_id;
       await execute();
@@ -21,10 +26,10 @@ export const useMatch = () => {
   };
 
   const getMatchStatstics = () => {
-    const game_id = ref('');
+    const game_id = ref("");
     const { data, pending, error, refresh, status, execute } =
-      useAsyncData<{ message: string; data: IMathStat }>(
-        'getMatchStatstics',
+      useAppApiData<IMathStat>(
+        appKeys.match("getMatchStatstics"),
         () => $qaydhaapi(`baloot-games/${game_id.value}/statistics`),
         { immediate: false },
       );
@@ -36,50 +41,44 @@ export const useMatch = () => {
   };
 
   const getUpdateChoicesForMatch = (tour_id: string, match_id: string) => {
-    return useAsyncData<{ message: string; data: IUpdateChoicesForMatch }>(
-      `getUpdateChoicesForMatch-${tour_id}-${match_id}`,
+    return useAppApiData<IUpdateChoicesForMatch>(
+      appKeys.match("getUpdateChoicesForMatch", tour_id, match_id),
       () => $api(`/tournaments/${tour_id}/matches/${match_id}/update-choices`),
     );
   };
 
   const updateMatch = () => {
-    const tour_id = ref();
-    const match_id = ref();
-    const body = ref<IMatchUpdate>();
-    const { data, pending, error, refresh, execute, status } = useAsyncData<{
-      message: string;
-      data: Match;
-    }>(
-      () => `updateMatch-${tour_id.value}-${match_id.value}`,
-      () =>
-        $api(`tournaments/${tour_id.value}/matches/${match_id.value}`, {
-          body: body.value,
-          method: 'PUT',
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (
       _tour_id: string,
       _match_id: string,
       _data: IMatchUpdate,
     ) => {
-      tour_id.value = _tour_id;
-      match_id.value = _match_id;
-      body.value = _data;
-      await execute();
-      if (status.value == 'success' && data.value?.data) {
-        refreshNuxtData(
-          ['getRoundsGroupDetails', tour_id.value, data.value?.data.groupId].join(
-            '-',
-          ),
+      await execute(async () => {
+        const res = await $api<{ message: string; data: Match }>(
+          `tournaments/${_tour_id}/matches/${_match_id}`,
+          {
+            body: _data,
+            method: "PUT",
+          },
         );
-      }
+        if (res?.data?.groupId) {
+          await refreshAppData(
+            appKeys.match(
+              "getRoundsGroupDetails",
+              _tour_id,
+              res.data.groupId,
+            ),
+          );
+        }
+      });
     };
-    return { data, pending, error, refresh, fetchREQ, status };
+    return { pending, status, error, fetchREQ };
   };
 
   const updateMatchState = () => {
-    const qydha_id = ref();
+    const { pending, status, error, execute } = useMutationRequest();
     const body = reactive<
       {
         id: number;
@@ -90,87 +89,74 @@ export const useMatch = () => {
     >([
       {
         id: 1,
-        eventName: '',
+        eventName: "",
         triggeredAt: new Date().toISOString(),
       },
     ]);
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      () => `updateMatchState-${qydha_id.value}`,
-      () =>
-        $api(`/baloot-games/${qydha_id.value}/events`, {
-          method: 'POST',
-          body,
-        }),
-      { immediate: false },
-    );
+
     const fetchRestREQ = async (_qydha_id: string) => {
-      qydha_id.value = _qydha_id;
-      body[0]!.eventName = 'ResetGameEvent';
-      await execute();
+      await execute(async () => {
+        body[0]!.eventName = "ResetGameEvent";
+        await $api(`/baloot-games/${_qydha_id}/events`, {
+          method: "POST",
+          body,
+        });
+      });
     };
 
     const fetchWithdrawREQ = async (
       _qydha_id: string,
       _withdraw_side: string,
     ) => {
-      qydha_id.value = _qydha_id;
-      body[0]!.WithdrawSide = _withdraw_side;
-      body[0]!.eventName = 'WithdrawGameEvent';
-      await execute();
+      await execute(async () => {
+        body[0]!.WithdrawSide = _withdraw_side;
+        body[0]!.eventName = "WithdrawGameEvent";
+        await $api(`/baloot-games/${_qydha_id}/events`, {
+          method: "POST",
+          body,
+        });
+      });
     };
-    return { data, pending, error, refresh, status, fetchRestREQ, fetchWithdrawREQ };
+    return { pending, status, error, fetchRestREQ, fetchWithdrawREQ };
   };
 
   const MatchWithdraw = () => {
-    const GameId = ref();
-    const withdrawSide = ref<'Us' | 'Them' | 'All'>();
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      () => `MatchWithdraw-${GameId.value}-${withdrawSide.value}`,
-      () =>
-        $api(`/baloot-games/${GameId.value}/withdraw`, {
-          method: 'POST',
-          body: { withdrawSide: withdrawSide.value },
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (
       _GameId: string,
-      _withdrawSide: 'Us' | 'Them' | 'All',
+      _withdrawSide: "Us" | "Them" | "All",
     ) => {
-      GameId.value = _GameId;
-      withdrawSide.value = _withdrawSide;
-      await execute();
+      await execute(async () => {
+        await $api(`/baloot-games/${_GameId}/withdraw`, {
+          method: "POST",
+          body: { withdrawSide: _withdrawSide },
+        });
+      });
     };
-    return { data, pending, error, refresh, status, execute, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   const MatchReset = () => {
-    const GameId = ref();
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      () => `MatchReset-${GameId.value}`,
-      () =>
-        $api(`/baloot-games/${GameId.value}/reset`, { method: 'POST' }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_GameId: string) => {
-      GameId.value = _GameId;
-      await execute();
+      await execute(async () => {
+        await $api(`/baloot-games/${_GameId}/reset`, { method: "POST" });
+      });
     };
-    return { data, pending, error, refresh, status, execute, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   const MatchBack = () => {
-    const GameId = ref();
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      () => `MatchBack-${GameId.value}`,
-      () => $api(`/baloot-games/${GameId.value}/back`, { method: 'POST' }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_GameId: string) => {
-      GameId.value = _GameId;
-      await execute();
+      await execute(async () => {
+        await $api(`/baloot-games/${_GameId}/back`, { method: "POST" });
+      });
     };
-    return { data, pending, error, refresh, status, execute, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   return {

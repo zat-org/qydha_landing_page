@@ -83,12 +83,11 @@ watch(
 );
 
 const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selectedGroup?.data.id ?? "",{immediate: false});
-// const rounds = computed(() => getRounds.data.value?.data.rounds);
 watch(()=>tourStore.selectedGroup?.data.id ??false, async (id: string|boolean) => {
   if (!id) return;
     await getRounds.fetchREQ(tourid, id as string);
     if (getRounds.status.value == "success")
-      tourStore.rounds = getRounds.data.value?.data.rounds ?? []
+      tourStore.rounds = getRounds.data.value?.rounds ?? []
   
   
 },{deep: true, immediate: true});

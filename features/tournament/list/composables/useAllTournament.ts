@@ -50,12 +50,13 @@ export function useAllTournament() {
       },
     );
 
-    const { data, pending, error, refresh, status } =
-      await useAppLazyData<getTournamentResponse>(
-        () => buildAppDataKey("getAllTournament", unref(param)),
-        () => $api("/tournaments/dashboard", { query: unref(param) }),
-        { watch: [param], server: false },
-      );
+    const { data, pending, error, refresh, status } = await useAppLazyApiData<
+      getTournamentResponse["data"]
+    >(
+      () => buildAppDataKey("getAllTournament", unref(param)),
+      () => $api("/tournaments/dashboard", { query: unref(param) }),
+      { watch: [param], server: false },
+    );
 
     return { data, pending, error, refresh, status };
   };

@@ -63,7 +63,7 @@ const toast = useToast();
 const exactSearch = ref<boolean>(route.query.exact === "true" || true);
 const roleFilter = ref<string>((route.query.role as string) || "User");
 const page = ref(
-  (route.query.page ? +route.query.page : 1) || usersREQ.data.value?.data.currentPage!
+  (route.query.page ? +route.query.page : 1) || usersREQ.data.value?.currentPage!
 );
 
 await usersREQ.fetchREQ(
@@ -73,7 +73,7 @@ await usersREQ.fetchREQ(
   roleFilter.value,
 
 );
-const items = ref(usersREQ.data.value?.data.totalCount!);
+const items = ref(usersREQ.data.value?.totalCount!);
 
 
 const copyToClipboard = (text: string) => {
@@ -86,7 +86,7 @@ const copyToClipboard = (text: string) => {
 };
 
 const rows = computed(() => {
-  return usersREQ.data.value?.data.items;
+  return usersREQ.data.value?.items;
 });
 const cols = [
   // { accessorKey: "id", header: "#" },
@@ -154,7 +154,7 @@ watch([page, query, exactSearch, roleFilter], async (newValue, oldValue) => {
     exactSearch.value,
     roleFilter.value
   );
-  items.value = usersREQ.data.value?.data.totalCount!;
+  items.value = usersREQ.data.value?.totalCount!;
 },);
 
 const roleOptions = [

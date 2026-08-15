@@ -35,7 +35,7 @@ await getTokenREQ.fetchREQ(props.serviceAccount.id)
 const token = computed(() => {
   if (getTokenREQ.data.value) {
 
-    return getTokenREQ.data.value.data.token
+    return getTokenREQ.data.value.token
   } else {
     console.log('no token || error')
     return null

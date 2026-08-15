@@ -41,9 +41,9 @@
 </template>
 <script setup lang="ts">
 import {type getTournamentRequestResponse ,TournamentRequestState} from '~/features/tournament/models/tournamentRequest';
-const { data: res } = useNuxtData<getTournamentRequestResponse>('OrganizerTourReqests')
+const { data: res } = useNuxtData<getTournamentRequestResponse['data']>(appKeys.adminTourRequests)
 const rows = computed(() => {
-    return unref(res)?.data.items ?? []
+    return unref(res)?.items ?? []
 })
 const { getTournamentTypeOptions, getTournamnetStateOptions  ,OrganizerCancelRequest} = useTournamentRequest()
 const stateOptions = getTournamnetStateOptions()

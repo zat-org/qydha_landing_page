@@ -50,7 +50,7 @@ const onSubmit = async () => {
     await updateREQ.fetchREQ(new_file.value)
     if (updateREQ.status.value == 'success') {
       toast.add({ title: 'update  done' })
-      refreshNuxtData("getBook")
+      await refreshAppData(appKeys.book)
       emit('close')
     } else if (updateREQ.status.value == 'error') {
       toast.add({ title: 'error happend ' })

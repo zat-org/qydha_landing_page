@@ -16,9 +16,9 @@
 const getcodesREQ = await useInfluncerCode().getinfluncerCodes();
 await getcodesREQ.fetchREQ();
 
-const codes = computed(() => getcodesREQ.data.value?.data.items);
-const page = ref(getcodesREQ.data.value?.data.currentPage!);
-const total = ref(getcodesREQ.data.value?.data.totalCount!);
+const codes = computed(() => getcodesREQ.data.value?.items);
+const page = ref(getcodesREQ.data.value?.currentPage!);
+const total = ref(getcodesREQ.data.value?.totalCount!);
 
 watch(page, async (newValue) => {
   await getcodesREQ.fetchREQ(newValue);

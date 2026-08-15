@@ -197,7 +197,7 @@ const updateBoard = () => {
 
 };
 const {updateBalootBoardSettings} = useBoardSettings()
-const updateREQ = await updateBalootBoardSettings()
+const updateREQ = updateBalootBoardSettings()
 const emit = defineEmits(['close']);
 
 

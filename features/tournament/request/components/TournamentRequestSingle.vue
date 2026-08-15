@@ -252,7 +252,7 @@ const apiFetch = computed(()=>{
 })
 const { data:res, status, pending } = apiFetch.value(props.id)
 const data =computed(()=>{
-    if(res.value?.data) return res.value.data
+    if(res.value) return res.value
 })
 const currentState = computed(()=>{
   if(!data.value) return undefined
@@ -267,7 +267,7 @@ const handleApprove = async () => {
   if(!data.value)return 
   await approveRequest(data.value.id)
   if (status.value === 'success') {
-    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
+    await refreshAppData(appKeys.adminSingleTourRequest(data.value.id))
   }
 }
 
@@ -275,14 +275,14 @@ const handleReject = async () => {
   if(!data.value)return 
   await rejectRequest(data.value.id)
   if (status.value === 'success' ) {
-    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
+    await refreshAppData(appKeys.adminSingleTourRequest(data.value.id))
   }
 }
 const handleCancel = async () => {
   if(!data.value)return 
   await cancelRequest(data.value.id)
   if (status.value === 'success' ) {
-    await refreshNuxtData(`AdminGetSingleTournamentRequest-${data.value.id}`)
+    await refreshAppData(appKeys.adminSingleTourRequest(data.value.id))
   }
 }
 

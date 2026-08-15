@@ -16,7 +16,7 @@
             
             <UBadge color="primary" class="flex items-center gap-2">
               <UIcon name="mdi:clock" class="text-xl"/>
-              <span>{{ new Date(getBookREQ.data.value?.data.lastUpdateAt as string).toLocaleDateString('ar-SA') }}</span>
+              <span>{{ new Date(getBookREQ.data.value?.lastUpdateAt as string).toLocaleDateString('ar-SA') }}</span>
             </UBadge>
           </div>
 
@@ -28,8 +28,8 @@
             block
             color="primary"
             size="xl"
-            :loading="!getBookREQ.data.value?.data.url"
-            :to="getBookREQ.data.value?.data.url"
+            :loading="!getBookREQ.data.value?.url"
+            :to="getBookREQ.data.value?.url"
             target="_blank"
             icon="material-symbols:book"
           >

@@ -76,7 +76,7 @@ const refreeGetREQ = await useTournamentRefree().getTournamentRefree();
 await refreeGetREQ.fetchREQ(tour_id);
 
 const refrees = computed(() => {
-  if (refreeGetREQ.data.value) return refreeGetREQ.data.value.data;
+  if (refreeGetREQ.data.value) return refreeGetREQ.data.value;
   return [];
 });
 

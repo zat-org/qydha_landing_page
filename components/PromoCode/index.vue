@@ -10,7 +10,7 @@
     </template>
   </UTable> 
   
-  <UPagination class="mx-auto rtl" v-model:page="page" :page-count="10" :total="getREQ.data.value?.data.totalCount!"  />
+  <UPagination class="mx-auto rtl" v-model:page="page" :page-count="10" :total="getREQ.data.value?.totalCount!"  />
 
   
 </template>
@@ -24,7 +24,7 @@ const getREQ = await promoCodeApi.getPromoCodes()
 await getREQ.fetchREQ()
 const overlay = useOverlay()
 const rows = computed(() => {
-  return getREQ.data.value?.data.items
+  return getREQ.data.value?.items
 })
 const cols = [
   {accessorKey:'code',header:'الكود'},
@@ -38,7 +38,7 @@ const openModal = ()=>{
   overlay.create(AddModal).open()
 }
 
-const page = ref(getREQ.data.value?.data.currentPage!)
+const page = ref(getREQ.data.value?.currentPage!)
 
 watch(page,async(newValue,oldValue)=>{
  await  getREQ.fetchREQ(newValue.toString())

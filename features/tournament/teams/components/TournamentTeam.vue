@@ -85,7 +85,6 @@
 
 <script lang="ts" setup>
 import { ConfirmationModal } from '#components';
-import type { DetailTournament } from '~/features/tournament/models/tournament';
 import type { IPlayer, ITeam } from '~/features/tournament/models/tournamentTeam';
 import TournamentTeamAddForm from '~/features/tournament/teams/components/AddForm.vue';
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
@@ -112,22 +111,19 @@ const toast = useToast()
 
 
 
-const tournamentDashboardKey = `getSingelTournament-${tour_id}` as const
-const { data: tournamentDashboardData } = useNuxtData<DetailTournament>(tournamentDashboardKey)
-
 const getTourREQ = await useSingleTournament().getSingelTournament(tour_id, { immediate: false })
 
-if (!tournamentDashboardData.value?.tournament) {
+if (!getTourREQ.data.value?.tournament) {
   await getTourREQ.refresh()
 }
 
-const tour = computed(() => tournamentDashboardData.value?.tournament)
+const tour = computed(() => getTourREQ.data.value?.tournament)
 const page = ref(1)
 
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams()
 await getTeamsREQ.fetchREQ(tour_id, page.value)
 
-const total = computed(() => getTeamsREQ.data.value?.data.totalCount!)
+const total = computed(() => getTeamsREQ.data.value?.totalCount!)
 const isDrawerOpen = ref(false)
 const drawerMode = ref<'add' | 'update' | 'addPlayer' | 'updatePlayer' | null>(null)
 const selectedTeam = ref<ITeam | null>(null)
@@ -161,8 +157,8 @@ const closeDrawer = () => {
   tablekey.value = Date.now()
 }
 
-const teams = computed(() => getTeamsREQ.data.value?.data.items)
-const teamsNumber = computed(() => getTeamsREQ.data.value?.data.totalCount!)
+const teams = computed(() => getTeamsREQ.data.value?.items)
+const teamsNumber = computed(() => getTeamsREQ.data.value?.totalCount!)
 
 watch(page, async () => {
   await getTeamsREQ.fetchREQ(tour_id, page.value)

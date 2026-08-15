@@ -47,14 +47,13 @@ const schema = object({
 })
 const permissionREQ = await useServiceAccount().getPermissions()
 const permissions = computed(() => {
-  return permissionREQ.data.value?.data.permissions
+  return permissionREQ.data.value?.permissions
 })
 const updateREQ = await useServiceAccount().updateServiceAccount()
 
 const onSubmit = async () => {
   await updateREQ.fetchREQ(props.serviceAccount.id, state)
   if (updateREQ.status.value == 'success') {
-    refreshNuxtData('getServiceAccounts')
     toast.add({ title: 'update done succefuly' })
     emit('close')
   }

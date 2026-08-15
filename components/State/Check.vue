@@ -86,7 +86,7 @@ const onSubmit = async () => {
     const number = dialcode.value + state.phonenumber;
     await checkStatePhone.fetchREQ(number);
     if (checkStatePhone.status.value == "success") {
-      selected_user.value = checkStatePhone.data.value?.data;
+    selected_user.value = checkStatePhone.data.value;
     } else if (checkStatePhone.status.value == "error") {
       error.value = "هذا الرقم غير موجود في البطوله";
     }
@@ -94,14 +94,14 @@ const onSubmit = async () => {
     await checkStateEmail.fetchREQ(state.email);
     if (checkStateEmail.status.value == "success") {
 
-      selected_user.value = checkStateEmail.data.value?.data;
+      selected_user.value = checkStateEmail.data.value;
     } else if (checkStateEmail.status.value == "error") {
       error.value = "هذا الايميل غير موجود في البطوله";
     }
   } else if (index.value == 2) {
     await checkStateID.fetchREQ(state.id);
     if (checkStateID.status.value == "success") {
-      selected_user.value = checkStateID.data.value?.data;
+      selected_user.value = checkStateID.data.value;
     } else if (checkStateID.status.value == "error") {
       error.value = "هذا الرقم المرجعي غير موجود في البطوله";
     }

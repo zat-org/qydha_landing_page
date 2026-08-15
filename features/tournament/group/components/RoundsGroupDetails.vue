@@ -39,7 +39,7 @@
         </template>
 
         <!-- Loading -->
-        <div v-if="rounGroupDetailsREQ.pending.value && rounGroupDetailsREQ.data.value?.data == null"
+        <div v-if="rounGroupDetailsREQ.pending.value && rounGroupDetailsREQ.data.value == null"
             class="flex flex-col items-center justify-center gap-3 px-4 py-16">
             <UIcon name="i-mdi-loading" class="size-10 animate-spin text-primary" />
             <p class="text-sm text-gray-500 dark:text-gray-400">جاري تحميل الجولات…</p>
@@ -205,7 +205,7 @@ const props = defineProps<{
 const rounGroupDetailsREQ = await useGroup().getRoundsGroupDetails(tour_id, props.group.id);
 
 const roundsGroupDetails = computed<RoundGroupDetails | null>(() => {
-    return rounGroupDetailsREQ.data.value?.data || null;
+    return rounGroupDetailsREQ.data.value || null;
 });
 
 interface RoundRow {

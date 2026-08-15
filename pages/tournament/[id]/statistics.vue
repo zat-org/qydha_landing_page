@@ -297,13 +297,13 @@ const error = computed(() => statsReq.error.value);
 
 const apiData = computed(() => statsReq.data.value ?? null);
 const statistics = computed<Partial<TournamentStatistics["statistics"]>>(
-  () => apiData.value?.data?.statistics ?? apiData.value?.data ?? {},
+  () => apiData.value?.statistics ?? {},
 );
 const totalGames = computed<number | null>(
-  () => (apiData.value?.data?.totalGames ?? null) as number | null,
+  () => (apiData.value?.totalGames ?? null) as number | null,
 );
 const refresh = () => {
-  refreshNuxtData(`getTournamentStatistics-${id}`);
+  refreshAppData(appKeys.tournamentStatistics(id));
 };
 
 onMounted(() => {

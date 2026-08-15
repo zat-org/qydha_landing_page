@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { object, string } from "yup";
 const authApi = useAuth();
-const loginREQ = await authApi.login();
+const loginREQ = authApi.login();
 const loginForm = ref<HTMLFormElement>();
 const state = reactive<{ username: string; password: string }>({
   username: "",

@@ -327,7 +327,7 @@ const teamsViewMode = ref<"table" | "grid">("table");
 const selectedTeams = ref<Record<string, boolean>>({});
 
 const teamRows = computed<TeamRow[]>(() => {
-    const items = getTeamsReq.data.value?.data.items ?? [];
+    const items = getTeamsReq.data.value?.items ?? [];
     return items.map((team) => {
         const displayName =
             team.players?.length > 0

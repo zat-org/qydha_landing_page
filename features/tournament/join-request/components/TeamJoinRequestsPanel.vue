@@ -217,8 +217,8 @@ const { data, pending, refresh } = getTeamJoinRequests(
   instanceKey,
 );
 
-const items = computed(() => data.value?.data?.items ?? []);
-const totalCount = computed(() => data.value?.data?.totalCount ?? 0);
+const items = computed(() => data.value?.items ?? []);
+const totalCount = computed(() => data.value?.totalCount ?? 0);
 const participantsCount = computed(() => totalCount.value * 2);
 const columns = computed(() => {
   return [

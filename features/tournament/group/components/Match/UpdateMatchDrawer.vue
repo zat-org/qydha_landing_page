@@ -162,15 +162,15 @@ const form = useTemplateRef('form');
 
 const choicesREQ = await  getUpdateChoicesForMatch(tour_id, matchId)
 
-if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
-    formState.refereeId = choicesREQ.data.value.data.selectedReferee?.id || undefined;
-    formState.tableId = choicesREQ.data.value.data.selectedTable?.id || undefined;
+if (choicesREQ.status.value === "success" && choicesREQ.data?.value) {
+    formState.refereeId = choicesREQ.data.value.selectedReferee?.id || undefined;
+    formState.tableId = choicesREQ.data.value.selectedTable?.id || undefined;
     formState.isMarked = false; // You may need to get this from the match data
 }
 // Match choices data
 const matchChoices = computed<IUpdateChoicesForMatch | null>(() => {
-    if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
-        return choicesREQ.data.value.data || null;
+    if (choicesREQ.status.value === "success" && choicesREQ.data?.value) {
+        return choicesREQ.data.value || null;
     }
     return null;
 });

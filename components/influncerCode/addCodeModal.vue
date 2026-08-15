@@ -63,7 +63,7 @@ const   schema =object({
 
 // submit add new influncer code  
 const influncerAPI = useInfluncerCode()
-const addREQ = await influncerAPI.addInfCode()
+const addREQ = influncerAPI.addInfCode()
 const onSubmit =async()=>{
   await addREQ.fetchREQ(state)
   if (addREQ.status.value == "success" ){
@@ -73,14 +73,13 @@ const onSubmit =async()=>{
 
 }
 // catergory options 
-const categoryAPI =useCategory()
-const getREQ= await categoryAPI.getAllcategory() 
-const categoryies = computed (()=>{
- return getREQ.data.value?.data.map((cat)=>({
-  label:cat.categoryName,
-  id:cat.id
- }))
- 
+const categoryAPI = useCategory()
+const getREQ = await categoryAPI.getAllCategory()
+const categoryies = computed(() => {
+  return getREQ.data.value?.map((cat) => ({
+    label: cat.categoryName,
+    id: cat.id,
+  }))
 })
 
 

@@ -41,7 +41,7 @@ export async function useUserSearchSelect(
     try {
       await getusers.fetchREQ(q, page, exactSearch.value, role);
 
-      const data = getusers.data.value?.data;
+      const data = getusers.data.value;
       const newItems = data?.items ?? [];
 
       if (append) {

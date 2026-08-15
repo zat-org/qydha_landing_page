@@ -15,8 +15,19 @@ const UserRoleColor: Record<string, string> = {
   SuperAdmin: "primary",
 };
 
+type UsersPage = {
+  currentPage: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
+  items: User[];
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+};
+
 export const useUsers = () => {
   const { $api } = useNuxtApp();
+
   const getAllUsers = async () => {
     const searchtoken = ref();
     const pageNumber = ref();
@@ -24,19 +35,8 @@ export const useUsers = () => {
     const roleFilter = ref();
 
     const { data, pending, error, refresh, status, execute } =
-      await useLazyAsyncData<{
-        data: {
-          currentPage: number;
-          hasNext: boolean;
-          hasPrevious: boolean;
-          items: User[];
-          pageSize: number;
-          totalCount: number;
-          totalPages: number;
-        };
-        message: string;
-      }>(
-        "getAllUsers",
+      await useAppLazyApiData<UsersPage>(
+        appKeys.getAllUsers,
         () =>
           $api("/users", {
             params: {
@@ -46,14 +46,14 @@ export const useUsers = () => {
               Role: roleFilter.value,
             },
           }),
-        { immediate: false }
+        { immediate: false },
       );
 
     const fetchREQ = async (
       search_token: string,
       _pageNumber?: number,
       _exactSearch: boolean = false,
-      _roleFilter: string = "User"
+      _roleFilter: string = "User",
     ) => {
       searchtoken.value = search_token;
       if (_pageNumber) {
@@ -63,53 +63,57 @@ export const useUsers = () => {
       roleFilter.value = _roleFilter;
       await execute();
     };
+
     return { data, pending, error, refresh, status, fetchREQ };
   };
-  const updateUser = async () => {
-    const body = ref<{ roles: string[] }>({ roles: [] });
-    const user_id = ref();
-    const { data, pending, error, refresh, execute, status } =
-      await useAsyncData(
-        "updateUser",
-        () =>
-          $api(`/users/${user_id.value}/roles`, {
-            method: "patch",
-            body: body.value,
-          }),
-        { immediate: false }
-      );
+
+  const updateUser = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_user_id: string, roles: string[]) => {
-      user_id.value = _user_id;
-      body.value.roles = roles;
-      await execute();
+      await execute(async () => {
+        await $api(`/users/${_user_id}/roles`, {
+          method: "patch",
+          body: { roles },
+        });
+      });
     };
-    return { data, pending, error, refresh, fetchREQ, status };
+
+    return { pending, status, error, fetchREQ };
   };
+
   const getSingleUser = async () => {
     const user_id = ref();
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{ data: ISingleUser; message: string }>(
-        "getSingleUser",
+      await useAppApiData<ISingleUser>(
+        appKeys.getSingleUser,
         () => $api(`/users/${user_id.value}`),
-        { immediate: false }
+        { immediate: false },
       );
+
     const fetchREQ = async (id: string) => {
       user_id.value = id;
       await execute();
     };
+
     return { data, pending, error, refresh, status, fetchREQ };
   };
+
   const getUsersRoles = async () => {
-    const { data, pending, error, refresh, status, execute } =
-      await useAsyncData("getUserRoles", () => $api(`/users/roles/`));
+    const { data, pending, error, refresh, status } = await useAppApiData(
+      appKeys.getUserRoles,
+      () => $api(`/users/roles/`),
+    );
     return { data, pending, error, refresh, status };
   };
+
   const getUserRoleLabel = (role: string) => {
     return UserRoleLable[role];
   };
   const getUserRoleColor = (role: string) => {
     return UserRoleColor[role];
   };
+
   return {
     getAllUsers,
     updateUser,

@@ -191,7 +191,7 @@ const formData = reactive<UpdateTournamentCreationRequest>({
 });
 
 const assignData = () => {
-  const data = getReq.data.value?.data ?? null;
+  const data = getReq.data.value ?? null;
   if (unref(getReq.status) === 'success' && data) {
     formData.title = data.title;
     formData.description = data.description;

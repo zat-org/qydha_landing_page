@@ -140,13 +140,13 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     try {
       await groupsREQ.refresh();
 
-      const groups = groupsREQ.data.value?.data.groups;
+      const groups = groupsREQ.data.value?.groups;
       if (groups) syncTournamentFromGroups(groups);
 
       const matchesREQ = await groupApi.getGroupMatches();
       await matchesREQ.fetchREQ(tournamentId, groupId);
-      if (matchesREQ.status.value !== 'error' && matchesREQ.data?.value?.data) {
-        applyMatchesToGroup(groupId, matchesREQ.data.value.data);
+      if (matchesREQ.status.value !== 'error' && matchesREQ.data?.value) {
+        applyMatchesToGroup(groupId, matchesREQ.data.value);
       }
     } finally {
       bracketRefreshPending.value = false;
@@ -161,7 +161,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     await groupsREQ.execute();
     if (groupsREQ.status?.value === 'error') return;
 
-    const groups = groupsREQ.data.value?.data.groups ?? [];
+    const groups = groupsREQ.data.value?.groups ?? [];
     syncTournamentFromGroups(groups);
 
     const groupId = selectedGroup.value?.data.id;
@@ -171,12 +171,12 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     await matchesREQ.fetchREQ(tournamentId, groupId);
     if (
       matchesREQ.status.value === 'error' ||
-      !matchesREQ.data?.value?.data
+      !matchesREQ.data?.value
     ) {
       return;
     }
 
-    applyMatchesToGroup(groupId, matchesREQ.data.value.data);
+    applyMatchesToGroup(groupId, matchesREQ.data.value);
 
     if (!connection.value) {
       connection.value = await initWebsocket(tournamentId);
@@ -188,9 +188,9 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     await matchData.fetchREQ(id);
     if (matchData.status.value == 'success' && matchData.data.value)
       games.value.push({
-        id: matchData.data.value?.data.state.id,
-        game: matchData.data.value?.data.state,
-        statistics: matchData.data.value?.data.statistics,
+        id: matchData.data.value.state.id,
+        game: matchData.data.value.state,
+        statistics: matchData.data.value.statistics,
       });
   };
 

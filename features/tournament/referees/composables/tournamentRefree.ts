@@ -2,57 +2,55 @@ import type { IRefre } from "~/features/tournament/models/Refre";
 
 export const useTournamentRefree = () => {
   const { $api } = useNuxtApp();
+
   const getTournamentRefree = async () => {
-    const tourId = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: IRefre[], message: string }>(
-      'getTournamentRefree',
-      () => $api(`/tournaments/${tourId.value}/referees`), { immediate: false }
-    );
+    const tourId = ref();
+    const { data, pending, error, refresh, status, execute } =
+      await useAppApiData<IRefre[]>(
+        appKeys.tournamentReferees,
+        () => $api(`/tournaments/${tourId.value}/referees`),
+        { immediate: false },
+      );
     const fetchREQ = async (_tour_id: string) => {
-      tourId.value = _tour_id
-      await execute()
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
+      tourId.value = _tour_id;
+      await execute();
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  };
 
-  }
-  const addTourRefree = async () => {
-    const tourId = ref()
-    const body = ref<{ username: string }>()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      ' addTourRefree',
-      () => $api(`/tournaments/${tourId.value}/referees`, { method: 'post', body: body.value }), { immediate: false }
-    );
-    const fetchREQ = async (_tour_id: string, refree: { username: string }) => {
-      tourId.value = _tour_id
-      body.value = refree
+  const addTourRefree = () => {
+    const { pending, status, error, execute } = useMutationRequest();
 
-      await execute()
-      if (status.value=='success'){
-        refreshNuxtData("getTournamentRefree")
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+    const fetchREQ = async (
+      _tour_id: string,
+      refree: { username: string },
+    ) => {
+      await execute(async () => {
+        await $api(`/tournaments/${_tour_id}/referees`, {
+          method: "post",
+          body: refree,
+        });
+        await refreshAppData(appKeys.tournamentReferees);
+      });
+    };
 
-  const deleteTourRefree = async () => {
-    const tourId = ref()
-    const refreeId = ref()
+    return { pending, status, error, fetchREQ };
+  };
 
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'deleteTourRefree',
-      () => $api(`/tournaments/${tourId.value}/referees/${refreeId.value}`, { method: 'delete' }), { immediate: false }
-    );
+  const deleteTourRefree = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_tour_id: string, _refree_id: string) => {
-      tourId.value = _tour_id
-      refreeId.value = _refree_id
+      await execute(async () => {
+        await $api(`/tournaments/${_tour_id}/referees/${_refree_id}`, {
+          method: "delete",
+        });
+        await refreshAppData(appKeys.tournamentReferees);
+      });
+    };
 
-      await execute()
-      if (status.value=='success'){
-        refreshNuxtData("getTournamentRefree")
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
-  return { getTournamentRefree, addTourRefree, deleteTourRefree }
+    return { pending, status, error, fetchREQ };
+  };
 
-}
+  return { getTournamentRefree, addTourRefree, deleteTourRefree };
+};

@@ -117,7 +117,7 @@ const selectedTeams = ref<Record<string, boolean>>({});
 const toast = useToast();
 
 const groupDetails = computed<DetailGroup | null>(() => {
-    return groupDetailREQ.data.value?.data ?? null;
+    return groupDetailREQ.data.value ?? null;
 });
 
 const effectiveState = computed(

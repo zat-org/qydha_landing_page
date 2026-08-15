@@ -39,7 +39,7 @@ const props = defineProps<{
     id: string
 }>()
 
-const { fetchREQ, error, status, data } = await useAuth().registerConfirm();
+const { fetchREQ, error, status, data } = useAuth().registerConfirm();
 
 const verifyOtp = async () => {
 

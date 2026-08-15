@@ -35,6 +35,17 @@ export function buildAppDataKey(prefix: string, params: unknown): string {
   return `${prefix}:${JSON.stringify(params)}`;
 }
 
+/** Refresh one or more useAsyncData caches by key. */
+export function refreshAppData(...keys: string[]) {
+  if (keys.length === 0) return Promise.resolve();
+  return refreshNuxtData(keys.length === 1 ? keys[0]! : keys);
+}
+
+/** Read shared Nuxt payload cache for a key without fetching. */
+export function useAppCachedData<T>(key: string) {
+  return useNuxtData<T>(key);
+}
+
 const withAppCache = <DataT>(
   options?: AsyncDataOptions<DataT>,
 ): AsyncDataOptions<DataT> => ({

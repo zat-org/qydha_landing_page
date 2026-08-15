@@ -58,7 +58,7 @@ const getTemplateREQ = await useMarketing().getTemplates();
 await getTemplateREQ.fetchREQ();
 const templates = computed(() => {
   // return ["temp1", "temp2", "temp3"];
-  return getTemplateREQ.data.value?.data;
+  return getTemplateREQ.data.value;
 });
 const state = reactive<WhatsappMessageCreateI>({
   templateName: "",
@@ -93,7 +93,7 @@ const phoneChanged = (event: { dialCode: string }) => {
   console.log(event.dialCode);
   lastCode.value = event.dialCode;
 };
-const AddREQ = await useMarketing().addWhatsAppMessage()
+const AddREQ = useMarketing().addWhatsAppMessage()
 
 const onSubmit = async () => {
   await AddREQ.fetchREQ(state)

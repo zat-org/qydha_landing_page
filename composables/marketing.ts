@@ -2,36 +2,36 @@ import type { WhatsappMessageCreateI } from "~/models/marketing";
 
 export const useMarketing = () => {
   const { $api } = useNuxtApp();
+
   const getTemplates = async () => {
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{ data: string[]; message: string }>(
-        "getTemplates",
+      await useAppApiData<string[]>(
+        appKeys.marketing,
         () => $api("/marketing/whatsapp-messages-templates"),
-        { immediate: false }
+        { immediate: false },
       );
+
     const fetchREQ = async () => {
       await execute();
     };
+
     return { data, pending, error, refresh, status, fetchREQ };
   };
 
-  const addWhatsAppMessage = async () => {
-    const body = ref<WhatsappMessageCreateI>();
-    const { data, pending, error, refresh, status, execute } =
-      await useAsyncData(
-        "addWhatsAppMessage",
-        () =>
-          $api("/marketing/whatsapp-messages", {
-            method: "post",
-            body: body.value,
-          }),
-        { immediate: false }
-      );
+  const addWhatsAppMessage = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (newMessage: WhatsappMessageCreateI) => {
-      body.value = newMessage;
-      await execute();
+      await execute(async () => {
+        await $api("/marketing/whatsapp-messages", {
+          method: "post",
+          body: newMessage,
+        });
+      });
     };
-    return { data, pending, error, refresh, status, fetchREQ };
+
+    return { pending, status, error, fetchREQ };
   };
+
   return { getTemplates, addWhatsAppMessage };
 };

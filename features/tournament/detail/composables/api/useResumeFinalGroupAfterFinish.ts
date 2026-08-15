@@ -7,7 +7,7 @@ export function useResumeFinalGroupAfterFinish() {
       await $api(`/tournaments/${tournamentId}/resume-final-group-matches`, {
         method: "POST",
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 

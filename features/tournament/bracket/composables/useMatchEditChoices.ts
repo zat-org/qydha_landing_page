@@ -23,7 +23,7 @@ export function useMatchEditChoices(
   };
 
   watch(
-    () => choicesREQ.data.value?.data,
+    () => choicesREQ.data.value,
     (choices) => {
       if (choices) syncStateFromChoices(choices);
     },
@@ -31,8 +31,8 @@ export function useMatchEditChoices(
   );
 
   const matchChoices = computed<IUpdateChoicesForMatch | null>(() => {
-    if (choicesREQ.status.value === "success" && choicesREQ.data?.value?.data) {
-      return choicesREQ.data.value.data || null;
+    if (choicesREQ.status.value === "success" && choicesREQ.data?.value) {
+      return choicesREQ.data.value || null;
     }
     return null;
   });

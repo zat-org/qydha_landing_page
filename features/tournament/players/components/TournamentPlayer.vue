@@ -58,12 +58,12 @@ const page = ref();
 const total = ref();
 await getplayerREQ.fetchREQ(tour_id, null);
 if (getplayerREQ.status.value == "success") {
-  page.value = getplayerREQ.data.value?.data.currentPage;
-  total.value = getplayerREQ.data.value?.data.totalCount;
+  page.value = getplayerREQ.data.value?.currentPage;
+  total.value = getplayerREQ.data.value?.totalCount;
 }
 watch(page, async (newValue, oldValue) => {
   await getplayerREQ.fetchREQ(tour_id, null, page.value);
-  total.value = getplayerREQ.data.value?.data.totalCount!;
+  total.value = getplayerREQ.data.value?.totalCount!;
 });
 
 const cols = [
@@ -78,7 +78,7 @@ const cols = [
 
 const players = computed(() => {
   console.log("hello ");
-  return getplayerREQ.data.value?.data.items;
+  return getplayerREQ.data.value?.items;
 });
 const openCreateModal = () => {
   overlay.create(CreatePlayerModal).open();

@@ -13,7 +13,7 @@ export function useUpdateJoinRequestSettings() {
         method: "PUT",
         body,
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 

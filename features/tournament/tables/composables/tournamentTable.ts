@@ -4,101 +4,73 @@ export const useTournamentTable = () => {
   const { $api } = useNuxtApp();
 
   const addTable = () => {
-    const tourId = ref()
-    const body = ref<ITableCreate>()
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      ()=>['addTable',tourId.value].join('-'),
-      () => {
-        if (!tourId.value) {
-          throw new Error('Tournament ID is required')
-        }
-        return $api(`tournaments/${tourId.value}/tables`, { 
-          method: 'post', 
-          body: body.value,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-      }, 
-      { immediate: false }
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (tour_id: string, new_table: ITableCreate) => {
-      console.log(tour_id, new_table)
       if (!tour_id) {
-        throw new Error('Tournament ID is required')
+        throw new Error("Tournament ID is required");
       }
-      tourId.value = tour_id
-      body.value = new_table
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData(['getTable',tourId.value].join('-'))
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+      await execute(async () => {
+        await $api(`tournaments/${tour_id}/tables`, {
+          method: "post",
+          body: new_table,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        await refreshAppData(appKeys.tournamentTables(tour_id));
+      });
+    };
 
-  const getTable = (tour_id:string) => {
-    return useAsyncData<{ data: ITable[], message: string }>(
-      ()=>['getTable',tour_id].join('-'),
-      () => $api(`/tournaments/${tour_id}/tables`)
+    return { pending, status, error, fetchREQ };
+  };
+
+  const getTable = (tour_id: string) => {
+    return useAppApiData<ITable[]>(appKeys.tournamentTables(tour_id), () =>
+      $api(`/tournaments/${tour_id}/tables`),
     );
-  }
-
-  // /tournaments/tID/tables/tableeID
+  };
 
   const deleteTable = () => {
-    const tourId = ref()
-    const tableId = ref()
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      'deleteTable',
-      () => $api(`/tournaments/${tourId.value}/tables/${tableId.value}`, { method: 'delete' }), { immediate: false }
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (tour_id: string, table_id: string) => {
-      tourId.value = tour_id
-      tableId.value = table_id
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData(['getTable',tourId.value].join('-'))
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+      await execute(async () => {
+        await $api(`/tournaments/${tour_id}/tables/${table_id}`, {
+          method: "delete",
+        });
+        await refreshAppData(appKeys.tournamentTables(tour_id));
+      });
+    };
+
+    return { pending, status, error, fetchREQ };
+  };
 
   const updateTable = () => {
-    const body = ref<ITableCreate>()
-    const tourId = ref()
-    const tableId = ref()
-    const { data, pending, error, refresh, status, execute } = useAsyncData(
-      'updateTable',
-      () => {
-        if (!tourId.value || !tableId.value) {
-          throw new Error('Tournament ID and Table ID are required')
-        }
-        return $api(`/tournaments/${tourId.value}/tables/${tableId.value}`, { 
-          method: 'put', 
-          body: body.value,
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-      }, 
-      { immediate: false }
-    );
-    const fetchREQ = async (tour_id: string, table_id: string, new_table: ITableCreate) => {
+    const { pending, status, error, execute } = useMutationRequest();
+
+    const fetchREQ = async (
+      tour_id: string,
+      table_id: string,
+      new_table: ITableCreate,
+    ) => {
       if (!tour_id || !table_id) {
-        throw new Error('Tournament ID and Table ID are required')
+        throw new Error("Tournament ID and Table ID are required");
       }
-      tourId.value = tour_id
-      tableId.value = table_id
-      body.value = new_table
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData(['getTable',tourId.value].join('-'))
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+      await execute(async () => {
+        await $api(`/tournaments/${tour_id}/tables/${table_id}`, {
+          method: "put",
+          body: new_table,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        await refreshAppData(appKeys.tournamentTables(tour_id));
+      });
+    };
 
+    return { pending, status, error, fetchREQ };
+  };
 
-  return { addTable, getTable, deleteTable, updateTable }
-}
+  return { addTable, getTable, deleteTable, updateTable };
+};

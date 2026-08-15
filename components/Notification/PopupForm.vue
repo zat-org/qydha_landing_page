@@ -96,7 +96,7 @@ defineExpose({ AddNotificatoion });
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
 const users = computed(() => {
-  return usergetREQ.data.value?.data.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
+  return usergetREQ.data.value?.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
 });
 
 const target = ref<"All" | "User" | "Anonymos">("All");
@@ -245,7 +245,7 @@ const onSubmit = async () => {
   emit("close");
 };
 
-const addREQ = await useNotification().sendNotificationToAllUsers();
+const addREQ = useNotification().sendNotificationToAllUsers();
 </script>
 
 <style></style>

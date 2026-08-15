@@ -189,7 +189,7 @@ const onSubmit = async () => {
     toast.add({ title: "تم ارسال الكود بنجاح" });
     // pass requestid
 
-    requestid.value = sendOtpREQ.data.value.data.requestId;
+    requestid.value = sendOtpREQ.data.value.requestId;
     selectedTab.value = 1;
   }
   if (sendOtpREQ.status.value == "error" && sendOtpREQ.error.value) {
@@ -211,7 +211,7 @@ const ConirmationSubmit = async () => {
   );
   if (confirmOtpREQ.status.value == "success" && confirmOtpREQ.data.value) {
     toast.add({ title: "تم تاكيد وجودك في الفريق" });
-    teamdata.value = confirmOtpREQ.data.value.data;
+    teamdata.value = confirmOtpREQ.data.value;
   } else if (
     confirmOtpREQ.status.value == "error" &&
     confirmOtpREQ.error.value

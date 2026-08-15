@@ -47,10 +47,10 @@ const search_term = ref('')
 const getUsersREQ = await useUsers().getAllUsers()
 await getUsersREQ.fetchREQ('')
 
-const addREQ = await usePromoCode().addPromoCodes()
+const addREQ = usePromoCode().addPromoCodes()
 
 const users = computed(() => { 
-  let result =  getUsersREQ.data.value?.data.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }))
+  let result =  getUsersREQ.data.value?.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }))
   console.log(result)
   return result
 })

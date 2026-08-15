@@ -35,7 +35,7 @@ const permissionGetREQ = await useTournamentModerator().getModeratorpermissions(
 
 const permission = computed(() => {
   if (permissionGetREQ.data.value)
-    return permissionGetREQ.data.value.data.permissions
+    return permissionGetREQ.data.value.permissions
 })
 
 const moderatorForm = ref()

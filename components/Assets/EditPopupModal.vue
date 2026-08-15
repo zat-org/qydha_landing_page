@@ -74,7 +74,7 @@ const emit = defineEmits(['close'])
 const updatePopUpREQ = await useAssets().updatePopupData();
 const getPopUp = await useAssets().getPopup();
 const popupData = computed(() => {
-  return getPopUp.data.value?.data!;
+  return getPopUp.data.value!;
 });
 
 const state = reactive<IAssetPopUpUpdate>({

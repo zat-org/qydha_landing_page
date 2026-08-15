@@ -45,7 +45,7 @@ export function useTournamentEdit(tournamentId: string) {
         method: "PUT",
         body: buildUpdateFormData(body),
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 

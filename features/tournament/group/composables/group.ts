@@ -4,51 +4,47 @@ import type {
   Group,
   Match,
   RoundGroupDetails,
-  Team,
 } from "~/features/tournament/models/group";
-import type { Node, Edge } from "@vue-flow/core";
 import { useMyAuthStore } from "~/store/Auth";
 import type { Privilege } from "~/models/user";
 import type { TournamentRoundUpdate } from "~/features/tournament/models/tournamentRound";
 
-interface GraphData {
-  nodes: Node<any, any, string>[];
-  edges: Edge<any, any, string>[];
-}
+type GroupsPayload = {
+  groups: Group[];
+  requesterPrivilege: {
+    permissions: string[] | null;
+    privilege: Privilege;
+  };
+};
 
 export const useGroup = () => {
   const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
+
   const getGroups = (tourid: string) => {
-    const { data, pending, error, refresh, status, execute } = useAsyncData<{
-      message: string;
-      data: {
-        groups: Group[];
-        requesterPrivilege: {
-          permissions: string[] | null;
-          privilege: Privilege;
-        };
-      };
-    }>(
-      () => ["getGroups", tourid].join("-"),
-      () => $api(`/tournaments/${tourid}/groups`),
-    );
+    const { data, pending, error, refresh, status, execute } =
+      useAppApiData<GroupsPayload>(appKeys.tournamentGroups(tourid), () =>
+        $api(`/tournaments/${tourid}/groups`),
+      );
+
     watch(status, () => {
-      if (status.value == "success" && data.value && data.value.data) {
+      if (status.value == "success" && data.value) {
         userStore.permissions =
-          data.value?.data.requesterPrivilege.permissions ?? [];
-        userStore.privilege = data.value?.data.requesterPrivilege.privilege;
+          data.value.requesterPrivilege.permissions ?? [];
+        userStore.privilege = data.value.requesterPrivilege.privilege;
       }
     });
 
     return { data, pending, error, refresh, status, execute };
   };
+
   const getGroupDetails = async (tour_id: string, group_id: string) => {
-    return await useAsyncData<{ message: string; data: DetailGroup }>(
-      () => ["getGroupDetails", tour_id, group_id].join("-"),
+    return await useAppApiData<DetailGroup>(
+      appKeys.tournamentGroupDetails(tour_id, group_id),
       () => $api(`tournaments/${tour_id}/groups/${group_id}`),
     );
   };
+
   const getRoundsGroupDetails = async (
     tour_id: string,
     group_id: string,
@@ -57,11 +53,8 @@ export const useGroup = () => {
     const TOURID = ref(tour_id);
     const GROUPID = ref(group_id);
 
-    const result = await useAsyncData<{
-      message: string;
-      data: RoundGroupDetails;
-    }>(
-      () => ["getRoundsGroupDetails", tour_id, group_id].join("-"),
+    const result = await useAppApiData<RoundGroupDetails>(
+      () => appKeys.match("getRoundsGroupDetails", TOURID.value, GROUPID.value),
       () => $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/rounds`),
       { immediate: options.immediate },
     );
@@ -77,9 +70,8 @@ export const useGroup = () => {
     const tour_id = ref();
     const group_id = ref();
     const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{ message: string; data: Match[] }>(
-        "getGroupMatch",
-
+      await useAppApiData<Match[]>(
+        appKeys.match("getGroupMatch"),
         () =>
           $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`),
         { immediate: false },
@@ -100,40 +92,21 @@ export const useGroup = () => {
     };
   };
 
-  const addAvailableTeamsToFinalGroup = async () => {
-    const tour_id = ref();
-    const result = await useAsyncData<{ message: string; data: Match[] }>(
-      () => ["addAvailableTeamsToFinalGroup", tour_id.value].join("-"),
-      () =>
-        $api(`tournaments/${tour_id.value}/groups/final/teams-links`, {
-          method: "post",
-        }),
-      { immediate: false },
-    );
+  const addAvailableTeamsToFinalGroup = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_tour_id: string) => {
-      tour_id.value = _tour_id;
-      await result.execute();
+      await execute(async () => {
+        await $api(`tournaments/${_tour_id}/groups/final/teams-links`, {
+          method: "post",
+        });
+      });
     };
-    return { result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   const updateTournamentRound = () => {
-    const tour_id = ref();
-    const round_id = ref();
-    const group_id = ref();
-    const body = ref<TournamentRoundUpdate>();
-    const result = useAsyncData<{
-      message: string;
-      data: TournamentRoundUpdate;
-    }>(
-      "updateTournamentRound",
-      () =>
-        $api(
-          `tournaments/${tour_id.value}/groups/${group_id.value}/rounds/${round_id.value}`,
-          { method: "put", body: body.value },
-        ),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
 
     const fetchREQ = async (
       _tour_id: string,
@@ -141,157 +114,126 @@ export const useGroup = () => {
       _group_id: string,
       _body: TournamentRoundUpdate,
     ) => {
-      tour_id.value = _tour_id;
-      round_id.value = _round_id;
-      group_id.value = _group_id;
-      body.value = _body;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(
-          ["getRoundsGroupDetails", _tour_id, _group_id].join("-"),
+      await execute(async () => {
+        await $api(
+          `tournaments/${_tour_id}/groups/${_group_id}/rounds/${_round_id}`,
+          { method: "put", body: _body },
         );
-      }
+        await refreshAppData(
+          appKeys.match("getRoundsGroupDetails", _tour_id, _group_id),
+        );
+      });
     };
-    return { result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   const ceateMatchesForGroup = () => {
-    const tour_id = ref();
-    const group_id = ref();
-    const body = ref<CreateMatch>();
-    const result = useAsyncData<{ message: string; data: Match[] }>(
-      () => ["ceateMatchesForGroup", tour_id.value, group_id.value].join("-"),
-      () =>
-        $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`, {
-          method: "post",
-          body: body.value,
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (
       _tour_id: string,
       _group_id: string,
       _body: CreateMatch,
     ) => {
-      tour_id.value = _tour_id;
-      group_id.value = _group_id;
-      body.value = _body;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(["getGroups", tour_id.value].join("-"));
-        refreshNuxtData(["getSingelTournament", tour_id.value].join("-"));
-      }
+      await execute(async () => {
+        await $api(`tournaments/${_tour_id}/groups/${_group_id}/matches`, {
+          method: "post",
+          body: _body,
+        });
+        await refreshAppData(
+          appKeys.tournamentGroups(_tour_id),
+          appKeys.tournament(_tour_id),
+        );
+      });
     };
-    return { result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   const ceateMatchesForFinalGroup = () => {
-    const tour_id = ref();
-    const body = ref<CreateMatch>();
-    const result = useAsyncData<{ message: string; data: Match[] }>(
-      () => ["ceateMatchesForFinalGroup", tour_id.value].join("-"),
-      () =>
-        $api(`tournaments/${tour_id.value}/generate-final-group-matches`, {
-          method: "post",
-          body: body.value,
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (
       _tour_id: string,
       _body: CreateMatch,
       _group_id?: string,
     ) => {
-      tour_id.value = _tour_id;
-      body.value = _body;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(["getGroups", tour_id.value].join("-"));
-        refreshNuxtData(
-          ["getGroupDetails", tour_id.value, _group_id].join("-"),
-        );
-        refreshNuxtData(
-          ["getRoundsGroupDetails", tour_id.value, _group_id].join("-"),
-        );
-        refreshNuxtData(["getSingelTournament", tour_id.value].join("-"));
-      }
+      await execute(async () => {
+        await $api(`tournaments/${_tour_id}/generate-final-group-matches`, {
+          method: "post",
+          body: _body,
+        });
+        const keys = [
+          appKeys.tournamentGroups(_tour_id),
+          appKeys.tournament(_tour_id),
+        ];
+        if (_group_id) {
+          keys.push(
+            appKeys.tournamentGroupDetails(_tour_id, _group_id),
+            appKeys.match("getRoundsGroupDetails", _tour_id, _group_id),
+          );
+        }
+        await refreshAppData(...keys);
+      });
     };
-    return { result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
-  const unlinkTeamFromGroup = async () => {
-    const tourId = ref();
-    const groupId = ref();
-    const body = ref<{ teamsId: string[] }>({ teamsId: [] });
-    const result = await useAsyncData(
-      "unlinkTeam",
-      () =>
-        $api(
-          `/tournaments/${tourId.value}/groups/${groupId.value}/teams-links`,
-          { method: "delete", body: body.value },
-        ),
-      { immediate: false },
-    );
+  const unlinkTeamFromGroup = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (
       tour_id: string,
       group_id: string,
       teams_id: string[],
     ) => {
-      tourId.value = tour_id;
-      groupId.value = group_id;
-      body.value.teamsId = teams_id;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
-      }
+      await execute(async () => {
+        await $api(`/tournaments/${tour_id}/groups/${group_id}/teams-links`, {
+          method: "delete",
+          body: { teamsId: teams_id },
+        });
+        await refreshAppData(
+          appKeys.tournamentGroupDetails(tour_id, group_id),
+        );
+      });
     };
-    return { result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
-  const revertGroupToLinkingState = async () => {
-    const tourId = ref();
-    const groupId = ref();
-    const result = await useAsyncData(
-      "revertGroupToLinkingState",
-      () =>
-        $api(`/tournaments/${tourId.value}/groups/${groupId.value}/matches`, {
+  const revertGroupToLinkingState = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
+    const fetchREQ = async (tour_id: string, group_id: string) => {
+      await execute(async () => {
+        await $api(`/tournaments/${tour_id}/groups/${group_id}/matches`, {
           method: "delete",
-        }),
-      { immediate: false },
-    );
-    const fetchREQ = async (tour_id: string, group_id: string) => {
-      tourId.value = tour_id;
-      groupId.value = group_id;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
-        refreshNuxtData(["getGroups", tour_id].join("-"));
-        refreshNuxtData(["getSingelTournament", tourId.value].join("-"));
-      }
+        });
+        await refreshAppData(
+          appKeys.tournamentGroupDetails(tour_id, group_id),
+          appKeys.tournamentGroups(tour_id),
+          appKeys.tournament(tour_id),
+        );
+      });
     };
-    return { ...result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
-  const revertFinalGroupGeneratedMatches = async () => {
-    const tourId = ref();
-    const result = await useAsyncData(
-      "revertFinalGroupGeneratedMatches",
-      () =>
-        $api(
-          `/tournaments/${tourId.value}/revert-final-group-generated-matches`,
-          { method: "post" },
-        ),
-      { immediate: false },
-    );
+
+  const revertFinalGroupGeneratedMatches = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (tour_id: string, group_id: string) => {
-      tourId.value = tour_id;
-      await result.execute();
-      if (result.status.value == "success") {
-        refreshNuxtData(["getGroupDetails", tour_id, group_id].join("-"));
-        refreshNuxtData(["getGroups", tour_id].join("-"));
-        refreshNuxtData(["getSingelTournament", tour_id].join("-"));
-      }
+      await execute(async () => {
+        await $api(
+          `/tournaments/${tour_id}/revert-final-group-generated-matches`,
+          { method: "post" },
+        );
+        await refreshAppData(
+          appKeys.tournamentGroupDetails(tour_id, group_id),
+          appKeys.tournamentGroups(tour_id),
+          appKeys.tournament(tour_id),
+        );
+      });
     };
-    return { ...result, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
 
   return {

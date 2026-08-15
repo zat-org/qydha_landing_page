@@ -46,7 +46,7 @@ if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.ro
 
 const Users = computed(() => {
   if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-    return getusers.data.value?.data.items
+    return getusers.data.value?.items
   }
 })
 const search = async (q: string) => {
@@ -60,7 +60,7 @@ const permissionGetREQ = await useTournamentModerator().getModeratorpermissions(
 
 const permission = computed(() => {
   if (permissionGetREQ.data.value)
-    return permissionGetREQ.data.value.data.permissions
+    return permissionGetREQ.data.value.permissions
 })
 
 const moderatorForm = ref()

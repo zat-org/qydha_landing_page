@@ -87,7 +87,7 @@ const generalError = ref('')
 
 const { register } = useAuth()
 
-const { fetchREQ, error, status, data } = await register()
+const { fetchREQ, error, status, data } = register()
 async function onSubmit() {
   generalError.value = ''
 

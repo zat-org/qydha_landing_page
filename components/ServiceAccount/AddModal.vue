@@ -43,13 +43,12 @@ const schema = object({
 })
 const permissionREQ = await useServiceAccount().getPermissions()
 const permissions = computed(() => {
-  return permissionREQ.data.value?.data.permissions
+  return permissionREQ.data.value?.permissions
 })
 const addREQ = await useServiceAccount().addServiceAccount()
 const onSubmit = async () => {
   await addREQ.fetchREQ(state)
   if (addREQ.status.value == 'success') {
-    refreshNuxtData('getServiceAccounts')
     toast.add({ title: 'add ing done succefuly' })
     emit('close')
   }

@@ -2,88 +2,112 @@ import type { State, TeamData } from "~/features/tournament/models/Player";
 
 export const useLeague = () => {
   const { $api } = useNuxtApp();
+
   const checkExistByPhone = async () => {
     const phoneNumber = ref();
     const { data, pending, error, refresh, execute, status } =
-      await useAsyncData<{ message: string; data: State }>(
+      await useAppApiData<State>(
         "checkExist",
         () => $api(`/players/phone/${phoneNumber.value}`),
-        { immediate: false }
+        { immediate: false },
       );
+
     const fetchREQ = async (_phone_numebr: string) => {
       phoneNumber.value = _phone_numebr;
       await execute();
     };
+
     return { data, pending, error, refresh, fetchREQ, status };
   };
+
   const checkExistByEmail = async () => {
     const email = ref();
     const { data, pending, error, refresh, execute, status } =
-      await useAsyncData<{ message: string; data: State }>(
+      await useAppApiData<State>(
         "checkExist",
         () => $api(`/players/email/${email.value}`),
-        { immediate: false }
+        { immediate: false },
       );
+
     const fetchREQ = async (_email: string) => {
       email.value = _email;
       await execute();
     };
+
     return { data, pending, error, refresh, fetchREQ, status };
   };
+
   const checkExistByID = async () => {
     const id = ref();
     const { data, pending, error, refresh, execute, status } =
-      await useAsyncData<{ message: string; data: State }>(
+      await useAppApiData<State>(
         "checkExist",
         () => $api(`/players/${id.value}`),
-        { immediate: false }
+        { immediate: false },
       );
+
     const fetchREQ = async (_id: string) => {
       id.value = _id;
       await execute();
     };
+
     return { data, pending, error, refresh, fetchREQ, status };
   };
 
-  const sendOtp = async () => {
-    const body = reactive({ firstPlayerId: "", secondPlayerId: "" });
-    const { data, pending, error, refresh, status, execute } =
-      await useAsyncData<{data:{requestId:string},message:string },{code:string ,error:string ,message:string}>(
-        "send-team-confirmation-otp",
-        () =>
-          $api("/send-team-confirmation-otp", { method: "post", body: body }),
-        { immediate: false }
-      );
+  const sendOtp = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+    const data = ref<{ requestId: string } | null>(null);
+
     const fetchREQ = async (
       _firstPlayerid: string,
-      _secoundPlayerid: string
+      _secoundPlayerid: string,
     ) => {
-      body.firstPlayerId = _firstPlayerid;
-      body.secondPlayerId = _secoundPlayerid;
-      await execute();
+      data.value = null;
+      await execute(async () => {
+        const res = await $api<{ data: { requestId: string }; message: string }>(
+          "/send-team-confirmation-otp",
+          {
+            method: "post",
+            body: {
+              firstPlayerId: _firstPlayerid,
+              secondPlayerId: _secoundPlayerid,
+            },
+          },
+        );
+        data.value = res.data;
+      });
     };
-    return { data, pending, error, refresh, status, fetchREQ };
+
+    return { data, pending, status, error, fetchREQ };
   };
 
-  const confirmOtp = async () => {
-    const body = reactive({
-      firstPlayerOtp: "",
-      SecondPlayerOtp: "",
-      requestId: "",
-    });
-    const { data, pending, error, refresh, execute, status } =
-      await useAsyncData<{data:TeamData, message:string },{code:string ,error:string ,message:string}>(
-        "confirm-team-otp",
-        () => $api("/confirm-team-otp", { method: "post",body:body }),
-        { immediate: false }
-      );
-    const fetchREQ = async (firstotp:string, secoundotp:string, reqID:string) => {
-      body.firstPlayerOtp=firstotp
-      body.SecondPlayerOtp=secoundotp
-      body.requestId =reqID
-      await execute();
+  const confirmOtp = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+    const data = ref<TeamData | null>(null);
+
+    const fetchREQ = async (
+      firstotp: string,
+      secoundotp: string,
+      reqID: string,
+    ) => {
+      data.value = null;
+      await execute(async () => {
+        const res = await $api<{ data: TeamData; message: string }>(
+          "/confirm-team-otp",
+          {
+            method: "post",
+            body: {
+              firstPlayerOtp: firstotp,
+              SecondPlayerOtp: secoundotp,
+              requestId: reqID,
+            },
+          },
+        );
+        data.value = res.data;
+      });
     };
-    return { data, pending, error, refresh, fetchREQ, status };
+
+    return { data, pending, status, error, fetchREQ };
   };
 
   return {

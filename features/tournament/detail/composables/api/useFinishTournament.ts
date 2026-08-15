@@ -5,7 +5,7 @@ export function useFinishTournament() {
   const fetchREQ = async (tournamentId: string) => {
     await execute(async () => {
       await $api(`/tournaments/${tournamentId}/finish`, { method: "POST" });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 

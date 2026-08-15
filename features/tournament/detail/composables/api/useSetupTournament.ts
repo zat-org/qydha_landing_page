@@ -17,7 +17,7 @@ export function useSetupTournament(tournamentId: string) {
         method: "POST",
         body,
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
 
     if (status.value === "success") {

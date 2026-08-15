@@ -39,12 +39,12 @@ const serviceAccountGetREQ = await useServiceAccount().getServiceAccounts()
 await serviceAccountGetREQ.fetchREQ()
 const serviceAccounts = computed(() => {
   if (serviceAccountGetREQ.data.value)
-    return serviceAccountGetREQ.data.value.data.accounts.items
+    return serviceAccountGetREQ.data.value.accounts.items
 })
 
 if (serviceAccountGetREQ.data.value) {
-  page.value = serviceAccountGetREQ.data.value.data.accounts.currentPage
-  items.value = serviceAccountGetREQ.data.value.data.accounts.totalCount
+  page.value = serviceAccountGetREQ.data.value.accounts.currentPage
+  items.value = serviceAccountGetREQ.data.value.accounts.totalCount
 
 }
 watch(page, async (newValue, oldValue) => {
@@ -72,9 +72,6 @@ const delteAccount = (row: IServiceAccount) => {
       message: 'you want to delete that Access Acount ? ',
       onSuccess: async () => {
         await deletREQ.fetchREQ(row.id)
-        if (deletREQ.status.value == 'success') {
-          refreshNuxtData('getServiceAccounts')
-        }
       }
     },
   }).open()

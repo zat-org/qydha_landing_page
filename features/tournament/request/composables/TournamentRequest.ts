@@ -9,7 +9,8 @@ import {
 import { TournamentPrizeCurrency } from "~/features/tournament/models/tournamentPrize";
 import { TournamentType } from "~/features/tournament/models/tournamenetType";
 
-import { useMyAuthStore } from "~/store/Auth";
+type TournamentRequestsPage = getTournamentRequestResponse["data"];
+
 const tournamentStateLabels: Record<TournamentRequestState, string> = {
   [TournamentRequestState.Pending]: "جاري المراجعة",
   [TournamentRequestState.Approved]: "تم الموافقة ",
@@ -20,10 +21,10 @@ const tournamentStateColors: Record<
   TournamentRequestState,
   "warning" | "success" | "error" | "neutral"
 > = {
-  [TournamentRequestState.Pending]: "warning", // Tailwind yellow for pending
-  [TournamentRequestState.Approved]: "success", // Tailwind green for approved
-  [TournamentRequestState.Rejected]: "error", // Tailwind red for rejected
-  [TournamentRequestState.Canceled]: "neutral", // Tailwind gray for canceled
+  [TournamentRequestState.Pending]: "warning",
+  [TournamentRequestState.Approved]: "success",
+  [TournamentRequestState.Rejected]: "error",
+  [TournamentRequestState.Canceled]: "neutral",
 };
 
 const getStateColor = (state: TournamentRequestState) => {
@@ -54,130 +55,93 @@ export const useTournamentRequest = () => {
   const { $api } = useNuxtApp();
 
   const AddTournamentRequest = () => {
-    const body = ref(new FormData());
-    const { data, status, execute, pending, error } = useAsyncData(
-      "Crearetrequest",
-      () =>
-        $api("/tournaments/creation-requests", {
-          method: "post",
-          body: body.value,
-        }),
-      { immediate: false },
-    );
-    // Helper function to convert object to FormData
+    const { pending, status, error, execute } = useMutationRequest();
 
     const fetchREQ = async (_body: TournamentCreationRequest) => {
-      body.value = new FormData();
-      body.value.append("title", _body.title);
-      body.value.append("description", _body.description);
-      body.value.append("contactPhone", _body.contactPhone);
-      body.value.append("startAt", _body.startAt);
-      body.value.append("endAt", _body.endAt);
-      body.value.append("type", _body.type);
-      body.value.append("locationDescription", _body.locationDescription);
-      body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
-      body.value.append(
-        "isContactPhoneWhatsapp",
-        String(_body.isContactPhoneWhatsapp),
-      );
-      body.value.append("AddPlayersByQydha", String(_body.isAddPlayersByQydha));
-      body.value.append("teamsCount", String(_body.teamsCount));
-      body.value.append("tablesCount", String(_body.tablesCount));
-      if (_body.isAddPlayersByQydha) {
-        if (_body.joinRequestStartAt) {
-          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
-        }
-        if (_body.joinRequestEndAt) {
-          body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
-        }
-        if (_body.joinRequestMaxCount) {
-          body.value.append(
-            "joinRequestMaxCount",
-            String(_body.joinRequestMaxCount),
+      await execute(async () => {
+        const body = new FormData();
+        body.append("title", _body.title);
+        body.append("description", _body.description);
+        body.append("contactPhone", _body.contactPhone);
+        body.append("startAt", _body.startAt);
+        body.append("endAt", _body.endAt);
+        body.append("type", _body.type);
+        body.append("locationDescription", _body.locationDescription);
+        body.append("isContactPhoneCall", String(_body.isContactPhoneCall));
+        body.append(
+          "isContactPhoneWhatsapp",
+          String(_body.isContactPhoneWhatsapp),
+        );
+        body.append("AddPlayersByQydha", String(_body.isAddPlayersByQydha));
+        body.append("teamsCount", String(_body.teamsCount));
+        body.append("tablesCount", String(_body.tablesCount));
+        if (_body.isAddPlayersByQydha) {
+          if (_body.joinRequestStartAt) {
+            body.append("joinRequestStartAt", _body.joinRequestStartAt);
+          }
+          if (_body.joinRequestEndAt) {
+            body.append("joinRequestEndAt", _body.joinRequestEndAt);
+          }
+          if (_body.joinRequestMaxCount) {
+            body.append(
+              "joinRequestMaxCount",
+              String(_body.joinRequestMaxCount),
+            );
+          }
+          if (_body.allowedJoinRequestType) {
+            body.append(
+              "allowedJoinRequestType",
+              _body.allowedJoinRequestType,
+            );
+          }
+          body.append(
+            "minimumSubscriptionDays",
+            String(_body.minimumSubscriptionDays),
           );
         }
-        if (_body.allowedJoinRequestType) {
-          body.value.append(
-            "allowedJoinRequestType",
-            _body.allowedJoinRequestType,
+        if (_body.tournamentPrivatePassword) {
+          body.append(
+            "tournamentPrivatePassword",
+            _body.tournamentPrivatePassword,
           );
         }
-        // if (_body.minimumSubscriptionDays) {
-        body.value.append(
-          "minimumSubscriptionDays",
-          String(_body.minimumSubscriptionDays),
-        );
-        // }
-      }
-      if (_body.tournamentPrivatePassword) {
-        body.value.append(
-          "tournamentPrivatePassword",
-          _body.tournamentPrivatePassword,
-        );
-      }
 
-      body.value.append("location", JSON.stringify(_body.location));
-      if (_body.logo) body.value.append("logo", _body.logo);
-      _body.sponsors.forEach((sponsor, index) => {
-        console.log(`Sponsor ${index}:`, sponsor.name, sponsor.size, "bytes");
-        body.value.append(`sponsors[${index}]`, sponsor);
-      });
-      body.value.append("prizes", JSON.stringify(_body.prizes));
-      if (_body.rules.length > 0) {
-        body.value!.append(`rules`, JSON.stringify(_body.rules));
-      } else {
-        body.value!.append("rules", "[]");
-      }
+        body.append("location", JSON.stringify(_body.location));
+        if (_body.logo) body.append("logo", _body.logo);
+        _body.sponsors.forEach((sponsor, index) => {
+          console.log(`Sponsor ${index}:`, sponsor.name, sponsor.size, "bytes");
+          body.append(`sponsors[${index}]`, sponsor);
+        });
+        body.append("prizes", JSON.stringify(_body.prizes));
+        if (_body.rules.length > 0) {
+          body.append(`rules`, JSON.stringify(_body.rules));
+        } else {
+          body.append("rules", "[]");
+        }
 
-      await execute();
-    };
-    return { data, status, fetchREQ, pending, error };
-  };
-  //Organizer
-  // const OrganizerGetTournamentRequests = (params: Ref<GetTournamentRequestParams>) => {
-  //   const param = ref(params.value);
-  //   watch([()=>param.value.searchToken,()=>param.value.state,()=>param.value.type],(newValue,oldValue)=>{
-  //     param.value.pageNumber=1
-  //   })
-
-  //   const { data, status, pending } = useAsyncData<getTournamentRequestResponse>(
-  //     "OrganizerTourReqests",
-  //     () => $api("tournaments/creation-request/me", { params: unref(param) }),
-  //     {
-  //       watch: [param],
-  //     }
-  //   );
-  //   return { data, status, pending };
-  // };
-
-  // const OrganizerGetSingleTournamentRequest = (id: string) => {
-  //   return useLazyAsyncData<{ data: DetailTournamentRequest }>(
-  //     `OrganizerGetSingleTournamentRequest-${id}`,
-  //     () => $api(`/tournaments/creation-request/me/${unref(id)}`),
-  //     { server: false }
-  //   );
-  // };
-  const OrganizerCancelRequest = () => {
-    const id = ref();
-    const { data, status, execute, pending } = useAsyncData(
-      "OrganizerCancelRequest",
-      () =>
-        $api(`/tournaments/creation-requests/${unref(id)}/cancel`, {
+        await $api("/tournaments/creation-requests", {
           method: "post",
-        }),
-      { immediate: false },
-    );
-    const fetchREQ = async (_id: string) => {
-      id.value = _id;
-      await execute();
-      if (unref(status) == "success") {
-        refreshNuxtData("AdminTourReqests");
-        // refreshNuxtData("OrganizerTourReqests");
-      }
+          body,
+        });
+      });
     };
-    return { data, status, pending, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
-  // admin
+
+  const OrganizerCancelRequest = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
+    const fetchREQ = async (_id: string) => {
+      await execute(async () => {
+        await $api(`/tournaments/creation-requests/${_id}/cancel`, {
+          method: "post",
+        });
+        await refreshAppData(appKeys.adminTourRequests);
+      });
+    };
+    return { pending, status, error, fetchREQ };
+  };
+
   const AdminGetTournamentRequests = (
     params: Ref<GetTournamentRequestParams>,
   ) => {
@@ -193,155 +157,139 @@ export const useTournamentRequest = () => {
       },
     );
 
-    const { data, status, pending } =
-      useAsyncData<getTournamentRequestResponse>(
-        "AdminTourReqests",
-        () => $api("tournaments/creation-requests", { params: unref(param) }),
-        {
-          watch: [unref(param)],
-          deep: true,
-        },
-      );
+    const { data, status, pending } = useAppApiData<TournamentRequestsPage>(
+      appKeys.adminTourRequests,
+      () => $api("tournaments/creation-requests", { params: unref(param) }),
+      {
+        watch: [unref(param)],
+        deep: true,
+      },
+    );
     return { data, status, pending };
   };
+
   const AdminApproveRequest = () => {
-    const id = ref();
-    const { data, status, execute, pending } = useAsyncData(
-      () => ["AdminApproveRequest", id.value].join("-"),
-      () =>
-        $api(`/tournaments/creation-requests/${unref(id)}/approve`, {
-          method: "post",
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_id: string) => {
-      id.value = _id;
-      await execute();
-      if (unref(status) == "success") {
-        refreshNuxtData("AdminTourReqests");
-        clearNuxtData((key)=>key.startsWith("getAllTournament"));
-      }
+      await execute(async () => {
+        await $api(`/tournaments/creation-requests/${_id}/approve`, {
+          method: "post",
+        });
+        await refreshAppData(appKeys.adminTourRequests);
+        clearNuxtData((key) => key.startsWith("getAllTournament"));
+      });
     };
-    return { data, status, pending, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
+
   const AdminRejectRequest = () => {
-    const id = ref();
-    const { data, status, execute, pending } = useAsyncData(
-      () => ["AdminRejectRequest", id.value].join("-"),
-      () =>
-        $api(`/tournaments/creation-requests/${unref(id)}/reject`, {
-          method: "post",
-        }),
-      { immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (_id: string) => {
-      id.value = _id;
-      await execute();
-      if (unref(status) == "success") {
-        refreshNuxtData("AdminTourReqests");
-      }
+      await execute(async () => {
+        await $api(`/tournaments/creation-requests/${_id}/reject`, {
+          method: "post",
+        });
+        await refreshAppData(appKeys.adminTourRequests);
+      });
     };
-    return { data, status, pending, fetchREQ };
+    return { pending, status, error, fetchREQ };
   };
+
   const AdminGetSingleTournamentRequest = (id: string) => {
-    return useLazyAsyncData<{ data: DetailTournamentRequest }>(
-      `AdminGetSingleTournamentRequest-${id}`,
+    return useAppLazyApiData<DetailTournamentRequest>(
+      appKeys.adminSingleTourRequest(id),
       () => $api(`/tournaments/creation-requests/${unref(id)}`),
       { server: false },
     );
   };
 
   const updateTournamentRequest = (id: string) => {
-    const body = ref<FormData>();
-    const { data, execute, status, error } = useLazyAsyncData<{
-      data: DetailTournamentRequest;
-    }>(
-      `updateTournamentRequest-${id}`,
-      () =>
-        $api(`/tournaments/creation-requests/${unref(id)}`, {
-          method: "put",
-          body: unref(body),
-        }),
-      { server: false, immediate: false },
-    );
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchReq = async (_body: UpdateTournamentCreationRequest) => {
-      body.value = new FormData();
-      body.value.append("title", _body.title);
-      body.value.append("description", _body.description);
-      body.value.append("contactPhone", _body.contactPhone);
-      body.value.append("startAt", _body.startAt);
-      body.value.append("endAt", _body.endAt);
-      body.value.append("type", _body.type);
-      body.value.append("locationDescription", _body.locationDescription);
-      body.value.append("isContactPhoneCall", String(_body.isContactPhoneCall));
-      body.value.append(
-        "isContactPhoneWhatsapp",
-        String(_body.isContactPhoneWhatsapp),
-      );
-      body.value.append(
-        "isAddPlayersByQydha",
-        String(_body.isAddPlayersByQydha),
-      );
-      body.value.append("teamsCount", String(_body.teamsCount));
-      body.value.append("tablesCount", String(_body.tablesCount));
-      if (_body.isAddPlayersByQydha) {
-        if (_body.joinRequestStartAt) {
-          console.log();
-          body.value.append("joinRequestStartAt", _body.joinRequestStartAt);
-        }
-        if (_body.joinRequestEndAt) {
-          body.value.append("joinRequestEndAt", _body.joinRequestEndAt);
-        }
-        if (_body.joinRequestMaxCount) {
-          body.value.append(
-            "joinRequestMaxCount",
-            String(_body.joinRequestMaxCount),
-          );
-        }
-        if (_body.allowedJoinRequestType) {
-          body.value.append(
-            "allowedJoinRequestType",
-            _body.allowedJoinRequestType,
-          );
-        }
-        if (_body.minimumSubscriptionDays) {
-          body.value.append(
-            "minimumSubscriptionDays",
-            String(_body.minimumSubscriptionDays),
-          );
-        }
-      }
-      if (_body.tournamentPrivatePassword) {
-        body.value.append(
-          "tournamentPrivatePassword",
-          _body.tournamentPrivatePassword,
+      await execute(async () => {
+        const body = new FormData();
+        body.append("title", _body.title);
+        body.append("description", _body.description);
+        body.append("contactPhone", _body.contactPhone);
+        body.append("startAt", _body.startAt);
+        body.append("endAt", _body.endAt);
+        body.append("type", _body.type);
+        body.append("locationDescription", _body.locationDescription);
+        body.append("isContactPhoneCall", String(_body.isContactPhoneCall));
+        body.append(
+          "isContactPhoneWhatsapp",
+          String(_body.isContactPhoneWhatsapp),
         );
-      }
+        body.append(
+          "isAddPlayersByQydha",
+          String(_body.isAddPlayersByQydha),
+        );
+        body.append("teamsCount", String(_body.teamsCount));
+        body.append("tablesCount", String(_body.tablesCount));
+        if (_body.isAddPlayersByQydha) {
+          if (_body.joinRequestStartAt) {
+            body.append("joinRequestStartAt", _body.joinRequestStartAt);
+          }
+          if (_body.joinRequestEndAt) {
+            body.append("joinRequestEndAt", _body.joinRequestEndAt);
+          }
+          if (_body.joinRequestMaxCount) {
+            body.append(
+              "joinRequestMaxCount",
+              String(_body.joinRequestMaxCount),
+            );
+          }
+          if (_body.allowedJoinRequestType) {
+            body.append(
+              "allowedJoinRequestType",
+              _body.allowedJoinRequestType,
+            );
+          }
+          if (_body.minimumSubscriptionDays) {
+            body.append(
+              "minimumSubscriptionDays",
+              String(_body.minimumSubscriptionDays),
+            );
+          }
+        }
+        if (_body.tournamentPrivatePassword) {
+          body.append(
+            "tournamentPrivatePassword",
+            _body.tournamentPrivatePassword,
+          );
+        }
 
-      body.value.append("location", JSON.stringify(_body.location));
-      if (_body.logo) body.value.append("logo", _body.logo);
+        body.append("location", JSON.stringify(_body.location));
+        if (_body.logo) body.append("logo", _body.logo);
 
-      body.value.append(
-        "remainingSponsorsUrls",
-        JSON.stringify(_body.remainingSponsorsUrls),
-      );
-      _body.sponsors.forEach((sponsor, index) => {
-        body.value!.append(`sponsors[${index}]`, sponsor);
+        body.append(
+          "remainingSponsorsUrls",
+          JSON.stringify(_body.remainingSponsorsUrls),
+        );
+        _body.sponsors.forEach((sponsor, index) => {
+          body.append(`sponsors[${index}]`, sponsor);
+        });
+        body.append("prizes", JSON.stringify(_body.prizes));
+        if (_body.rules.length > 0) {
+          body.append(`rules`, JSON.stringify(_body.rules));
+        } else {
+          body.append("rules", "[]");
+        }
+
+        await $api(`/tournaments/creation-requests/${unref(id)}`, {
+          method: "put",
+          body,
+        });
+        await refreshAppData(
+          appKeys.adminTourRequests,
+          appKeys.adminSingleTourRequest(id),
+        );
       });
-      body.value.append("prizes", JSON.stringify(_body.prizes));
-      if (_body.rules.length > 0) {
-        body.value!.append(`rules`, JSON.stringify(_body.rules));
-      } else {
-        body.value!.append("rules", "[]");
-      }
-
-      await execute();
-      if (status.value == "success") {
-        // refreshNuxtData("OrganizerTourReqests")
-        refreshNuxtData("AdminTourReqests");
-      }
     };
-    return { data, fetchReq, status, error };
+    return { pending, status, error, fetchReq };
   };
 
   const getTournamnetStateOptions = () => {

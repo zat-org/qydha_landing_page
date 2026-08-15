@@ -56,7 +56,7 @@ const props = withDefaults(defineProps<Props>(), {
   mode: DEFAULT_TOURNAMENT_OUTLET_MODE,
 });
 const active = ref("0")
-const tourReq = useSingleTournament().getSingelTournament(props.tournamentId);
+const tourReq = await useSingleTournament().getSingelTournament(props.tournamentId);
 const tournamentState = computed(() => tourReq.data.value?.tournament.detailedState);
 const groupApi = useGroup();
 
@@ -64,7 +64,7 @@ const { data, pending, error, refresh, status } =  groupApi.getGroups(props.tour
 
 
 const groups = computed(() => {
-    return data.value?.data.groups || []
+    return data.value?.groups || []
 })
 
 const accordionItems = computed(() => {

@@ -141,8 +141,8 @@
       <UPagination
         v-if="getReq.status.value == 'success' && data && data.length > 0"
         v-model:page="filters.PageNumber"
-        :page-count="getReq.data.value?.data.totalPages"
-        :total="getReq.data.value?.data.totalCount"
+        :page-count="getReq.data.value?.totalPages"
+        :total="getReq.data.value?.totalCount"
         class="mx-auto"
       />
     </div>
@@ -226,7 +226,7 @@ const stateOptions = getTournamnetStateOptions();
 const OrderStartAtOptions = getTournamnetOrderStartAtOptions();
 const data = computed(() => {
   if (unref(getReq.status) == "success" && getReq.data.value) {
-    return getReq.data.value.data.items;
+    return getReq.data.value.items;
   }
   if (unref(getReq.status) == "error") {
     toast.add({ title: " حدث خطاء في جلب بينات البطولات ", color: "error" });

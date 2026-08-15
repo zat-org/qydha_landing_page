@@ -182,7 +182,7 @@ if (getREQ.status.value == "error") {
 
 const userData = computed(() => {
 
-  return getREQ.data.value?.data
+  return getREQ.data.value
 })
 
 const isLoading = computed(() => getREQ.status.value === 'pending' || getREQ.status.value === 'idle')

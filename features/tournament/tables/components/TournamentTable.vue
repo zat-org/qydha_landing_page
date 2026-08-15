@@ -115,7 +115,7 @@ const overlay = useOverlay()
 const route = useRoute()
 const toast = useToast()
 const tour_id = route.params.id.toString()
-const tourREQ =  useSingleTournament().getSingelTournament(tour_id)
+const tourREQ = await useSingleTournament().getSingelTournament(tour_id)
 
 const tour = computed(() => {
   if (tourREQ.data.value)
@@ -143,7 +143,7 @@ watch(() => getTableREQ.status.value, (status) => {
 
 // Tables data
 const tables = computed(() => {
-  return getTableREQ.data.value?.data || []
+  return getTableREQ.data.value || []
 })
 const tablesNumber = computed(() => {
   return tables.value?.length || 0
@@ -189,7 +189,7 @@ const openUpdateModal = (row: ITable) => {
   const data = tables.value?.find(t => t.id === row.id)
   if (data) {
     overlay.create(UpdateModal, { props: { table: data } }).open()
-    // Data will be refreshed automatically via refreshNuxtData in the composable
+    // Data will be refreshed automatically via refreshAppData in the composable
   }
 }
 
@@ -197,7 +197,7 @@ const openUpdateModal = (row: ITable) => {
 const addTableREQ = useTournamentTable().addTable()
 const openAddModal = () => {
   overlay.create(AddModal, { props: { tourId: tour_id } }).open()
-  // Data will be refreshed automatically via refreshNuxtData in the composable
+  // Data will be refreshed automatically via refreshAppData in the composable
 }
 
 // Refresh tables manually if needed

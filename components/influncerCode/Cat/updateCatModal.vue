@@ -35,12 +35,11 @@ const schema =object({
   categoryName: string().required ("برجاء ادخال اسم الفئة"),
   maxCodesPerUserInGroup: number().required("عدد المرات المتاحة للاستخدام").min(1,"اصغر رقم متاح هو 1")
 })
-const addCatreq =await useCategory().updateCategry() 
-const onsubmit =async()=>{
-  await addCatreq.fetchREQ(state,props.cat.id)
-  if (addCatreq.status.value == "success"){
+const addCatreq = useCategory().updateCategory()
+const onsubmit = async () => {
+  await addCatreq.fetchREQ(state, props.cat.id)
+  if (addCatreq.status.value == "success") {
     emit('close')
-    refreshNuxtData("getAllcategory")
   }
 }
 </script>

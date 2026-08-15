@@ -40,8 +40,8 @@
         ? AdminRequestTable
         : OrganizerRequestTable" />
 
-      <UPagination class="mx-auto mt-auto" v-if="data && data.data.totalPages > 1" v-model:page="filters.pageNumber"
-        :total="data.data.totalCount" />
+      <UPagination class="mx-auto mt-auto" v-if="data && data.totalPages > 1" v-model:page="filters.pageNumber"
+        :total="data.totalCount" />
     </div>
   </UCard>
 </template>

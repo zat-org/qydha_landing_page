@@ -8,7 +8,7 @@ export function useSingleTournament() {
     options?: { immediate?: boolean },
   ) => {
     return useAppLazyApiData<DetailTournament>(
-      `getSingelTournament-${tournamentId}`,
+      appKeys.tournament(tournamentId),
       () => $api(`/tournaments/${tournamentId}/dashboard`),
       { immediate: options?.immediate ?? true },
     );

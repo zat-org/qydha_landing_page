@@ -86,7 +86,6 @@
 </template>
 
 <script lang="ts" setup>
-import type { DetailTournament } from '~/features/tournament/models/tournament';
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
@@ -107,15 +106,13 @@ const router = useRouter();
 const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton);
 const id = props.tournamentId ?? useRoute().params.id?.toString() ?? "";
 
-const tournamentDashboardKey = `getSingelTournament-${id}` as const;
-const { data: tournamentDashboardData } = useNuxtData<DetailTournament>(tournamentDashboardKey);
 const getTourREQ = await useSingleTournament().getSingelTournament(id, { immediate: false });
 
-if (!tournamentDashboardData.value?.tournament) {
+if (!getTourREQ.data.value?.tournament) {
   await getTourREQ.refresh();
 }
 
-const tournament = computed(() => tournamentDashboardData.value?.tournament ?? null);
+const tournament = computed(() => getTourREQ.data.value?.tournament ?? null);
 const tournamneState = computed(() => tournament.value?.state ?? null);
 const showActions = computed(() => {
   if (tournamneState.value === null) return false;

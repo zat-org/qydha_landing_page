@@ -376,7 +376,7 @@ const { getTable } = useTournamentTable();
 const getTableREQ = getTable(tour_id);
 
 const tables = computed<ITable[]>(() => {
-    const list = getTableREQ.data.value?.data ?? [];
+    const list = getTableREQ.data.value ?? [];
     return [...list].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }),
     );
@@ -507,14 +507,14 @@ watch(open, async (isOpen) => {
 });
 
 const createMatchREQ = useGroup().ceateMatchesForFinalGroup();
-const isCreateMatchPending = computed(() => createMatchREQ.result.status.value === "pending");
+const isCreateMatchPending = computed(() => createMatchREQ.status.value === "pending");
 const toast = useToast();
 
 const handleSubmit = async () => {
     try {
         await form.value?.validate();
         await createMatchREQ.fetchREQ(tour_id, formState.value, props.group.id);
-        if (createMatchREQ.result.status.value === "success") {
+        if (createMatchREQ.status.value === "success") {
             toast.add({ title: "تم إنشاء المباراة بنجاح", color: "success" });
             emit("success");
             open.value = false;

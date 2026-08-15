@@ -48,15 +48,15 @@
       </template>
     </UTable>
 
-    <div class="mt-4 flex justify-center" v-if="data?.data.totalPages! > 1">
+    <div class="mt-4 flex justify-center" v-if="data?.totalPages! > 1">
       <UPagination
       class="rtl"
         v-model="currentPage"
-        :total="data?.data.totalCount!"
-        :page-size="data?.data.pageSize"
-        :total-pages="data?.data.totalPages"
-        :show-prev="data?.data.hasPrevious"
-        :show-next="data?.data.hasNext"
+        :total="data?.totalCount!"
+        :page-size="data?.pageSize"
+        :total-pages="data?.totalPages"
+        :show-prev="data?.hasPrevious"
+        :show-next="data?.hasNext"
       />
     </div>
 </template>
@@ -85,8 +85,8 @@ const cols = [
 const tableKey = ref(`table-${Date.now()}`)
 
 const filteredItems = computed(() => {
-  if (!data.value?.data.items) return [];
-  const items = data.value.data.items;
+  if (!data.value?.items) return [];
+  const items = data.value.items;
   
   if (!groupNameFilter.value.trim()) {
     return items;
@@ -118,7 +118,7 @@ const handleDelete = async (row: CardGroupI) => {
   await deleteREQ.fetchREQ(row.groupCode);
 };
 
-watch(() => data.value?.data.items, () => {
+watch(() => data.value?.items, () => {
   tableKey.value = `table-${Date.now()}`
 }, { deep: true })
 </script>

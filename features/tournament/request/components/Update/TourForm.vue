@@ -75,8 +75,8 @@ const sponsersAvilabel = ref(false)
 
 const route =useRoute()
 const id= route.params.id.toString()
-const adminData =useNuxtData<{data:DetailTournamentRequest}>(`AdminGetSingleTournamentRequest-${id}`)
-const SelectedRequest = computed(()=> unref(adminData.data.value?.data))
+const adminData =useNuxtData<DetailTournamentRequest>(appKeys.adminSingleTourRequest(id))
+const SelectedRequest = computed(()=> unref(adminData.data))
 const logoImageUrl = ref<string>();
 watch(SelectedRequest,()=>{ if(SelectedRequest.value?.logoUrl){ logoImageUrl.value = SelectedRequest.value?.logoUrl; } },{immediate:true})
 const fileInput = ref<HTMLInputElement>();

@@ -1,86 +1,92 @@
-import type { IModerator, IModeratorCreate, IModeratorUpdate } from "~/features/tournament/models/tournamentModeratorr";
+import type {
+  IModerator,
+  IModeratorCreate,
+  IModeratorUpdate,
+} from "~/features/tournament/models/tournamentModeratorr";
 
 export const useTournamentModerator = () => {
   const { $api } = useNuxtApp();
 
   const getAllmoderators = async () => {
-    const tourId = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData<{ data: IModerator[], messge: string }>(
-      'getAllmoderators',
-      () => $api(`/tournaments/${tourId.value}/moderators`), { immediate: false }
-    );
+    const tourId = ref();
+    const { data, pending, error, refresh, status, execute } =
+      await useAppApiData<IModerator[]>(
+        appKeys.tournamentModerators,
+        () => $api(`/tournaments/${tourId.value}/moderators`),
+        { immediate: false },
+      );
     const fetchREQ = async (tour_id: string) => {
-      tourId.value = tour_id
+      tourId.value = tour_id;
       await execute();
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
+    };
+    return { data, pending, error, refresh, status, fetchREQ };
+  };
 
-  }
-  const addModerator = async () => {
-    const tourID = ref()
-    const body = ref<IModeratorCreate>()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'addModerator',
-      () => $api(`/tournaments/${tourID.value}/moderators`, { method: "post", body: body.value }), { immediate: false }
-    );
+  const addModerator = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (tour_id: string, new_body: IModeratorCreate) => {
-      tourID.value = tour_id
-      body.value = new_body
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData('getAllmoderators')
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+      await execute(async () => {
+        await $api(`/tournaments/${tour_id}/moderators`, {
+          method: "post",
+          body: new_body,
+        });
+        await refreshAppData(appKeys.tournamentModerators);
+      });
+    };
 
-  const deleteModerator = async () => {
-    const tourId = ref()
-    const moderatorId = ref()
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'deleteModerator',
-      () => $api(`tournaments/${tourId.value}/moderators/${moderatorId.value}`, { method: 'delete' }), { immediate: false }
-    );
+    return { pending, status, error, fetchREQ };
+  };
+
+  const deleteModerator = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
     const fetchREQ = async (tour_id: string, moderator_id: string) => {
-      tourId.value = tour_id
-      moderatorId.value = moderator_id
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData('getAllmoderators')
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+      await execute(async () => {
+        await $api(`tournaments/${tour_id}/moderators/${moderator_id}`, {
+          method: "delete",
+        });
+        await refreshAppData(appKeys.tournamentModerators);
+      });
+    };
 
-  const updateModerator = async () => {
-    const tourId = ref()
-    const moderatorId = ref()
-    const body = ref<IModeratorUpdate>()
+    return { pending, status, error, fetchREQ };
+  };
 
-    const { data, pending, error, refresh, status, execute } = await useAsyncData(
-      'updateModerator',
-      () => $api(`tournaments/${tourId.value}/moderators/${moderatorId.value}`, { method: 'put', body: body.value }), { immediate: false }
-    );
-    const fetchREQ = async (tour_id: string, moderator_id: string, new_moderator: IModeratorUpdate) => {
-      tourId.value = tour_id
-      moderatorId.value = moderator_id
-      body.value = new_moderator
-      await execute()
-      if (status.value == "success") {
-        refreshNuxtData('getAllmoderators')
-      }
-    }
-    return { data, pending, error, refresh, status, fetchREQ }
-  }
+  const updateModerator = () => {
+    const { pending, status, error, execute } = useMutationRequest();
+
+    const fetchREQ = async (
+      tour_id: string,
+      moderator_id: string,
+      new_moderator: IModeratorUpdate,
+    ) => {
+      await execute(async () => {
+        await $api(`tournaments/${tour_id}/moderators/${moderator_id}`, {
+          method: "put",
+          body: new_moderator,
+        });
+        await refreshAppData(appKeys.tournamentModerators);
+      });
+    };
+
+    return { pending, status, error, fetchREQ };
+  };
+
   const getModeratorpermissions = async () => {
-    const { data, pending, error, refresh } = await useAsyncData<{ data: { permissions: string[] }, message: string }>(
-      'getModeratorpermissions',
-      () => $api('/tournaments/moderator-permissions')
+    const { data, pending, error, refresh } = await useAppApiData<{
+      permissions: string[];
+    }>("getModeratorpermissions", () =>
+      $api("/tournaments/moderator-permissions"),
     );
-    return { data, pending, error, refresh }
-  }
+    return { data, pending, error, refresh };
+  };
 
-
-  return { addModerator, deleteModerator, updateModerator, getModeratorpermissions, getAllmoderators }
-
-}
+  return {
+    addModerator,
+    deleteModerator,
+    updateModerator,
+    getModeratorpermissions,
+    getAllmoderators,
+  };
+};

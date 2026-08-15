@@ -270,7 +270,7 @@ const schema = object({
 const form = useTemplateRef("form");
 const updateRoundREQ = useGroup().updateTournamentRound();
 
-const isUpdatePending = computed(() => updateRoundREQ.result.status.value === "pending");
+const isUpdatePending = computed(() => updateRoundREQ.status.value === "pending");
 
 const handleSubmit = async () => {
     try {
@@ -297,7 +297,7 @@ const handleSubmit = async () => {
             updateData,
         );
 
-        if (updateRoundREQ.result.status.value === "success") {
+        if (updateRoundREQ.status.value === "success") {
             toast.add({
                 title: "نجح التحديث",
                 description: "تم تحديث الروند بنجاح",
@@ -305,11 +305,11 @@ const handleSubmit = async () => {
             });
             open.value = false;
             emit("updated");
-        } else if (updateRoundREQ.result.error.value) {
+        } else if (updateRoundREQ.error.value) {
             toast.add({
                 title: "خطأ في التحديث",
                 description:
-                    updateRoundREQ.result.error.value.message ||
+                    updateRoundREQ.error.value.message ||
                     "حدث خطأ أثناء تحديث الروند",
                 color: "error",
             });

@@ -7,7 +7,7 @@ export function useApproveTournamentPlan() {
       await $api(`/tournaments/${tournamentId}/confirm-final-group-bracket`, {
         method: "POST",
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 

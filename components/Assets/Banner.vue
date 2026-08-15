@@ -135,7 +135,7 @@ const getBannersREQ = await assets.getBanners()
 const setActiveREQ = await assets.setActiveBanner()
 const deleteBannerREQ = await assets.deleteBanner()
 
-const payload = computed(() => getBannersREQ.data.value?.data)
+const payload = computed(() => getBannersREQ.data.value)
 
 const banners = computed<IAssetBanner[]>(() => payload.value?.banners ?? [])
 const activeBannerId = computed(() => payload.value?.activeBannerId ?? null)

@@ -15,11 +15,11 @@ import UpdateCatModal from './updateCatModal.vue';
 
 const overlay = useOverlay()
 const categoryApi = useCategory()
-const getCatREQ = await categoryApi.getAllcategory()
-const deleteCatREQ = await categoryApi.deleteCategry()
+const getCatREQ = await categoryApi.getAllCategory()
+const deleteCatREQ = categoryApi.deleteCategory()
 
 const catRow = computed(() => {
-  return getCatREQ.data.value?.data
+  return getCatREQ.data.value
 })
 
 const cols =[
@@ -35,11 +35,8 @@ const openupdateModal = (row:ICategory)=>{
   }).open();
 }
 
-const deletecat =async  (row:ICategory)=>{
+const deletecat = async (row: ICategory) => {
   await deleteCatREQ.fetchREQ(row.id)
-  if (deleteCatREQ.status.value=="success"){
-    refreshNuxtData("getAllcategory")
-  }
 }
 </script>
 

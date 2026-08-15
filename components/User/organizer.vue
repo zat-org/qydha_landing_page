@@ -293,7 +293,7 @@ const getUserReq = await userApi.getSingleUser()
 await getUserReq.fetchREQ(props.id || '')
 
 const userData = computed(() => {
-  return getUserReq.data.value?.data?.user
+  return getUserReq.data.value?.user
 })
 
 // Mock organization data - in real app, this would come from API

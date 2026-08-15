@@ -81,7 +81,7 @@ import { popUpActionType } from '~/models/notification';
 
 const popupGetREQ = await useAssets().getPopup()
 const popUp = computed(() => {
-  return popupGetREQ.data.value?.data
+  return popupGetREQ.data.value
 })
 </script>
 

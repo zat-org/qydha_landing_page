@@ -32,7 +32,7 @@ const schema = object({ password: string().required("برجاء ادخال كل�
 const onDelete = () => {
   form.value?.submit()
 }
-const logoutReq = await authApi.logout()
+const logoutReq = authApi.logout()
 const onSubmit = async () => {
   emit('close')
   await logoutReq.fetchREQ()

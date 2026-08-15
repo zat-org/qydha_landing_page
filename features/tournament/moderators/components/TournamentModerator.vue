@@ -43,7 +43,7 @@ await moderatorsGetREQ.fetchREQ(tour_id)
 
 const moderators = computed(() => {
   if (moderatorsGetREQ.status.value=="success"){
-    return moderatorsGetREQ.data.value?.data
+    return moderatorsGetREQ.data.value
   }
   
 })

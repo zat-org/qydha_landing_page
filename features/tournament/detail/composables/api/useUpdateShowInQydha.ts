@@ -8,7 +8,7 @@ export function useUpdateShowInQydha() {
         method: "PUT",
         body: { showInQydha },
       });
-      refreshNuxtData(`getSingelTournament-${tournamentId}`);
+      await refreshAppData(appKeys.tournament(tournamentId));
     });
   };
 
