@@ -19,9 +19,12 @@ export const appKeys = {
   users: "getUsers",
   getAllUsers: "getAllUsers",
   getSingleUser: "getSingleUser",
+  getMeUser: "getMeUser",
   getUserRoles: "getUserRoles",
   leagues: "getLeagues",
-  tournamentTables: (id: string) => `getTable-${id}`,
+  tournamentTables: (id: string, placeId: string) =>
+    `getTable-${id}-${placeId}`,
+  tournamentPlaces: (id: string) => `getPlaces-${id}`,
   tournamentTeams: "getAllTourTeams",
   tournamentNotInGroupTeams: "getNotInGroupTourTeams",
   tournamentGroups: (id: string) => `getGroups-${id}`,

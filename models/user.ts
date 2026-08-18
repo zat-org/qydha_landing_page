@@ -30,6 +30,14 @@ export interface ISingleUser {
   user: User;
 }
 
+export interface UserPlayer {
+  id?: number;
+  playerId?: string | null;
+  name: string;
+  url?: string | null;
+  originalUrl?: string | null;
+}
+
 export interface User {
   id: string;
   username: string;
@@ -42,6 +50,19 @@ export interface User {
   avatarUrl: any;
   expireDate: string;
   roles: string[];
+}
+
+/** GET /users/me — `players` is a sibling of `user`, not nested. */
+export interface IMeUser {
+  user: User;
+  players: UserPlayer[];
+  generalSettings?: GeneralSettings;
+  handSettings?: HandSettings;
+  balootSettings?: BalootSettings;
+  boardsLinks?: {
+    baloot: string;
+    hand: string;
+  };
 }
 export interface MinUser {
   id: string;
@@ -76,8 +97,3 @@ export interface BalootSettings {
   sakkasCount: number;
 }
 
-export interface Player {
-  id: number;
-  url?: string;
-  name: string;
-}

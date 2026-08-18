@@ -133,7 +133,7 @@ export const TOURNAMENT_PHASE_CONFIG: Record<TournamentDetailedState, PhaseConfi
       },
     },
     outlets: ['group'],
-    externalTabs: ['bracket', 'statistics', 'refree', 'tables'],
+    externalTabs: ['bracket', 'statistics', 'refree', 'tables', 'places'],
     actions: [
       {
         id: 'finish',

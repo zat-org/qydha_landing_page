@@ -14,6 +14,15 @@
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
           اختياري — فعّل التصفيات وأضف أماكن اللعب قبل قوانين البطولة
         </p>
+        <UButton
+          v-if="managePlacesHref"
+          class="mt-2"
+          size="xs"
+          variant="soft"
+          icon="i-heroicons-map-pin"
+          :to="managePlacesHref"
+          label="إدارة الأماكن من صفحة الأماكن"
+        />
       </div>
     </template>
 
@@ -47,4 +56,13 @@ const props = defineProps<{
 
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<any>({ required: true });
+
+const route = useRoute();
+const managePlacesHref = computed(() => {
+  const id = route.params.id?.toString();
+  if (id && route.path.includes("/edit")) {
+    return `/tournament/${id}/places`;
+  }
+  return null;
+});
 </script>

@@ -91,6 +91,11 @@ export default defineNuxtConfig({
       "/tournament",
     ],
   },
+  // nuxt-schema-org 6.2.1 + Unhead v2/Nitro: default WebSite graph
+  // throws "Cannot read properties of undefined (reading 'webSiteResolver')" on SSR.
+  schemaOrg: {
+    enabled: false,
+  },
   robots: {
     disallow: ["/me", "/user", "/stream", "/tournament", "/unauthorized"],
     sitemap: "https://qydha.com/sitemap.xml",

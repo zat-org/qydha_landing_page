@@ -35,10 +35,17 @@ export const TAB_VIEW_CONFIG = {
     pathSegment: "table",
     openInNewTab: false,
   },
+  places: {
+    label: "الأماكن",
+    icon: "i-mdi-map-marker",
+    pathSegment: "places",
+    openInNewTab: false,
+  },
 } as const satisfies Record<TournamentTabView, TabViewMeta>;
 
 /** Tab views shown in the tournament header settings menu (display order). */
 export const SETTINGS_MENU_TAB_VIEWS = [
+  "places",
   "tables",
   "refree",
   "bracket",

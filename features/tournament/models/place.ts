@@ -24,6 +24,9 @@ export type GetTournamentPlace = {
   availableTablesCount: number;
   startAt: string;
   endAt: string;
+  connectedTablesCount: number;
+  connectedGroupsCount: number;
+  connectedJoinRequestsCount: number;
 };
 
 export type QualificationsStageInfo = {

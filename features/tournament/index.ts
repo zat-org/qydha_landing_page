@@ -7,4 +7,5 @@ export * from "./bracket";
 export * from "./players";
 export * from "./referees";
 export * from "./tables";
+export * from "./places";
 export * from "./request/composables";

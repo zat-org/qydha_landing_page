@@ -17,20 +17,6 @@
           />
         </UFormField>
 
-        <UFormField
-          v-if="hasPlaces"
-          name="placeId"
-          label="مكان التصفيات"
-          required
-        >
-          <USelect
-            v-model="state.placeId"
-            :items="placeOptions"
-            placeholder="اختر المكان"
-            :disabled="AddREQ.status.value === 'pending'"
-          />
-        </UFormField>
-
         <UAlert
           v-if="AddREQ.error.value"
           color="error"
@@ -65,72 +51,39 @@
 <script lang="ts" setup>
 import type { ITableCreate } from '~/features/tournament/models/Table';
 import { object, string } from 'yup'
-import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces'
 
 const props = defineProps<{
   tourId: string
+  placeId: string
 }>()
 
 const emit = defineEmits(['close'])
 const toast = useToast()
 
-const AddTableForm = ref<any>()
-
-const tourREQ = await useSingleTournament().getSingelTournament(props.tourId)
-const { placeOptions, hasPlaces, places } = useTournamentPlaces(
-  () => tourREQ.data.value,
-)
+const AddTableForm = ref<{ submit: () => void }>()
 
 const state = reactive<ITableCreate>({
   name: '',
-  placeId: places.value[0]?.id ?? '',
 })
 
-watch(
-  places,
-  (list) => {
-    if (list.length && !state.placeId) {
-      state.placeId = list[0]!.id
-    }
-  },
-  { immediate: true },
-)
-
-const schema = computed(() =>
-  object({
-    name: string().required('اسم الطاولة مطلوب'),
-    placeId: hasPlaces.value
-      ? string().required('مكان التصفيات مطلوب')
-      : string().nullable(),
-  }),
-)
+const schema = object({
+  name: string().required('اسم الطاولة مطلوب').min(1, 'اسم الطاولة مطلوب'),
+})
 
 const AddREQ = useTournamentTable().addTable()
 
 const onSubmit = async () => {
-  if (!props.tourId) {
+  if (!props.tourId || !props.placeId) {
     toast.add({
       title: 'خطأ',
-      description: 'معرف البطولة غير متوفر',
+      description: 'معرف البطولة أو المكان غير متوفر',
       color: 'error',
       icon: 'i-heroicons-exclamation-triangle'
     })
     return
   }
-
-  if (hasPlaces.value && !state.placeId) {
-    toast.add({
-      title: 'مكان مطلوب',
-      description: 'اختر مكان التصفيات للطاولة',
-      color: 'warning',
-    })
-    return
-  }
   
-  await AddREQ.fetchREQ(props.tourId, {
-    name: state.name,
-    ...(state.placeId ? { placeId: state.placeId } : {}),
-  })
+  await AddREQ.fetchREQ(props.tourId, props.placeId, { name: state.name })
   
   if (AddREQ.status.value === "success") {
     toast.add({ 

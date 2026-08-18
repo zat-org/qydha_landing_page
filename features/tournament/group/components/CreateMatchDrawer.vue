@@ -373,19 +373,23 @@ const emit = defineEmits<{
 }>();
 
 const { getTable } = useTournamentTable();
-const getTableREQ = getTable(tour_id);
+const getPlacesREQ = useTournamentPlacesApi().getPlaces(tour_id);
+
+const tablePlaceId = computed(() => {
+    if (props.group.placeId) return props.group.placeId;
+    const list = getPlacesREQ.data.value ?? [];
+    return (
+        list.find((p) => p.type === "FinalStagePlace")?.id ??
+        list[0]?.id ??
+        ""
+    );
+});
+
+const getTableREQ = getTable(tour_id, tablePlaceId);
 
 const tables = computed<ITable[]>(() => {
     const list = getTableREQ.data.value ?? [];
-    const placeId = props.group.placeId;
-    const scoped =
-        placeId
-            ? (() => {
-                  const filtered = list.filter((t) => t.placeId === placeId);
-                  return filtered.length > 0 ? filtered : list;
-              })()
-            : list;
-    return [...scoped].sort((a, b) =>
+    return [...list].sort((a, b) =>
         a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" }),
     );
 });

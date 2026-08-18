@@ -21,18 +21,18 @@
       </div>
     </template>
 
-    <div v-if="hasPlaces" class="mb-4 max-w-xs">
-      <UFormField label="تصفية حسب المكان">
+    <div class="mb-4 max-w-xs">
+      <UFormField label="المكان">
         <USelect
-          v-model="placeFilter"
-          :items="placeFilterItems"
-          placeholder="كل الأماكن"
+          v-model="selectedPlaceId"
+          :items="placeItems"
+          placeholder="اختر المكان"
         />
       </UFormField>
     </div>
 
     <!-- Loading State -->
-    <div v-if="getTableREQ.pending.value" class="flex justify-center items-center py-12">
+    <div v-if="getPlacesREQ.pending.value || getTableREQ.pending.value" class="flex justify-center items-center py-12">
       <div class="flex flex-col items-center gap-4">
         <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin text-primary" />
         <p class="text-gray-500 dark:text-gray-400">جاري تحميل الطاولات...</p>
@@ -41,12 +41,12 @@
 
     <!-- Error State -->
     <UAlert
-      v-else-if="getTableREQ.error.value"
+      v-else-if="getPlacesREQ.error.value || getTableREQ.error.value"
       color="error"
       variant="soft"
       icon="i-heroicons-exclamation-triangle"
       title="خطأ في تحميل الطاولات"
-      :description="getTableREQ.error.value?.message || 'حدث خطأ أثناء تحميل البيانات'"
+      :description="(getPlacesREQ.error.value || getTableREQ.error.value)?.message || 'حدث خطأ أثناء تحميل البيانات'"
       class="mb-4"
     >
       <template #actions>
@@ -54,17 +54,23 @@
           color="error" 
           variant="soft" 
           label="إعادة المحاولة"
-          @click="getTableREQ.refresh()"
+          @click="retryLoad"
         />
       </template>
     </UAlert>
 
+    <div v-else-if="!selectedPlaceId" class="flex flex-col items-center justify-center py-12">
+      <UIcon name="i-heroicons-map-pin" class="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
+      <p class="text-lg text-gray-500 dark:text-gray-400 mb-2">اختر مكاناً لعرض طاولاته</p>
+    </div>
+
     <!-- Empty State -->
-    <div v-else-if="!tableRows || tableRows.length === 0" class="flex flex-col items-center justify-center py-12">
+    <div v-else-if="!tables || tables.length === 0" class="flex flex-col items-center justify-center py-12">
       <UIcon name="i-heroicons-table-cells" class="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" />
       <p class="text-lg text-gray-500 dark:text-gray-400 mb-2">لا توجد طاولات</p>
       <p class="text-sm text-gray-400 dark:text-gray-500 mb-4">ابدأ بإضافة طاولة جديدة</p>
       <UButton 
+        v-if="canAddTable"
         label="إضافة طاولة" 
         color="primary"
         icon="i-heroicons-plus-circle"
@@ -75,7 +81,7 @@
     <!-- Table Data -->
     <UTable 
       v-else
-      :data="tableRows" 
+      :data="tables" 
       :columns="cols"
       :loading="getTableREQ.status.value === 'pending'"
       class="w-full"
@@ -95,7 +101,7 @@
             icon="i-heroicons-trash"
             @click="()=>confirmDelete(row.original)"
             :loading="deleteREQ.status.value === 'pending'"
-            v-if="row.original.connectedGamesCount === 0"
+            v-if="(row.original.connectedGamesCount ?? 0) === 0"
           >
             حذف
           </UButton>
@@ -110,7 +116,6 @@
             إجمالي الطاولات: <span class="font-semibold">{{ tables.length }}</span>
           </span>
         </div>
-        
       </div>
     </template>
   </UCard>
@@ -120,30 +125,27 @@
 import type { ITable } from '~/features/tournament/models/Table';
 import UpdateModal from './UpdateModal.vue';
 import AddModal from './AddModal.vue';
-import { TournamentDetailedState } from '~/features/tournament/models/tournament';
-import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces';
+import ConfirmModal from '~/components/ConfirmationModal.vue';
+import { canMutateTournamentPlaces } from '~/features/tournament/places/utils';
+
 const overlay = useOverlay()
 const route = useRoute()
+const router = useRouter()
 const toast = useToast()
 const tour_id = route.params.id.toString()
 const tourREQ = await useSingleTournament().getSingelTournament(tour_id)
 
-const tour = computed(() => {
-  if (tourREQ.data.value)
-    return tourREQ.data.value.tournament
-})
-
-const { placeLabel, hasPlaces } = useTournamentPlaces(() => tourREQ.data.value)
+const getPlacesREQ = useTournamentPlacesApi().getPlaces(tour_id)
+const selectedPlaceId = ref((route.query.placeId as string) || '')
+const getTableREQ = useTournamentTable().getTable(tour_id, selectedPlaceId)
 
 const canAddTable = computed(() => {
-  return tour.value?.detailedState!=TournamentDetailedState.Finished
+  return (
+    !!selectedPlaceId.value &&
+    canMutateTournamentPlaces(tourREQ.data.value?.tournament?.detailedState)
+  )
 })
 
-// Get tables
-const getTableREQ = useTournamentTable().getTable(tour_id)
-// await getTableREQ.fetchREQ(tour_id)
-
-// Watch for errors on initial load
 watch(() => getTableREQ.status.value, (status) => {
   if (status === 'error') {
     toast.add({
@@ -155,57 +157,62 @@ watch(() => getTableREQ.status.value, (status) => {
   }
 })
 
-// Tables data
-const tables = computed(() => {
-  return getTableREQ.data.value || []
-})
-const tablesNumber = computed(() => {
-  return tables.value?.length || 0
-})
+const places = computed(() => getPlacesREQ.data.value || [])
 
-const placeFilter = ref<string | null>(null)
-const placeFilterItems = computed(() => [
-  { label: 'كل الأماكن', value: null },
-  ...((tourREQ.data.value?.tournament.qualificationStagePlaces ?? []).map((p) => ({
-    label: p.locationDescription,
+const placeItems = computed(() =>
+  places.value.map((p) => ({
+    label:
+      p.type === 'FinalStagePlace'
+        ? `${p.locationDescription} (نهائي)`
+        : p.locationDescription,
     value: p.id,
-  }))),
-])
-
-const filteredTables = computed(() => {
-  if (!placeFilter.value) return tables.value
-  return tables.value.filter((t) => t.placeId === placeFilter.value)
-})
-
-// Table columns
-const cols = computed(() => {
-  const base = [
-    { accessorKey: 'name', header: 'الاسم' },
-  ]
-  if (hasPlaces.value) {
-    base.push({ accessorKey: 'placeLabel', header: 'المكان' })
-  }
-  base.push({ accessorKey: 'actions', header: 'الإجراءات' })
-  return base
-})
-
-const tableRows = computed(() =>
-  filteredTables.value.map((t) => ({
-    ...t,
-    placeLabel: placeLabel(t.placeId),
   })),
 )
 
-// Delete table
+watch(
+  places,
+  (list) => {
+    if (!list.length) return
+    const fromQuery = route.query.placeId?.toString()
+    if (fromQuery && list.some((p) => p.id === fromQuery)) {
+      selectedPlaceId.value = fromQuery
+      return
+    }
+    if (!selectedPlaceId.value || !list.some((p) => p.id === selectedPlaceId.value)) {
+      selectedPlaceId.value = list[0]!.id
+    }
+  },
+  { immediate: true },
+)
+
+watch(selectedPlaceId, (id) => {
+  if (!id) return
+  if (route.query.placeId !== id) {
+    void router.replace({ query: { ...route.query, placeId: id } })
+  }
+})
+
+const tables = computed(() => getTableREQ.data.value || [])
+const tablesNumber = computed(() => tables.value?.length || 0)
+
+const cols = [
+  { accessorKey: 'name', header: 'الاسم' },
+  { accessorKey: 'actions', header: 'الإجراءات' },
+]
+
+function retryLoad() {
+  void getPlacesREQ.refresh()
+  void getTableREQ.refresh()
+}
+
 const deleteREQ = useTournamentTable().deleteTable()
-import ConfirmModal from '~/components/ConfirmationModal.vue';
 const confirmModal = overlay.create(ConfirmModal )
 const confirmDelete = async (row: ITable) => {
   const instance = confirmModal.open( {message: `هل أنت متأكد من حذف الطاولة "${row.name}"؟`} )
   const confirmed = await instance.result
   if (!confirmed) return
 
-  await deleteREQ.fetchREQ(tour_id, row.id)
+  await deleteREQ.fetchREQ(tour_id, selectedPlaceId.value, row.id)
   
   if (deleteREQ.status.value === 'success') {
     toast.add({
@@ -224,27 +231,14 @@ const confirmDelete = async (row: ITable) => {
   }
 }
 
-// Update table
 const updateTableREQ = useTournamentTable().updateTable()
 const openUpdateModal = (row: ITable) => {
-  const data = tables.value?.find(t => t.id === row.id)
-  if (data) {
-    overlay.create(UpdateModal, { props: { table: data } }).open()
-    // Data will be refreshed automatically via refreshAppData in the composable
-  }
+  overlay.create(UpdateModal, { props: { table: row } }).open()
 }
 
-// Add table
 const addTableREQ = useTournamentTable().addTable()
 const openAddModal = () => {
-  overlay.create(AddModal, { props: { tourId: tour_id } }).open()
-  // Data will be refreshed automatically via refreshAppData in the composable
+  if (!selectedPlaceId.value) return
+  overlay.create(AddModal, { props: { tourId: tour_id, placeId: selectedPlaceId.value } }).open()
 }
-
-// Refresh tables manually if needed
-
 </script>
-
-<style scoped>
-/* Add any custom styles if needed */
-</style>
