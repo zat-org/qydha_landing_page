@@ -48,115 +48,118 @@
       </template>
     </UAlert>
 
-    <UTable
-      v-else
-      v-model:expanded="expandedRows"
-      :data="places"
-      :columns="cols"
-      :get-row-can-expand="() => true"
-      :get-row-id="(row) => row.id"
-      hover
-      class="flex-1"
+    <div
+      v-else-if="!places.length"
+      class="flex flex-col items-center justify-center py-12 px-4"
     >
-      <template #empty>
-        <div class="flex flex-col items-center justify-center py-12 px-4">
-          <UIcon
-            name="i-heroicons-map-pin"
-            class="mb-3 text-5xl text-gray-400"
-          />
-          <p class="mb-4 text-gray-500 dark:text-gray-400">لا توجد أماكن</p>
-          <UButton
-            v-if="canMutatePlaces"
-            label="إضافة مكان تصفيات"
-            color="primary"
-            icon="i-heroicons-plus-circle"
-            @click="openAddModal"
-          />
+      <UIcon name="i-heroicons-map-pin" class="mb-3 text-5xl text-gray-400" />
+      <p class="mb-4 text-gray-500 dark:text-gray-400">لا توجد أماكن</p>
+      <UButton
+        v-if="canMutatePlaces"
+        label="إضافة مكان تصفيات"
+        color="primary"
+        icon="i-heroicons-plus-circle"
+        @click="openAddModal"
+      />
+    </div>
+
+    <UTabs
+      v-else
+      v-model="selectedPlaceId"
+      :items="placeTabItems"
+      dir="rtl"
+      class="w-full min-w-0"
+    >
+      <template v-for="place in places" :key="place.id" #[`place-${place.id}`]>
+        <div class="flex flex-col gap-4 pt-4">
+          <div
+            class="flex flex-col gap-3 rounded-xl border border-gray-200 bg-gray-50/80 p-4 dark:border-gray-800 dark:bg-gray-950/40 sm:flex-row sm:items-start sm:justify-between"
+          >
+            <div class="min-w-0 space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="font-semibold text-gray-900 dark:text-gray-100">
+                  {{ place.locationDescription }}
+                </p>
+                <UBadge
+                  :color="place.type === 'FinalStagePlace' ? 'primary' : 'neutral'"
+                  variant="soft"
+                >
+                  {{
+                    place.type === "FinalStagePlace"
+                      ? "المرحلة النهائية"
+                      : "مرحلة التصفيات"
+                  }}
+                </UBadge>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-300">
+                {{ formatDateTime(place.startAt) }} — {{ formatDateTime(place.endAt) }}
+              </p>
+              <div class="flex flex-wrap gap-2 text-xs text-gray-500 dark:text-gray-400">
+                <UBadge color="neutral" variant="outline" size="xs">
+                  السعة {{ place.availableTablesCount }}
+                </UBadge>
+                <UBadge color="neutral" variant="outline" size="xs">
+                  طاولات {{ place.connectedTablesCount ?? 0 }}
+                </UBadge>
+                <UBadge color="neutral" variant="outline" size="xs">
+                  مجموعات {{ place.connectedGroupsCount ?? 0 }}
+                </UBadge>
+                <UBadge color="neutral" variant="outline" size="xs">
+                  طلبات {{ place.connectedJoinRequestsCount ?? 0 }}
+                </UBadge>
+              </div>
+            </div>
+            <UFieldGroup>
+              <UButton
+                color="neutral"
+                variant="soft"
+                icon="i-heroicons-table-cells"
+                :to="`/tournament/${tour_id}/table?placeId=${place.id}`"
+              >
+                إدارة الطاولات
+              </UButton>
+              <UButton
+                v-if="canMutatePlaces && place.type === 'QualificationStagePlace'"
+                color="warning"
+                icon="i-heroicons-pencil-square"
+                @click="openUpdateModal(place)"
+              >
+                تعديل
+              </UButton>
+              <UButton
+                v-if="canDeletePlace(place)"
+                color="error"
+                icon="i-heroicons-trash"
+                :loading="
+                  deleteREQ.status.value === 'pending' && deletingId === place.id
+                "
+                @click="confirmDelete(place)"
+              >
+                حذف
+              </UButton>
+            </UFieldGroup>
+          </div>
+
+          <UAccordion
+            v-model="openSections"
+            type="multiple"
+            :items="sectionItems"
+            class="w-full rounded-lg border border-gray-200 px-2 dark:border-gray-700"
+          >
+            <template #tables>
+              <PlaceTablesExpand :tour-id="tour_id" :place-id="place.id" />
+            </template>
+            <template #referees>
+              <PlaceRefereesExpand
+                :tour-id="tour_id"
+                :place-id="place.id"
+                :can-mutate="canMutateReferees"
+              />
+            </template>
+          </UAccordion>
         </div>
       </template>
-      <template #expand-cell="{ row }">
-        <UButton
-          variant="ghost"
-          color="neutral"
-          size="sm"
-          square
-          :aria-expanded="row.getIsExpanded()"
-          :aria-label="row.getIsExpanded() ? 'طي الطاولات' : 'عرض الطاولات'"
-          :icon="row.getIsExpanded() ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-          @click="row.toggleExpanded()"
-        />
-      </template>
-      <template #locationDescription-cell="{ row }">
-        <div class="flex flex-wrap items-center gap-2">
-          <p class="font-medium text-gray-900 dark:text-gray-100">
-            {{ row.original.locationDescription }}
-          </p>
-          <UBadge
-            :color="row.original.type === 'FinalStagePlace' ? 'primary' : 'neutral'"
-            variant="soft"
-          >
-            {{
-              row.original.type === "FinalStagePlace"
-                ? "المرحلة النهائية"
-                : "مرحلة التصفيات"
-            }}
-          </UBadge>
-        </div>
-      </template>
-      <template #schedule-cell="{ row }">
-        <p class="text-sm text-gray-600 dark:text-gray-300">
-          {{ formatDateTime(row.original.startAt) }} —
-          {{ formatDateTime(row.original.endAt) }}
-        </p>
-      </template>
-      <template #availableTablesCount-cell="{ row }">
-        {{ row.original.availableTablesCount }}
-      </template>
-      <template #connectedTablesCount-cell="{ row }">
-        {{ row.original.connectedTablesCount ?? 0 }}
-      </template>
-      <template #connectedGroupsCount-cell="{ row }">
-        {{ row.original.connectedGroupsCount ?? 0 }}
-      </template>
-      <template #connectedJoinRequestsCount-cell="{ row }">
-        {{ row.original.connectedJoinRequestsCount ?? 0 }}
-      </template>
-      <template #actions-cell="{ row }">
-        <UFieldGroup>
-          <UButton
-            color="neutral"
-            variant="soft"
-            icon="i-heroicons-table-cells"
-            :to="`/tournament/${tour_id}/table?placeId=${row.original.id}`"
-          >
-            الطاولات
-          </UButton>
-          <UButton
-            v-if="canMutatePlaces && row.original.type === 'QualificationStagePlace'"
-            color="warning"
-            icon="i-heroicons-pencil-square"
-            @click="openUpdateModal(row.original)"
-          >
-            تعديل
-          </UButton>
-          <UButton
-            v-if="canDeletePlace(row.original)"
-            color="error"
-            icon="i-heroicons-trash"
-            :loading="
-              deleteREQ.status.value === 'pending' &&
-              deletingId === row.original.id
-            "
-            @click="confirmDelete(row.original)"
-          >
-            حذف
-          </UButton>
-        </UFieldGroup>
-      </template>
-      <template #expanded="{ row }">
-        <PlaceTablesExpand :tour-id="tour_id" :place-id="row.original.id" />
-      </template>
-    </UTable>
+    </UTabs>
   </UCard>
 </template>
 
@@ -166,8 +169,11 @@ import ConfirmModal from "~/components/ConfirmationModal.vue";
 import AddPlaceModal from "./AddPlaceModal.vue";
 import UpdatePlaceModal from "./UpdatePlaceModal.vue";
 import PlaceTablesExpand from "./PlaceTablesExpand.vue";
+import PlaceRefereesExpand from "./PlaceRefereesExpand.vue";
 import { canMutateTournamentPlaces } from "../utils";
 import { useMyAuthStore } from "~/store/Auth";
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import { formatDateTime } from "~/utils/formatDate";
 
 const overlay = useOverlay();
 const route = useRoute();
@@ -185,23 +191,60 @@ const deleteREQ = useTournamentPlacesApi().deletePlace();
 
 const places = computed(() => getPlacesREQ.data.value ?? []);
 const deletingId = ref<string | null>(null);
-const expandedRows = ref<Record<string, boolean>>({});
+const selectedPlaceId = ref("");
+const openSections = ref(["tables", "referees"]);
 
-const cols = [
-  { id: "expand", accessorKey: "expand", header: "" },
-  { accessorKey: "locationDescription", header: "المكان" },
-  { accessorKey: "schedule", header: "الفترة" },
-  { accessorKey: "availableTablesCount", header: "السعة" },
-  { accessorKey: "connectedTablesCount", header: "طاولات متصلة" },
-  { accessorKey: "connectedGroupsCount", header: "مجموعات" },
-  { accessorKey: "connectedJoinRequestsCount", header: "طلبات انضمام" },
-  { accessorKey: "actions", header: "إجراءات" },
+const placeTabItems = computed(() =>
+  places.value.map((place) => ({
+    label: place.locationDescription,
+    value: place.id,
+    slot: `place-${place.id}`,
+    icon:
+      place.type === "FinalStagePlace"
+        ? "i-heroicons-flag"
+        : "i-heroicons-map-pin",
+  })),
+);
+
+const sectionItems = [
+  {
+    label: "الطاولات",
+    icon: "i-heroicons-table-cells",
+    slot: "tables",
+    value: "tables",
+  },
+  {
+    label: "الحكام",
+    icon: "i-mdi-account-group",
+    slot: "referees",
+    value: "referees",
+  },
 ];
+
+watch(
+  places,
+  (list) => {
+    if (!list.length) {
+      selectedPlaceId.value = "";
+      return;
+    }
+    if (!list.some((place) => place.id === selectedPlaceId.value)) {
+      selectedPlaceId.value = list[0].id;
+    }
+  },
+  { immediate: true },
+);
 
 const canMutatePlaces = computed(
   () =>
     !!userStore.isAdmin &&
     canMutateTournamentPlaces(tourREQ.data.value?.tournament?.detailedState),
+);
+
+const canMutateReferees = computed(
+  () =>
+    tourREQ.data.value?.tournament?.detailedState !=
+    TournamentDetailedState.Finished,
 );
 
 function canDeletePlace(place: GetTournamentPlace) {

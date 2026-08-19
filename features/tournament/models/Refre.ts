@@ -1,8 +1,10 @@
 export interface IRefre {
-  avatarUrl: string;
   id: string;
-  name: string | null;
   phone: string;
+  name: string | null;
   username: string;
-  connectedGamesCount:number
+  avatarUrl: string | null;
+  tournamentId: string;
+  placeId: string;
+  connectedGamesCount: number;
 }

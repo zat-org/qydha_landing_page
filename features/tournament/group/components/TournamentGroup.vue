@@ -2,7 +2,7 @@
     <UCard class="flex flex-col flex-1 ">
         
         <template #header>
-            <GroupsHeader :mode="props.mode" />
+            <GroupsHeader />
         </template>
 
         <div v-if="status == 'pending'" class="flex justify-center items-center py-8">
@@ -44,18 +44,13 @@ import Loading from "~/components/loading.vue";
 import GroupDetails from "./GroupDetails.vue";
 import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
-import { DEFAULT_TOURNAMENT_OUTLET_MODE } from '~/features/tournament/detail/constants/tournamentEmbed.config';
-import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
 import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces';
 
 interface Props {
   tournamentId: string;
-  mode?: TournamentOutletMode;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  mode: DEFAULT_TOURNAMENT_OUTLET_MODE,
-});
+const props = defineProps<Props>();
 const active = ref("0")
 const tourReq = await useSingleTournament().getSingelTournament(props.tournamentId);
 const tournamentState = computed(() => tourReq.data.value?.tournament.detailedState);

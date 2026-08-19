@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="border-t border-gray-200/90 bg-gray-50/80 px-3 py-4 dark:border-gray-800 dark:bg-gray-950/50 sm:px-5"
-  >
-    <div class="mb-3 flex flex-wrap items-center gap-2">
-      <UIcon name="i-heroicons-table-cells" class="size-5 text-primary" />
-      <span class="text-sm font-bold text-gray-800 dark:text-gray-100">
-        طاولات المكان
-      </span>
+  <div class="px-1 pb-3">
+    <div class="mb-3">
       <UBadge color="neutral" variant="soft" size="xs">
         {{ tables.length }}
       </UBadge>

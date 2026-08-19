@@ -118,12 +118,12 @@ export const useTournamentRequest = () => {
         } else {
           body.append("rules", "[]");
         }
-        body.append(
-          "qualificationsStageInfo",
-          _body.qualificationsStageInfo
-            ? JSON.stringify(_body.qualificationsStageInfo)
-            : "null",
-        );
+        if (_body.qualificationsStageInfo) {
+          body.append(
+            "qualificationsStageInfo",
+            JSON.stringify(_body.qualificationsStageInfo),
+          );
+        }
 
         await $api("/tournaments/creation-requests", {
           method: "post",
@@ -284,12 +284,12 @@ export const useTournamentRequest = () => {
         } else {
           body.append("rules", "[]");
         }
-        body.append(
-          "qualificationsStageInfo",
-          _body.qualificationsStageInfo
-            ? JSON.stringify(_body.qualificationsStageInfo)
-            : "null",
-        );
+        if (_body.qualificationsStageInfo) {
+          body.append(
+            "qualificationsStageInfo",
+            JSON.stringify(_body.qualificationsStageInfo),
+          );
+        }
 
         await $api(`/tournaments/creation-requests/${unref(id)}`, {
           method: "put",

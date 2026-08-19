@@ -1,11 +1,11 @@
 <template>
   <TournamentPhaseContent
-    :heading="phaseView.ui.heading"
-    :description="phaseView.ui.description"
-    :alert="phaseView.ui.alert"
+    :heading="phaseConfig.ui.heading"
+    :description="phaseConfig.ui.description"
+    :alert="phaseConfig.ui.alert"
   >
     <UButton
-      v-for="action in phaseView.actions"
+      v-for="action in visibleActions"
       :key="action.id"
       :label="action.label"
       :icon="action.icon"
@@ -30,20 +30,30 @@
       @confirm="confirmStart"
     />
   </TournamentPhaseContent>
+
+  <component
+    :is="phaseConfig.view"
+    v-if="phaseConfig.view"
+    class="mt-4"
+    :tournament-id="context.tournamentId"
+    @done="emit('refreshed')"
+  />
 </template>
 
 <script lang="ts" setup>
-import TournamentApprovePlanConfirmModal from '../../shared/TournamentApprovePlanConfirmModal.vue';
-import TournamentStartConfirmModal from '../../shared/TournamentStartConfirmModal.vue';
-import TournamentPhaseContent from './TournamentPhaseContent.vue';
+import TournamentApprovePlanConfirmModal from "../../shared/TournamentApprovePlanConfirmModal.vue";
+import TournamentStartConfirmModal from "../../shared/TournamentStartConfirmModal.vue";
+import TournamentPhaseContent from "./TournamentPhaseContent.vue";
 import type {
-  ResolvedPhaseView,
+  PhaseAction,
+  PhaseStateConfig,
   TournamentPhaseContext,
-} from '~/features/tournament/detail/types/phase.types';
+} from "~/features/tournament/detail/types/phase.types";
 
 const props = defineProps<{
   context: TournamentPhaseContext;
-  phaseView: ResolvedPhaseView;
+  phaseConfig: PhaseStateConfig;
+  visibleActions: PhaseAction[];
 }>();
 
 const emit = defineEmits<{ refreshed: [] }>();
@@ -57,8 +67,7 @@ const {
   runAction,
   confirmApprovePlan,
   confirmStart,
-} = useTournamentPhaseActions(
-  props.context.tournamentId,
-  () => emit('refreshed'),
+} = useTournamentPhaseActions(props.context.tournamentId, () =>
+  emit("refreshed"),
 );
 </script>

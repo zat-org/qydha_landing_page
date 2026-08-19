@@ -1,7 +1,5 @@
 <template>
-  <TournamentGet v-if="showDetailShell" :id="id">
-    <NuxtPage />
-  </TournamentGet>
+  <TournamentGet v-if="showDetailShell" :id="id" />
   <NuxtPage v-else />
 </template>
 

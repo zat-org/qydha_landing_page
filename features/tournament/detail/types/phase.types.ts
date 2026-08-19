@@ -1,12 +1,12 @@
-import type { GroupState } from '~/features/tournament/models/group';
+import type { Component } from "vue";
+import type { GroupState } from "~/features/tournament/models/group";
 import type {
   TournamentDetailedState,
   TournamentState,
-} from '~/features/tournament/models/tournament';
-import type { TournamentOutletView, TournamentTabView } from './navigation.types';
+} from "~/features/tournament/models/tournament";
 
 export interface PhaseAlertConfig {
-  color: 'info' | 'success' | 'warning' | 'neutral';
+  color: "info" | "success" | "warning" | "neutral";
   title: string;
   description?: string;
 }
@@ -26,46 +26,38 @@ export interface TournamentPhaseContext {
   hasQualificationsStage?: boolean | null;
 }
 
-export type PhaseActionId = 'organize' | 'approvePlan' | 'start' | 'finish' | 'resume';
+export type PhaseActionId =
+  | "organize"
+  | "approvePlan"
+  | "start"
+  | "finish"
+  | "resume";
 
-export type PhaseActionConfirm = 'setup' | 'approvePlan' | 'start';
+export type PhaseActionConfirm = "setup" | "approvePlan" | "start";
 
-export type TournamentGuardName =
-  | 'canOrganize'
-  | 'canApprovePlan'
-  | 'canStart'
-  | 'canFinish'
-  | 'canResume'
-  | 'showRegenerateFinalMatches'
-  | 'showStartTournamentCta'
-  | 'showFinishTournamentCta'
-  | 'showResumeAfterFinishCta';
+export type PhaseApi = (
+  request: string,
+  opts?: { method?: string; body?: unknown },
+) => Promise<unknown>;
 
-export interface PhaseActionConfig {
+export interface PhaseAction {
   id: PhaseActionId;
   label: string;
   icon: string;
-  variant?: 'solid' | 'outline' | 'soft';
-  color?: 'primary' | 'neutral' | 'success' | 'warning' | 'error';
+  variant?: "solid" | "outline" | "soft";
+  color?: "primary" | "neutral" | "success" | "warning" | "error";
   confirm?: PhaseActionConfirm;
-  guard?: TournamentGuardName;
+  canExecute: (ctx: TournamentPhaseContext) => boolean;
+  service: (
+    ctx: TournamentPhaseContext,
+    api: PhaseApi,
+    extra?: unknown,
+  ) => Promise<void>;
 }
 
-/** Static phase UI config — single source of truth (UI-ready shape). */
-export interface PhaseConfig {
+export interface PhaseStateConfig {
   label: string;
   ui: PhaseUiConfig;
-  outlets: TournamentOutletView[];
-  externalTabs: TournamentTabView[];
-  actions: PhaseActionConfig[];
-}
-
-export type ResolvedPhaseAction = Omit<PhaseActionConfig, 'guard'>
-
-export interface ResolvedPhaseView {
-  label: string;
-  ui: PhaseUiConfig;
-  outlets: TournamentOutletView[];
-  externalTabs: TournamentTabView[];
-  actions: ResolvedPhaseAction[];
+  view: Component | null;
+  actions: PhaseAction[];
 }

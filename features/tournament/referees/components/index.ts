@@ -1,1 +1,1 @@
-export { default as TournamentRefree } from "./TournamentRefree.vue";
+export { default as RefereeAddForm } from "./AddForm.vue";

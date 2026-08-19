@@ -1,10 +1,13 @@
 import SetupTournamentModal from "~/features/tournament/detail/components/SetupTournamentModal.vue";
 import SetupQualificationsModal from "~/features/tournament/detail/components/SetupQualificationsModal.vue";
 import type {
+  PhaseAction,
   PhaseActionId,
-  ResolvedPhaseAction,
+  PhaseApi,
 } from "~/features/tournament/detail/types/phase.types";
 import type { SetupTournamentPayload } from "~/features/tournament/detail/composables/api/useSetupTournament";
+import { organizeAction } from "~/features/tournament/phase/phaseActions";
+import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 
 export function useTournamentPhaseActions(
   tournamentId: string,
@@ -12,6 +15,14 @@ export function useTournamentPhaseActions(
 ) {
   const toast = useToast();
   const overlay = useOverlay();
+  const { $api } = useNuxtApp();
+  const { pending, status, error, execute } = useMutationRequest();
+  const phaseStore = useTournamentPhaseStore();
+
+  const runningId = ref<PhaseActionId | null>(null);
+  const approveConfirmOpen = ref(false);
+  const startConfirmOpen = ref(false);
+
   const setupModal = overlay.create(SetupTournamentModal, {
     props: { tournamentId },
   });
@@ -19,39 +30,60 @@ export function useTournamentPhaseActions(
     props: { tournamentId },
   });
 
-  const approveConfirmOpen = ref(false);
-  const startConfirmOpen = ref(false);
-
-  const setupReq = useSetupTournament(tournamentId);
-  const approveReq = useApproveTournamentPlan();
-  const startReq = useStartFinalGroupTournament(tournamentId);
-  const finishReq = useFinishTournament();
-  const resumeReq = useResumeFinalGroupAfterFinish();
-
-  const setupPending = computed(() => setupReq.pending.value);
-  const approvePending = computed(() => approveReq.pending.value);
-  const startPending = computed(() => startReq.pending.value);
-  const finishPending = computed(() => finishReq.pending.value);
-  const resumePending = computed(() => resumeReq.pending.value);
-
   const pendingByAction = computed<Record<PhaseActionId, boolean>>(() => ({
-    organize: setupPending.value,
-    approvePlan: approvePending.value,
-    start: startPending.value,
-    finish: finishPending.value,
-    resume: resumePending.value,
+    organize: pending.value && runningId.value === "organize",
+    approvePlan: pending.value && runningId.value === "approvePlan",
+    start: pending.value && runningId.value === "start",
+    finish: pending.value && runningId.value === "finish",
+    resume: pending.value && runningId.value === "resume",
   }));
 
-  async function runSetup(payload: SetupTournamentPayload) {
-    await setupReq.fetchREQ(payload);
-    if (setupReq.status.value === "success") {
-      onRefreshed();
-    } else {
+  const successTitle: Record<PhaseActionId, string> = {
+    organize: "تم بدء تنظيم البطولة",
+    approvePlan: "تمت الموافقة على مخطط البطولة",
+    start: "تم بدء المباريات في المجموعة النهائية",
+    finish: "تم انهاء البطولة",
+    resume: "تم استكمال البطولة",
+  };
+
+  async function mutateAction(action: PhaseAction, extra?: unknown) {
+    const ctx = phaseStore.context;
+    if (!action.canExecute(ctx)) return;
+
+    runningId.value = action.id;
+    await execute(async () => {
+      await action.service(ctx, $api as PhaseApi, extra);
+    });
+    runningId.value = null;
+
+    if (status.value === "success") {
       toast.add({
-        title: "تعذّر تنظيم البطولة",
+        title: successTitle[action.id],
+        color: "success",
+      });
+      approveConfirmOpen.value = false;
+      startConfirmOpen.value = false;
+      onRefreshed();
+      return;
+    }
+
+    if (
+      action.id === "finish" &&
+      error.value?.data?.code === "InvalidTournamentOperation"
+    ) {
+      toast.add({
+        title: "تعذّر انهاء البطولة",
+        description: "لا يمكن انهاء البطولة الا بعد انهاء كل المباريات",
         color: "error",
       });
+      return;
     }
+
+    toast.add({
+      title: "تعذّر تنفيذ العملية",
+      description: error.value?.message,
+      color: "error",
+    });
   }
 
   async function handleOrganizeTournament() {
@@ -60,7 +92,7 @@ export function useTournamentPhaseActions(
     if (!confirmed) return;
 
     if (confirmed === "direct") {
-      await runSetup({ type: "direct" });
+      await mutateAction(organizeAction, { type: "direct" });
       return;
     }
 
@@ -68,92 +100,19 @@ export function useTournamentPhaseActions(
       const qualsInstance = qualsModal.open();
       const groups = await qualsInstance.result;
       if (!groups) return;
-      await runSetup({ type: "qualifications", groups });
+      const payload: SetupTournamentPayload = {
+        type: "qualifications",
+        groups,
+      };
+      await mutateAction(organizeAction, payload);
     }
   }
 
-  async function confirmApprovePlan() {
-    await approveReq.fetchREQ(tournamentId);
-    if (approveReq.status.value === "success") {
-      toast.add({
-        title: "تمت الموافقة على مخطط البطولة",
-        color: "success",
-      });
-      approveConfirmOpen.value = false;
-      onRefreshed();
-    } else {
-      toast.add({
-        title: "تعذّرت الموافقة على المخطط",
-        color: "error",
-      });
-    }
+  function findAction(id: PhaseActionId): PhaseAction | undefined {
+    return phaseStore.phaseConfig.actions.find((item) => item.id === id);
   }
 
-  async function confirmStart() {
-    await startReq.fetchREQ();
-    if (startReq.status.value === "success") {
-      toast.add({
-        title: "تم بدء المباريات في المجموعة النهائية",
-        description: "تم بدء المباريات في المجموعة النهائية بنجاح",
-        color: "success",
-      });
-      startConfirmOpen.value = false;
-      onRefreshed();
-    } else {
-      const err = startReq.error.value as
-        | { message?: string }
-        | null
-        | undefined;
-      toast.add({
-        title: "تعذّر بدء البطولة",
-        description: err?.message ?? "تحقق من الاتصال وحاول مرة أخرى.",
-        color: "error",
-      });
-    }
-  }
-
-  async function handleFinish() {
-    await finishReq.fetchREQ(tournamentId);
-    if (finishReq.status.value === "success") {
-      toast.add({
-        title: "تم انهاء البطولة",
-        description: "تم انهاء البطولة بنجاح",
-        color: "success",
-      });
-      onRefreshed();
-    } else if (
-      finishReq.error.value?.data?.code === "InvalidTournamentOperation"
-    ) {
-      toast.add({
-        title: "تعذّر انهاء البطولة",
-        description: "لا يمكن انهاء البطولة الا بعد انهاء كل المباريات",
-        color: "error",
-      });
-    }
-  }
-
-  async function handleResume() {
-    await resumeReq.fetchREQ(tournamentId);
-    if (resumeReq.status.value === "success") {
-      toast.add({
-        title: "تم استكمال البطولة",
-        color: "success",
-      });
-      onRefreshed();
-    } else {
-      const err = resumeReq.error.value as
-        | { message?: string }
-        | null
-        | undefined;
-      toast.add({
-        title: "تعذّر استكمال البطولة",
-        description: err?.message ?? "تحقق من الاتصال وحاول مرة أخرى.",
-        color: "error",
-      });
-    }
-  }
-
-  function runAction(action: ResolvedPhaseAction) {
+  function runAction(action: PhaseAction) {
     if (action.confirm === "setup") {
       void handleOrganizeTournament();
       return;
@@ -166,23 +125,28 @@ export function useTournamentPhaseActions(
       startConfirmOpen.value = true;
       return;
     }
-    if (action.id === "finish") {
-      void handleFinish();
-      return;
-    }
-    if (action.id === "resume") {
-      void handleResume();
-    }
+    void mutateAction(action);
+  }
+
+  async function confirmApprovePlan() {
+    const action = findAction("approvePlan");
+    if (action) await mutateAction(action);
+  }
+
+  async function confirmStart() {
+    const action = findAction("start");
+    if (action) await mutateAction(action);
   }
 
   return {
     approveConfirmOpen,
     startConfirmOpen,
-    approvePending,
-    startPending,
+    approvePending: computed(() => pendingByAction.value.approvePlan),
+    startPending: computed(() => pendingByAction.value.start),
     pendingByAction,
     runAction,
     confirmApprovePlan,
     confirmStart,
+    mutateAction,
   };
 }

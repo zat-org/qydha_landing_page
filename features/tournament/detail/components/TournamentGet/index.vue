@@ -26,9 +26,7 @@
         :winners="winnersSorted"
       />
 
-      <TournamentGetManagementBoard :id="id" @refreshed="wrappedRefresh">
-        <slot />
-      </TournamentGetManagementBoard>
+      <TournamentGetManagementBoard :id="id" @refreshed="wrappedRefresh" />
     </div>
   </UCard>
 </template>
@@ -40,7 +38,6 @@ import TournamentGetWinnersSection from "./TournamentGetWinnersSection.vue";
 import TournamentGetManagementBoard from "./TournamentGetManagementBoard.vue";
 import { useMyAuthStore } from "~/store/Auth";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
-import { useTournamentOutletRouteSync } from "~/features/tournament/detail/composables/logic/useTournamentOutletRouteSync";
 import Loading from "~/components/loading.vue";
 
 const props = defineProps<{ id: string }>();
@@ -68,5 +65,4 @@ const wrappedRefresh = async () => {
   if (tour.value) phaseStore.syncFromTour(tour.value, isAdmin.value);
 };
 
-useTournamentOutletRouteSync(() => props.id);
 </script>

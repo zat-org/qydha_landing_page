@@ -7,15 +7,6 @@
     <template #header>
       <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
         <div class="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 md:gap-4">
-          <UButton
-            v-if="showBackButton"
-            class="min-h-11 shrink-0 self-start touch-manipulation sm:min-h-0 sm:self-center"
-            icon="i-heroicons-arrow-right"
-            label="عوده"
-            variant="ghost"
-            color="neutral"
-            @click="router.back()"
-          />
           <h1 class="min-w-0 break-words text-lg font-bold leading-snug sm:text-xl md:text-2xl">
             طلبات انضمام الفرق
           </h1>
@@ -89,21 +80,13 @@
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
-import { DEFAULT_TOURNAMENT_OUTLET_MODE, TOURNAMENT_OUTLET_MODES } from '~/features/tournament/detail/constants/tournamentEmbed.config';
-import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
 
-const props = withDefaults(
-  defineProps<{
-    mode?: TournamentOutletMode;
-    tournamentId?: string;
-  }>(),
-  { mode: DEFAULT_TOURNAMENT_OUTLET_MODE },
-);
+const props = defineProps<{
+  tournamentId?: string;
+}>();
 
 const emit = defineEmits<{ done: [] }>();
 
-const router = useRouter();
-const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton);
 const id = props.tournamentId ?? useRoute().params.id?.toString() ?? "";
 
 const getTourREQ = await useSingleTournament().getSingelTournament(id, { immediate: false });
@@ -151,11 +134,7 @@ async function confirmFinalApprove() {
     if (ok) {
       approveOpen.value = false;
       await refreshBothPanels();
-      if (TOURNAMENT_OUTLET_MODES[props.mode].completeWithEmit) {
-        emit('done');
-      } else {
-        router.back();
-      }
+      emit('done');
     }
   } finally {
     finalApprovePatching.value = false;

@@ -54,6 +54,12 @@ import { GroupType, type RoundGroupDetails } from "~/features/tournament/models/
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import { useMyAuthStore } from "~/store/Auth";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
+import {
+  canShowRegenerateFinalMatches,
+  finishAction,
+  resumeAction,
+  startAction,
+} from "~/features/tournament/phase/phaseActions";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -103,19 +109,19 @@ const isFinalGroupSelected = computed(
 );
 
 const showRegenerateFinalMatchesButton = computed(() =>
-  phaseStore.checkGuard('showRegenerateFinalMatches'),
+  canShowRegenerateFinalMatches(phaseStore.context),
 );
 
 const showStartTournamentCta = computed(() =>
-  phaseStore.checkGuard('showStartTournamentCta'),
+  startAction.canExecute(phaseStore.context),
 );
 
 const showFinishTournamentCta = computed(() =>
-  phaseStore.checkGuard('showFinishTournamentCta'),
+  finishAction.canExecute(phaseStore.context),
 );
 
 const showResumeFinalGroupAfterFinishCta = computed(() =>
-  phaseStore.checkGuard('showResumeAfterFinishCta'),
+  resumeAction.canExecute(phaseStore.context),
 );
 
 const selectedRoundId = ref<string | undefined>(tourStore.selectedRound?.id);

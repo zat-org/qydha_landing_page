@@ -1,16 +1,12 @@
-import { defineStore } from 'pinia';
-import { GroupType } from '~/features/tournament/models/group';
-import type { DetailTournament } from '~/features/tournament/models/tournament';
+import { defineStore } from "pinia";
+import { GroupType } from "~/features/tournament/models/group";
+import type { DetailTournament } from "~/features/tournament/models/tournament";
 import type {
-  ResolvedPhaseView,
-  TournamentGuardName,
+  PhaseAction,
+  PhaseStateConfig,
   TournamentPhaseContext,
-} from '~/features/tournament/detail/types/phase.types';
-import { tournamentGuards } from '../guards';
-import {
-  getPhaseConfig,
-  UNKNOWN_PHASE_CONFIG,
-} from '../tournamentPhase.config';
+} from "~/features/tournament/detail/types/phase.types";
+import { getPhaseConfig } from "../tournamentPhase.config";
 
 export function buildPhaseContextFromTour(
   tour: DetailTournament,
@@ -30,60 +26,45 @@ export function buildPhaseContextFromTour(
   };
 }
 
-function buildPhaseView(context: TournamentPhaseContext): ResolvedPhaseView {
-  const config = getPhaseConfig(context.detailedState);
-
-  return {
-    label: config.label,
-    ui: config.ui,
-    outlets: config.outlets,
-    externalTabs: config.externalTabs,
-    actions: config.actions
-      .filter(
-        (action) =>
-          !action.guard || tournamentGuards[action.guard]({ context }),
-      )
-      .map(({ guard: _guard, ...action }) => action),
-  };
-}
-
 const emptyContext: TournamentPhaseContext = {
-  tournamentId: '',
+  tournamentId: "",
   isAdmin: false,
 };
 
-export const useTournamentPhaseStore = defineStore('tournamentPhase', () => {
+export const useTournamentPhaseStore = defineStore("tournamentPhase", () => {
   const context = ref<TournamentPhaseContext>({ ...emptyContext });
-  const phaseView = ref<ResolvedPhaseView>({ ...UNKNOWN_PHASE_CONFIG, actions: [] });
+
+  const phaseConfig = computed<PhaseStateConfig>(() =>
+    getPhaseConfig(context.value.detailedState),
+  );
+
+  const visibleActions = computed<PhaseAction[]>(() =>
+    phaseConfig.value.actions.filter((action) =>
+      action.canExecute(context.value),
+    ),
+  );
+
+  const phaseLabel = computed(() => phaseConfig.value.label);
 
   function syncFromTour(tour: DetailTournament, isAdmin: boolean) {
     context.value = buildPhaseContextFromTour(tour, isAdmin);
-    phaseView.value = buildPhaseView(context.value);
   }
 
   function syncContext(next: TournamentPhaseContext) {
     context.value = next;
-    phaseView.value = buildPhaseView(context.value);
   }
 
   function reset() {
     context.value = { ...emptyContext };
-    phaseView.value = { ...UNKNOWN_PHASE_CONFIG, actions: [] };
   }
-
-  function checkGuard(guard: TournamentGuardName): boolean {
-    return tournamentGuards[guard]({ context: context.value });
-  }
-
-  const phaseLabel = computed(() => phaseView.value.label);
 
   return {
     context,
-    phaseView,
+    phaseConfig,
+    visibleActions,
     phaseLabel,
     syncContext,
     syncFromTour,
     reset,
-    checkGuard,
   };
 });

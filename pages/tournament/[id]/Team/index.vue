@@ -1,14 +1,9 @@
 <template>
-  <TournamentTeam mode="embedded" :tournament-id="tournamentId" />
+  <span class="sr-only" aria-hidden="true" />
 </template>
 
 <script lang="ts" setup>
-import TournamentTeam from "~/features/tournament/teams/components/TournamentTeam.vue";
-
 definePageMeta({
   middleware: ["auth"],
 });
-
-const route = useRoute();
-const tournamentId = route.params.id?.toString() ?? "";
 </script>

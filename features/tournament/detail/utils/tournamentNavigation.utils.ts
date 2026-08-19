@@ -4,7 +4,6 @@ import {
   TAB_VIEW_CONFIG,
 } from "../constants/tournamentNavigation.config";
 import type {
-  TournamentOutletView,
   TournamentPhaseView,
   TournamentTabNavItem,
   TournamentTabView,
@@ -13,13 +12,6 @@ import type {
 const EMBEDDED_OUTLET_SEGMENTS = new Set(
   Object.values(OUTLET_PATH_SEGMENTS).map((segment) => segment.toLowerCase()),
 );
-
-const SEGMENT_TO_OUTLET_VIEW = Object.fromEntries(
-  Object.entries(OUTLET_PATH_SEGMENTS).map(([view, segment]) => [
-    segment.toLowerCase(),
-    view,
-  ]),
-) as Record<string, TournamentOutletView>;
 
 const PATH_SEGMENT_BY_VIEW = {
   ...OUTLET_PATH_SEGMENTS,
@@ -39,18 +31,10 @@ export function normalizeRoutePath(path: string): string {
   return path.replace(/\/+$/, "");
 }
 
-interface ParsedTournamentDetailRoute {
-  base: string;
-  path: string;
-  isBase: boolean;
-  isUnderBase: boolean;
-  firstSegment: string | null;
-}
-
 function parseTournamentDetailRoute(
   route: RouteLocationNormalizedLoaded,
   tournamentId: string,
-): ParsedTournamentDetailRoute {
+) {
   const base = getTournamentDetailBasePath(tournamentId);
   const path = normalizeRoutePath(route.path);
   const isBase = path === base;
@@ -83,45 +67,6 @@ export function getPhaseViewPath(
   tournamentId: string,
 ): string {
   return `${getTournamentDetailBasePath(tournamentId)}/${PATH_SEGMENT_BY_VIEW[view]}`;
-}
-
-export function getDefaultOutletPath(
-  tournamentId: string,
-  outlets: TournamentOutletView[],
-): string | null {
-  const firstOutlet = outlets[0];
-  if (!firstOutlet) return null;
-  return getPhaseViewPath(firstOutlet, tournamentId);
-}
-
-export function getEmbeddedOutletViewFromRoute(
-  route: RouteLocationNormalizedLoaded,
-  tournamentId: string,
-): TournamentOutletView | null {
-  const { isBase, isUnderBase, firstSegment } = parseTournamentDetailRoute(
-    route,
-    tournamentId,
-  );
-
-  if (isBase || !isUnderBase || !firstSegment) return null;
-  if (!EMBEDDED_OUTLET_SEGMENTS.has(firstSegment)) return null;
-
-  return SEGMENT_TO_OUTLET_VIEW[firstSegment] ?? null;
-}
-
-/** Returns the path the router should use for the current phase, or null if unchanged. */
-export function resolveOutletRouteForPhase(
-  route: RouteLocationNormalizedLoaded,
-  tournamentId: string,
-  outlets: TournamentOutletView[],
-): string | null {
-  const base = getTournamentDetailBasePath(tournamentId);
-  const currentView = getEmbeddedOutletViewFromRoute(route, tournamentId);
-
-  if (currentView && outlets.includes(currentView)) return null;
-  if (outlets.length === 0) return currentView ? base : null;
-
-  return getDefaultOutletPath(tournamentId, outlets) ?? base;
 }
 
 export function buildTabNavItems(

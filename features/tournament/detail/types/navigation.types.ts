@@ -2,7 +2,12 @@
 export type TournamentOutletView = 'team' | 'joinRequest' | 'group';
 
 /** Views that open in a separate browser tab */
-export type TournamentTabView = 'bracket' | 'statistics' | 'refree' | 'tables' | 'places';
+export type TournamentTabView =
+  | 'bracket'
+  | 'statistics'
+  | 'tables'
+  | 'places'
+  | 'moderator';
 
 export type TournamentPhaseView = TournamentOutletView | TournamentTabView;
 

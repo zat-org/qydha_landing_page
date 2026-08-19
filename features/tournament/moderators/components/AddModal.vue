@@ -1,87 +1,120 @@
 <template>
-  <UModal prevent-close>
-    <UCard>
-      <template #header>
-       اضافة مدير جديد
-      </template>
-      <UForm :state="state" :schema="schema" ref="moderatorForm" @submit="onSubmit">
-        <UFormField name="username" label=" اسم المدير ">
-          <USelectMenu 
-          clear-search-on-close
-           v-model="state.username"
-           :loading="getusers.status.value=='pending'"
-            v-if="authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')"
-            :options="Users" :searchable="search" option-attribute="username" value-attribute="username" />
-
-          <UInput v-model="state.username" v-else />
+  <UModal
+    title="اضافة مدير جديد"
+    prevent-close
+    description="تعيين مستخدم كمدير لهذه البطولة مع صلاحياته"
+  >
+    <template #body>
+      <UForm
+        :state="state"
+        :schema="schema"
+        ref="moderatorForm"
+        class="space-y-4"
+        @submit="onSubmit"
+      >
+        <UFormField name="username" label="اسم المدير">
+          <UserSelectMenu
+            v-model="state.username"
+            :remote-search="canPickUserFromList"
+            placeholder="ابحث عن مدير..."
+            class="w-full"
+          />
         </UFormField>
         <UFormField name="permissions" label="الصلاحيات">
-          <USelectMenu v-model="state.permissions" :options="permission" multiple />
+          <USelectMenu
+            v-model="state.permissions"
+            :items="permissionItems"
+            multiple
+            class="w-full"
+            placeholder="اختر صلاحية واحدة على الأقل"
+          />
         </UFormField>
       </UForm>
-
-      <template #footer>
-        <div class="flex justify-between items-center">
-          <UButton label="اضافة" @click="moderatorForm?.submit()" />
-          <UButton color="error" label="اغلاق" @click="emit('close')" />
-        </div>
-      </template>
-    </UCard>
+    </template>
+    <template #footer>
+      <div class="flex justify-between items-center gap-2">
+        <UButton
+          label="اضافة"
+          color="primary"
+          :loading="addModeratorREQ.status.value === 'pending'"
+          @click="moderatorForm?.submit()"
+        />
+        <UButton
+          label="اغلاق"
+          color="error"
+          variant="soft"
+          :disabled="addModeratorREQ.status.value === 'pending'"
+          @click="emit('close')"
+        />
+      </div>
+    </template>
   </UModal>
 </template>
 
 <script lang="ts" setup>
-import type { IModeratorCreate } from '~/features/tournament/models/tournamentModeratorr';
-import { array, object, string } from "yup"
-import { useMyAuthStore } from '~/store/Auth';
+import { array, object, string } from "yup";
+import type { IModeratorCreate } from "~/features/tournament/models/tournamentModeratorr";
+import { useMyAuthStore } from "~/store/Auth";
+import UserSelectMenu from "~/components/User/UserSelectMenu.vue";
 
-const route = useRoute()
-const tour_id = route.params.id.toString()
+const emit = defineEmits(["close"]);
+const route = useRoute();
+const toast = useToast();
+const tour_id = route.params.id.toString();
+const authStore = useMyAuthStore();
 
-const getusers = await useUsers().getAllUsers()
-const  authStore =useMyAuthStore()
-if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-  await getusers.fetchREQ('')
-}
+const canPickUserFromList = computed(
+  () => !!authStore.isAdmin,
+);
 
-const Users = computed(() => {
-  if (authStore.user?.user.roles.includes('SuperAdmin') || authStore.user?.user.roles.includes('StaffAdmin')) {
-    return getusers.data.value?.items
-  }
-})
-const search = async (q: string) => {
-  await getusers.fetchREQ(q)
-  return Users.value!
-}
+const permissionGetREQ = await useTournamentModerator().getModeratorpermissions();
 
+const permissionItems = computed(
+  () => permissionGetREQ.data.value?.permissions ?? [],
+);
 
-const emit = defineEmits(['close'])
-const permissionGetREQ = await useTournamentModerator().getModeratorpermissions()
-
-const permission = computed(() => {
-  if (permissionGetREQ.data.value)
-    return permissionGetREQ.data.value.permissions
-})
-
-const moderatorForm = ref()
+const moderatorForm = ref();
 const state = reactive<IModeratorCreate>({
   username: "",
-  permissions: []
-})
+  permissions: [],
+});
+
 const schema = object({
   username: string().required("برجاء ادخال اسم المدير"),
-  permissions: array().of(string()).min(1, "برجاء اختيار صلاحية واحدة علي الاقل")
-})
-const addModeratorREQ = await useTournamentModerator().addModerator()
-const onSubmit = async () => {
-  await addModeratorREQ.fetchREQ(tour_id, state)
+  permissions: array()
+    .of(string())
+    .min(1, "برجاء اختيار صلاحية واحدة علي الاقل"),
+});
+
+const addModeratorREQ = await useTournamentModerator().addModerator();
+
+async function onSubmit() {
+  await addModeratorREQ.fetchREQ(tour_id, state);
   if (addModeratorREQ.status.value == "success") {
-    emit('close')
+    toast.add({
+      title: "تم اضافة المدير بنجاح",
+      color: "success",
+      icon: "material-symbols:check",
+    });
+    emit("close");
+    return;
   }
-  else if (addModeratorREQ.status.value == "error" && addModeratorREQ.error.value?.statusCode == 404  ){
-    moderatorForm.value?.setErrors([{message:"هذا المستخدم غير موجود",path:'username'}])
+
+  if (addModeratorREQ.status.value == "error") {
+    const statusCode = addModeratorREQ.error.value?.statusCode;
+    if (statusCode == 404) {
+      moderatorForm.value?.setErrors([
+        { message: "هذا المستخدم غير موجود", name: "username" },
+      ]);
+    } else if (statusCode == 400) {
+      moderatorForm.value?.setErrors([
+        { message: "هذا المستخدم موجود بالفعل في البطولة", name: "username" },
+      ]);
+    } else if (statusCode == 403) {
+      moderatorForm.value?.setErrors([
+        { message: "ليس لديك صلاحية لاضافة مدير", name: "username" },
+      ]);
+    }
   }
 }
 </script>
-
-<style></style>

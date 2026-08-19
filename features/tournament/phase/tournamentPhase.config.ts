@@ -1,176 +1,132 @@
-import { TournamentDetailedState } from '~/features/tournament/models/tournament';
-import type { PhaseConfig } from '~/features/tournament/detail/types/phase.types';
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import type { PhaseStateConfig } from "~/features/tournament/detail/types/phase.types";
+import TournamentTeam from "~/features/tournament/teams/components/TournamentTeam.vue";
+import TournamentJoiningRequest from "~/features/tournament/join-request/components/TournamentJoiningRequest.vue";
+import TournamentGroup from "~/features/tournament/group/components/TournamentGroup.vue";
+import {
+  approvePlanAction,
+  finishAction,
+  organizeAction,
+  resumeAction,
+  startAction,
+} from "./phaseActions";
 
-export const UNKNOWN_PHASE_CONFIG: PhaseConfig = {
-  label: 'حالة غير معروفة',
+export const UNKNOWN_PHASE_CONFIG: PhaseStateConfig = {
+  label: "حالة غير معروفة",
   ui: {
     alert: {
-      color: 'warning',
-      title: 'حالة غير معروفة أو محدثة',
+      color: "warning",
+      title: "حالة غير معروفة أو محدثة",
       description:
-        'تأكد من تحديث الصفحة. يمكنك متابعة إدارة البطولة من التبويبات أدناه.',
+        "تأكد من تحديث الصفحة. يمكنك متابعة إدارة البطولة من التبويبات أدناه.",
     },
   },
-  outlets: ['team', 'group'],
-  externalTabs: [],
+  view: null,
   actions: [],
 };
 
-export const TOURNAMENT_PHASE_CONFIG: Record<TournamentDetailedState, PhaseConfig> = {
+export const TOURNAMENT_PHASE_CONFIG: Record<
+  TournamentDetailedState,
+  PhaseStateConfig
+> = {
   [TournamentDetailedState.Created]: {
-    label: 'إنشاء البطولة',
+    label: "إنشاء البطولة",
     ui: {
-      description: 'ابدأ بإعداد البطولة والفرق حسب سياسة الانضمام.',
+      description: "ابدأ بإعداد البطولة والفرق حسب سياسة الانضمام.",
     },
-    outlets: ['team'],
-    externalTabs: [],
+    view: TournamentTeam,
     actions: [],
   },
   [TournamentDetailedState.ReceivingJoinRequests]: {
-    label: 'استقبال طلبات الانضمام',
+    label: "استقبال طلبات الانضمام",
     ui: {
       description:
-        'مرحلة استقبال الطلبات — عرض الطلبات دون اتخاذ إجراء من لوحة التحكم هنا.',
+        "مرحلة استقبال الطلبات — عرض الطلبات دون اتخاذ إجراء من لوحة التحكم هنا.",
     },
-    outlets: ['joinRequest'],
-    externalTabs: [],
+    view: TournamentJoiningRequest,
     actions: [],
   },
   [TournamentDetailedState.ManagingJoinRequests]: {
-    label: 'إدارة طلبات الانضمام',
+    label: "إدارة طلبات الانضمام",
     ui: {
-      description: 'يمكنك قبول الطلبات أو رفضها.',
+      description: "يمكنك قبول الطلبات أو رفضها.",
     },
-    outlets: ['joinRequest'],
-    externalTabs: [],
+    view: TournamentJoiningRequest,
     actions: [],
   },
   [TournamentDetailedState.ManagingTeams]: {
-    label: 'إعداد الفرق',
+    label: "إعداد الفرق",
     ui: {
-      heading: 'إعداد الفرق',
+      heading: "إعداد الفرق",
       description:
-        'أضف الفرق واللاعبين، ثم ابدأ تنظيم البطولة للانتقال لمرحلة ربط الفرق بالمجموعة النهائية.',
+        "أضف الفرق واللاعبين، ثم ابدأ تنظيم البطولة للانتقال لمرحلة ربط الفرق بالمجموعة النهائية.",
     },
-    outlets: ['team'],
-    externalTabs: [],
-    actions: [
-      {
-        id: 'organize',
-        label: 'بدء تنظيم البطولة',
-        icon: 'i-mdi-tournament',
-        variant: 'outline',
-        confirm: 'setup',
-        guard: 'canOrganize',
-      },
-    ],
+    view: TournamentTeam,
+    actions: [organizeAction],
   },
   [TournamentDetailedState.LinkingFinalGroupTeams]: {
-    label: 'ربط الفرق بالمجموعة النهائية',
+    label: "ربط الفرق بالمجموعة النهائية",
     ui: {
       alert: {
-        color: 'info',
-        title: 'ربط الفرق بالمجموعة',
+        color: "info",
+        title: "ربط الفرق بالمجموعة",
         description:
-          'وزع الفرق على المجموعة النهائية ثم كوّن المباريات من صفحة المجموعات.',
+          "وزع الفرق على المجموعة النهائية ثم كوّن المباريات من صفحة المجموعات.",
       },
     },
-    outlets: ['group'],
-    externalTabs: [],
+    view: TournamentGroup,
     actions: [],
   },
   [TournamentDetailedState.ManagingFinalGroupBracket]: {
-    label: 'إدارة المجموعة والمباريات',
+    label: "إدارة المجموعة والمباريات",
     ui: {
       description:
-        'ولّد المباريات وراجع الخريطة قبل الموافقة على المخطط وبدء اللعب.',
+        "ولّد المباريات وراجع الخريطة قبل الموافقة على المخطط وبدء اللعب.",
     },
-    outlets: ['group'],
-    externalTabs: ['bracket'],
-    actions: [
-      {
-        id: 'approvePlan',
-        label: 'الموافقة على مخطط البطولة',
-        icon: 'i-mdi-check-decagram',
-        variant: 'solid',
-        color: 'primary',
-        confirm: 'approvePlan',
-        guard: 'canApprovePlan',
-      },
-    ],
+    view: TournamentGroup,
+    actions: [approvePlanAction],
   },
   [TournamentDetailedState.WaitingFinalGroupStarting]: {
-    label: 'في انتظار بدء البطولة',
+    label: "في انتظار بدء البطولة",
     ui: {
       alert: {
-        color: 'info',
-        title: 'جاهز للبدء',
+        color: "info",
+        title: "جاهز للبدء",
         description:
-          'تمت الموافقة على المخطط — راجع الخريطة ثم ابدأ البطولة عندما تكون جاهزاً.',
+          "تمت الموافقة على المخطط — راجع الخريطة ثم ابدأ البطولة عندما تكون جاهزاً.",
       },
     },
-    outlets: [],
-    externalTabs: ['bracket'],
-    actions: [
-      {
-        id: 'start',
-        label: 'بدء البطولة',
-        icon: 'i-mdi-play',
-        variant: 'solid',
-        color: 'primary',
-        confirm: 'start',
-        guard: 'canStart',
-      },
-    ],
+    view: null,
+    actions: [startAction],
   },
   [TournamentDetailedState.FinalGroupRunning]: {
-    label: 'البطولة جارية',
+    label: "البطولة جارية",
     ui: {
       alert: {
-        color: 'success',
-        title: 'البطولة جارية',
-        description: 'تابع المباريات من الخريطة أو حدّث النتائج حسب صلاحياتك.',
+        color: "success",
+        title: "البطولة جارية",
+        description: "تابع المباريات من الخريطة أو حدّث النتائج حسب صلاحياتك.",
       },
     },
-    outlets: ['group'],
-    externalTabs: ['bracket', 'statistics', 'refree', 'tables', 'places'],
-    actions: [
-      {
-        id: 'finish',
-        label: 'انهاء البطولة',
-        icon: 'i-mdi-trophy',
-        variant: 'soft',
-        color: 'primary',
-        guard: 'canFinish',
-      },
-    ],
+    view: TournamentGroup,
+    actions: [finishAction],
   },
   [TournamentDetailedState.Finished]: {
-    label: 'انتهت البطولة',
+    label: "انتهت البطولة",
     ui: {
       alert: {
-        color: 'neutral',
-        title: 'انتهت البطولة',
+        color: "neutral",
+        title: "انتهت البطولة",
       },
     },
-    outlets: [],
-    externalTabs: ['bracket', 'statistics'],
-    actions: [
-      {
-        id: 'resume',
-        label: 'استكمال البطولة',
-        icon: 'i-mdi-check',
-        variant: 'soft',
-        color: 'primary',
-        guard: 'canResume',
-      },
-    ],
+    view: null,
+    actions: [resumeAction],
   },
 };
 
 export function getPhaseConfig(
   state: TournamentDetailedState | undefined,
-): PhaseConfig {
+): PhaseStateConfig {
   if (!state) return UNKNOWN_PHASE_CONFIG;
   return TOURNAMENT_PHASE_CONFIG[state] ?? UNKNOWN_PHASE_CONFIG;
 }

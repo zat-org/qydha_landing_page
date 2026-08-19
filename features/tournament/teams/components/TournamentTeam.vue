@@ -8,15 +8,6 @@
     <template #header>
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-        <UButton
-          v-if="showBackButton"
-          icon="i-heroicons-arrow-right"
-          label="عوده"
-          variant="ghost"
-          color="neutral"
-          @click="router.back()"
-        />
-        
         <h1 class="text-2xl font-bold">     
           {{ tour.title }}
           /
@@ -90,21 +81,13 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
-import { DEFAULT_TOURNAMENT_OUTLET_MODE, TOURNAMENT_OUTLET_MODES } from '~/features/tournament/detail/constants/tournamentEmbed.config';
-import type { TournamentOutletMode } from '~/features/tournament/detail/types/outlet.types';
 
-const props = withDefaults(
-  defineProps<{
-    mode?: TournamentOutletMode;
-    tournamentId?: string;
-  }>(),
-  { mode: DEFAULT_TOURNAMENT_OUTLET_MODE },
-);
+const props = defineProps<{
+  tournamentId?: string;
+}>();
 
 const tablekey = ref(Date.now())
-const router = useRouter()
 const route = useRoute()
-const showBackButton = computed(() => TOURNAMENT_OUTLET_MODES[props.mode].showBackButton)
 const tour_id = props.tournamentId ?? route.params.id.toString()
 const toast = useToast()
 

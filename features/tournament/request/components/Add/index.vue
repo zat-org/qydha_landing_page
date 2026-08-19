@@ -132,6 +132,7 @@ import { object, string, number, boolean, array, mixed } from "yup";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import { type TournamentCreationRequest, TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
+import { parseTournamentRequestApiErrors, resolveStepForApiFields } from '~/features/tournament/request/composables/tournamentRequestApiErrors';
 import { TournamentType } from '~/features/tournament/models/tournamenetType';
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/features/tournament/models/tournamentPrize';
 import TournamentRequestFormTourForm from '~/features/tournament/request/components/Form/TourForm.vue';
@@ -362,22 +363,6 @@ const previousStep = () => {
   if (currentStepValue.value > 0) currentStepValue.value -= 1;
 };
 
-const getStepForField = (error: any): number => {
-  if (!error || typeof error !== 'object') return 0;
-  const step0Fields = new Set(stepFieldMap[0]);
-  const step1Fields = new Set(stepFieldMap[1]);
-  const step2Fields = new Set(stepFieldMap[2]);
-  const step3Fields = new Set(stepFieldMap[3]);
-  const errorKeys = Object.keys(error.errors ?? {});
-  for (const key of errorKeys) {
-    if (step0Fields.has(key)) return 0;
-    if (step1Fields.has(key)) return 1;
-    if (step2Fields.has(key)) return 2;
-    if (step3Fields.has(key)) return 3;
-  }
-  return 0;
-};
-
 const submitForm = async () => {
   const currentStepBeforeSubmit = currentStepValue.value;
   for (let idx = 0; idx < steps.length; idx++) {
@@ -403,18 +388,25 @@ const submitForm = async () => {
     return;
   }
 
-  const apiData = (addREq.error.value?.data as any)?.data;
-  const apiErrors = apiData?.errors as Record<string, string[]> | undefined;
-  if (apiErrors) {
-    for (const [key, value] of Object.entries(apiErrors)) {
-      setFieldError(key as any, Array.isArray(value) ? value[0] : String(value));
-    }
+  const parsed = parseTournamentRequestApiErrors(addREq.error.value);
+  for (const [key, message] of Object.entries(parsed.errors)) {
+    setFieldError(key as any, message);
   }
-  currentStepValue.value = getStepForField(apiData);
+  const errorStep = resolveStepForApiFields(parsed.fieldKeys, stepFieldMap);
+  attemptedSteps.value.add(errorStep);
+  currentStepValue.value = errorStep;
   await nextTick();
-  const invalidFields = stepFieldMap[currentStepValue.value] ?? [];
-  await scrollToFirstInvalidField(invalidFields);
-  toast.add({ title: `خطاء في بيانات ${Object.keys(apiErrors ?? {}).join(", ")}`, color: "error" });
+  await scrollToFirstInvalidField([
+    ...parsed.fieldKeys,
+    ...(stepFieldMap[errorStep] ?? []),
+  ]);
+  toast.add({
+    title: parsed.message,
+    description: parsed.fieldKeys.length
+      ? `الحقول: ${parsed.fieldKeys.join("، ")}`
+      : undefined,
+    color: "error",
+  });
 };
 
 const stepperItems = computed(() => steps.map((step, idx) => ({

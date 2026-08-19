@@ -3,19 +3,24 @@ import type { IRefre } from "~/features/tournament/models/Refre";
 export const useTournamentRefree = () => {
   const { $api } = useNuxtApp();
 
-  const getTournamentRefree = async () => {
-    const tourId = ref();
-    const { data, pending, error, refresh, status, execute } =
-      await useAppApiData<IRefre[]>(
-        appKeys.tournamentReferees,
-        () => $api(`/tournaments/${tourId.value}/referees`),
-        { immediate: false },
-      );
-    const fetchREQ = async (_tour_id: string) => {
-      tourId.value = _tour_id;
-      await execute();
-    };
-    return { data, pending, error, refresh, status, fetchREQ };
+  const getTournamentRefree = (
+    tour_id: string,
+    place_id: MaybeRefOrGetter<string>,
+  ) => {
+    return useAppApiData<IRefre[]>(
+      () =>
+        appKeys.tournamentReferees(tour_id, toValue(place_id) || "none"),
+      () => {
+        const pid = toValue(place_id);
+        if (!pid) {
+          return Promise.resolve({ data: [] as IRefre[] });
+        }
+        return $api(`/tournaments/${tour_id}/places/${pid}/referees`);
+      },
+      {
+        watch: [() => toValue(place_id)],
+      },
+    );
   };
 
   const addTourRefree = () => {
@@ -23,14 +28,17 @@ export const useTournamentRefree = () => {
 
     const fetchREQ = async (
       _tour_id: string,
+      _place_id: string,
       refree: { username: string },
     ) => {
       await execute(async () => {
-        await $api(`/tournaments/${_tour_id}/referees`, {
+        await $api(`/tournaments/${_tour_id}/places/${_place_id}/referees`, {
           method: "post",
           body: refree,
         });
-        await refreshAppData(appKeys.tournamentReferees);
+        await refreshAppData(
+          appKeys.tournamentReferees(_tour_id, _place_id),
+        );
       });
     };
 
@@ -40,12 +48,21 @@ export const useTournamentRefree = () => {
   const deleteTourRefree = () => {
     const { pending, status, error, execute } = useMutationRequest();
 
-    const fetchREQ = async (_tour_id: string, _refree_id: string) => {
+    const fetchREQ = async (
+      _tour_id: string,
+      _place_id: string,
+      _refree_id: string,
+    ) => {
       await execute(async () => {
-        await $api(`/tournaments/${_tour_id}/referees/${_refree_id}`, {
-          method: "delete",
-        });
-        await refreshAppData(appKeys.tournamentReferees);
+        await $api(
+          `/tournaments/${_tour_id}/places/${_place_id}/referees/${_refree_id}`,
+          {
+            method: "delete",
+          },
+        );
+        await refreshAppData(
+          appKeys.tournamentReferees(_tour_id, _place_id),
+        );
       });
     };
 

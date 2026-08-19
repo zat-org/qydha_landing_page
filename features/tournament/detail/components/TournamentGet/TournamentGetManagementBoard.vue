@@ -17,26 +17,20 @@
             المرحلة الحالية — ماذا تفعل الآن؟
           </p>
           <p
-            v-if="phaseView.label"
+            v-if="phaseConfig.label"
             class="mt-1 text-sm font-semibold text-gray-900 dark:text-white"
           >
-            {{ phaseView.label }}
+            {{ phaseConfig.label }}
           </p>
         </div>
       </div>
 
       <TournamentPhasePanel
         :context="phaseContext"
-        :phase-view="phaseView"
+        :phase-config="phaseConfig"
+        :visible-actions="visibleActions"
         @refreshed="emit('refreshed')"
       />
-
-      <TournamentGetExternalLinks
-        :tournament-id="id"
-        :tabs="phaseView.externalTabs"
-      />
-
-      <slot />
     </section>
   </div>
 </template>
@@ -45,7 +39,6 @@
 import { storeToRefs } from "pinia";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 import TournamentPhasePanel from "./phases/TournamentPhasePanel.vue";
-import TournamentGetExternalLinks from "./TournamentGetExternalLinks.vue";
 
 defineProps<{
   id: string;
@@ -54,5 +47,9 @@ defineProps<{
 const emit = defineEmits<{ refreshed: [] }>();
 
 const phaseStore = useTournamentPhaseStore();
-const { phaseView, context: phaseContext } = storeToRefs(phaseStore);
+const {
+  phaseConfig,
+  context: phaseContext,
+  visibleActions,
+} = storeToRefs(phaseStore);
 </script>

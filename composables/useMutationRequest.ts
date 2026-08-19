@@ -2,7 +2,14 @@ type MutationStatus = "idle" | "pending" | "success" | "error";
 
 export type MutationError = {
   message?: string;
-  data?: { code?: string; errors?: Record<string, string[]> };
+  statusCode?: number;
+  data?: {
+    code?: string;
+    message?: string;
+    traceId?: string;
+    errors?: Record<string, string[] | string>;
+    data?: { errors?: Record<string, string[] | string> };
+  };
 };
 
 export function useMutationRequest() {

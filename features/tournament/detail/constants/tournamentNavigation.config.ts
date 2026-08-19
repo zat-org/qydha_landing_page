@@ -23,12 +23,6 @@ export const TAB_VIEW_CONFIG = {
     pathSegment: "statistics",
     openInNewTab: true,
   },
-  refree: {
-    label: "الحكام",
-    icon: "i-mdi-account-group",
-    pathSegment: "refree",
-    openInNewTab: false,
-  },
   tables: {
     label: "الطاولات",
     icon: "i-mdi-table-chair",
@@ -41,13 +35,19 @@ export const TAB_VIEW_CONFIG = {
     pathSegment: "places",
     openInNewTab: false,
   },
+  moderator: {
+    label: "المديرين",
+    icon: "i-mdi-account-supervisor",
+    pathSegment: "moderator",
+    openInNewTab: false,
+  },
 } as const satisfies Record<TournamentTabView, TabViewMeta>;
 
 /** Tab views shown in the tournament header settings menu (display order). */
 export const SETTINGS_MENU_TAB_VIEWS = [
   "places",
   "tables",
-  "refree",
+  "moderator",
   "bracket",
   "statistics",
 ] as const satisfies readonly TournamentTabView[];
