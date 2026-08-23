@@ -42,6 +42,7 @@
 
 <script lang="ts" setup>
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 
 const props = defineProps<{
   tournamentId: string;

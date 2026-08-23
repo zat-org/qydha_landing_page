@@ -29,6 +29,7 @@ import { VueFlow, type VueFlowStore } from "@vue-flow/core";
 import type { Group } from "@/features/tournament/models/group";
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import MatchNode from "./MatchNode.vue";
+import { useLayout } from "~/features/tournament/bracket/composables/useLayout";
 
 const props = defineProps<{ group: Group; obsMode?: boolean }>();
 

@@ -81,11 +81,11 @@
                   {{ place.locationDescription }}
                 </p>
                 <UBadge
-                  :color="place.type === 'FinalStagePlace' ? 'primary' : 'neutral'"
+                  :color="place.stageType === 'Final' ? 'primary' : 'neutral'"
                   variant="soft"
                 >
                   {{
-                    place.type === "FinalStagePlace"
+                    place.stageType === "Final"
                       ? "المرحلة النهائية"
                       : "مرحلة التصفيات"
                   }}
@@ -119,7 +119,7 @@
                 إدارة الطاولات
               </UButton>
               <UButton
-                v-if="canMutatePlaces && place.type === 'QualificationStagePlace'"
+                v-if="canMutatePlaces && place.stageType === 'Qualification'"
                 color="warning"
                 icon="i-heroicons-pencil-square"
                 @click="openUpdateModal(place)"
@@ -174,6 +174,8 @@ import { canMutateTournamentPlaces } from "../utils";
 import { useMyAuthStore } from "~/store/Auth";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import { formatDateTime } from "~/utils/formatDate";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
+import { useTournamentPlacesApi } from "~/features/tournament/places/composables/useTournamentPlacesApi";
 
 const overlay = useOverlay();
 const route = useRoute();
@@ -200,7 +202,7 @@ const placeTabItems = computed(() =>
     value: place.id,
     slot: `place-${place.id}`,
     icon:
-      place.type === "FinalStagePlace"
+      place.stageType === "Final"
         ? "i-heroicons-flag"
         : "i-heroicons-map-pin",
   })),
@@ -250,7 +252,7 @@ const canMutateReferees = computed(
 function canDeletePlace(place: GetTournamentPlace) {
   return (
     canMutatePlaces.value &&
-    place.type === "QualificationStagePlace" &&
+    place.stageType === "Qualification" &&
     (place.connectedJoinRequestsCount ?? 0) === 0
   );
 }

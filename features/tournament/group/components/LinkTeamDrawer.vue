@@ -288,6 +288,7 @@
 <script lang="ts" setup>
 import type { Group } from "~/features/tournament/models/group";
 import type { ITeam } from "~/features/tournament/models/tournamentTeam";
+import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
 
 interface Props {
     group: Group;

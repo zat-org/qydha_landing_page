@@ -93,6 +93,7 @@ import {
 } from "~/features/tournament/group/group-details/constants";
 import type { GroupDetailsActions } from "~/features/tournament/group/group-details/types";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
+import { useGroup } from "~/features/tournament/group/composables/group";
 import type { TournamentDetailedState } from "~/features/tournament/models/tournament";
 
 const LinkTeamDrawer = defineAsyncComponent(() => import("./LinkTeamDrawer.vue"));

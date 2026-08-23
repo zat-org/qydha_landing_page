@@ -50,6 +50,8 @@ import { array, object, string } from "yup";
 import type { IPlayerCreate } from "~/features/tournament/models/tournamentTeam";
 import "vue-tel-input/vue-tel-input.css";
 import { VueTelInput } from "vue-tel-input";
+import { useTournamentPlayer } from "~/features/tournament/players/composables/tournamentPlayer";
+
 const PlayerForm = ref<any>();
 const emit = defineEmits(['close'])
 const state = reactive<IPlayerCreate>({

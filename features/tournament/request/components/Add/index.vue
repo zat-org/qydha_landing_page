@@ -139,6 +139,7 @@ import TournamentRequestFormTourForm from '~/features/tournament/request/compone
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
 import TournamentRequestFormQualificationsForm from '~/features/tournament/request/components/Form/QualificationsForm.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
+import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 
 const cardUi = {
   root: 'flex flex-col max-h-[calc(100dvh-6vh)] min-h-[min(640px,calc(100dvh-6vh))] overflow-hidden shadow-none ring-0 p-0',
@@ -254,6 +255,10 @@ const requestSchema = object({
             .typeError("عدد الطاولات مطلوب")
             .required("عدد الطاولات مطلوب")
             .min(1, "يجب أن يكون عدد الطاولات على الأقل 1"),
+          competingTeamsCount: number()
+            .typeError("عدد الفرق المتنافسة مطلوب")
+            .required("عدد الفرق المتنافسة مطلوب")
+            .min(1, "يجب أن يكون عدد الفرق المتنافسة أكبر من صفر"),
         }),
       )
       .min(1, "يجب إضافة مكان تصفيات واحد على الأقل"),

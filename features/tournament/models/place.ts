@@ -3,27 +3,28 @@ export type DomainLocation = {
   longitude: number;
 };
 
+export type TournamentStageType = "Final" | "Qualification";
+
 export type CreateTournamentPlaceDto = {
   startAt: string;
   endAt: string;
   location: DomainLocation;
   locationDescription: string;
+  competingTeamsCount: number;
   availableTablesCount: number;
 };
-
-export type TournamentPlaceType =
-  | "QualificationStagePlace"
-  | "FinalStagePlace";
 
 export type GetTournamentPlace = {
   id: string;
   tournamentId: string;
-  type: TournamentPlaceType;
   location: DomainLocation;
   locationDescription: string;
+  competingTeamsCount: number;
   availableTablesCount: number;
   startAt: string;
   endAt: string;
+  stageId: string;
+  stageType: TournamentStageType;
   connectedTablesCount: number;
   connectedGroupsCount: number;
   connectedJoinRequestsCount: number;
@@ -47,6 +48,7 @@ export function createEmptyTournamentPlace(): CreateTournamentPlaceDto {
     endAt: "",
     location: { latitude: 0, longitude: 0 },
     locationDescription: "",
+    competingTeamsCount: 1,
     availableTablesCount: 1,
   };
 }

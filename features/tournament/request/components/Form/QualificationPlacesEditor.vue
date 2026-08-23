@@ -84,6 +84,7 @@ const placeErrors = (index: number) => {
     location: e[`${prefix}.location`],
     startAt: e[`${prefix}.startAt`],
     endAt: e[`${prefix}.endAt`],
+    competingTeamsCount: e[`${prefix}.competingTeamsCount`],
     availableTablesCount: e[`${prefix}.availableTablesCount`],
   };
 };

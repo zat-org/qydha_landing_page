@@ -27,7 +27,15 @@ export const appKeys = {
   tournamentPlaces: (id: string) => `getPlaces-${id}`,
   tournamentTeams: "getAllTourTeams",
   tournamentNotInGroupTeams: "getNotInGroupTourTeams",
-  tournamentGroups: (id: string) => `getGroups-${id}`,
+  tournamentGroups: (
+    id: string,
+    filters?: { stageId?: string; placeId?: string },
+  ) => {
+    const parts = [`getGroups-${id}`];
+    if (filters?.stageId) parts.push(`stage-${filters.stageId}`);
+    if (filters?.placeId) parts.push(`place-${filters.placeId}`);
+    return parts.join("-");
+  },
   tournamentGroupDetails: (tourId: string, groupId: string) =>
     `getGroupDetails-${tourId}-${groupId}`,
   tournamentReferees: (id: string, placeId: string) =>

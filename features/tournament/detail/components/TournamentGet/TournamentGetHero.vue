@@ -296,6 +296,7 @@ import {
 import { formatDate } from "~/utils/formatDate";
 import { useTournamentPhaseStore } from '~/store/tournamentPhase';
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
+import { useTournamentLookups } from "~/features/tournament/detail/composables/logic/useTournamentLookups";
 
 const HERO_ACCORDION_ITEM_VALUE = 'tournament-hero';
 

@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
-import * as signalR from '@microsoft/signalr';
+import type { HubConnection } from '@microsoft/signalr';
 import type { Group, Match, RoundGroupDetails } from '~/features/tournament/models/group';
 import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
+import { useGroup } from '~/features/tournament/group/composables/group';
+import { useMatch } from '~/features/tournament/shared/composables/match';
 
 export const useTournamentBracketStore = defineStore('tournamentBracket', () => {
   const route = useRoute();
@@ -11,7 +13,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
   );
   const selectedTournamentId = ref<string>('');
   const tournament = ref<{ data: Group; matches: Match[] }[]>([]);
-  const connection = ref<signalR.HubConnection>();
+  const connection = ref<HubConnection>();
   const rounds = ref<RoundGroupDetails['rounds']>([]);
   const selectedRound = ref<RoundGroupDetails['rounds'][0]>();
   const handleRoundSelection = (roundId: string) => {
@@ -221,6 +223,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     applyMatchesToGroup(groupId, JSON.parse(groupMatches) as Match[]);
   };
   const initWebsocket = async (tournamentId: string) => {
+    const signalR = await import('@microsoft/signalr');
     const config = useRuntimeConfig();
     const conn = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.qydhaapiBase}/tournaments-hub`, {

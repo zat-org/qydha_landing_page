@@ -168,6 +168,7 @@ import type { DropdownMenuItem } from "@nuxt/ui";
 import qydhaLogo from "~/assets/images/qydha-logo.svg";
 import type { TournamentStatistics } from "~/features/tournament/models/tournament";
 import { useMyAuthStore } from "~/store/Auth";
+import { useTournamentStatistics } from "~/features/tournament/detail/composables/api/useTournamentStatistics";
 
 type StatKey = keyof TournamentStatistics["statistics"];
 type PageTheme = "dark" | "light";

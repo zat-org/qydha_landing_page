@@ -56,6 +56,7 @@ import type {
   GetTournamentPlace,
 } from "~/features/tournament/models/place";
 import PlaceFormFields from "./PlaceFormFields.vue";
+import { useTournamentPlacesApi } from "~/features/tournament/places/composables/useTournamentPlacesApi";
 
 const props = defineProps<{
   tourId: string;
@@ -75,6 +76,7 @@ const state = reactive<CreateTournamentPlaceDto>({
   endAt: props.place.endAt,
   location: { ...props.place.location },
   locationDescription: props.place.locationDescription,
+  competingTeamsCount: props.place.competingTeamsCount,
   availableTablesCount: props.place.availableTablesCount,
 });
 
@@ -107,6 +109,10 @@ const schema = computed(() =>
         minTables.value,
         `عدد الطاولات لا يمكن أن يقل عن ${minTables.value}`,
       ),
+    competingTeamsCount: number()
+      .typeError("عدد الفرق المتنافسة مطلوب")
+      .required("عدد الفرق المتنافسة مطلوب")
+      .min(1, "يجب أن يكون عدد الفرق المتنافسة أكبر من صفر"),
   }),
 );
 

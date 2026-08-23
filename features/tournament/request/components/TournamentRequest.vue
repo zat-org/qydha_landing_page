@@ -51,6 +51,7 @@ import { useMyAuthStore } from "~/store/Auth";
 import AdminRequestTable from "./AdminRequestTable.vue";
 import OrganizerRequestTable from "./OrganizerRequestTable.vue";
 import type { GetTournamentRequestParams } from "~/features/tournament/models/tournamentRequest";
+import { useTournamentRequest } from "~/features/tournament/request/composables/TournamentRequest";
 
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);

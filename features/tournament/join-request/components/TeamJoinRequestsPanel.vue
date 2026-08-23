@@ -193,6 +193,8 @@ import {
   type TeamJoinRequestPatchAction,
 } from "~/features/tournament/models/TournamentJoinRequest";
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
+import { useTournamentJoinRequest } from "~/features/tournament/join-request/composables/TournamentJoinRequest";
 
 const debouncedSearch = useDebounceFn((value: Event) => {
   const input = value.target as HTMLInputElement;

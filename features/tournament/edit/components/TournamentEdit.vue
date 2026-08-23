@@ -111,6 +111,9 @@ import { TournamentType } from '~/features/tournament/models/tournamenetType';
 import { TournamentDetailedState, type TournamentUpdate } from '~/features/tournament/models/tournament';
 import Loading from '~/components/loading.vue';
 import TournamentEditPanels from '~/features/tournament/edit/components/TournamentEditForm/Panels.vue';
+import { useSingleTournament } from '~/features/tournament/detail/composables/api/useSingleTournament';
+import { useTournamentEdit } from '~/features/tournament/edit/composables/useTournamentEdit';
+import { useTournamentEditLogic } from '~/features/tournament/edit/composables/useTournamentEditLogic';
 
 type TournamentEditForm = TournamentUpdate & {
   type: TournamentType;
@@ -231,6 +234,10 @@ const editSchema = object({
             .typeError('عدد الطاولات مطلوب')
             .required('عدد الطاولات مطلوب')
             .min(1, 'يجب أن يكون عدد الطاولات على الأقل 1'),
+          competingTeamsCount: number()
+            .typeError('عدد الفرق المتنافسة مطلوب')
+            .required('عدد الفرق المتنافسة مطلوب')
+            .min(1, 'يجب أن يكون عدد الفرق المتنافسة أكبر من صفر'),
         }),
       )
       .min(1, 'يجب إضافة مكان تصفيات واحد على الأقل'),
@@ -365,6 +372,7 @@ const assignData = () => {
           endAt: place.endAt,
           location: place.location,
           locationDescription: place.locationDescription,
+          competingTeamsCount: place.competingTeamsCount,
           availableTablesCount: place.availableTablesCount,
         })),
       }

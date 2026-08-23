@@ -131,7 +131,6 @@ export interface DetailTournament {
     tournamentRules: string[];
     sponsors: string[];
     tournamentPrivatePassword: null | string;
-    hasQualificationsStage: boolean | null;
     qualificationStagePlaces?: GetTournamentPlace[];
     allowedJoinRequestType: TournamentPlayerJoinRequestType | null;
     minimumSubscriptionDays: number | null;
@@ -204,6 +203,9 @@ export enum TournamentDetailedState {
   ReceivingJoinRequests = "ReceivingJoinRequests",
   ManagingJoinRequests = "ManagingJoinRequests",
   ManagingTeams = "ManagingTeams",
+  QualificationStagePreparing = "QualificationStagePreparing",
+  QualificationStageRunning = "QualificationStageRunning",
+  QualificationStageCompleted = "QualificationStageCompleted",
   LinkingFinalGroupTeams = "LinkingFinalGroupTeams",
   ManagingFinalGroupBracket = "ManagingFinalGroupBracket",
   WaitingFinalGroupStarting = "WaitingFinalGroupStarting",

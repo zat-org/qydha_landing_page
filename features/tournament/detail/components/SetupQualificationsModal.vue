@@ -98,6 +98,7 @@
 <script lang="ts" setup>
 import type { SetupQualificationGroup } from "~/features/tournament/models/place";
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 
 const props = defineProps<{
   tournamentId: string;

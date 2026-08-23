@@ -54,7 +54,7 @@
             padded
           >
             <span class="flex items-center justify-center gap-2">
-              <Icon name="material-symbols:download" class="text-xl" />
+              <UIcon name="i-heroicons-arrow-down-tray" class="text-xl" />
               حمل التطبيق الان
             </span>
           </UButton>
@@ -66,7 +66,7 @@
             padded
           >
             <span class="flex items-center justify-center gap-2">
-              <Icon name="material-symbols:info" class="text-xl" />
+              <UIcon name="i-heroicons-information-circle" class="text-xl" />
               تعرف على خدماتنا
             </span>
           </UButton>
@@ -116,18 +116,33 @@
             <!-- Main center image -->
             <img
               src="@/assets/images/home_page-portrait.jpeg"
+              alt="تطبيق قيدها"
+              width="360"
+              height="550"
+              fetchpriority="high"
+              decoding="async"
               class="absolute h-[550px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-0 left-1/2 -translate-x-1/2 dark:brightness-90 z-20 hover-scale"
             />
 
             <!-- Right diagonal image -->
             <img
               src="@/assets/images/baloot_page-portrait.jpeg"
+              alt=""
+              width="360"
+              height="500"
+              loading="lazy"
+              decoding="async"
               class="absolute h-[500px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 right-0 translate-x-1/4 rotate-15 dark:brightness-90 z-10 hover-scale"
             />
 
             <!-- Left diagonal image -->
             <img
               src="@/assets/images/subscription_page-portrait.jpeg"
+              alt=""
+              width="360"
+              height="500"
+              loading="lazy"
+              decoding="async"
               class="absolute h-[500px] rounded-5xl shadow-xl dark:shadow-gray-800/50 top-1/2 -translate-y-1/2 left-0 -translate-x-1/4 rotate-[-15deg] dark:brightness-90 z-10 hover-scale"
             />
           </div>

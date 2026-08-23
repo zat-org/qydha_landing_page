@@ -1,1 +1,0 @@
-export { useGroupTeamsTable } from "./useGroupTeamsTable";

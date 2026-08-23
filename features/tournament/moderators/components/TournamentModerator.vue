@@ -114,6 +114,8 @@ import { TournamentDetailedState } from "~/features/tournament/models/tournament
 import { useMyAuthStore } from "~/store/Auth";
 import AddModal from "./AddModal.vue";
 import EditModal from "./EditModal.vue";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
+import { useTournamentModerator } from "~/features/tournament/moderators/composables/tournamentModerator";
 
 const route = useRoute();
 const overlay = useOverlay();

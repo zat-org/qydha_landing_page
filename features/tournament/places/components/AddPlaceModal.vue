@@ -47,6 +47,7 @@
 import { object, string, number } from "yup";
 import { createEmptyTournamentPlace } from "~/features/tournament/models/place";
 import PlaceFormFields from "./PlaceFormFields.vue";
+import { useTournamentPlacesApi } from "~/features/tournament/places/composables/useTournamentPlacesApi";
 
 const props = defineProps<{
   tourId: string;
@@ -82,6 +83,10 @@ const schema = object({
     .typeError("عدد الطاولات مطلوب")
     .required("عدد الطاولات مطلوب")
     .min(1, "يجب أن يكون عدد الطاولات على الأقل 1"),
+  competingTeamsCount: number()
+    .typeError("عدد الفرق المتنافسة مطلوب")
+    .required("عدد الفرق المتنافسة مطلوب")
+    .min(1, "يجب أن يكون عدد الفرق المتنافسة أكبر من صفر"),
 });
 
 const AddREQ = useTournamentPlacesApi().addPlace();

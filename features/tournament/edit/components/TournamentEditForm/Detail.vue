@@ -122,6 +122,7 @@ import UserSelectMenu from "~/components/User/UserSelectMenu.vue";
 import TournamentTourDetailFormPrizeManagement from "~/features/tournament/request/components/Form/TourDetailForm/PrizeManagement.vue";
 import TournamentRequestCalculatorRounds from "~/features/tournament/request/components/CalculatorRounds.vue";
 import TournamentRequestCalculatorSummary from "~/features/tournament/request/components/CalculatorSummary.vue";
+import { useTourCalc } from "~/features/tournament/request/composables/useTourCalc";
 
 const props = defineProps<{
   errors?: Record<string, string | undefined>;

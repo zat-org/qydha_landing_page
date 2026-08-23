@@ -43,6 +43,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useTournamentTable } from "~/features/tournament/tables/composables/tournamentTable";
+
 const props = defineProps<{
   tourId: string;
   placeId: string;

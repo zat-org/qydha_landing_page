@@ -194,6 +194,7 @@ import UpdateRoundDrawer from "./Round/UpdateRoundDrawer.vue";
 import UpdateMatchDrawer from "./Match/UpdateMatchDrawer.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";
 import  { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import { useGroup } from "~/features/tournament/group/composables/group";
 
 const route = useRoute();
 const tour_id = route.params.id?.toString() ?? "";

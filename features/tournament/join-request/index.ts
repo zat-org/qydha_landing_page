@@ -1,4 +1,4 @@
 export * from "./components";
-export * from "./composables";
+export { useTournamentJoinRequest } from "./composables/TournamentJoinRequest";
 export * from "./models/TournamentJoinRequest";
 export * from "./stores";

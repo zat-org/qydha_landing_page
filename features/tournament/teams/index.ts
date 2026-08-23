@@ -1,3 +1,3 @@
 export * from "./components";
-export * from "./composables";
+export { useTourrnamentTeam } from "./composables/tourrnamentTeam";
 export * from "./models/tournamentTeam";

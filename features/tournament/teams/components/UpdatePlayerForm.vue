@@ -23,6 +23,8 @@
 <script lang="ts" setup>
 import { object, string } from "yup";
 import type { IPlayer, IPlayerCreate } from "~/features/tournament/models/tournamentTeam";
+import { useTournamentPlayer } from "~/features/tournament/players/composables/tournamentPlayer";
+
 const props = defineProps<{ player: IPlayer }>();
 const PlayerForm = ref<any>();
 const emit = defineEmits(['close'])

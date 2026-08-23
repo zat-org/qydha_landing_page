@@ -32,6 +32,8 @@
 <script lang="ts" setup>
 import { array, object, string } from 'yup';
 import type { ITeamCreate } from '~/features/tournament/models/tournamentTeam';
+import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
+
 const teamForm = useTemplateRef('teamForm')
 const route = useRoute()
 const tour_id = route.params.id.toString()

@@ -49,6 +49,7 @@ import type {
   IModerator,
   IModeratorUpdate,
 } from "~/features/tournament/models/tournamentModeratorr";
+import { useTournamentModerator } from "~/features/tournament/moderators/composables/tournamentModerator";
 
 const props = defineProps<{ moderator: IModerator }>();
 

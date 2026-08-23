@@ -44,6 +44,7 @@ import {
   navigateToTabView,
 } from '~/features/tournament/detail/utils/tournamentNavigation.utils';
 import type { DetailTournament } from '~/features/tournament/models/tournament';
+import { useUpdateShowInQydha } from '~/features/tournament/detail/composables/api/useUpdateShowInQydha';
 
 const props = defineProps<{
   id: string;

@@ -23,7 +23,6 @@ export const organizeAction: PhaseAction = {
   canExecute: (ctx) =>
     ctx.detailedState === TournamentDetailedState.ManagingTeams &&
     ctx.finalGroupState === GroupState.Created &&
-    ctx.hasQualificationsStage == null &&
     ctx.tournamentState === TournamentState.Upcoming,
   service: async (ctx, api, extra) => {
     const payload = extra as SetupTournamentPayload | undefined;

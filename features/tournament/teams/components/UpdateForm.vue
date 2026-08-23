@@ -15,6 +15,8 @@
 <script lang="ts" setup>
 import { string, object } from 'yup';
 import type { ITeam } from '~/features/tournament/models/tournamentTeam';
+import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
+
 const updateTeamForm = ref()
 const props = defineProps<{ team: ITeam }>()
 const emit = defineEmits(['close'])

@@ -1,6 +1,8 @@
 import type { TournamentState } from '~/features/tournament/models/tournament';
 import type { TournamentType } from '~/features/tournament/models/tournamenetType';
 import type { TournamentPrizeCurrency } from '~/features/tournament/models/tournamentPrize';
+import { useAllTournament } from '~/features/tournament/list/composables/useAllTournament';
+import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 
 export function useTournamentLookups() {
   const { getTournamnetStateOptions } = useAllTournament();

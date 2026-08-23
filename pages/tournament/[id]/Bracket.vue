@@ -159,6 +159,10 @@ import TournamentApprovePlanConfirmModal from "~/features/tournament/detail/comp
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useMyAuthStore } from "~/store/Auth";
 import { GroupState } from "~/features/tournament/models/group";
+import { useStartFinalGroupTournament } from "~/features/tournament/detail/composables/api/useStartFinalGroupTournament";
+import { useFinishTournament } from "~/features/tournament/detail/composables/api/useFinishTournament";
+import { useResumeFinalGroupAfterFinish } from "~/features/tournament/detail/composables/api/useResumeFinalGroupAfterFinish";
+import { useApproveTournamentPlan } from "~/features/tournament/detail/composables/api/useApproveTournamentPlan";
 
 definePageMeta({
   layout: "custom",

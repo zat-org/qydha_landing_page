@@ -1,3 +1,5 @@
+import type { TournamentStageType } from "./place";
+
 export enum GroupState {
   Created = "Created",
   TeamsLinking = "TeamsLinking",
@@ -9,7 +11,7 @@ export enum GroupState {
 
 export enum GroupType {
   Final = "Final",
-  Staging = "Staging",
+  Qualification = "Qualification",
 }
 
 export interface Group {
@@ -17,10 +19,12 @@ export interface Group {
   name: string;
   checkInAt: string;
   startPlayAt: string;
-  type: string;
+  type: GroupType;
   withThirdPlaceMatch: boolean;
   state: GroupState;
   placeId?: string;
+  stageId: string;
+  stageType: TournamentStageType;
 }
 
 export interface DetailGroup {
@@ -43,6 +47,8 @@ export interface DetailGroup {
   tournamentId: string;
   type: GroupType;
   withThirdPlaceMatch: boolean;
+  stageId: string;
+  stageType: TournamentStageType;
 }
 
 
@@ -60,11 +66,13 @@ withThirdPlaceMatch: boolean;
 export interface RoundGroupDetails {
   id: string;
   name: string;
-  type: string;
+  type: GroupType;
   checkInAt: string;
   startPlayAt: string;
   withThirdPlaceMatch: true;
   state: GroupState;
+  stageId: string;
+  stageType: TournamentStageType;
   rounds: {
     id: string;
     name: string;

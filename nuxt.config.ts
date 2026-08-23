@@ -14,7 +14,6 @@ const WebsiteUrl = "https://qydha.com/";
 export default defineNuxtConfig({
   ssr: true,
   modules: [
-    "@netlify/nuxt",
     ...(process.env.NETLIFY !== "true" ? ["@nuxt/eslint" as const] : []),
     "@nuxt/ui",
     "@pinia/nuxt",
@@ -51,18 +50,7 @@ export default defineNuxtConfig({
         { name: "viewport", content: "width=device-width, initial-scale=1" },
         { charset: "utf-8" },
       ],
-      link: [
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
-        {
-          rel: "preconnect",
-          href: "https://fonts.gstatic.com",
-          crossorigin: "anonymous",
-        },
-        {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700&display=swap",
-        },
-      ],
+      link: [],
     },
   },
 
@@ -108,9 +96,6 @@ export default defineNuxtConfig({
     dirs: [
       "composables",
       "utils",
-      "features/tournament/**/composables",
-      "features/tournament/**/composables/api",
-      "features/tournament/**/composables/logic",
     ],
   },
 

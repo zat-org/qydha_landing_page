@@ -99,6 +99,7 @@ import { object, string, number } from "yup";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
 import type { UpdateJoinRequestSeetingsBody } from "~/features/tournament/models/tournament";
 import { TournamentPlayerJoinRequestType } from "~/features/tournament/models/tournamentRequest";
+import { useUpdateJoinRequestSettings } from "~/features/tournament/detail/composables/api/useUpdateJoinRequestSettings";
 
 const props = defineProps<{
   tournamentId: string;

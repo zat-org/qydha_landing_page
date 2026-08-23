@@ -132,6 +132,7 @@
 import { object, string, boolean } from "yup";
 import type { IMatchUpdate, IUpdateChoicesForMatch } from "~/features/tournament/models/match";
 import loading from "~/components/loading.vue";
+import { useMatch } from "~/features/tournament/shared/composables/match";
 
 const route = useRoute();
 const tour_id = route.params.id?.toString() ?? '';

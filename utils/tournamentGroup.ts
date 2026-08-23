@@ -7,6 +7,7 @@ export const getGroupTypeLabel = (type: string): string => {
         'C': 'المجموعة ج',
         'D': 'المجموعة د',
         'Final': 'النهائي',
+        'Qualification': 'التصفيات',
         'Semi-Final': 'نصف النهائي',
         'Quarter-Final': 'ربع النهائي'
     };

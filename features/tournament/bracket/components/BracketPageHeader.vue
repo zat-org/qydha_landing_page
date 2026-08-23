@@ -60,6 +60,8 @@ import {
   resumeAction,
   startAction,
 } from "~/features/tournament/phase/phaseActions";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
+import { useGroup } from "~/features/tournament/group/composables/group";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];

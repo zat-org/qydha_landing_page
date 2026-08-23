@@ -64,6 +64,38 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
     view: TournamentTeam,
     actions: [organizeAction],
   },
+  [TournamentDetailedState.QualificationStagePreparing]: {
+    label: "تجهيز مرحلة التصفيات",
+    ui: {
+      description: "جهّز مجموعات التصفيات واربط الفرق قبل بدء المرحلة.",
+    },
+    view: TournamentGroup,
+    actions: [],
+  },
+  [TournamentDetailedState.QualificationStageRunning]: {
+    label: "مرحلة التصفيات جارية",
+    ui: {
+      alert: {
+        color: "success",
+        title: "مرحلة التصفيات جارية",
+        description: "تابع مباريات التصفيات من صفحة المجموعات.",
+      },
+    },
+    view: TournamentGroup,
+    actions: [],
+  },
+  [TournamentDetailedState.QualificationStageCompleted]: {
+    label: "اكتملت مرحلة التصفيات",
+    ui: {
+      alert: {
+        color: "info",
+        title: "اكتملت مرحلة التصفيات",
+        description: "يمكنك متابعة إعداد المرحلة النهائية.",
+      },
+    },
+    view: TournamentGroup,
+    actions: [],
+  },
   [TournamentDetailedState.LinkingFinalGroupTeams]: {
     label: "ربط الفرق بالمجموعة النهائية",
     ui: {

@@ -49,6 +49,7 @@ import type {
   PhaseStateConfig,
   TournamentPhaseContext,
 } from "~/features/tournament/detail/types/phase.types";
+import { useTournamentPhaseActions } from "~/features/tournament/detail/composables/logic/useTournamentPhaseActions";
 
 const props = defineProps<{
   context: TournamentPhaseContext;

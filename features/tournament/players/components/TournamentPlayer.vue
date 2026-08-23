@@ -47,6 +47,7 @@
 import type { IPlayer } from "~/features/tournament/models/tournamentTeam";
 import CreatePlayerModal from "./CreatePlayerModal.vue";
 import UpdatePlayerModal from "./updatePlayerModal.vue";
+import { useTournamentPlayer } from "~/features/tournament/players/composables/tournamentPlayer";
 
 const route = useRoute();
 const overlay = useOverlay();

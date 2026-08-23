@@ -45,6 +45,8 @@ import GroupDetails from "./GroupDetails.vue";
 import RoundsGroupDetails from "./RoundsGroupDetails.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import { useTournamentPlaces } from '~/features/tournament/composables/useTournamentPlaces';
+import { useSingleTournament } from '~/features/tournament/detail/composables/api/useSingleTournament';
+import { useGroup } from '~/features/tournament/group/composables/group';
 
 interface Props {
   tournamentId: string;

@@ -81,6 +81,8 @@ import TournamentTeamAddForm from '~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from '~/features/tournament/teams/components/UpdateForm.vue';
 import TournamentTeamAddPlayerForm from '~/features/tournament/teams/components/AddPlayerForm.vue';
 import TournamentTeamUpdatePlayerForm from '~/features/tournament/teams/components/UpdatePlayerForm.vue';
+import { useSingleTournament } from '~/features/tournament/detail/composables/api/useSingleTournament';
+import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
 
 const props = defineProps<{
   tournamentId?: string;

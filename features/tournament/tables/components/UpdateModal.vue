@@ -51,6 +51,7 @@
 <script lang="ts" setup>
 import type { ITable, ITableCreate } from '~/features/tournament/models/Table';
 import { object, string } from 'yup'
+import { useTournamentTable } from '~/features/tournament/tables/composables/tournamentTable';
 
 const props = defineProps<{ table: ITable }>()
 const emit = defineEmits(['close'])

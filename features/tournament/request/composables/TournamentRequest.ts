@@ -129,6 +129,7 @@ export const useTournamentRequest = () => {
           method: "post",
           body,
         });
+        await refreshAppData(appKeys.adminTourRequests);
       });
     };
     return { pending, status, error, fetchREQ };

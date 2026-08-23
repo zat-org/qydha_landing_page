@@ -166,6 +166,7 @@ import EditModal from "./EditModal.vue";
 import MatchAdminActionConfirmModal from "./MatchAdminActionConfirmModal.vue";
 import { useMatchNodeShared } from "~/features/tournament/bracket/composables/useMatchNodeShared";
 import type { MatchActionType } from "~/features/tournament/match/types/matchAction.types";
+import { useMatch } from "~/features/tournament/shared/composables/match";
 
 const userStore = useMyAuthStore();
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();

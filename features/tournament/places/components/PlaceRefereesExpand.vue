@@ -85,6 +85,7 @@
 <script lang="ts" setup>
 import type { IRefre } from "~/features/tournament/models/Refre";
 import RefereeAddForm from "~/features/tournament/referees/components/AddForm.vue";
+import { useTournamentRefree } from "~/features/tournament/referees/composables/tournamentRefree";
 
 const props = defineProps<{
   tourId: string;

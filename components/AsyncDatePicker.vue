@@ -11,6 +11,15 @@
 </template>
 
 <script setup lang="ts">
+import { defineAsyncComponent } from "vue";
+
+const VDatePicker = defineAsyncComponent(() =>
+  import("v-calendar").then((m) => {
+    import("v-calendar/style.css");
+    return m.DatePicker;
+  }),
+);
+
 const colorMode = useColorMode()
 
 const props = withDefaults(defineProps<{

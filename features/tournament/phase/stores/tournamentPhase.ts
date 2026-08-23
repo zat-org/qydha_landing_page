@@ -22,7 +22,8 @@ export function buildPhaseContextFromTour(
     detailedState: tour.tournament.detailedState,
     tournamentState: tour.tournament.state,
     finalGroupState: finalGroup?.state,
-    hasQualificationsStage: tour.tournament.hasQualificationsStage,
+    hasQualificationStage:
+      (tour.tournament.qualificationStagePlaces ?? []).length > 0,
   };
 }
 

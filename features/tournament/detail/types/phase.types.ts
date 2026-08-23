@@ -23,7 +23,7 @@ export interface TournamentPhaseContext {
   detailedState?: TournamentDetailedState;
   tournamentState?: TournamentState;
   finalGroupState?: GroupState;
-  hasQualificationsStage?: boolean | null;
+  hasQualificationStage?: boolean;
 }
 
 export type PhaseActionId =

@@ -24,6 +24,7 @@
 <script lang="ts" setup>
 import { object, string } from "yup";
 import { useMyAuthStore } from "~/store/Auth";
+import { useTournamentRefree } from "~/features/tournament/referees/composables/tournamentRefree";
 
 const props = defineProps<{
   tourId: string;

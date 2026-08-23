@@ -3,6 +3,7 @@ import {
   TournamentState,
   type DetailTournament,
 } from "~/features/tournament/models/tournament";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 
 export async function useTournamentDetailPage(tournamentId: string) {
   const { getSingelTournament } = useSingleTournament();

@@ -73,6 +73,7 @@ import { object, string, boolean } from "yup";
 import type { Match } from "~/features/tournament/models/group";
 import { useMatchEditChoices } from "~/features/tournament/bracket/composables/useMatchEditChoices";
 import loading from "~/components/loading.vue";
+import { useMatch } from "~/features/tournament/shared/composables/match";
 
 const form = useTemplateRef("form");
 const props = defineProps<{ match: Match }>();

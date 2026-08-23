@@ -17,14 +17,24 @@ type GroupsPayload = {
   };
 };
 
+type GetGroupsFilters = {
+  stageId?: string;
+  placeId?: string;
+};
+
 export const useGroup = () => {
   const userStore = useMyAuthStore();
   const { $api } = useNuxtApp();
 
-  const getGroups = (tourid: string) => {
+  const getGroups = (tourid: string, filters?: GetGroupsFilters) => {
     const { data, pending, error, refresh, status, execute } =
-      useAppApiData<GroupsPayload>(appKeys.tournamentGroups(tourid), () =>
-        $api(`/tournaments/${tourid}/groups`),
+      useAppApiData<GroupsPayload>(appKeys.tournamentGroups(tourid, filters), () =>
+        $api(`/tournaments/${tourid}/groups`, {
+          query: {
+            ...(filters?.stageId ? { stageId: filters.stageId } : {}),
+            ...(filters?.placeId ? { placeId: filters.placeId } : {}),
+          },
+        }),
       );
 
     watch(status, () => {

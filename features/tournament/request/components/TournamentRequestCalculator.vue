@@ -29,6 +29,7 @@
 import TournamentRequestCalculatorInputs from '~/features/tournament/request/components/CalculatorInputs.vue';
 import TournamentRequestCalculatorRounds from '~/features/tournament/request/components/CalculatorRounds.vue';
 import TournamentRequestCalculatorSummary from '~/features/tournament/request/components/CalculatorSummary.vue';
+import { useTourCalc } from '~/features/tournament/request/composables/useTourCalc';
 
 const { rounds, teamsCount, tablesCount, sakkTime, sakkTime3, sakkTime5, totalTime, timePerDay, totalMatches, dayNumber } = useTourCalc();
 

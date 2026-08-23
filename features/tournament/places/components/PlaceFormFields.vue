@@ -30,7 +30,7 @@
       />
     </UFormField>
 
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       <UFormField label="تاريخ البداية" name="startAt" required>
         <AsyncDatePicker v-model="place.startAt" :min-date="new Date()" />
       </UFormField>
@@ -38,6 +38,18 @@
         <AsyncDatePicker
           v-model="place.endAt"
           :min-date="place.startAt || undefined"
+        />
+      </UFormField>
+      <UFormField
+        label="عدد الفرق المتنافسة"
+        name="competingTeamsCount"
+        required
+      >
+        <UInput
+          v-model.number="place.competingTeamsCount"
+          type="number"
+          min="1"
+          placeholder="1"
         />
       </UFormField>
       <UFormField

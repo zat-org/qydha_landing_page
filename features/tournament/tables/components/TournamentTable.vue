@@ -127,6 +127,9 @@ import UpdateModal from './UpdateModal.vue';
 import AddModal from './AddModal.vue';
 import ConfirmModal from '~/components/ConfirmationModal.vue';
 import { canMutateTournamentPlaces } from '~/features/tournament/places/utils';
+import { useSingleTournament } from '~/features/tournament/detail/composables/api/useSingleTournament';
+import { useTournamentPlacesApi } from '~/features/tournament/places/composables/useTournamentPlacesApi';
+import { useTournamentTable } from '~/features/tournament/tables/composables/tournamentTable';
 
 const overlay = useOverlay()
 const route = useRoute()
@@ -162,7 +165,7 @@ const places = computed(() => getPlacesREQ.data.value || [])
 const placeItems = computed(() =>
   places.value.map((p) => ({
     label:
-      p.type === 'FinalStagePlace'
+      p.stageType === 'Final'
         ? `${p.locationDescription} (نهائي)`
         : p.locationDescription,
     value: p.id,

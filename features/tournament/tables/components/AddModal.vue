@@ -51,6 +51,7 @@
 <script lang="ts" setup>
 import type { ITableCreate } from '~/features/tournament/models/Table';
 import { object, string } from 'yup'
+import { useTournamentTable } from '~/features/tournament/tables/composables/tournamentTable';
 
 const props = defineProps<{
   tourId: string

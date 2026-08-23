@@ -17,6 +17,9 @@
 <script lang="ts" setup>
 import { object, string } from 'yup'
 import { refDebounced } from '@vueuse/core'
+import { useTournamentPlayer } from '~/features/tournament/players/composables/tournamentPlayer';
+import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
+
 const addPlayerForm = ref()
 const emit = defineEmits(['close'])
 const route = useRoute()

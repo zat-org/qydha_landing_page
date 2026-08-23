@@ -65,6 +65,7 @@ export const useMyAuthStore = defineStore(
       },
       {
         storage: piniaPluginPersistedstate.localStorage(),
+        pick: ["user.jwtToken", "user.user.roles", "user.boardLink"],
       },
     ],
   }

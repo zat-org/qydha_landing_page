@@ -7,7 +7,7 @@
         v-if="logedin"
         size="lg"
         variant="ghost"
-        icon="mdi:menu"
+        icon="i-heroicons-bars-3"
         color="neutral"
         class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200"
         @click="openNav"
@@ -30,7 +30,7 @@
         v-if="!logedin"
         variant="ghost"
         color="neutral"
-        icon="mdi:user"
+        icon="i-heroicons-user"
         to="/login"
         size="lg"
         class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200"
@@ -41,7 +41,7 @@
         v-else
         variant="ghost"
         color="neutral"
-        icon="mdi:logout"
+        icon="i-heroicons-arrow-right-on-rectangle"
         class="hover:bg-amber-50 dark:hover:bg-amber-500/20 transition-colors duration-200"
         @click="onLogOut()"
       />
@@ -50,8 +50,10 @@
 </template>
 
 <script setup lang="ts">
+import { defineAsyncComponent } from "vue";
 import { useMyAuthStore } from "~/store/Auth";
-import SideBar from "./SideBar.vue";
+
+const SideBar = defineAsyncComponent(() => import("./SideBar.vue"));
 
 const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);

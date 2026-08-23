@@ -350,6 +350,9 @@ import { object, array, string, boolean, number } from "yup";
 import type { ITable } from "~/features/tournament/models/Table";
 import type { Group } from "~/features/tournament/models/group";
 import type { CreateMatch } from "~/features/tournament/models/group";
+import { useTournamentTable } from "~/features/tournament/tables/composables/tournamentTable";
+import { useTournamentPlacesApi } from "~/features/tournament/places/composables/useTournamentPlacesApi";
+import { useGroup } from "~/features/tournament/group/composables/group";
 
 const route = useRoute();
 const tour_id = route.params.id.toString();
@@ -379,7 +382,7 @@ const tablePlaceId = computed(() => {
     if (props.group.placeId) return props.group.placeId;
     const list = getPlacesREQ.data.value ?? [];
     return (
-        list.find((p) => p.type === "FinalStagePlace")?.id ??
+        list.find((p) => p.stageType === "Final")?.id ??
         list[0]?.id ??
         ""
     );

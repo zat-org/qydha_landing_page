@@ -80,6 +80,8 @@
 import { TournamentDetailedState, TournamentState } from '~/features/tournament/models/tournament';
 import Loading from "~/components/loading.vue";
 import TeamJoinRequestsPanel from "~/features/tournament/join-request/components/TeamJoinRequestsPanel.vue";
+import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
+import { useTournamentJoinRequest } from "~/features/tournament/join-request/composables/TournamentJoinRequest";
 
 const props = defineProps<{
   tournamentId?: string;

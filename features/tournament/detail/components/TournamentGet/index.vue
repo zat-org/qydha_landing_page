@@ -39,6 +39,7 @@ import TournamentGetManagementBoard from "./TournamentGetManagementBoard.vue";
 import { useMyAuthStore } from "~/store/Auth";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 import Loading from "~/components/loading.vue";
+import { useTournamentDetailPage } from "~/features/tournament/detail/composables/logic/useTournamentDetailPage";
 
 const props = defineProps<{ id: string }>();
 

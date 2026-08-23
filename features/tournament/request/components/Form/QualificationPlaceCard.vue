@@ -54,7 +54,7 @@
         />
       </UFormField>
 
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <UFormField
           label="تاريخ البداية"
           :name="`qualificationsStageInfo.places[${index}].startAt`"
@@ -79,6 +79,21 @@
             :disabled="disabled"
             :min-date="place.startAt || undefined"
             @update:model-value="emit('blur')"
+          />
+        </UFormField>
+        <UFormField
+          label="عدد الفرق المتنافسة"
+          :name="`qualificationsStageInfo.places[${index}].competingTeamsCount`"
+          required
+          :error="errors?.competingTeamsCount"
+        >
+          <UInput
+            v-model.number="place.competingTeamsCount"
+            type="number"
+            min="1"
+            :disabled="disabled"
+            placeholder="1"
+            @blur="emit('blur')"
           />
         </UFormField>
         <UFormField
@@ -115,6 +130,7 @@ defineProps<{
     location?: string;
     startAt?: string;
     endAt?: string;
+    competingTeamsCount?: string;
     availableTablesCount?: string;
   };
 }>();

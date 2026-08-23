@@ -56,6 +56,7 @@ import { array, object, string } from "yup";
 import type { IModeratorCreate } from "~/features/tournament/models/tournamentModeratorr";
 import { useMyAuthStore } from "~/store/Auth";
 import UserSelectMenu from "~/components/User/UserSelectMenu.vue";
+import { useTournamentModerator } from "~/features/tournament/moderators/composables/tournamentModerator";
 
 const emit = defineEmits(["close"]);
 const route = useRoute();

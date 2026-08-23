@@ -49,6 +49,8 @@ import { TournamentPlayerJoinRequestType } from "~/features/tournament/models/to
 import TournamentRequestCalculatorRounds from "~/features/tournament/request/components/CalculatorRounds.vue";
 import TournamentRequestCalculatorSummary from "~/features/tournament/request/components/CalculatorSummary.vue";
 import TournamentRequestFormTourDetailFormPrizeManagement from "~/features/tournament/request/components/Form/TourDetailForm/PrizeManagement.vue";
+import { useTourCalc } from "~/features/tournament/request/composables/useTourCalc";
+
 const props = defineProps<{ errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void; disabledFields?: Record<string, boolean> }>();
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<any>({ required: true })

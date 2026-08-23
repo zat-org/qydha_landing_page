@@ -8,4 +8,7 @@ export * from "./players";
 export * from "./referees";
 export * from "./tables";
 export * from "./places";
-export * from "./request/composables";
+export { useTournamentRequest } from "./request/composables/TournamentRequest";
+export { useTourCalc } from "./request/composables/useTourCalc";
+export { useTournamentCalculations } from "./request/composables/useTournamentCalculations";
+export { parseTournamentRequestApiErrors, resolveStepForApiFields } from "./request/composables/tournamentRequestApiErrors";

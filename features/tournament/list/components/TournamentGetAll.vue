@@ -161,6 +161,9 @@ import {
   type GetTournamentParams,
   type Tournament,
 } from "~/features/tournament/models/tournament";
+import { useAllTournament } from "~/features/tournament/list/composables/useAllTournament";
+import { useDeleteTournament } from "~/features/tournament/list/composables/useDeleteTournament";
+
 const {
   getAllTournament,
   getTournamnetStateOptions,

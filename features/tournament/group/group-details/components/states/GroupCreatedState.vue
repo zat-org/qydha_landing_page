@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import type { DetailGroup } from "~/features/tournament/models/group";
-import { useGroupTeamsTable } from "../../composables";
+import { useGroupTeamsTable } from "../../composables/useGroupTeamsTable";
 import GroupTeamsList from "../GroupTeamsList.vue";
 
 const props = defineProps<{

@@ -175,6 +175,7 @@
 import { object, string, boolean, number } from "yup";
 import type { RoundGroupDetails } from "~/features/tournament/models/group";
 import type { TournamentRoundUpdate } from "~/features/tournament/models/tournamentRound";
+import { useGroup } from "~/features/tournament/group/composables/group";
 
 const props = defineProps<{
     round: RoundGroupDetails["rounds"][0] | null;

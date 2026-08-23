@@ -87,7 +87,7 @@
 import { computed } from "vue";
 import type { DetailGroup } from "~/features/tournament/models/group";
 import type { GroupDetailsActions } from "../../types";
-import { useGroupTeamsTable } from "../../composables";
+import { useGroupTeamsTable } from "../../composables/useGroupTeamsTable";
 import GroupTeamsList from "../GroupTeamsList.vue";
 
 const props = defineProps<{

@@ -181,6 +181,9 @@
                 <div class="text-sm text-gray-600 dark:text-gray-400">
                   عدد الطاولات: {{ place.availableTablesCount }}
                 </div>
+                <div class="text-sm text-gray-600 dark:text-gray-400">
+                  عدد الفرق المتنافسة: {{ place.competingTeamsCount }}
+                </div>
                 <UButton
                   v-if="place.location"
                   variant="soft"
@@ -274,6 +277,7 @@ import { useMyAuthStore } from '~/store/Auth';
 import { TournamentPrizeType, TournamentPrizeCurrency  } from '~/features/tournament/models/tournamentPrize';
 import { TournamentRequestState } from '~/features/tournament/models/tournamentRequest';
 import {formatDateTime,formatDate} from'~/utils/formatDate'
+import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 
 const props = defineProps<{id:string}>()
 const { 
