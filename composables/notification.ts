@@ -25,8 +25,11 @@ export const useNotification = () => {
         body.append("actionType", new_notification.actionType);
         body.append("description", new_notification.description);
         body.append("title", new_notification.title);
-        if ("popUpImage" in new_notification) {
-          body.append("popUpImage", new_notification.popUpImage as File);
+        if (
+          "popUpImage" in new_notification &&
+          new_notification.popUpImage instanceof File
+        ) {
+          body.append("popUpImage", new_notification.popUpImage);
         }
 
         let target = "";

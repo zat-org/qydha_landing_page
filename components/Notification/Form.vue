@@ -1,116 +1,120 @@
 <template>
   <UForm
+    ref="notificationForm"
     :state="state"
     :schema="schema"
-    ref="notificationForm"
+    class="flex flex-col gap-4"
     @submit="onSubmit"
-    class="flex flex-col gap-2"
   >
     <UFieldGroup class="mx-auto">
       <UButton
-        :color="target == 'All' ? 'primary' : 'neutral'"
-        @click="target = 'All'"
-        label="الكل"
-
-      />
-      <UButton
-        :color="target == 'Anonymos' ? 'primary' : 'neutral'"
-        @click="target = 'Anonymos'"
-        label="غير مسجلين"
-      />
-      <UButton
-        :color="target == 'User' ? 'primary' : 'neutral'"
-        @click="target = 'User'"
-        label="مستخدم"
+        v-for="item in notificationTargetOptions"
+        :key="item.value"
+        :color="target === item.value ? 'primary' : 'neutral'"
+        :label="item.label"
+        @click="onSelectTarget(item.value)"
       />
     </UFieldGroup>
-    <UFormField label="المستخدم" name="user" v-if="target == 'User'">
+
+    <UFormField v-if="target === 'User'" label="المستخدم" name="user" required>
       <UInputMenu
         v-model="state.user"
         v-model:search-term="search_user"
-        :loading="usergetREQ.status.value == 'pending'"
+        :loading="usergetREQ.status.value === 'pending'"
         :items="users"
-   
+        placeholder="ابحث عن مستخدم"
         option-key="username"
         value-key="id"
+        class="w-full"
       />
     </UFormField>
-    <UFormField label="العنوان" name="title">
-      <UInput v-model="state.title" />
+
+    <UFormField label="العنوان" name="title" required>
+      <UInput v-model="state.title" placeholder="عنوان الإشعار (5 أحرف على الأقل)" />
     </UFormField>
+
     <UFormField label="الوصف" name="description">
-      <UInput v-model="state.description" />
-      </UFormField>
-    <UFormField label="النوع" name="actionType">
-      <USelect v-model="state.actionType" :items="notificationActionsArray" class="w-full"  />
+      <UTextarea
+        v-model="state.description"
+        :rows="4"
+        placeholder="نص الإشعار"
+      />
     </UFormField>
+
+    <UFormField label="النوع" name="actionType" required>
+      <USelect
+        v-model="state.actionType"
+        :items="notificationActionsArray"
+        class="w-full"
+      />
+    </UFormField>
+
     <UFormField
-      label="الهدف"
+      v-if="state.actionType !== NotificationActionType.NoAction"
+      :label="actionPathLabel(state.actionType)"
       name="actionPath"
-      v-if="state.actionType != NotificationActionType.NoAction"
+      required
     >
       <UInput
+        v-if="state.actionType === NotificationActionType.GoToURL"
         v-model="state.actionPath"
-        v-if="state.actionType == NotificationActionType.GoToURL"
+        dir="ltr"
+        placeholder="https://..."
       />
       <USelect
-        class="w-full"
+        v-else
         v-model="state.actionPath"
-        :items="
-          state.actionType == NotificationActionType.GoToScreen
-            ? screenOptions
-            : tabOptions
-        "
-        v-if="
-          state.actionType == NotificationActionType.GoToScreen ||
-          state.actionType == NotificationActionType.GoToTab
-        "
+        :items="pathOptions"
+        class="w-full"
+        placeholder="اختر الوجهة"
       />
     </UFormField>
   </UForm>
 </template>
 
 <script lang="ts" setup>
-import { string, object } from "yup";
-import { refDebounced } from '@vueuse/core'
-const search_user = ref("")
-const search_userDebounced = refDebounced(search_user, 500)
-
+import { object, string } from "yup";
+import { refDebounced } from "@vueuse/core";
 import {
   NotificationActionType,
   type INotificationCreate,
 } from "~/models/notification";
-const notificationForm = ref<HTMLFormElement>();
-const AddNotificatoion = () => {
-  notificationForm.value?.submit();
+import {
+  actionPathLabel,
+  notificationScreenOptions,
+  notificationTabOptions,
+  notificationTargetOptions,
+} from "~/components/Notification/notificationTargets";
+
+const notificationForm = ref<{ submit: () => Promise<void> } | null>(null);
+const toast = useToast();
+const emit = defineEmits<{ close: [] }>();
+const target = ref<"All" | "User" | "Anonymos">("All");
+const search_user = ref("");
+const search_userDebounced = refDebounced(search_user, 500);
+const addREQ = useNotification().sendNotificationToAllUsers();
+
+const onSelectTarget = (value: "All" | "User" | "Anonymos") => {
+  target.value = value;
 };
 
-defineExpose({ AddNotificatoion });
-const toast = useToast();
-const emit = defineEmits(['close'])
-const target = ref<"All" | "User" | "Anonymos">("All");
+defineExpose({
+  AddNotificatoion: () => notificationForm.value?.submit(),
+  pending: addREQ.pending,
+});
+
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
-const users = computed(() => {
-  return usergetREQ.data.value?.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
-});
+const users = computed(() =>
+  usergetREQ.data.value?.items.map((ele) => ({
+    ...ele,
+    label: ele.username,
+    value: ele.id,
+  })),
+);
 
-watch(target, (newValue, oldValue) => {
-  schema.fields.user = string();
-  if (newValue == "User") {
-    schema.fields.user = string().required();
-  }
-});
-
-const search = async (q: string) => {
-  console.log(q)
+watch(search_userDebounced, async (q) => {
   await usergetREQ.fetchREQ(q);
-  return users.value!;
-};
-
-// Watch for changes in the debounced search term and trigger search
-watch(search_userDebounced, async (newSearchTerm) => {
-    await search(newSearchTerm);
 });
 
 const state = reactive<INotificationCreate>({
@@ -121,100 +125,55 @@ const state = reactive<INotificationCreate>({
   user: "",
 });
 
-const schema = object({
-  title: string().required().min(5),
-  description: string().min(5),
-  actionPath: string(),
-  actionType: string().required(),
-  user: string(),
-});
-// screen name options
-// TournamentDetailsScreen -> /tournament-details/:id
-// JoinTournamentScreen -> /join-tournament/:id
-const screenOptions = [
-  { label: "البلوت", value: "/baloot-game" },
-  { label: "الهند", value: "/hand-game" },
-  { label: "المكتبة", value: "/library" },
-  { label: "كتاب البلوت", value: "/baloot-book" },
-  { label: "المحادثات المباشرة", value: "/live-chat" },
-  { label: " الاشعارات", value: "/notifications" },
-  { label: " الاشعارات", value: "/notifications" },
-  { label: "اشيف الالعاب", value: "/games-archive" },
-  { label: "تعديل المستخدم ", value: "/edit-profile" },
-  { label: "الاعدادات", value: "/app-settings" },
-  { label: "اعدادات المستخدم", value: "/user-settings" },
-  { label: "  الاعدادات اللاعبين", value: "/players-settings" },
-  { label: "مسح المستخدم", value: "/delete-user" },
-  { label: "تغيير كلمة المرور", value: "/change-password" },
-  { label: "نسي  كلمة المرور", value: "/forget-password" },
-  { label: "تعيين كلمة المرور جديدة ", value: "/set-new-password" },
-  { label: "عنا", value: "/about-us" },
-  { label: "قوانين الخصوصية", value: "/privacy-policy" },
-  { label: "الشروط والاحكام", value: "/terms" },
-  { label: "البطولات", value: "/tournaments-tab" },
-  { label: " طلبات الانضمام للبطولات  ", value: "/tournament-user-requests" },
-  { label: " دعوات الانضمام للبطولات  ", value: "/tournament-invitations" },
+const schema = computed(() =>
+  object({
+    title: string().required("العنوان مطلوب").min(5, "العنوان يجب أن يكون 5 أحرف على الأقل"),
+    description: string().min(5, "الوصف يجب أن يكون 5 أحرف على الأقل").required("الوصف مطلوب"),
+    actionType: string().required("النوع مطلوب"),
+    user:
+      target.value === "User"
+        ? string().required("يجب اختيار مستخدم")
+        : string(),
+    actionPath:
+      state.actionType === NotificationActionType.NoAction
+        ? string()
+        : state.actionType === NotificationActionType.GoToURL
+          ? string().url("أدخل رابطاً صحيحاً").required("الرابط مطلوب")
+          : string().required("الوجهة مطلوبة"),
+  }),
+);
+
+const pathOptions = computed(() =>
+  state.actionType === NotificationActionType.GoToScreen
+    ? notificationScreenOptions
+    : notificationTabOptions,
+);
+
+const notificationActionsArray = [
+  { value: NotificationActionType.NoAction, label: "إشعار فقط" },
+  { value: NotificationActionType.GoToURL, label: "التوجه لرابط" },
+  { value: NotificationActionType.GoToScreen, label: "التوجه لشاشة في التطبيق" },
+  { value: NotificationActionType.GoToTab, label: "التوجه لواجهة في التطبيق" },
 ];
-// tab names options
-const tabOptions = [
-  { label: "الصفحة الشخصية", value: "profile" },
-  { label: "المتجر", value: "store" },
-  { label: "الاحصائيات", value: "statistics" },
-  { label: "الكتاب", value: "books" },
-  { label: " الرئيسية", value: "home" },
-];
-// handel file input
-// const filechange = (event: FileList) => {
-//   if (event.item(0)) {
-//     console.log(event.item(0))
-//     state.popUpImage = event.item(0)
-//   }
-// }
-// handel notification action type data
-const notificationActionsArray: { value: NotificationActionType; label: string }[] = [
-  {
-    value: NotificationActionType.NoAction,
-    label: "اشعار فقط",
-  },
-  {
-    value: NotificationActionType.GoToURL,
-    label: "التوجه للينك معين",
-  },
-  {
-    value: NotificationActionType.GoToScreen,
-    label: "التوجة لشاشة في التطبيق",
-  },
-  {
-    value: NotificationActionType.GoToTab,
-    label: "التوجة لواجهة  في التطبيق",
-  },
-]
 
 watch(
   () => state.actionType,
-  (newValue, oldValue) => {
-    state.actionPath = "";
-    if (newValue == NotificationActionType.NoAction) {
-      schema.fields.actionPath = string();
+  (newValue) => {
+    if (newValue === NotificationActionType.NoAction) {
       state.actionPath = "_";
-    } else if (newValue == NotificationActionType.GoToURL) {
-      schema.fields.actionPath = string().url().required();
     } else {
-      schema.fields.actionPath = string().required();
+      state.actionPath = "";
     }
   },
-  { immediate: true }
 );
 
 const onSubmit = async () => {
-  console.log(state);
   await addREQ.fetchREQ(state, target.value, state.user);
-  if (addREQ.status.value == "success")
-    toast.add({ title: "add new notification doen " });
-  emit("close");
+  if (addREQ.status.value === "success") {
+    toast.add({ title: "تم إرسال الإشعار", color: "success" });
+    emit("close");
+    return;
+  }
+  toast.add({ title: "تعذر إرسال الإشعار", color: "error" });
 };
-
-const addREQ = useNotification().sendNotificationToAllUsers();
 </script>
-
-<style></style>

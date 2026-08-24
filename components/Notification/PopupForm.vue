@@ -1,128 +1,168 @@
 <template>
   <UForm
-    :state="formState"
-    :schema="schema"
     ref="notificationForm"
+    :state="state"
+    :schema="schema"
+    class="flex flex-col gap-4"
     @submit="onSubmit"
-    class="flex flex-col gap-2"
   >
     <UFieldGroup class="mx-auto">
       <UButton
-        :color="target == 'All' ? 'primary' : 'neutral'"
-        @click="target = 'All'"
-        label="الكل"
-      />
-      <UButton
-        :color="target == 'Anonymos' ? 'primary' : 'neutral'"
-        @click="target = 'Anonymos'"
-        label="غير مسجلين"
-      />
-      <UButton
-        :color="target == 'User' ? 'primary' : 'neutral'"
-        @click="target = 'User'"
-        label="مستخدم"
+        v-for="item in notificationTargetOptions"
+        :key="item.value"
+        :color="target === item.value ? 'primary' : 'neutral'"
+        :label="item.label"
+        @click="onSelectTarget(item.value)"
       />
     </UFieldGroup>
-    <UFormField label="المستخدم" name="user" v-if="target == 'User'">
+
+    <UFormField v-if="target === 'User'" label="المستخدم" name="user" required>
       <UInputMenu
-        v-model="formState.user"
+        v-model="state.user"
         v-model:search-term="search_user"
-        :loading="usergetREQ.status.value == 'pending'"
+        :loading="usergetREQ.status.value === 'pending'"
         :items="users"
-        
+        placeholder="ابحث عن مستخدم"
         option-key="username"
         value-key="id"
+        class="w-full"
       />
     </UFormField>
-    <UFormField label="العنوان" name="title">
-      <UInput v-model="formState.title" />
+
+    <UFormField label="العنوان" name="title" required>
+      <UInput v-model="state.title" placeholder="عنوان الإشعار المنبثق" />
     </UFormField>
+
     <UFormField label="الوصف" name="description">
-      <UInput v-model="formState.description" />
+      <UTextarea
+        v-model="state.description"
+        :rows="4"
+        placeholder="نص الإشعار المنبثق"
+      />
     </UFormField>
-    <UFormField label="النوع" name="actionType">
-      <USelect v-model="formState.actionType" :items="notificationActionsArray" class="w-full"  />
+
+    <UFormField label="النوع" name="actionType" required>
+      <USelect
+        v-model="state.actionType"
+        :items="notificationActionsArray"
+        class="w-full"
+      />
     </UFormField>
+
     <UFormField
-      label="الهدف"
+      v-if="state.actionType !== popUpActionType.PopUpWithNoAction"
+      :label="actionPathLabel(state.actionType)"
       name="actionPath"
-      v-if="formState.actionType != popUpActionType.PopUpWithNoAction"
+      required
     >
       <UInput
-        v-model="formState.actionPath"
-        v-if="formState.actionType == popUpActionType.PopUpWithGoToURL"
+        v-if="state.actionType === popUpActionType.PopUpWithGoToURL"
+        v-model="state.actionPath"
+        dir="ltr"
+        placeholder="https://..."
       />
       <USelect
+        v-else
+        v-model="state.actionPath"
+        :items="pathOptions"
         class="w-full"
-        v-model="formState.actionPath"
-        :items="
-          formState.actionType == popUpActionType.PopUpWithGoToScreen
-            ? screenOptions
-            : tabOptions
-        "
-        v-if="
-          formState.actionType == popUpActionType.PopUpWithGoToScreen ||
-          formState.actionType == popUpActionType.PopUpWithGoToTab
-        "
+        placeholder="اختر الوجهة"
       />
     </UFormField>
-    <div class="flex justify-between items-center">
-      <UFormField label="الصورة المرفقة" name="popUpImage">
-        <UInput @change="filechange" type="file" />
-      </UFormField>
-      <img :src="imageUrl" class="w-[100px] h-[100]" />
-    </div>
+
+    <UFormField label="الصورة المرفقة" name="popUpImage" required>
+      <input
+        ref="fileInput"
+        type="file"
+        class="hidden"
+        accept=".png,.jpg,.jpeg,.webp"
+        @change="onImageChange"
+      />
+      <div class="flex items-center gap-4">
+        <div
+          class="relative h-28 w-28 overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 group dark:border-gray-600 dark:bg-gray-800"
+        >
+          <template v-if="!imageUrl">
+            <div class="absolute inset-0 flex items-center justify-center">
+              <UButton
+                color="primary"
+                variant="ghost"
+                class="flex flex-col items-center gap-1"
+                @click="fileInput?.click()"
+              >
+                <UIcon name="i-heroicons-photo" class="h-8 w-8" />
+                <span class="text-xs">إضافة صورة</span>
+              </UButton>
+            </div>
+          </template>
+          <template v-else>
+            <img :src="imageUrl" class="h-full w-full object-cover" alt="صورة الإشعار" />
+            <div
+              class="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
+            >
+              <UButton color="error" variant="solid" size="xs" @click.stop="removeImage">
+                <UIcon name="i-heroicons-trash" class="h-4 w-4" />
+              </UButton>
+              <UButton color="primary" variant="solid" size="xs" @click.stop="fileInput?.click()">
+                <UIcon name="i-heroicons-pencil" class="h-4 w-4" />
+              </UButton>
+            </div>
+          </template>
+        </div>
+        <p class="text-xs text-gray-500">PNG أو JPG أو WEBP</p>
+      </div>
+    </UFormField>
   </UForm>
 </template>
 
 <script lang="ts" setup>
-import { string, object } from "yup";
-import { refDebounced } from '@vueuse/core'
+import { mixed, object, string } from "yup";
+import { refDebounced } from "@vueuse/core";
 import {
   popUpActionType,
   type INotificationPopupCreate,
 } from "~/models/notification";
-const notificationForm = ref<HTMLFormElement>();
+import {
+  actionPathLabel,
+  notificationScreenOptions,
+  notificationTabOptions,
+  notificationTargetOptions,
+} from "~/components/Notification/notificationTargets";
+
+const notificationForm = ref<{ submit: () => Promise<void> } | null>(null);
+const fileInput = ref<HTMLInputElement>();
 const toast = useToast();
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>();
 const imageUrl = ref("");
-const search_user = ref("")
-const search_userDebounced = refDebounced(search_user, 500)
-const AddNotificatoion = () => {
-  notificationForm.value?.submit();
+const target = ref<"All" | "User" | "Anonymos">("All");
+const search_user = ref("");
+const search_userDebounced = refDebounced(search_user, 500);
+const addREQ = useNotification().sendNotificationToAllUsers();
+
+const onSelectTarget = (value: "All" | "User" | "Anonymos") => {
+  target.value = value;
 };
 
-defineExpose({ AddNotificatoion });
+defineExpose({
+  AddNotificatoion: () => notificationForm.value?.submit(),
+  pending: addREQ.pending,
+});
+
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
-const users = computed(() => {
-  return usergetREQ.data.value?.items.map((ele) => ({ ...ele, label: ele.username, value: ele.id }));
-});
 
-const target = ref<"All" | "User" | "Anonymos">("All");
-watch(target, (newValue, oldValue) => {
-  schema.fields.user = string();
-  if (newValue == "User") {
-    schema.fields.user = string().required();
-  }
-});
-// Watch for changes in the debounced search term and trigger search
-watch(search_userDebounced, async (newSearchTerm) => {
-    await search(newSearchTerm);
-});
+const usergetREQ = await useUsers().getAllUsers();
+await usergetREQ.fetchREQ("");
+const users = computed(() =>
+  usergetREQ.data.value?.items.map((ele) => ({
+    ...ele,
+    label: ele.username,
+    value: ele.id,
+  })),
+);
 
-const search = async (q: string) => {
+watch(search_userDebounced, async (q) => {
   await usergetREQ.fetchREQ(q);
-  return users.value!;
-};
-
-const formState = reactive({
-  title: "",
-  description: "",
-  actionPath: "_",
-  actionType: popUpActionType.PopUpWithNoAction,
-  popUpImage: null as string | null,
-  user: "",
 });
 
 const state = reactive<INotificationPopupCreate>({
@@ -133,119 +173,76 @@ const state = reactive<INotificationPopupCreate>({
   popUpImage: null,
   user: "",
 });
-const schema = object({
-  title: string().required(),
-  description: string(),
-  actionPath: string(),
-  actionType: string().required(),
-  popUpImage: string().nullable(),
-  user: string(),
-});
-// screen name options
-const screenOptions = [
-  { label: "البلوت", value: "/baloot-game" },
-  { label: "الهند", value: "/hand-game" },
-  { label: "المكتبة", value: "/library" },
-  { label: "كتاب البلوت", value: "/baloot-book" },
-  { label: "المحادثات المباشرة", value: "/live-chat" },
-  { label: " الاشعارات", value: "/notifications" },
-  { label: " الاشعارات", value: "/notifications" },
-  { label: "اشيف الالعاب", value: "/games-archive" },
-  { label: "تعديل المستخدم ", value: "/edit-profile" },
-  { label: "الاعدادات", value: "/app-settings" },
-  { label: "اعدادات المستخدم", value: "/user-settings" },
-  { label: "  الاعدادات اللاعبين", value: "/players-settings" },
-  { label: "مسح المستخدم", value: "/delete-user" },
-  { label: "تغيير كلمة المرور", value: "/change-password" },
-  { label: "نسي  كلمة المرور", value: "/forget-password" },
-  { label: "تعيين كلمة المرور جديدة ", value: "/set-new-password" },
-  { label: "عنا", value: "/about-us" },
-  { label: "قوانين الخصوصية", value: "/privacy-policy" },
-  { label: "الشروط والاحكام", value: "/terms" },
-  { label: "البطولات", value: "/tournaments-tab" },
-  { label: " طلبات الانضمام للبطولات  ", value: "/tournament-user-requests" },
-  { label: " دعوات الانضمام للبطولات  ", value: "/tournament-invitations" },
-];
-// tab names options
-const tabOptions = [
-  { label: "الصفحة الشخصية", value: "profile" },
-  { label: "المتجر", value: "store" },
-  { label: "الاحصائيات", value: "statistics" },
-  { label: "الكتاب", value: "books" },
-  { label: " الرئيسية", value: "home" },
-];
-// handel file input
-const filechange = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const files = target.files;
-  if (files && files.length > 0) {
-    console.log(files);
-    imageUrl.value = "";
-    const file = files[0];
-    state.popUpImage = file;
-    formState.popUpImage = file.name; // Store filename for form validation
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      imageUrl.value = e.target?.result as string; // Get the image URL
-    };
-    reader.readAsDataURL(file);
-  }
-};
-// handel notification action type data
-const notificationActionsArray: { value: popUpActionType; label: string }[] = [
-  {
-    value: popUpActionType.PopUpWithNoAction,
-    label: "اشعار فقط",
-  },
-  {
-    value: popUpActionType.PopUpWithGoToURL,
-    label: "التوجه للينك معين",
-  },
-  {
-    value: popUpActionType.PopUpWithGoToScreen,
-    label: "التوجة لشاشة في التطبيق",
-  },
-  {
-    value: popUpActionType.PopUpWithGoToTab,
-    label: "التوجة لواجهة  في التطبيق",
-  },
+
+const schema = computed(() =>
+  object({
+    title: string().required("العنوان مطلوب").min(5, "العنوان يجب أن يكون 5 أحرف على الأقل"),
+    description: string().min(5, "الوصف يجب أن يكون 5 أحرف على الأقل").required("الوصف مطلوب"),
+    actionType: string().required("النوع مطلوب"),
+    user:
+      target.value === "User"
+        ? string().required("يجب اختيار مستخدم")
+        : string(),
+    actionPath:
+      state.actionType === popUpActionType.PopUpWithNoAction
+        ? string()
+        : state.actionType === popUpActionType.PopUpWithGoToURL
+          ? string().url("أدخل رابطاً صحيحاً").required("الرابط مطلوب")
+          : string().required("الوجهة مطلوبة"),
+    popUpImage: mixed().required("الصورة مطلوبة"),
+  }),
+);
+
+const pathOptions = computed(() =>
+  state.actionType === popUpActionType.PopUpWithGoToScreen
+    ? notificationScreenOptions
+    : notificationTabOptions,
+);
+
+const notificationActionsArray = [
+  { value: popUpActionType.PopUpWithNoAction, label: "إشعار فقط" },
+  { value: popUpActionType.PopUpWithGoToURL, label: "التوجه لرابط" },
+  { value: popUpActionType.PopUpWithGoToScreen, label: "التوجه لشاشة في التطبيق" },
+  { value: popUpActionType.PopUpWithGoToTab, label: "التوجه لواجهة في التطبيق" },
 ];
 
 watch(
-  () => formState.actionType,
-  (newValue, oldValue) => {
-    formState.actionPath = "";
-    state.actionPath = "";
-    if (newValue == popUpActionType.PopUpWithNoAction) {
-      schema.fields.actionPath = string();
-      formState.actionPath = "_";
+  () => state.actionType,
+  (newValue) => {
+    if (newValue === popUpActionType.PopUpWithNoAction) {
       state.actionPath = "_";
-    } else if (newValue == popUpActionType.PopUpWithGoToURL) {
-      schema.fields.actionPath = string().url().required();
     } else {
-      schema.fields.actionPath = string().required();
+      state.actionPath = "";
     }
   },
-  { immediate: true }
 );
 
-// handel sent req on form submit
-const onSubmit = async () => {
-  // Sync formState with state
-  state.title = formState.title;
-  state.description = formState.description;
-  state.actionPath = formState.actionPath;
-  state.actionType = formState.actionType;
-  state.user = formState.user;
-  
-  console.log(state);
-  await addREQ.fetchREQ(state, target.value, state.user);
-  if (addREQ.status.value == "success")
-    toast.add({ title: "add new notification doen " });
-  emit("close");
+const onImageChange = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+  if (!file) return;
+  state.popUpImage = file;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    imageUrl.value = String(e.target?.result ?? "");
+  };
+  reader.readAsDataURL(file);
+  if (fileInput.value) fileInput.value.value = "";
 };
 
-const addREQ = useNotification().sendNotificationToAllUsers();
-</script>
+const removeImage = () => {
+  state.popUpImage = null;
+  imageUrl.value = "";
+  if (fileInput.value) fileInput.value.value = "";
+};
 
-<style></style>
+const onSubmit = async () => {
+  await addREQ.fetchREQ(state, target.value, state.user);
+  if (addREQ.status.value === "success") {
+    toast.add({ title: "تم إرسال الإشعار المنبثق", color: "success" });
+    emit("close");
+    return;
+  }
+  toast.add({ title: "تعذر إرسال الإشعار المنبثق", color: "error" });
+};
+</script>
