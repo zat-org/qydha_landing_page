@@ -40,7 +40,7 @@ export interface TournamentCreationRequest {
   endAt: string;
   type: TournamentType;
   tournamentPrivatePassword?: string;
-  isAddPlayersByQydha: boolean;
+  addPlayersByQydha: boolean;
   joinRequestEndAt: string;
   joinRequestMaxCount: number;
   joinRequestStartAt: string;
@@ -72,7 +72,7 @@ export interface UpdateTournamentCreationRequest {
   endAt: string;
   type: TournamentType;
   tournamentPrivatePassword?: string;
-  isAddPlayersByQydha: boolean;
+  addPlayersByQydha: boolean;
   joinRequestEndAt?: string;
   joinRequestMaxCount?: number;
   joinRequestStartAt?: string;
@@ -126,7 +126,7 @@ export interface DetailTournamentRequest {
   startAt: string;
   endAt: string;
   type: TournamentType;
-  isAddPlayersByQydha: boolean;
+  addPlayersByQydha: boolean;
   teamsCount: number;
   tablesCount: number;
   tournamentPrivatePassword: string | null;

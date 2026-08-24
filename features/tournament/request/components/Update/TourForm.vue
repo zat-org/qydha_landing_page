@@ -11,9 +11,26 @@
       <UFormField label="شعار البطولة" name="logo" required :error="errors?.logo">
         <input type="file" ref="fileInput" class="hidden" accept=".png,.jpg,.jpeg" @change="onLogoChange" />
         <div class="flex flex-col items-center gap-4">
-          <div class="relative w-48 h-48 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 cursor-pointer group bg-gray-50 dark:bg-gray-800">
-            <template v-if="!logoImageUrl"><div class="absolute inset-0 flex items-center justify-center"><UButton @click="openLogoInput()">إضافة شعار</UButton></div></template>
-            <template v-else><img :src="logoImageUrl" class="w-full h-full object-cover" alt="شعار البطولة" /></template>
+          <div class="relative w-48 h-48 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-primary-500 transition-colors duration-200 cursor-pointer group bg-gray-50 dark:bg-gray-800">
+            <template v-if="!logoImageUrl">
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 group-hover:text-primary-500">
+                <UButton color="primary" variant="ghost" class="flex flex-col items-center gap-2" @click="openLogoInput()">
+                  <UIcon name="i-heroicons-plus-circle" class="w-12 h-12" />
+                  <span class="text-sm">إضافة شعار</span>
+                </UButton>
+              </div>
+            </template>
+            <template v-else>
+              <img :src="logoImageUrl" class="w-full h-full object-cover" alt="شعار البطولة" />
+              <div class="absolute inset-0 z-10 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
+                <UButton color="error" variant="solid" size="sm" @click.stop="removeLogo()">
+                  <UIcon name="i-heroicons-trash" class="w-4 h-4" />
+                </UButton>
+                <UButton color="primary" variant="solid" size="sm" @click.stop="openLogoInput()">
+                  <UIcon name="i-heroicons-pencil" class="w-4 h-4" />
+                </UButton>
+              </div>
+            </template>
           </div>
         </div>
       </UFormField>
@@ -67,7 +84,6 @@
 <script lang="ts" setup>
 import { TournamentType } from "~/features/tournament/models/tournamenetType";
 import type { DetailTournamentRequest } from "~/features/tournament/models/tournamentRequest";
-import { useMyAuthStore } from "~/store/Auth";
 
 const props = defineProps<{ modelValue: any; errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void }>();
 const { errors, onFieldBlur } = toRefs(props);
@@ -77,10 +93,21 @@ const route =useRoute()
 const id= route.params.id.toString()
 const adminData =useNuxtData<DetailTournamentRequest>(appKeys.adminSingleTourRequest(id))
 const SelectedRequest = computed(()=> unref(adminData.data))
-const logoImageUrl = ref<string>();
-watch(SelectedRequest,()=>{ if(SelectedRequest.value?.logoUrl){ logoImageUrl.value = SelectedRequest.value?.logoUrl; } },{immediate:true})
+const logoImageUrl = ref<string>("");
+const logoCleared = ref(false);
+watch(SelectedRequest, () => {
+  if (props.modelValue.logo instanceof File || logoCleared.value) return;
+  if (SelectedRequest.value?.logoUrl) logoImageUrl.value = SelectedRequest.value.logoUrl;
+}, { immediate: true });
 const fileInput = ref<HTMLInputElement>();
 const openLogoInput = () => { fileInput.value?.click() }
+const removeLogo = () => {
+  logoCleared.value = true;
+  logoImageUrl.value = "";
+  props.modelValue.logo = undefined;
+  if (fileInput.value) fileInput.value.value = "";
+  props.onFieldBlur?.("logo");
+};
 const onLogoChange = (event: Event) => {
   const traget = event.target as HTMLInputElement
   const file = traget.files?.[0]
@@ -88,8 +115,10 @@ const onLogoChange = (event: Event) => {
     const reader = new FileReader();
     reader.onload = (e) => { logoImageUrl.value = e.target?.result as string; props.modelValue.logo = file };
     reader.readAsDataURL(file);
+    logoCleared.value = false;
     props.onFieldBlur?.("logo");
   }
+  if (fileInput.value) fileInput.value.value = "";
 };
 interface SponsorItem { type: 'existing' | 'new'; url: string; fileIndex?: number; urlIndex?: number; }
 const SponsorInput = ref<any>()

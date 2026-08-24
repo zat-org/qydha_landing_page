@@ -165,7 +165,7 @@ const formData = reactive<TournamentCreationRequest>({
   startAt: "",
   endAt: "",
   type: TournamentType.public,
-  isAddPlayersByQydha: true,
+  addPlayersByQydha: true,
   joinRequestEndAt: "",
   joinRequestStartAt: "",
   joinRequestMaxCount: 100,
@@ -199,7 +199,7 @@ const steps = [
 
 const stepFieldMap: Record<number, string[]> = {
   0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors'],
-  1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'isAddPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
+  1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'addPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
   2: ['qualificationsStageInfo'],
   3: ['rules'],
 };
@@ -219,12 +219,12 @@ const requestSchema = object({
     return value || parent.isContactPhoneCall;
   }),
   sponsors: array().of(mixed()),
-  isAddPlayersByQydha: boolean(),
+  addPlayersByQydha: boolean(),
   startAt: string().required("تاريخ بداية البطولة مطلوب"),
   endAt: string().required("تاريخ نهاية البطولة مطلوب"),
-  joinRequestStartAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ بداية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestEndAt: string().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ نهاية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestMaxCount: number().when('isAddPlayersByQydha', { is: true, then: (schema) => schema.required("عدد طلبات الانضمام المطلوب مطلوب"), otherwise: (schema) => schema.notRequired() }),
+  joinRequestStartAt: string().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ بداية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
+  joinRequestEndAt: string().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ نهاية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
+  joinRequestMaxCount: number().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("عدد طلبات الانضمام المطلوب مطلوب"), otherwise: (schema) => schema.notRequired() }),
   prizes: array().min(1, "يجب إضافة جائزة واحدة على الأقل"),
   teamsCount: number().typeError("عدد الفرق مطلوب").required("عدد الفرق مطلوب").min(2, "يجب أن يكون عدد الفرق على الأقل 2"),
   tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
@@ -232,7 +232,7 @@ const requestSchema = object({
   allowedJoinRequestType: string().required("نوع طلبات الانضمام مطلوب"),
   minimumSubscriptionDays: number()
     .nullable()
-    .when('isAddPlayersByQydha', {
+    .when('addPlayersByQydha', {
       is: true,
       then: (schema) => schema.min(0, "الحد الأدنى يجب أن يكون 0 أو أكثر"),
       otherwise: (schema) => schema.nullable().notRequired(),

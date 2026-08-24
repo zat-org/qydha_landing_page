@@ -1,17 +1,17 @@
 <template>
     <UCard :ui="{ body: 'px-3 py-1 sm:p-1', header: 'px-2 py-1 sm:p-1 ', footer: 'px-2 py-1 sm:p-1' }" class="max-w-7xl mx-auto  bg-gray-50 dark:bg-gray-900">
         <UForm :state="model" class="flex flex-col space-y-2">
-            <UFormField name="isAddPlayersByQydha" size="xl">
-                <div class="flex  gap-4"><USwitch v-model="modelValue.isAddPlayersByQydha" :disabled="disabledFields?.isAddPlayersByQydha" size="xl" /><label> التسجيل من خلال قيدها </label></div>
+            <UFormField name="addPlayersByQydha" size="xl">
+                <div class="flex  gap-4"><USwitch v-model="modelValue.addPlayersByQydha" :disabled="disabledFields?.addPlayersByQydha" size="xl" /><label> التسجيل من خلال قيدها </label></div>
             </UFormField>
             <div class="space-y-3">
                 <div class="text-sm font-medium">المخطط الزمني لاختيار التواريخ</div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
+                    <div v-if="modelValue.addPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt" :error="errors?.joinRequestStartAt"><AsyncDatePicker v-model="model.joinRequestStartAt" :disabled="disabledFields?.joinRequestStartAt" :min-date="new Date()" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestStartAt')" /></UFormField>
                     </div>
                     
-                    <div v-if="modelValue.isAddPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
+                    <div v-if="modelValue.addPlayersByQydha" class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
                         <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt" :error="errors?.joinRequestEndAt"><AsyncDatePicker v-model="model.joinRequestEndAt" :disabled="disabledFields?.joinRequestEndAt" :min-date="model.joinRequestStartAt" :max-date="model.startAt || undefined" @update:model-value="onFieldBlur?.('joinRequestEndAt')" /></UFormField>
                     </div>
                     <div class="p-3 rounded-lg border bg-white/60 dark:bg-gray-800/60">
@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </div>
-            <template v-if="modelValue.isAddPlayersByQydha">
+            <template v-if="modelValue.addPlayersByQydha">
                 <UFormField label=" اقصي عدد طلبات الانضمام  " name="joinRequestMaxCount" :error="errors?.joinRequestMaxCount"><UInput type="number" :disabled="disabledFields?.joinRequestMaxCount" v-model="model.joinRequestMaxCount" @blur="onFieldBlur?.('joinRequestMaxCount')" /></UFormField>
                 <UFormField label="نوع طلبات الانضمام" name="allowedJoinRequestType" :error="errors?.allowedJoinRequestType"><USelect v-model="model.allowedJoinRequestType" :disabled="disabledFields?.allowedJoinRequestType" :items="TournamentPlayerJoinRequestTypeOptions" @update:model-value="onFieldBlur?.('allowedJoinRequestType')" /></UFormField>
                 <UFormField label="عدد الأيام الأدني للاشتراك" name="minimumSubscriptionDays" :error="errors?.minimumSubscriptionDays"><UInput type="number" :disabled="disabledFields?.minimumSubscriptionDays" v-model="model.minimumSubscriptionDays" min="1" placeholder="0" @blur="onFieldBlur?.('minimumSubscriptionDays')" /></UFormField>

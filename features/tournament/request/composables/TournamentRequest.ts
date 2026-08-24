@@ -72,10 +72,10 @@ export const useTournamentRequest = () => {
           "isContactPhoneWhatsapp",
           String(_body.isContactPhoneWhatsapp),
         );
-        body.append("AddPlayersByQydha", String(_body.isAddPlayersByQydha));
+        body.append("AddPlayersByQydha", String(_body.addPlayersByQydha));
         body.append("teamsCount", String(_body.teamsCount));
         body.append("tablesCount", String(_body.tablesCount));
-        if (_body.isAddPlayersByQydha) {
+        if (_body.addPlayersByQydha) {
           if (_body.joinRequestStartAt) {
             body.append("joinRequestStartAt", _body.joinRequestStartAt);
           }
@@ -231,12 +231,12 @@ export const useTournamentRequest = () => {
           String(_body.isContactPhoneWhatsapp),
         );
         body.append(
-          "isAddPlayersByQydha",
-          String(_body.isAddPlayersByQydha),
+          "AddPlayersByQydha",
+          String(_body.addPlayersByQydha),
         );
         body.append("teamsCount", String(_body.teamsCount));
         body.append("tablesCount", String(_body.tablesCount));
-        if (_body.isAddPlayersByQydha) {
+        if (_body.addPlayersByQydha) {
           if (_body.joinRequestStartAt) {
             body.append("joinRequestStartAt", _body.joinRequestStartAt);
           }
