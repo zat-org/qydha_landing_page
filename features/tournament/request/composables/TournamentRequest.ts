@@ -255,12 +255,10 @@ export const useTournamentRequest = () => {
               _body.allowedJoinRequestType,
             );
           }
-          if (_body.minimumSubscriptionDays) {
-            body.append(
-              "minimumSubscriptionDays",
-              String(_body.minimumSubscriptionDays),
-            );
-          }
+          body.append(
+            "minimumSubscriptionDays",
+            String(_body.minimumSubscriptionDays ?? 0),
+          );
         }
         if (_body.tournamentPrivatePassword) {
           body.append(
