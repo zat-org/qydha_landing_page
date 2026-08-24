@@ -150,9 +150,6 @@ defineExpose({
 
 const usergetREQ = await useUsers().getAllUsers();
 await usergetREQ.fetchREQ("");
-
-const usergetREQ = await useUsers().getAllUsers();
-await usergetREQ.fetchREQ("");
 const users = computed(() =>
   usergetREQ.data.value?.items.map((ele) => ({
     ...ele,
