@@ -52,4 +52,7 @@ export const appKeys = {
   adminSingleTourRequest: (id: string) =>
     `AdminGetSingleTournamentRequest-${id}`,
   match: (...parts: string[]) => ["match", ...parts].join("-"),
+  tournamentFaqs: (id: string) => `getTournamentFaqs-${id}`,
+  tournamentUserQuestions: (id: string, params?: unknown) =>
+    `getTournamentUserQuestions-${id}:${JSON.stringify(params ?? {})}`,
 };

@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-4 py-2">
     <div class="flex flex-wrap items-center justify-between gap-3">
       <UBadge color="primary" size="lg" variant="soft" class="w-fit">
-        عدد المشتركين: {{ participantsCount }}
+        العدد: {{ participantsCount }} مشتركين · {{ totalCount }} فرق
       </UBadge>
       <UPagination
         v-model:page="params.pageNumber"
@@ -15,7 +15,7 @@
       v-if="mode === 'main'"
       class="flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/40 sm:flex-row sm:items-end"
     >
-      <UFormField class="min-w-0 flex-1" label="تصفية حسب الفريق">
+      <UFormField class="min-w-0 flex-1" label="احد الاعبين او اسم الفريق">
         <UInput placeholder="ادخل اسم الفريق" @input="debouncedSearch" />
       </UFormField>
       <UFormField class="min-w-0 flex-1" label="تصفية حسب حالة الطلب (الفرق)">
@@ -58,7 +58,7 @@
         icon="i-mdi-information-outline"
         :title="`عدد الفرق التي سيتم الموافق عنها نهائيا هم ${numberOfTeams} فريق`"
       />
-      <UFormField class="min-w-0 flex-1" label="تصفية حسب الفريق">
+      <UFormField class="min-w-0 flex-1" label="احد الاعبين او اسم الفريق">
         <UInput placeholder="ادخل اسم الفريق" @input="debouncedSearch" />
       </UFormField>
     </div>

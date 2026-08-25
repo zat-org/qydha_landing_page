@@ -77,7 +77,7 @@
             <div
               class="text-xl sm:text-2xl font-bold text-primary-500 dark:text-primary-400"
             >
-              100K+
+              +144K
             </div>
             <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               تنزيلات

@@ -7,7 +7,8 @@ export type TournamentTabView =
   | 'statistics'
   | 'tables'
   | 'places'
-  | 'moderator';
+  | 'moderator'
+  | 'faqs';
 
 export type TournamentPhaseView = TournamentOutletView | TournamentTabView;
 

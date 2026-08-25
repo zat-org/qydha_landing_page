@@ -41,6 +41,12 @@ export const TAB_VIEW_CONFIG = {
     pathSegment: "moderator",
     openInNewTab: false,
   },
+  faqs: {
+    label: "الأسئلة",
+    icon: "i-heroicons-question-mark-circle",
+    pathSegment: "faqs",
+    openInNewTab: false,
+  },
 } as const satisfies Record<TournamentTabView, TabViewMeta>;
 
 /** Tab views shown in the tournament header settings menu (display order). */
@@ -48,6 +54,7 @@ export const SETTINGS_MENU_TAB_VIEWS = [
   "places",
   "tables",
   "moderator",
+  "faqs",
   "bracket",
   "statistics",
 ] as const satisfies readonly TournamentTabView[];

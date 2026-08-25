@@ -266,6 +266,10 @@
               </ul>
             </template>
 
+            <template #acc-faqs>
+              <TournamentGetFaqsSection :faqs="faqs" />
+            </template>
+
             <template #acc-moderators>
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 <div v-for="(m, i) in tour.tournament!.moderators" :key="i"
@@ -297,6 +301,8 @@ import { formatDate } from "~/utils/formatDate";
 import { useTournamentPhaseStore } from '~/store/tournamentPhase';
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 import { useTournamentLookups } from "~/features/tournament/detail/composables/logic/useTournamentLookups";
+import { useTournamentFaqsApi } from "~/features/tournament/faqs/composables/useTournamentFaqsApi";
+import TournamentGetFaqsSection from "./TournamentGetFaqsSection.vue";
 
 const HERO_ACCORDION_ITEM_VALUE = 'tournament-hero';
 
@@ -310,6 +316,10 @@ const phaseStore = useTournamentPhaseStore();
 const phaseLabel = computed(() => phaseStore.phaseLabel);
 
 const { places: qualificationPlaces } = useTournamentPlaces(() => props.tour);
+
+const tournamentId = props.tour.tournament!.id;
+const getFaqsREQ = useTournamentFaqsApi().getFaqs(tournamentId);
+const faqs = computed(() => getFaqsREQ.data.value ?? []);
 
 const heroAccordionOpen = ref<string | undefined>(undefined);
 const detailsSectionsOpen = ref<string[]>([]);
@@ -347,6 +357,14 @@ const detailsAccordionItems = computed(() => {
       label: 'قواعد البطولة',
       slot: 'acc-rules',
       icon: 'i-mdi-book-open-page-variant',
+    });
+  }
+
+  if (faqs.value.length) {
+    items.push({
+      label: 'الأسئلة الشائعة',
+      slot: 'acc-faqs',
+      icon: 'i-heroicons-question-mark-circle',
     });
   }
 

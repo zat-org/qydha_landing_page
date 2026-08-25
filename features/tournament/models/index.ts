@@ -14,3 +14,5 @@ export * from "./place";
 export * from "./tournamenetType";
 export * from "./Player";
 export * from "./Refre";
+export * from "./faq";
+export * from "./userQuestion";
