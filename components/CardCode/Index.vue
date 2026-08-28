@@ -73,6 +73,12 @@ const { getCardCodeGroups, deleteCardCodeGroup } = useCardCode();
 const { data, pending, error, refresh, currentPage } =
   await getCardCodeGroups();
 
+watch(groupNameFilter, () => {
+  if (currentPage.value !== 1) {
+    currentPage.value = 1;
+  }
+});
+
 const cols = [
   { accessorKey: "groupCode", header: "اسم المجموعة" },
   { accessorKey: "totalCount", header: "العدد الكلي" },

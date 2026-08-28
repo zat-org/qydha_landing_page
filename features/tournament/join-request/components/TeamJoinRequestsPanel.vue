@@ -196,11 +196,6 @@ import { useTournamentPlaces } from "~/features/tournament/composables/useTourna
 import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 import { useTournamentJoinRequest } from "~/features/tournament/join-request/composables/TournamentJoinRequest";
 
-const debouncedSearch = useDebounceFn((value: Event) => {
-  const input = value.target as HTMLInputElement;
-  params.value.searchToken = input.value ? input.value : null;
-}, 1000);
-
 const props = withDefaults(
   defineProps<{
     tournamentId: string;
@@ -229,6 +224,22 @@ const params = ref<GetTeamJoinRequestsParams>({
       ? [TeamJoinRequestWorkflowState.WaitingOrganizerApproval]
       : [TeamJoinRequestWorkflowState.WaitingOrganizerConsideration],
 });
+
+const resetPage = () => {
+  params.value.pageNumber = 1;
+};
+
+const debouncedSearch = useDebounceFn((value: Event) => {
+  const input = value.target as HTMLInputElement;
+  params.value.searchToken = input.value ? input.value : null;
+  resetPage();
+}, 1000);
+
+watch(
+  () => params.value.GetOnlyStates,
+  resetPage,
+  { deep: true },
+);
 
 const instanceKey = props.mode === "consider" ? "consider" : "main";
 

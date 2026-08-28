@@ -24,11 +24,7 @@ export const useAuth = () => {
         );
         data.value = result;
         user.value = result.data;
-        if (user.value.user.roles.includes("Streamer")) {
-          navigateTo("/stream");
-        } else {
-          navigateTo("/me");
-        }
+        navigateTo(userStore.defaultHomePath);
       });
       if (status.value === "error") console.log(error.value);
     };

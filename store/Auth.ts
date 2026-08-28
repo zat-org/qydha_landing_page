@@ -39,6 +39,12 @@ export const useMyAuthStore = defineStore(
       return roles.value?.includes("Organizer");
     });
 
+    const defaultHomePath = computed(() => {
+      if (isStreamer.value) return "/stream";
+      if (isAdmin.value || isOrganizer.value) return "/tournament";
+      return "/me";
+    });
+
     return {
       logedin,
       user,
@@ -50,6 +56,7 @@ export const useMyAuthStore = defineStore(
       isAdmin,
       isStreamer,
       isOrganizer,
+      defaultHomePath,
       BalootBoardSettings,
       HandBoardSettings,
     };
