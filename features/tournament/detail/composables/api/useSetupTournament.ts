@@ -1,40 +1,25 @@
-import type { SetupQualificationGroup } from "~/features/tournament/models/place";
-
-export type SetupTournamentPayload =
-  | { type: "direct" }
-  | { type: "qualifications"; groups: SetupQualificationGroup[] };
+import { appKeys } from "~/composables/queryKeys";
 
 export function useSetupTournament(tournamentId: string) {
   const toast = useToast();
   const { $api } = useNuxtApp();
   const { pending, status, error, execute } = useMutationRequest();
 
-  const fetchREQ = async (payload: SetupTournamentPayload) => {
+  const fetchREQ = async () => {
     await execute(async () => {
-      const body =
-        payload.type === "direct"
-          ? {
-              hasQualificationsStage: false,
-              qualificationsStageData: null,
-            }
-          : {
-              hasQualificationsStage: true,
-              qualificationsStageData: {
-                groups: payload.groups,
-              },
-            };
-
       await $api(`/tournaments/${tournamentId}/setup-stages`, {
         method: "POST",
-        body,
       });
-      await refreshAppData(appKeys.tournament(tournamentId));
+      await refreshAppData(
+        appKeys.tournament(tournamentId),
+        appKeys.tournamentGroups(tournamentId),
+      );
     });
 
     if (status.value === "success") {
       toast.add({
         title: "تم بدء تنظيم البطولة",
-        description: "تم بدء تنظيم البطولة بنجاح",
+        description: "تم بدء تنظيم مراحل ومجموعات البطولة بنجاح",
         color: "success",
       });
     }

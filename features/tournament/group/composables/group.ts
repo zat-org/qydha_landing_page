@@ -55,7 +55,7 @@ export const useGroup = () => {
     );
   };
 
-  const getRoundsGroupDetails = async (
+  const getRoundsGroupDetails = (
     tour_id: string,
     group_id: string,
     options: { immediate: boolean } = { immediate: true },
@@ -63,7 +63,7 @@ export const useGroup = () => {
     const TOURID = ref(tour_id);
     const GROUPID = ref(group_id);
 
-    const result = await useAppApiData<RoundGroupDetails>(
+    const result = useAppApiData<RoundGroupDetails>(
       () => appKeys.match("getRoundsGroupDetails", TOURID.value, GROUPID.value),
       () => $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/rounds`),
       { immediate: options.immediate },
@@ -76,30 +76,28 @@ export const useGroup = () => {
     return { ...result, fetchREQ };
   };
 
-  const getGroupMatches = async () => {
-    const tour_id = ref();
-    const group_id = ref();
-    const { data, pending, error, refresh, status, execute } =
-      await useAppApiData<Match[]>(
-        appKeys.match("getGroupMatch"),
-        () =>
-          $api(`tournaments/${tour_id.value}/groups/${group_id.value}/matches`),
-        { immediate: false },
-      );
+  const getGroupMatches = (
+    tour_id: string,
+    group_id: string,
+    options: { immediate: boolean } = { immediate: false },
+  ) => {
+    const TOURID = ref(tour_id);
+    const GROUPID = ref(group_id);
+
+    const result = useAppApiData<Match[]>(
+      () => appKeys.match("getGroupMatch", TOURID.value, GROUPID.value),
+      () =>
+        $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/matches`),
+      { immediate: options.immediate },
+    );
 
     const fetchREQ = async (_tour_id: string, _group_id: string) => {
-      group_id.value = _group_id;
-      tour_id.value = _tour_id;
-      await execute();
+      TOURID.value = _tour_id;
+      GROUPID.value = _group_id;
+      await result.execute();
     };
-    return {
-      data,
-      pending,
-      error,
-      refresh,
-      status,
-      fetchREQ,
-    };
+
+    return { ...result, fetchREQ };
   };
 
   const addAvailableTeamsToFinalGroup = () => {
@@ -199,7 +197,7 @@ export const useGroup = () => {
       await execute(async () => {
         await $api(`/tournaments/${tour_id}/groups/${group_id}/teams-links`, {
           method: "delete",
-          body: { teamsId: teams_id },
+          body: { teamsIds: teams_id },
         });
         await refreshAppData(
           appKeys.tournamentGroupDetails(tour_id, group_id),

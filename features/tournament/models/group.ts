@@ -100,21 +100,28 @@ export interface Team {
   state: string;
 }
 
+export interface DefaultGameSettings {
+  isFlipped: boolean;
+  isAdvancedRecording: boolean;
+  isSakkahMashdodahMode: boolean;
+  showWhoWonDialogOnDraw: boolean;
+  isNumbersSoundEnabled: boolean;
+  isCommentsSoundEnabled: boolean;
+  isEkakShown: boolean;
+  isAklatShown: boolean;
+  sakkasCount: number;
+  isVoiceRecording: boolean;
+}
+
+export interface GenerateQualificationBracketsPayload {
+  defaultGameInterval: string;
+  defaultGameSettings: DefaultGameSettings;
+}
+
 export interface CreateMatch {
   usedTables: string[];
   defaultGameInterval: string;
-  defaultGameSettings: {
-    isFlipped: boolean;
-    isAdvancedRecording: boolean;
-    isSakkahMashdodahMode: boolean;
-    showWhoWonDialogOnDraw: boolean;
-    isNumbersSoundEnabled: boolean;
-    isCommentsSoundEnabled: boolean;
-    isEkakShown: boolean;
-    isAklatShown: boolean;
-    sakkasCount: number;
-    isVoiceRecording: boolean;
-  };
+  defaultGameSettings: DefaultGameSettings;
 }
 export type MatchLifecycleState = "Created" | "Running" | "Paused" | "Ended";
 export interface Match {

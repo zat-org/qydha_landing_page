@@ -17,25 +17,55 @@
         @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
         @open-start-confirm-map="openStartTournamentConfirmMap"
       />
-      <UFieldGroup
+      <div
         v-else-if="tourStore.tournament.length > 0"
-        orientation="horizontal"
-        class="flex flex-wrap"
+        class="fixed top-0 left-0 right-0 z-50 flex items-center gap-2 overflow-x-auto px-3 py-2 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs scrollbar-none"
       >
-        <UButton
+        <button
           v-for="item in tourStore.tournament"
           :key="item.data.id"
-          class="basis-[20px] grow"
-          :label="`${item.data.name}`"
-          block
-          :color="
-            tourStore.selectedGroup?.data.id == item.data.id
-              ? 'success'
-              : 'neutral'
+          type="button"
+          class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none shrink-0"
+          :class="
+            tourStore.selectedGroup?.data.id === item.data.id
+              ? 'bg-primary text-white shadow-sm shadow-primary/30 ring-2 ring-primary/20'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200/80 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
           "
           @click="handleGroupSelection(item.data.id.toString())"
-        />
-      </UFieldGroup>
+        >
+          <UIcon
+            :name="
+              item.data.type === GroupType.Final || item.data.stageType === 'Final'
+                ? 'i-heroicons-trophy-20-solid'
+                : 'i-heroicons-squares-2x2-20-solid'
+            "
+            class="size-3.5 shrink-0"
+          />
+          <span>{{ item.data.name }}</span>
+          <span
+            v-if="item.data.type === GroupType.Final || item.data.stageType === 'Final'"
+            class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
+            :class="
+              tourStore.selectedGroup?.data.id === item.data.id
+                ? 'bg-white/20 text-white'
+                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+            "
+          >
+            النهائي
+          </span>
+          <span
+            v-else
+            class="text-[10px] px-1.5 py-0.2 rounded-full font-medium"
+            :class="
+              tourStore.selectedGroup?.data.id === item.data.id
+                ? 'bg-white/20 text-white'
+                : 'bg-primary/10 text-primary dark:text-primary-400'
+            "
+          >
+            تصفيات
+          </span>
+        </button>
+      </div>
 
       <loading
         v-if="

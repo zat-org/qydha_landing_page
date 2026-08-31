@@ -1,31 +1,42 @@
 import type { PlayerState } from "./Player";
+import type { TournamentStageType } from "./place";
 import type { MinUser } from "~/models/user";
 
-export interface ITeamCreate {
-  name: string;
-  players: {
-    name: string;
-    phone: string;
-    email: string;
-    qydhaUsername: string;
-  }[];
-}
+export type TeamStageEntryType = "Direct" | "Qualified";
 
-export interface ITeam {
-  id: number;
-  name: string;
-  players: IPlayer[];
-  tournamentId: number;
-  status?: PlayerState | string;
-  additionalData?: any;
-  teamJoinRequestId: string | null;
+export interface TeamStageEntry {
+  stageId: string;
+  stageType: TournamentStageType;
+  placeId: string;
+  entryType: TeamStageEntryType;
 }
 
 export interface IPlayerCreate {
-  email: string;
   name: string;
-  phone: string;
-  qydhaUsername: string;
+  phone?: string | null;
+  email?: string | null;
+  qydhaUsername?: string | null;
+  additionalData?: Record<string, unknown>;
+}
+
+export interface ITeamCreate {
+  name: string;
+  placeId: string;
+  additionalData?: Record<string, unknown>;
+  players: IPlayerCreate[];
+}
+
+export interface ITeam {
+  id: number | string;
+  name: string;
+  players: IPlayer[];
+  tournamentId: number | string;
+  status?: PlayerState | string;
+  additionalData?: Record<string, unknown>;
+  teamJoinRequestId?: string | null;
+  hasGroupLink?: boolean;
+  groupLinks?: unknown[];
+  stageEntries?: TeamStageEntry[];
 }
 
 export interface IPlayer {
@@ -33,9 +44,10 @@ export interface IPlayer {
   id: string;
   name: string;
   phone: string;
-  qydhaUserData: MinUser;
+  qydhaUserData?: MinUser;
   tournamentId: string;
-  teamId: number | null;
+  teamId: number | string | null;
   teamName: null | string;
   state?: PlayerState | string;
+  additionalData?: Record<string, unknown>;
 }

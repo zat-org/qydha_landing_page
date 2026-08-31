@@ -13,27 +13,92 @@
                         <UIcon name="i-mdi-trophy-outline" class="size-6" />
                     </span>
                     <div class="min-w-0 space-y-0.5">
-                        <h3 class="text-lg font-bold leading-tight text-gray-900 dark:text-white">جولات المجموعة</h3>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-lg font-bold leading-tight text-gray-900 dark:text-white">جولات المجموعة</h3>
+                            <UBadge :color="groupStateBadgeColor(props.group.state)" variant="subtle" size="sm">
+                                {{ groupStateLabel(props.group.state) }}
+                            </UBadge>
+                        </div>
                         <p class="truncate text-sm text-gray-500 dark:text-gray-400">
                             {{ props.group.name }}
                         </p>
                     </div>
                 </div>
-                <!-- LinkingFinalGroupTeams = "LinkingFinalGroupTeams",
-  ManagingFinalGroupBracket = "ManagingFinalGroupBracket",
-  WaitingFinalGroupStarting -->
-                <div class="flex flex-wrap items-center gap-2 sm:justify-end" v-if="state == TournamentDetailedState.LinkingFinalGroupTeams|| state == TournamentDetailedState.ManagingFinalGroupBracket|| state == TournamentDetailedState.WaitingFinalGroupStarting">
+
+                <div class="flex flex-wrap items-center gap-2 sm:justify-end">
                     <UBadge v-if="roundsGroupDetails && (roundsGroupDetails.rounds?.length ?? 0) > 0" color="primary"
                         variant="subtle" size="md" class="rounded-full px-3">
                         {{ roundsGroupDetails.rounds?.length ?? 0 }} جولة
                     </UBadge>
 
-                    <UButton icon="i-mdi-refresh" color="primary" variant="soft" size="sm"
-                        label="اعادة الإنشاء للمباريات" class="min-h-9" :disabled="isRevertPending"
-                        @click="openRegenerateMatchesDrawer" />
-                    <UButton icon="i-mdi-account-group-outline" color="neutral" variant="soft" size="sm"
-                        label="تراجع عن إنشاء المباريات" class="min-h-9" :loading="isRevertPending"
-                        :disabled="isRevertPending" @click="revertFinalGroupGeneratedMatches" />
+                    <!-- Final group controls -->
+                    <template v-if="isFinalGroup && canRevertOrRegenerateFinalGroup">
+                        <UButton icon="i-mdi-refresh" color="primary" variant="soft" size="sm"
+                            label="اعادة الإنشاء للمباريات" class="min-h-9" :disabled="isRevertPending"
+                            @click="openRegenerateMatchesDrawer" />
+                        <UButton icon="i-mdi-account-group-outline" color="neutral" variant="soft" size="sm"
+                            label="تراجع عن إنشاء المباريات" class="min-h-9" :loading="isRevertPending"
+                            :disabled="isRevertPending" @click="revertFinalGroupGeneratedMatches" />
+                    </template>
+
+                    <!-- Qualification group runtime controls -->
+                    <template v-if="isQualificationGroup && canModify">
+                        <!-- Start group -->
+                        <UButton
+                            v-if="canStartQualGroup"
+                            icon="i-mdi-play"
+                            color="primary"
+                            variant="solid"
+                            size="sm"
+                            label="بدء مباريات المجموعة"
+                            class="min-h-9"
+                            :loading="isQualActionPending"
+                            :disabled="isQualActionPending"
+                            @click="handleStartQualGroup"
+                        />
+
+                        <!-- Reset group -->
+                        <UButton
+                            v-if="canResetQualGroup"
+                            icon="i-mdi-restore"
+                            color="warning"
+                            variant="soft"
+                            size="sm"
+                            label="إعادة ضبط المجموعة"
+                            class="min-h-9"
+                            :loading="isQualActionPending"
+                            :disabled="isQualActionPending || !allGamesCreated"
+                            @click="handleResetQualGroup"
+                        />
+
+                        <!-- Finish group -->
+                        <UButton
+                            v-if="canFinishQualGroup"
+                            icon="i-mdi-trophy"
+                            color="success"
+                            variant="soft"
+                            size="sm"
+                            label="إنهاء المجموعة"
+                            class="min-h-9"
+                            :loading="isQualActionPending"
+                            :disabled="isQualActionPending || !allGamesEnded"
+                            @click="handleFinishQualGroup"
+                        />
+
+                        <!-- Resume group -->
+                        <UButton
+                            v-if="canResumeQualGroup"
+                            icon="i-mdi-play-pause"
+                            color="primary"
+                            variant="soft"
+                            size="sm"
+                            label="استئناف المجموعة"
+                            class="min-h-9"
+                            :loading="isQualActionPending"
+                            :disabled="isQualActionPending"
+                            @click="handleResumeQualGroup"
+                        />
+                    </template>
                 </div>
             </div>
         </template>
@@ -59,7 +124,7 @@
                     :get-row-can-expand="() => true" :ui="{
                         td: 'align-middle',
                         th: 'text-gray-600 dark:text-gray-300 font-semibold text-xs uppercase tracking-wide',
-                    }" class="min-w-[640px]">
+                    }" class="min-w-160">
                     <template #expand-cell="{ row }">
                         <UButton variant="ghost" color="neutral" size="sm" square :aria-expanded="row.getIsExpanded()"
                             :aria-label="row.getIsExpanded() ? 'طي المباريات' : 'عرض المباريات'"
@@ -97,7 +162,7 @@
 
                     <template #expanded="{ row }">
                         <div
-                            class="border-t border-gray-200/90 bg-gradient-to-b from-gray-50/90 to-white px-3 py-4 dark:border-gray-800 dark:from-gray-950/80 dark:to-gray-900/60 sm:px-5">
+                            class="border-t border-gray-200/90 bg-linear-to-b from-gray-50/90 to-white px-3 py-4 dark:border-gray-800 dark:from-gray-950/80 dark:to-gray-900/60 sm:px-5">
                             <div class="mb-3 flex flex-wrap items-center gap-2">
                                 <UIcon name="i-mdi-soccer" class="size-5 text-primary" />
                                 <span class="text-sm font-bold text-gray-800 dark:text-gray-100">مباريات الجولة</span>
@@ -106,22 +171,22 @@
                                 </UBadge>
                             </div>
                             <div
-                                class="overflow-x-auto rounded-xl border border-gray-200/90 bg-white shadow-sm ring-1 ring-gray-900/[0.03] dark:border-gray-700 dark:bg-gray-900/40 dark:ring-white/5">
+                                class="overflow-x-auto rounded-xl border border-gray-200/90 bg-white shadow-sm ring-1 ring-gray-900/3 dark:border-gray-700 dark:bg-gray-900/40 dark:ring-white/5">
                                 <UTable :data="(row.original as RoundRow).round.matches ?? []" :columns="matchColumns"
                                     :ui="{
                                         td: 'text-sm py-2.5',
                                         th: 'text-xs font-semibold text-gray-600 dark:text-gray-400',
-                                    }" class="min-w-[520px]">
+                                    }" class="min-w-130">
                                     <template #teams-cell="{ row: m }">
                                         <div class="flex flex-wrap items-center gap-2 py-0.5">
                                             <span
-                                                class="inline-flex max-w-[11rem] truncate rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+                                                class="inline-flex max-w-44 truncate rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-100">
                                                 {{ m.original.themTeamName?.trim() || "لم يحدد بعد" }}
                                             </span>
                                             <span
                                                 class="select-none text-[10px] font-bold uppercase tracking-wider text-gray-400">ضد</span>
                                             <span
-                                                class="inline-flex max-w-[11rem] truncate rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-100">
+                                                class="inline-flex max-w-44 truncate rounded-lg bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-900 dark:bg-gray-800 dark:text-gray-100">
                                                 {{ m.original.usTeamName?.trim() || "لم يحدد بعد" }}
                                             </span>
                                         </div>
@@ -152,11 +217,43 @@
                                         </div>
                                     </template>
                                     <template #actions-cell="{ row: m }">
-                                        <UButton 
-                                        v-if="m.original.state == 'created'"
-                                        icon="i-mdi-pencil-outline" color="warning" variant="soft" size="sm"
-                                            square aria-label="تعديل المباراة" class="rounded-lg"
-                                            @click="openUpdateMatchDrawer(m.original.id)" />
+                                        <div class="flex items-center gap-1.5" v-if="canModify">
+                                            <UButton 
+                                                icon="i-heroicons-pencil-square" 
+                                                color="warning" 
+                                                variant="soft" 
+                                                size="xs"
+                                                label="تعديل"
+                                                class="rounded-lg"
+                                                @click="openEditMatchModal(m.original)" 
+                                            />
+                                            <UDropdownMenu
+                                                v-if="m.original.state === 'Created' && m.original.usTeamId && m.original.themTeamId"
+                                                :items="getWithdrawMenuItems(m.original)"
+                                                :popper="{ placement: 'bottom-end' }"
+                                            >
+                                                <UButton
+                                                    icon="i-heroicons-arrow-right-on-rectangle"
+                                                    color="error"
+                                                    variant="soft"
+                                                    size="xs"
+                                                    label="انسحاب"
+                                                    class="rounded-lg"
+                                                    :loading="matchWithdrawReq.status.value === 'pending'"
+                                                />
+                                            </UDropdownMenu>
+                                            <UButton
+                                                v-else-if="m.original.state === 'Running' || m.original.state === 'Ended'"
+                                                icon="i-heroicons-arrow-path"
+                                                color="neutral"
+                                                variant="soft"
+                                                size="xs"
+                                                label="إعادة ضبط"
+                                                class="rounded-lg"
+                                                :loading="matchResetReq.status.value === 'pending'"
+                                                @click="handleResetMatch(m.original)"
+                                            />
+                                        </div>
                                     </template>
                                 </UTable>
                             </div>
@@ -186,15 +283,20 @@
 </template>
 
 <script lang="ts" setup>
+import { ConfirmationModal } from "#components";
 import type { Group, RoundGroupDetails, Match } from "~/features/tournament/models/group";
+import { GroupState } from "~/features/tournament/models/group";
 import { formatDateTime } from "~/utils/formatDate";
 import type { TableColumn } from "@nuxt/ui";
-// import { MatchStateEnum } from "~/features/tournament/models/match";
 import UpdateRoundDrawer from "./Round/UpdateRoundDrawer.vue";
 import UpdateMatchDrawer from "./Match/UpdateMatchDrawer.vue";
+import EditModal from "~/features/tournament/bracket/components/EditModal.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";
-import  { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import { useGroup } from "~/features/tournament/group/composables/group";
+import { useQualificationStage } from "~/features/tournament/detail/composables/api/useQualificationStage";
+import { useMatch } from "~/features/tournament/shared/composables/match";
+import { useMyAuthStore } from "~/store/Auth";
 
 const route = useRoute();
 const tour_id = route.params.id?.toString() ?? "";
@@ -203,11 +305,97 @@ const props = defineProps<{
     state: TournamentDetailedState;
 }>();
 
-const rounGroupDetailsREQ = await useGroup().getRoundsGroupDetails(tour_id, props.group.id);
+const authStore = useMyAuthStore();
+const rounGroupDetailsREQ = useGroup().getRoundsGroupDetails(tour_id, props.group.id);
 
 const roundsGroupDetails = computed<RoundGroupDetails | null>(() => {
     return rounGroupDetailsREQ.data.value || null;
 });
+
+const isFinalGroup = computed(
+    () => props.group.stageType === "Final" || props.group.type === "Final",
+);
+const isQualificationGroup = computed(
+    () => props.group.stageType === "Qualification" || props.group.type === "Qualification",
+);
+
+const canModify = computed(() => {
+    return authStore.isAdmin || authStore.permissions.includes("ModifyTournamentData");
+});
+
+const canRevertOrRegenerateFinalGroup = computed(() => {
+    return (
+        props.state === TournamentDetailedState.LinkingFinalGroupTeams ||
+        props.state === TournamentDetailedState.ManagingFinalGroupBracket
+    );
+});
+
+const canStartQualGroup = computed(() => {
+    return (
+        props.group.state === GroupState.WaitingMatchesStarting &&
+        (props.state === TournamentDetailedState.WaitingQualificationStageStarting ||
+            props.state === TournamentDetailedState.QualificationStageRunning)
+    );
+});
+
+const canResetQualGroup = computed(() => {
+    return (
+        props.group.state === GroupState.MatchesRunning &&
+        props.state === TournamentDetailedState.QualificationStageRunning
+    );
+});
+
+const canFinishQualGroup = computed(() => {
+    return (
+        props.group.state === GroupState.MatchesRunning &&
+        props.state === TournamentDetailedState.QualificationStageRunning
+    );
+});
+
+const canResumeQualGroup = computed(() => {
+    return (
+        props.group.state === GroupState.MatchesFinished &&
+        (props.state === TournamentDetailedState.QualificationStageRunning ||
+            props.state === TournamentDetailedState.QualificationStageFinished)
+    );
+});
+
+const allMatches = computed<Match[]>(() => {
+    if (!roundsGroupDetails.value?.rounds) return [];
+    return roundsGroupDetails.value.rounds.flatMap((r) => r.matches ?? []);
+});
+
+const allGamesCreated = computed(() => {
+    return allMatches.value.length > 0 && allMatches.value.every((m) => m.state === "Created");
+});
+
+const allGamesEnded = computed(() => {
+    return allMatches.value.length > 0 && allMatches.value.every((m) => m.state === "Ended");
+});
+
+const groupStateLabel = (st: GroupState): string => {
+    const map: Record<GroupState, string> = {
+        [GroupState.Created]: "تم الإنشاء",
+        [GroupState.TeamsLinking]: "ربط الفرق",
+        [GroupState.MatchesGenerated]: "تم توليد المباريات",
+        [GroupState.WaitingMatchesStarting]: "في انتظار البدء",
+        [GroupState.MatchesRunning]: "جارية",
+        [GroupState.MatchesFinished]: "انتهت",
+    };
+    return map[st] ?? st;
+};
+
+const groupStateBadgeColor = (st: GroupState): "neutral" | "primary" | "info" | "warning" | "success" => {
+    const map: Record<GroupState, "neutral" | "primary" | "info" | "warning" | "success"> = {
+        [GroupState.Created]: "neutral",
+        [GroupState.TeamsLinking]: "info",
+        [GroupState.MatchesGenerated]: "primary",
+        [GroupState.WaitingMatchesStarting]: "warning",
+        [GroupState.MatchesRunning]: "success",
+        [GroupState.MatchesFinished]: "neutral",
+    };
+    return map[st] ?? "neutral";
+};
 
 interface RoundRow {
     round: RoundGroupDetails["rounds"][0];
@@ -283,6 +471,81 @@ const openUpdateRoundDrawer = (roundId: string) => {
 
 const overlay = useOverlay();
 const matchDrawer = overlay.create(UpdateMatchDrawer);
+const editMatchModal = overlay.create(EditModal);
+const confirmationModal = overlay.create(ConfirmationModal);
+
+const { MatchWithdraw, MatchReset } = useMatch();
+const matchWithdrawReq = MatchWithdraw();
+const matchResetReq = MatchReset();
+
+const openEditMatchModal = (match: Match) => {
+    editMatchModal.open({
+        match,
+    });
+};
+
+const handleWithdraw = async (match: Match, side: "Us" | "Them" | "All") => {
+    if (!match.qydhaGameId) {
+        toast.add({ title: "معرف لعبة قيدها غير متوفر", color: "error" });
+        return;
+    }
+    await matchWithdrawReq.fetchREQ(match.qydhaGameId, side);
+    if (matchWithdrawReq.status.value === "success") {
+        toast.add({ title: "تم تسجيل الانسحاب بنجاح", color: "success" });
+        await rounGroupDetailsREQ.refresh();
+    } else {
+        toast.add({
+            title: "تعذّر تسجيل الانسحاب",
+            description: matchWithdrawReq.error.value?.message || "حدث خطأ أثناء الانسحاب",
+            color: "error",
+        });
+    }
+};
+
+const handleResetMatch = async (match: Match) => {
+    if (!match.qydhaGameId) {
+        toast.add({ title: "معرف لعبة قيدها غير متوفر", color: "error" });
+        return;
+    }
+    const instance = confirmationModal.open({
+        message: `هل أنت متأكد من إعادة ضبط هذه المباراة؟`,
+    });
+    if (await instance.result) {
+        await matchResetReq.fetchREQ(match.qydhaGameId);
+        if (matchResetReq.status.value === "success") {
+            toast.add({ title: "تمت إعادة ضبط المباراة بنجاح", color: "success" });
+            await rounGroupDetailsREQ.refresh();
+        } else {
+            toast.add({
+                title: "تعذّر إعادة الضبط",
+                description: matchResetReq.error.value?.message || "حدث خطأ أثناء إعادة الضبط",
+                color: "error",
+            });
+        }
+    }
+};
+
+const getWithdrawMenuItems = (match: Match) => {
+    return [
+        [
+            {
+                label: `انسحاب: ${match.themTeamName || 'الفريق الأول'}`,
+                icon: 'i-heroicons-user-minus',
+                onSelect: () => handleWithdraw(match, 'Them'),
+            },
+            {
+                label: `انسحاب: ${match.usTeamName || 'الفريق الثاني'}`,
+                icon: 'i-heroicons-user-minus',
+                onSelect: () => handleWithdraw(match, 'Us'),
+            },
+            {
+                label: 'انسحاب كلا الفريقين',
+                icon: 'i-heroicons-user-group',
+                onSelect: () => handleWithdraw(match, 'All'),
+            },
+        ],
+    ];
+};
 
 const openUpdateMatchDrawer = async (matchId: string) => {
     matchDrawer.open({
@@ -305,6 +568,80 @@ const revertFinalGroupGeneratedMatches = async () => {
         const msg =
             err?.data?.data?.message ?? (err as { message?: string })?.message ?? "تعذّر تنفيذ العملية";
         toast.add({ title: msg, color: "error" });
+    }
+};
+
+// Qualification stage runtime handlers
+const qualStageApi = useQualificationStage();
+const startQualReq = qualStageApi.startGroup();
+const resetQualReq = qualStageApi.resetGroup();
+const finishQualReq = qualStageApi.finishGroup();
+const resumeQualReq = qualStageApi.resumeGroup();
+
+const isQualActionPending = computed(
+    () =>
+        startQualReq.pending.value ||
+        resetQualReq.pending.value ||
+        finishQualReq.pending.value ||
+        resumeQualReq.pending.value,
+);
+
+const handleStartQualGroup = async () => {
+    await startQualReq.fetchREQ(tour_id, props.group.id);
+    if (startQualReq.status.value === "success") {
+        toast.add({ title: "تم بدء مباريات المجموعة بنجاح", color: "success" });
+        await rounGroupDetailsREQ.refresh();
+    } else {
+        const err = startQualReq.error.value as { data?: { message?: string }; message?: string } | null;
+        toast.add({ title: "تعذّر بدء المجموعة", description: err?.data?.message ?? err?.message, color: "error" });
+    }
+};
+
+const handleResetQualGroup = async () => {
+    const instance = confirmationModal.open({
+        message: `هل أنت متأكد من إعادة ضبط المجموعة "${props.group.name}"؟`,
+    });
+    if (await instance.result) {
+        await resetQualReq.fetchREQ(tour_id, props.group.id);
+        if (resetQualReq.status.value === "success") {
+            toast.add({ title: "تمت إعادة ضبط المجموعة", color: "success" });
+            await rounGroupDetailsREQ.refresh();
+        } else {
+            const err = resetQualReq.error.value as { data?: { message?: string }; message?: string } | null;
+            toast.add({ title: "تعذّر إعادة ضبط المجموعة", description: err?.data?.message ?? err?.message, color: "error" });
+        }
+    }
+};
+
+const handleFinishQualGroup = async () => {
+    const instance = confirmationModal.open({
+        message: `هل أنت متأكد من إنهاء المجموعة "${props.group.name}" واحتساب الفرق المتأهلة؟`,
+    });
+    if (await instance.result) {
+        await finishQualReq.fetchREQ(tour_id, props.group.id);
+        if (finishQualReq.status.value === "success") {
+            toast.add({ title: "تم إنهاء المجموعة بنجاح", color: "success" });
+            await rounGroupDetailsREQ.refresh();
+        } else {
+            const err = finishQualReq.error.value as { data?: { message?: string }; message?: string } | null;
+            toast.add({ title: "تعذّر إنهاء المجموعة", description: err?.data?.message ?? err?.message, color: "error" });
+        }
+    }
+};
+
+const handleResumeQualGroup = async () => {
+    const instance = confirmationModal.open({
+        message: `هل أنت متأكد من استئناف المجموعة "${props.group.name}"؟ سيتم إلغاء سجلات الفرق المتأهلة السابقة لهذه المجموعة.`,
+    });
+    if (await instance.result) {
+        await resumeQualReq.fetchREQ(tour_id, props.group.id);
+        if (resumeQualReq.status.value === "success") {
+            toast.add({ title: "تم استئناف المجموعة بنجاح", color: "success" });
+            await rounGroupDetailsREQ.refresh();
+        } else {
+            const err = resumeQualReq.error.value as { data?: { message?: string }; message?: string } | null;
+            toast.add({ title: "تعذّر استئناف المجموعة", description: err?.data?.message ?? err?.message, color: "error" });
+        }
     }
 };
 </script>

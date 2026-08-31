@@ -29,6 +29,13 @@
       :pending="startPending"
       @confirm="confirmStart"
     />
+
+    <GenerateQualificationBracketsDrawer
+      v-model:open="qualGenerateOpen"
+      :tournament-id="context.tournamentId"
+      :is-regenerate="isRegenerateQual"
+      @success="emit('refreshed')"
+    />
   </TournamentPhaseContent>
 
   <component
@@ -43,7 +50,9 @@
 <script lang="ts" setup>
 import TournamentApprovePlanConfirmModal from "../../shared/TournamentApprovePlanConfirmModal.vue";
 import TournamentStartConfirmModal from "../../shared/TournamentStartConfirmModal.vue";
+import GenerateQualificationBracketsDrawer from "~/features/tournament/detail/components/GenerateQualificationBracketsDrawer.vue";
 import TournamentPhaseContent from "./TournamentPhaseContent.vue";
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import type {
   PhaseAction,
   PhaseStateConfig,
@@ -59,9 +68,16 @@ const props = defineProps<{
 
 const emit = defineEmits<{ refreshed: [] }>();
 
+const isRegenerateQual = computed(
+  () =>
+    props.context.detailedState ===
+    TournamentDetailedState.ManagingQualificationStageBrackets,
+);
+
 const {
   approveConfirmOpen,
   startConfirmOpen,
+  qualGenerateOpen,
   approvePending,
   startPending,
   pendingByAction,

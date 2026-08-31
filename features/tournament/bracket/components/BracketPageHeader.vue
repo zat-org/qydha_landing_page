@@ -1,50 +1,169 @@
 <template>
-  <div class="flex flex-col fixed top-0 left-0 right-0 z-50">
-    <UFieldGroup v-if="tourStore.tournament.length > 0" orientation="horizontal" class="flex flex-wrap">
-      <UButton v-for="item in tourStore.tournament" :key="item.data.id" class="basis-[20px] grow"
-        :label="`${item.data.name}`" block
-        :color="tourStore.selectedGroup?.data.id == item.data.id ? 'success' : 'neutral'"
-        @click="handleGroupSelection(item.data.id.toString())" />
-    </UFieldGroup>
-    <div v-if="isAdminOrStaff && tourStore.selectedGroup"
-      class="flex flex-wrap items-center gap-2 border-b border-gray-200/80 bg-white/90 p-2 dark:border-gray-800 dark:bg-gray-950/60">
-      <UButton v-if="showRegenerateFinalMatchesButton" icon="i-mdi-refresh" color="primary" variant="soft" size="sm"
-        label="اعادة انشاء المباريات" class="min-h-9"
-        :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined" :disabled="!isFinalGroupSelected"
-        @click="emit('regenerate-final-matches')" />
+  <div class="fixed top-0 left-0 right-0 z-50 flex flex-col backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs">
+    <!-- Groups pill selector bar -->
+    <div
+      v-if="tourStore.tournament.length > 0"
+      class="flex items-center gap-2 overflow-x-auto px-3 py-2 scrollbar-none w-full"
+    >
+      <button
+        v-for="item in tourStore.tournament"
+        :key="item.data.id"
+        type="button"
+        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none shrink-0"
+        :class="
+          tourStore.selectedGroup?.data.id === item.data.id
+            ? 'bg-primary text-white shadow-sm shadow-primary/30 ring-2 ring-primary/20'
+            : 'bg-gray-100 text-gray-700 hover:bg-gray-200/80 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+        "
+        @click="handleGroupSelection(item.data.id.toString())"
+      >
+        <UIcon
+          :name="
+            item.data.type === GroupType.Final || item.data.stageType === 'Final'
+              ? 'i-heroicons-trophy-20-solid'
+              : 'i-heroicons-squares-2x2-20-solid'
+          "
+          class="size-3.5 shrink-0"
+        />
+        <span>{{ item.data.name }}</span>
+        <span
+          v-if="item.data.placeId && placeLabel(item.data.placeId) !== 'أي مكان'"
+          class="text-[10px] opacity-80 font-normal"
+        >
+          · {{ placeLabel(item.data.placeId) }}
+        </span>
+        <span
+          v-if="item.data.type === GroupType.Final || item.data.stageType === 'Final'"
+          class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
+          :class="
+            tourStore.selectedGroup?.data.id === item.data.id
+              ? 'bg-white/20 text-white'
+              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+          "
+        >
+          النهائي
+        </span>
+        <span
+          v-else
+          class="text-[10px] px-1.5 py-0.2 rounded-full font-medium"
+          :class="
+            tourStore.selectedGroup?.data.id === item.data.id
+              ? 'bg-white/20 text-white'
+              : 'bg-primary/10 text-primary dark:text-primary-400'
+          "
+        >
+          تصفيات
+        </span>
+      </button>
+    </div>
 
-        <UButton v-if="showRegenerateFinalMatchesButton" label="التاكيد علي  الخريطة" icon="i-mdi-play-circle" size="sm" color="primary"
-        variant="solid" class="min-h-9" :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
-        :disabled="!isFinalGroupSelected" @click="emit('open-start-confirm-map')" />
+    <!-- Admin actions and rounds toolbar -->
+    <div
+      v-if="isAdminOrStaff && tourStore.selectedGroup"
+      class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-200/60 dark:border-gray-800/60 px-3 py-1.5 bg-gray-50/70 dark:bg-gray-900/40"
+    >
+      <!-- Action buttons -->
+      <div class="flex flex-wrap items-center gap-1.5">
+        <UButton
+          v-if="showRegenerateFinalMatchesButton"
+          icon="i-mdi-refresh"
+          color="primary"
+          variant="soft"
+          size="xs"
+          label="إعادة إنشاء المباريات"
+          :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+          :disabled="!isFinalGroupSelected"
+          @click="emit('regenerate-final-matches')"
+        />
 
-      <UButton v-if="showStartTournamentCta" label="بدء البطولة" icon="i-mdi-play" size="sm" color="primary"
-        variant="solid" class="min-h-9" :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
-        :disabled="!isFinalGroupSelected" @click="emit('open-start-confirm')" />
-      <UButton v-if="showFinishTournamentCta" label="انهاء  البطولة" icon="i-mdi-check" size="sm" color="primary"
-        variant="solid" class="min-h-9" :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
-        :disabled="!isFinalGroupSelected" @click="emit('finish-tournament')" />
-      <UButton v-if="showResumeFinalGroupAfterFinishCta" label="استكمال  البطولة" icon="i-mdi-play" size="sm"
-        color="primary" variant="solid" class="min-h-9"
-        :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined" :disabled="!isFinalGroupSelected"
-        @click="emit('resume-final-group-after-finish')" />
-        <!-- <pre>
-          {{ tourStore.rounds }}
-        </pre> -->
-      <template v-if="tourStore.rounds && tourStore.rounds.length > 0">
-        <USelectMenu v-model="selectedRoundId" :items="tourStore.rounds " label-key="name" value-key="id"
-          :search-attributes="['name']" class="w-[220px]" :placeholder="tourStore.selectedRound?.name || 'اختر الجولة'"
-          @update:model-value="onRoundSelected" />
+        <UButton
+          v-if="showRegenerateFinalMatchesButton"
+          label="التأكيد على الخريطة"
+          icon="i-mdi-play-circle"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+          :disabled="!isFinalGroupSelected"
+          @click="emit('open-start-confirm-map')"
+        />
 
-        <UButton icon="i-heroicons-pencil" color="warning" variant="soft" :disabled="!canEditSelectedRound"
-          @click="openSelectedRoundEdit">
+        <UButton
+          v-if="showStartTournamentCta"
+          label="بدء البطولة"
+          icon="i-mdi-play"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+          :disabled="!isFinalGroupSelected"
+          @click="emit('open-start-confirm')"
+        />
+
+        <UButton
+          v-if="showFinishTournamentCta"
+          label="إنهاء البطولة"
+          icon="i-mdi-check"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+          :disabled="!isFinalGroupSelected"
+          @click="emit('finish-tournament')"
+        />
+
+        <UButton
+          v-if="showResumeFinalGroupAfterFinishCta"
+          label="استكمال البطولة"
+          icon="i-mdi-play"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :title="!isFinalGroupSelected ? 'متاح للمجموعة النهائية فقط' : undefined"
+          :disabled="!isFinalGroupSelected"
+          @click="emit('resume-final-group-after-finish')"
+        />
+      </div>
+
+      <!-- Rounds filter -->
+      <div
+        v-if="tourStore.rounds && tourStore.rounds.length > 0"
+        class="flex items-center gap-1.5 mr-auto"
+      >
+        <USelectMenu
+          v-model="selectedRoundId"
+          :items="tourStore.rounds"
+          label-key="name"
+          value-key="id"
+          size="xs"
+          :search-attributes="['name']"
+          class="w-48"
+          :placeholder="tourStore.selectedRound?.name || 'اختر الجولة'"
+          @update:model-value="onRoundSelected"
+        />
+
+        <UButton
+          icon="i-heroicons-pencil"
+          color="warning"
+          variant="soft"
+          size="xs"
+          :disabled="!canEditSelectedRound"
+          @click="openSelectedRoundEdit"
+        >
           تعديل
         </UButton>
 
-        <UButton icon="i-heroicons-x-mark" color="neutral" variant="soft" :disabled="!tourStore.selectedRound"
-          @click="clearRoundSelection">
+        <UButton
+          icon="i-heroicons-x-mark"
+          color="neutral"
+          variant="soft"
+          size="xs"
+          :disabled="!tourStore.selectedRound"
+          @click="clearRoundSelection"
+        >
           مسح
         </UButton>
-      </template>
+      </div>
     </div>
   </div>
 </template>
@@ -61,7 +180,7 @@ import {
   startAction,
 } from "~/features/tournament/phase/phaseActions";
 import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
-import { useGroup } from "~/features/tournament/group/composables/group";
+import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -81,6 +200,7 @@ const route = useRoute();
 const tourid = route.params.id?.toString() || '';
 const getTourRequest = await useSingleTournament().getSingelTournament(tourid);
 const tour = computed(() => getTourRequest.data.value);
+const { placeLabel } = useTournamentPlaces(() => tour.value);
 
 watch(
   [tour, isAdmin],
@@ -89,17 +209,6 @@ watch(
   },
   { immediate: true },
 );
-
-const getRounds = await useGroup().getRoundsGroupDetails(tourid, tourStore.selectedGroup?.data.id ?? "",{immediate: false});
-watch(()=>tourStore.selectedGroup?.data.id ??false, async (id: string|boolean) => {
-  if (!id) return;
-    await getRounds.fetchREQ(tourid, id as string);
-    if (getRounds.status.value == "success")
-      tourStore.rounds = getRounds.data.value?.rounds ?? []
-  
-  
-},{deep: true, immediate: true});
-
 
 const isAdminOrStaff = computed(() => {
   const roles = user.value?.user.roles;
@@ -136,7 +245,10 @@ watch(
 );
 
 const handleGroupSelection = (group_id: string) => {
-  useRouter().push({ path: useRoute().path, query: { group: group_id } });
+  useRouter().push({
+    path: route.path,
+    query: { ...route.query, group: group_id },
+  });
 };
 
 const onRoundSelected = (id?: string) => {

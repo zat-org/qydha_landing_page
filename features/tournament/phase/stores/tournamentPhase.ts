@@ -19,6 +19,7 @@ export function buildPhaseContextFromTour(
   return {
     tournamentId: tour.tournament.id,
     isAdmin,
+    permissions: tour.requesterPrivilege?.permissions ?? null,
     detailedState: tour.tournament.detailedState,
     tournamentState: tour.tournament.state,
     finalGroupState: finalGroup?.state,

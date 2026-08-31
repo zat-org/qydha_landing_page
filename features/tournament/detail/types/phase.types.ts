@@ -20,6 +20,7 @@ export interface PhaseUiConfig {
 export interface TournamentPhaseContext {
   tournamentId: string;
   isAdmin: boolean;
+  permissions?: string[] | null;
   detailedState?: TournamentDetailedState;
   tournamentState?: TournamentState;
   finalGroupState?: GroupState;
@@ -28,12 +29,29 @@ export interface TournamentPhaseContext {
 
 export type PhaseActionId =
   | "organize"
+  | "generateQualificationBrackets"
+  | "revertQualificationTeamLinking"
+  | "revertQualificationGeneratedBrackets"
+  | "confirmQualificationBrackets"
+  | "confirmQualificationResults"
+  | "confirmFinalStageTeams"
+  | "revertFinalGroupTeamsLinks"
   | "approvePlan"
   | "start"
   | "finish"
   | "resume";
 
-export type PhaseActionConfirm = "setup" | "approvePlan" | "start";
+export type PhaseActionConfirm =
+  | "setup"
+  | "generateQualificationBrackets"
+  | "revertQualificationTeamLinking"
+  | "revertQualificationGeneratedBrackets"
+  | "confirmQualificationBrackets"
+  | "confirmQualificationResults"
+  | "confirmFinalStageTeams"
+  | "revertFinalGroupTeamsLinks"
+  | "approvePlan"
+  | "start";
 
 export type PhaseApi = (
   request: string,

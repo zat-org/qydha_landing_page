@@ -1,38 +1,44 @@
 <template>
   <UModal
-    title="بدء تنظيم البطولة"
+    title="بدء تنظيم مراحل ومجموعات البطولة"
     prevent-close
     description="هل أنت متأكد من بدء تنظيم البطولة؟"
   >
     <template #body>
-      <div class="flex flex-col gap-2">
-        <p>برجاء اختيار طريقة تنظيم البطوله</p>
-        <URadioGroup v-model="hasStaging" :items="items" dir="rtl" />
+      <div class="space-y-3">
+        <p class="text-sm text-gray-700 dark:text-gray-300">
+          سيقوم النظام تلقائياً بتوزيع الفرق وإنشاء المجموعات:
+        </p>
         <UAlert
-          v-if="hasStaging === 'qualifications' && !hasPlaces"
-          color="warning"
+          v-if="hasPlaces"
+          color="info"
           variant="soft"
-          class="mt-2"
-          title="لا توجد أماكن تصفيات على هذه البطولة"
-          description="فعّل مرحلة التصفيات وأضف الأماكن عند إنشاء طلب البطولة."
+          title="مرحلة التصفيات مفعلة"
+          description="تم العثور على أماكن تصفيات. سيتم توزيع الفرق المخصصة لأماكن التصفيات عبر أيام ومجموعات التصفيات تلقائياً."
+        />
+        <UAlert
+          v-else
+          color="info"
+          variant="soft"
+          title="نهائيات مباشرة"
+          description="لا توجد أماكن تصفيات. سيتم ربط الفرق المؤهلة بالنهائي مباشرة."
         />
       </div>
     </template>
     <template #footer>
       <div class="flex w-full items-center justify-between">
         <UButton
-          label="تأكيد"
-          color="success"
+          label="تأكيد والبدء"
+          color="primary"
           size="lg"
-          variant="soft"
-          :disabled="hasStaging === 'qualifications' && !hasPlaces"
+          variant="solid"
           @click="confirm"
         />
         <UButton
           label="إلغاء"
-          color="error"
+          color="neutral"
           size="lg"
-          variant="soft"
+          variant="ghost"
           @click="cancel"
         />
       </div>
@@ -48,27 +54,13 @@ const props = defineProps<{
   tournamentId: string;
 }>();
 
-const hasStaging = ref<"direct" | "qualifications">("direct");
-
 const tourREQ = await useSingleTournament().getSingelTournament(
   props.tournamentId,
 );
 const { hasPlaces } = useTournamentPlaces(() => tourREQ.data.value);
 
-const items = computed(() => [
-  {
-    label: "نهائيات مباشرة",
-    value: "direct" as const,
-  },
-  {
-    label: "مرحلة التصفيات",
-    value: "qualifications" as const,
-    disabled: !hasPlaces.value,
-  },
-]);
-
 const emit = defineEmits<{
-  close: [false | "direct" | "qualifications"];
+  close: [boolean];
 }>();
 
 const cancel = () => {
@@ -76,7 +68,6 @@ const cancel = () => {
 };
 
 const confirm = () => {
-  if (hasStaging.value === "qualifications" && !hasPlaces.value) return;
-  emit("close", hasStaging.value);
+  emit("close", true);
 };
 </script>

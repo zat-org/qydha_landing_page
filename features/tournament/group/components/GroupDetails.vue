@@ -26,9 +26,17 @@
                     </div>
 
                     <div class="flex flex-wrap items-stretch gap-2 sm:justify-end" >
-                        <UButton color="success" variant="soft" size="sm" icon="i-mdi-tournament"
-                            label="إنشاء المباريات" class="min-h-10" @click="groupDetailsActions.createMatches" />
-                        <template v-if="isTeamsLinking">
+                        <UButton
+                            v-if="canCreateFinalMatches"
+                            color="success"
+                            variant="soft"
+                            size="sm"
+                            icon="i-mdi-tournament"
+                            label="إنشاء المباريات"
+                            class="min-h-10"
+                            @click="groupDetailsActions.createMatches"
+                        />
+                        <template v-if="canLinkUnlinkTeams">
                             <UButton color="primary" icon="i-mdi-plus" variant="soft" size="sm" label="إضافة فريق"
                                 class="min-h-10" @click="groupDetailsActions.linkTeam" />
                             <UButton color="error" icon="i-mdi-account-minus-outline" variant="soft" size="sm"
@@ -42,8 +50,8 @@
                     enter-from-class="opacity-0 -translate-y-1" enter-to-class="opacity-100 translate-y-0"
                     leave-active-class="transition duration-150 ease-in" leave-from-class="opacity-100 translate-y-0"
                     leave-to-class="opacity-0 -translate-y-1">
-                    <div v-if="groupDetails && isTeamsLinking && selectedTeamsIds.length > 0"
-                        class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/[0.06] px-3 py-2 text-sm dark:bg-primary/10">
+                    <div v-if="groupDetails && canLinkUnlinkTeams && selectedTeamsIds.length > 0"
+                        class="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-primary/25 bg-primary/6 px-3 py-2 text-sm dark:bg-primary/10">
                         <span class="font-medium text-primary">
                             تم تحديد {{ selectedTeamsIds.length }}
                             {{ selectedTeamsIds.length === 1 ? 'فريق' : 'فرق' }}
@@ -94,7 +102,8 @@ import {
 import type { GroupDetailsActions } from "~/features/tournament/group/group-details/types";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
 import { useGroup } from "~/features/tournament/group/composables/group";
-import type { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import { TournamentDetailedState } from "~/features/tournament/models/tournament";
+import { useMyAuthStore } from "~/store/Auth";
 
 const LinkTeamDrawer = defineAsyncComponent(() => import("./LinkTeamDrawer.vue"));
 
@@ -107,6 +116,7 @@ const props = defineProps<Props>();
 
 const route = useRoute();
 const tour_id = route.params.id.toString();
+const authStore = useMyAuthStore();
 const groupApi = useGroup();
 const groupDetailREQ = await groupApi.getGroupDetails(tour_id, props.group.id);
 const unlinkTeamFromGroupReq = await useTourrnamentTeam().unlinkTeamFromGroup();
@@ -128,6 +138,42 @@ const effectiveState = computed(
 const isTeamsLinking = computed(
     () => effectiveState.value === GroupState.TeamsLinking,
 );
+
+const isFinalGroup = computed(
+    () => props.group.stageType === "Final" || props.group.type === "Final",
+);
+
+const isQualGroup = computed(
+    () => props.group.stageType === "Qualification" || props.group.type === "Qualification",
+);
+
+const canModify = computed(() => {
+    return authStore.isAdmin || authStore.permissions.includes("ModifyTournamentData");
+});
+
+const canManageGroups = computed(() => {
+    return authStore.isAdmin || authStore.permissions.includes("GroupsCRUDs");
+});
+
+const canCreateFinalMatches = computed(() => {
+    return (
+        isFinalGroup.value &&
+        canModify.value &&
+        (props.state === TournamentDetailedState.LinkingFinalGroupTeams ||
+            props.state === TournamentDetailedState.ManagingFinalGroupBracket)
+    );
+});
+
+const canLinkUnlinkTeams = computed(() => {
+    if (!isTeamsLinking.value || !canManageGroups.value) return false;
+    if (isQualGroup.value) {
+        return props.state === TournamentDetailedState.LinkingQualificationStageTeams;
+    }
+    if (isFinalGroup.value) {
+        return props.state === TournamentDetailedState.LinkingFinalGroupTeams;
+    }
+    return false;
+});
 
 const headerDescription = computed(() => {
     return (

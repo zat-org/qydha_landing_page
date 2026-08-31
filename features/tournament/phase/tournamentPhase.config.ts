@@ -5,9 +5,16 @@ import TournamentJoiningRequest from "~/features/tournament/join-request/compone
 import TournamentGroup from "~/features/tournament/group/components/TournamentGroup.vue";
 import {
   approvePlanAction,
+  confirmFinalStageTeamsAction,
+  confirmQualificationBracketsAction,
+  confirmQualificationResultsAction,
   finishAction,
+  generateQualificationBracketsAction,
   organizeAction,
   resumeAction,
+  revertFinalGroupTeamsLinksAction,
+  revertQualificationGeneratedBracketsAction,
+  revertQualificationTeamLinkingAction,
   startAction,
 } from "./phaseActions";
 
@@ -59,15 +66,53 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
     ui: {
       heading: "إعداد الفرق",
       description:
-        "أضف الفرق واللاعبين، ثم ابدأ تنظيم البطولة للانتقال لمرحلة ربط الفرق بالمجموعة النهائية.",
+        "أضف الفرق واللاعبين، ثم ابدأ تنظيم البطولة للانتقال للمرحلة التالية.",
     },
     view: TournamentTeam,
     actions: [organizeAction],
   },
-  [TournamentDetailedState.QualificationStagePreparing]: {
-    label: "تجهيز مرحلة التصفيات",
+  [TournamentDetailedState.LinkingQualificationStageTeams]: {
+    label: "ربط فرق مرحلة التصفيات",
     ui: {
-      description: "جهّز مجموعات التصفيات واربط الفرق قبل بدء المرحلة.",
+      alert: {
+        color: "info",
+        title: "ربط فرق التصفيات",
+        description:
+          "وزّع الفرق على مجموعات التصفيات أو قم بتوليد المباريات.",
+      },
+    },
+    view: TournamentGroup,
+    actions: [
+      revertQualificationTeamLinkingAction,
+      generateQualificationBracketsAction,
+    ],
+  },
+  [TournamentDetailedState.ManagingQualificationStageBrackets]: {
+    label: "إدارة مباريات التصفيات",
+    ui: {
+      alert: {
+        color: "info",
+        title: "إدارة مباريات التصفيات",
+        description:
+          "راجع مباريات مجموعات التصفيات، يمكنك إعادة الإنشاء أو التراجع أو اعتماد الجدول للانتقال للبدء.",
+      },
+    },
+    view: TournamentGroup,
+    actions: [
+      revertQualificationGeneratedBracketsAction,
+      generateQualificationBracketsAction,
+      confirmQualificationBracketsAction,
+    ],
+  },
+  [TournamentDetailedState.WaitingQualificationStageStarting]: {
+    label: "في انتظار بدء التصفيات",
+    ui: {
+      alert: {
+        color: "info",
+        title: "جاهز لبدء مرحلة التصفيات",
+        description:
+          "تم اعتماد جدول التصفيات. يمكنك بدء تشغيل المجموعات من صفحة المجموعات أدناه.",
+      },
     },
     view: TournamentGroup,
     actions: [],
@@ -78,23 +123,35 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       alert: {
         color: "success",
         title: "مرحلة التصفيات جارية",
-        description: "تابع مباريات التصفيات من صفحة المجموعات.",
+        description:
+          "تابع مباريات التصفيات وتحديث حالة المجموعات من صفحة المجموعات أدناه.",
       },
     },
     view: TournamentGroup,
     actions: [],
   },
-  [TournamentDetailedState.QualificationStageCompleted]: {
+  [TournamentDetailedState.QualificationStageFinished]: {
     label: "اكتملت مرحلة التصفيات",
     ui: {
       alert: {
         color: "info",
         title: "اكتملت مرحلة التصفيات",
-        description: "يمكنك متابعة إعداد المرحلة النهائية.",
+        description:
+          "انتهت جميع مجموعات التصفيات. يمكنك استئناف أي مجموعة أو اعتماد النتائج لتأهيل الفرق للمرحلة النهائية.",
       },
     },
     view: TournamentGroup,
-    actions: [],
+    actions: [confirmQualificationResultsAction],
+  },
+  [TournamentDetailedState.ManagingFinalStageQualifiedTeams]: {
+    label: "إدارة فرق المرحلة النهائية",
+    ui: {
+      heading: "إدارة فرق المرحلة النهائية",
+      description:
+        "راجع الفرق المتأهلة ويمكنك إضافة الفرق المباشرة للنهائي ثم اعتمادها.",
+    },
+    view: TournamentTeam,
+    actions: [confirmFinalStageTeamsAction],
   },
   [TournamentDetailedState.LinkingFinalGroupTeams]: {
     label: "ربط الفرق بالمجموعة النهائية",
@@ -107,7 +164,7 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       },
     },
     view: TournamentGroup,
-    actions: [],
+    actions: [revertFinalGroupTeamsLinksAction],
   },
   [TournamentDetailedState.ManagingFinalGroupBracket]: {
     label: "إدارة المجموعة والمباريات",

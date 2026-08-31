@@ -1,9 +1,7 @@
-import { GroupState } from "~/features/tournament/models/group";
 import {
   TournamentDetailedState,
   TournamentState,
 } from "~/features/tournament/models/tournament";
-import type { SetupTournamentPayload } from "~/features/tournament/detail/composables/api/useSetupTournament";
 import type {
   PhaseAction,
   TournamentPhaseContext,
@@ -11,7 +9,16 @@ import type {
 import { appKeys } from "~/composables/queryKeys";
 
 async function refreshTournament(tournamentId: string) {
-  await refreshAppData(appKeys.tournament(tournamentId));
+  await refreshAppData(
+    appKeys.tournament(tournamentId),
+    appKeys.tournamentGroups(tournamentId),
+  );
+}
+
+export function canModifyTournament(ctx: TournamentPhaseContext): boolean {
+  return (
+    ctx.isAdmin || (ctx.permissions?.includes("ModifyTournamentData") ?? false)
+  );
 }
 
 export const organizeAction: PhaseAction = {
@@ -21,28 +28,139 @@ export const organizeAction: PhaseAction = {
   variant: "outline",
   confirm: "setup",
   canExecute: (ctx) =>
-    ctx.detailedState === TournamentDetailedState.ManagingTeams &&
-    ctx.finalGroupState === GroupState.Created &&
-    ctx.tournamentState === TournamentState.Upcoming,
-  service: async (ctx, api, extra) => {
-    const payload = extra as SetupTournamentPayload | undefined;
-    if (!payload) return;
-    const body =
-      payload.type === "direct"
-        ? {
-            hasQualificationsStage: false,
-            qualificationsStageData: null,
-          }
-        : {
-            hasQualificationsStage: true,
-            qualificationsStageData: {
-              groups: payload.groups,
-            },
-          };
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.ManagingTeams,
+  service: async (ctx, api) => {
     await api(`/tournaments/${ctx.tournamentId}/setup-stages`, {
       method: "POST",
-      body,
     });
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const generateQualificationBracketsAction: PhaseAction = {
+  id: "generateQualificationBrackets",
+  label: "إنشاء مباريات التصفيات",
+  icon: "i-mdi-tournament",
+  variant: "solid",
+  color: "primary",
+  confirm: "generateQualificationBrackets",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    (ctx.detailedState ===
+      TournamentDetailedState.LinkingQualificationStageTeams ||
+      ctx.detailedState ===
+        TournamentDetailedState.ManagingQualificationStageBrackets),
+  service: async () => {},
+};
+
+export const revertQualificationTeamLinkingAction: PhaseAction = {
+  id: "revertQualificationTeamLinking",
+  label: "تراجع عن تنظيم التصفيات",
+  icon: "i-mdi-undo",
+  variant: "outline",
+  color: "neutral",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState ===
+      TournamentDetailedState.LinkingQualificationStageTeams,
+  service: async (ctx, api) => {
+    await api(
+      `/tournaments/${ctx.tournamentId}/qualification-stage/revert-team-linking`,
+      { method: "POST" },
+    );
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const revertQualificationGeneratedBracketsAction: PhaseAction = {
+  id: "revertQualificationGeneratedBrackets",
+  label: "تراجع عن إنشاء المباريات",
+  icon: "i-mdi-undo",
+  variant: "outline",
+  color: "neutral",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState ===
+      TournamentDetailedState.ManagingQualificationStageBrackets,
+  service: async (ctx, api) => {
+    await api(
+      `/tournaments/${ctx.tournamentId}/qualification-stage/revert-generated-brackets`,
+      { method: "POST" },
+    );
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const confirmQualificationBracketsAction: PhaseAction = {
+  id: "confirmQualificationBrackets",
+  label: "اعتماد جدول التصفيات",
+  icon: "i-mdi-check-decagram",
+  variant: "solid",
+  color: "primary",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState ===
+      TournamentDetailedState.ManagingQualificationStageBrackets,
+  service: async (ctx, api) => {
+    await api(
+      `/tournaments/${ctx.tournamentId}/qualification-stage/confirm-brackets`,
+      { method: "POST" },
+    );
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const confirmQualificationResultsAction: PhaseAction = {
+  id: "confirmQualificationResults",
+  label: "اعتماد نتائج التصفيات",
+  icon: "i-mdi-check-decagram",
+  variant: "solid",
+  color: "primary",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.QualificationStageFinished,
+  service: async (ctx, api) => {
+    await api(
+      `/tournaments/${ctx.tournamentId}/qualification-stage/confirm-results`,
+      { method: "PATCH" },
+    );
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const confirmFinalStageTeamsAction: PhaseAction = {
+  id: "confirmFinalStageTeams",
+  label: "اعتماد فرق المرحلة النهائية",
+  icon: "i-mdi-account-check",
+  variant: "solid",
+  color: "primary",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState ===
+      TournamentDetailedState.ManagingFinalStageQualifiedTeams,
+  service: async (ctx, api) => {
+    await api(`/tournaments/${ctx.tournamentId}/confirm-final-stage-teams`, {
+      method: "POST",
+    });
+    await refreshTournament(ctx.tournamentId);
+  },
+};
+
+export const revertFinalGroupTeamsLinksAction: PhaseAction = {
+  id: "revertFinalGroupTeamsLinks",
+  label: "تراجع عن ربط الفرق",
+  icon: "i-mdi-undo",
+  variant: "outline",
+  color: "neutral",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.LinkingFinalGroupTeams,
+  service: async (ctx, api) => {
+    await api(
+      `/tournaments/${ctx.tournamentId}/revert-final-group-teams-links`,
+      { method: "POST" },
+    );
     await refreshTournament(ctx.tournamentId);
   },
 };
@@ -55,9 +173,8 @@ export const approvePlanAction: PhaseAction = {
   color: "primary",
   confirm: "approvePlan",
   canExecute: (ctx) =>
-    ctx.isAdmin &&
-    ctx.tournamentState === TournamentState.Upcoming &&
-    ctx.finalGroupState === GroupState.MatchesGenerated,
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.ManagingFinalGroupBracket,
   service: async (ctx, api) => {
     await api(`/tournaments/${ctx.tournamentId}/confirm-final-group-bracket`, {
       method: "POST",
@@ -74,6 +191,7 @@ export const startAction: PhaseAction = {
   color: "primary",
   confirm: "start",
   canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
     ctx.detailedState === TournamentDetailedState.WaitingFinalGroupStarting,
   service: async (ctx, api) => {
     await api(`/tournaments/${ctx.tournamentId}/start-final-group-matches`, {
@@ -90,8 +208,8 @@ export const finishAction: PhaseAction = {
   variant: "soft",
   color: "primary",
   canExecute: (ctx) =>
-    ctx.detailedState === TournamentDetailedState.FinalGroupRunning &&
-    ctx.isAdmin,
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.FinalGroupRunning,
   service: async (ctx, api) => {
     await api(`/tournaments/${ctx.tournamentId}/finish`, { method: "POST" });
     await refreshTournament(ctx.tournamentId);
@@ -105,7 +223,8 @@ export const resumeAction: PhaseAction = {
   variant: "soft",
   color: "primary",
   canExecute: (ctx) =>
-    ctx.detailedState === TournamentDetailedState.Finished && ctx.isAdmin,
+    canModifyTournament(ctx) &&
+    ctx.detailedState === TournamentDetailedState.Finished,
   service: async (ctx, api) => {
     await api(`/tournaments/${ctx.tournamentId}/resume-final-group-matches`, {
       method: "POST",
@@ -118,6 +237,7 @@ export function canShowRegenerateFinalMatches(
   ctx: TournamentPhaseContext,
 ): boolean {
   return (
+    canModifyTournament(ctx) &&
     ctx.detailedState === TournamentDetailedState.ManagingFinalGroupBracket
   );
 }
