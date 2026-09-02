@@ -4,6 +4,7 @@ import {
   TAB_VIEW_CONFIG,
 } from "../constants/tournamentNavigation.config";
 import type {
+  TournamentOutletView,
   TournamentPhaseView,
   TournamentTabNavItem,
   TournamentTabView,
@@ -60,6 +61,24 @@ export function shouldShowTournamentDetailShell(
   if (!isUnderBase || !firstSegment) return false;
 
   return EMBEDDED_OUTLET_SEGMENTS.has(firstSegment);
+}
+
+export function getActiveOutletView(
+  route: RouteLocationNormalizedLoaded,
+  tournamentId: string,
+): TournamentOutletView | null {
+  const { isBase, firstSegment } = parseTournamentDetailRoute(
+    route,
+    tournamentId,
+  );
+  if (isBase || !firstSegment) return null;
+
+  for (const [view, segment] of Object.entries(OUTLET_PATH_SEGMENTS)) {
+    if (firstSegment === segment.toLowerCase()) {
+      return view as TournamentOutletView;
+    }
+  }
+  return null;
 }
 
 export function getPhaseViewPath(

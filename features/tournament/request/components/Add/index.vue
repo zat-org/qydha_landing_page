@@ -61,7 +61,7 @@
             />
           </KeepAlive>
           <KeepAlive>
-            <TournamentRequestFormTourDetailForm
+            <TournamentRequestFormJoinRequestForm
               v-show="currentStepValue === 1"
               v-model="formData"
               :errors="visibleErrors"
@@ -77,8 +77,16 @@
             />
           </KeepAlive>
           <KeepAlive>
-            <TournamentRequestFormRulesForm
+            <TournamentRequestFormTourDetailForm
               v-show="currentStepValue === 3"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+          <KeepAlive>
+            <TournamentRequestFormRulesForm
+              v-show="currentStepValue === 4"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -128,14 +136,19 @@
 </template>
 
 <script setup lang="ts">
-import { object, string, number, boolean, array, mixed } from "yup";
 import { useForm } from "vee-validate";
 import { toTypedSchema } from "@vee-validate/yup";
 import { type TournamentCreationRequest, TournamentPlayerJoinRequestType } from '~/features/tournament/models/tournamentRequest';
 import { parseTournamentRequestApiErrors, resolveStepForApiFields } from '~/features/tournament/request/composables/tournamentRequestApiErrors';
+import {
+  createTournamentRequestSchema,
+  tournamentRequestStepFieldMap,
+  tournamentRequestSteps,
+} from '~/features/tournament/request/composables/tournamentRequestFormConfig';
 import { TournamentType } from '~/features/tournament/models/tournamenetType';
 import { TournamentPrizeCurrency, TournamentPrizeType } from '~/features/tournament/models/tournamentPrize';
 import TournamentRequestFormTourForm from '~/features/tournament/request/components/Form/TourForm.vue';
+import TournamentRequestFormJoinRequestForm from '~/features/tournament/request/components/Form/JoinRequestForm.vue';
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
 import TournamentRequestFormQualificationsForm from '~/features/tournament/request/components/Form/QualificationsForm.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
@@ -190,82 +203,10 @@ const formData = reactive<TournamentCreationRequest>({
   qualificationsStageInfo: null,
 });
 
-const steps = [
-  { id: 0, title: "معلومات البطولة", slot: "TourInfo", icon: "i-heroicons-trophy" },
-  { id: 1, title: "تفاصيل البطولة", slot: "TourDetail", icon: "i-heroicons-clipboard-document-list" },
-  { id: 2, title: "أماكن التصفيات", slot: "TourPlaces", icon: "i-heroicons-map-pin" },
-  { id: 3, title: "قوانين البطولة", slot: "TourRules", icon: "i-heroicons-scale" },
-];
+const steps = [...tournamentRequestSteps];
+const stepFieldMap = tournamentRequestStepFieldMap;
 
-const stepFieldMap: Record<number, string[]> = {
-  0: ['title', 'description', 'logo', 'contactPhone', 'isContactPhoneCall', 'isContactPhoneWhatsapp', 'locationDescription', 'location', 'type', 'tournamentPrivatePassword', 'sponsors'],
-  1: ['startAt', 'endAt', 'joinRequestStartAt', 'joinRequestEndAt', 'joinRequestMaxCount', 'addPlayersByQydha', 'prizes', 'teamsCount', 'tablesCount', 'allowedJoinRequestType', 'minimumSubscriptionDays'],
-  2: ['qualificationsStageInfo'],
-  3: ['rules'],
-};
-
-const requestSchema = object({
-  title: string().required("اسم البطولة مطلوب"),
-  description: string(),
-  logo: mixed().required("شعار البطولة مطلوب"),
-  type: string().required("نوع البطولة مطلوب"),
-  tournamentPrivatePassword: string().when('type', { is: TournamentType.private, then: (schema) => schema.required("رمز البطولة الخاصة مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  locationDescription: string().required("عنوان البطولة مطلوب"),
-  location: object({ latitude: number(), longitude: number() }).test('location-selected', 'يرجى اختيار الموقع', (value) => !!value && value.latitude !== 0 && value.longitude !== 0),
-  contactPhone: string().required("رقم للتواصل للاعبين مطلوب").min(10, "رقم للتواصل للاعبين يجب أن يكون أطول من 10 أرقام"),
-  isContactPhoneCall: boolean(),
-  isContactPhoneWhatsapp: boolean().test("at-least-one-contact-method", "يجب اختيار وسيلة تواصل واحدة على الأقل (واتساب أو اتصال)", function (value) {
-    const parent = this.parent as TournamentCreationRequest;
-    return value || parent.isContactPhoneCall;
-  }),
-  sponsors: array().of(mixed()),
-  addPlayersByQydha: boolean(),
-  startAt: string().required("تاريخ بداية البطولة مطلوب"),
-  endAt: string().required("تاريخ نهاية البطولة مطلوب"),
-  joinRequestStartAt: string().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ بداية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestEndAt: string().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("تاريخ نهاية تقديم طلبات الانضمام مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  joinRequestMaxCount: number().when('addPlayersByQydha', { is: true, then: (schema) => schema.required("عدد طلبات الانضمام المطلوب مطلوب"), otherwise: (schema) => schema.notRequired() }),
-  prizes: array().min(1, "يجب إضافة جائزة واحدة على الأقل"),
-  teamsCount: number().typeError("عدد الفرق مطلوب").required("عدد الفرق مطلوب").min(2, "يجب أن يكون عدد الفرق على الأقل 2"),
-  tablesCount: number().typeError("عدد الطاولات مطلوب").required("عدد الطاولات مطلوب").min(1, "يجب ادخال عدد الطاولات"),
-  rules: array().of(string()),
-  allowedJoinRequestType: string().required("نوع طلبات الانضمام مطلوب"),
-  minimumSubscriptionDays: number()
-    .nullable()
-    .when('addPlayersByQydha', {
-      is: true,
-      then: (schema) => schema.min(0, "الحد الأدنى يجب أن يكون 0 أو أكثر"),
-      otherwise: (schema) => schema.nullable().notRequired(),
-    }),
-  qualificationsStageInfo: object({
-    places: array()
-      .of(
-        object({
-          startAt: string().required("تاريخ بداية المكان مطلوب"),
-          endAt: string().required("تاريخ نهاية المكان مطلوب"),
-          locationDescription: string()
-            .required("وصف المكان مطلوب")
-            .max(255, "وصف المكان يجب ألا يتجاوز 255 حرفاً"),
-          location: object({ latitude: number(), longitude: number() }).test(
-            "place-location-selected",
-            "يرجى اختيار موقع المكان",
-            (value) => !!value && value.latitude !== 0 && value.longitude !== 0,
-          ),
-          availableTablesCount: number()
-            .typeError("عدد الطاولات مطلوب")
-            .required("عدد الطاولات مطلوب")
-            .min(1, "يجب أن يكون عدد الطاولات على الأقل 1"),
-          competingTeamsCount: number()
-            .typeError("عدد الفرق المتنافسة مطلوب")
-            .required("عدد الفرق المتنافسة مطلوب")
-            .min(1, "يجب أن يكون عدد الفرق المتنافسة أكبر من صفر"),
-        }),
-      )
-      .min(1, "يجب إضافة مكان تصفيات واحد على الأقل"),
-  })
-    .nullable()
-    .default(null),
-});
+const requestSchema = createTournamentRequestSchema({ requireLogo: true });
 
 const { validateField, setValues, setFieldError, errors } = useForm<TournamentCreationRequest>({
   validationSchema: toTypedSchema(requestSchema),

@@ -35,6 +35,7 @@
       :index="index"
       :can-remove="model.places.length > 1"
       :disabled="disabled"
+      :min-start-date="minStartDate"
       :errors="placeErrors(index)"
       @remove="removePlace(index)"
       @blur="emit('blur')"
@@ -55,6 +56,7 @@ const props = defineProps<{
   disabled?: boolean;
   error?: string;
   errors?: Record<string, string | undefined>;
+  minStartDate?: Date;
 }>();
 
 const emit = defineEmits<{

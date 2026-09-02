@@ -1,7 +1,8 @@
 <template>
   <div class="mt-4">
     <section
-      class="rounded-2xl border space-y-2  border-gray-200/90 bg-linear-to-b from-white/95 to-gray-50/70 p-4 shadow-md shadow-gray-900/5 ring-1 ring-gray-200/60 dark:border-gray-800 dark:from-gray-950/50 dark:to-gray-950/80 dark:shadow-none dark:ring-gray-800/80 sm:p-6"
+      v-if="!activeOutlet"
+      class="rounded-2xl border space-y-2 border-gray-200/90 bg-linear-to-b from-white/95 to-gray-50/70 p-4 shadow-md shadow-gray-900/5 ring-1 ring-gray-200/60 dark:border-gray-800 dark:from-gray-950/50 dark:to-gray-950/80 dark:shadow-none dark:ring-gray-800/80 sm:p-6"
       aria-label="المرحلة الحالية"
     >
       <div
@@ -29,6 +30,7 @@
         :context="phaseContext"
         :phase-config="phaseConfig"
         :visible-actions="visibleActions"
+        :summary="lifecycleSummary"
         @refreshed="emit('refreshed')"
       />
     </section>
@@ -39,9 +41,14 @@
 import { storeToRefs } from "pinia";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 import TournamentPhasePanel from "./phases/TournamentPhasePanel.vue";
+import type { DetailTournament } from "~/features/tournament/models/tournament";
+import type { TournamentOutletView } from "~/features/tournament/detail/types/navigation.types";
+import { useTournamentLifecycleSummary } from "~/features/tournament/detail/composables/logic/useTournamentLifecycleSummary";
 
-defineProps<{
+const props = defineProps<{
   id: string;
+  tour: DetailTournament;
+  activeOutlet: TournamentOutletView | null;
 }>();
 
 const emit = defineEmits<{ refreshed: [] }>();
@@ -52,4 +59,8 @@ const {
   context: phaseContext,
   visibleActions,
 } = storeToRefs(phaseStore);
+
+const lifecycleSummary = useTournamentLifecycleSummary(
+  computed(() => props.tour),
+);
 </script>

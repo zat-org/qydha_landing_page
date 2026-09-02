@@ -22,11 +22,24 @@
       <TournamentGetHero :tour="tour" />
 
       <TournamentGetWinnersSection
-        v-if="showWinnersSection"
+        v-if="showWinnersSection && !activeOutlet"
         :winners="winnersSorted"
       />
 
-      <TournamentGetManagementBoard :id="id" @refreshed="wrappedRefresh" />
+      <TournamentOutletView
+        v-if="activeOutlet"
+        :tournament-id="id"
+        :outlet="activeOutlet"
+        @refreshed="wrappedRefresh"
+      />
+
+      <TournamentGetManagementBoard
+        v-else
+        :id="id"
+        :tour="tour"
+        :active-outlet="activeOutlet"
+        @refreshed="wrappedRefresh"
+      />
     </div>
   </UCard>
 </template>
@@ -36,18 +49,25 @@ import TournamentGetHeader from "./TournamentGetHeader.vue";
 import TournamentGetHero from "./TournamentGetHero.vue";
 import TournamentGetWinnersSection from "./TournamentGetWinnersSection.vue";
 import TournamentGetManagementBoard from "./TournamentGetManagementBoard.vue";
+import TournamentOutletView from "./TournamentOutletView.vue";
 import { useMyAuthStore } from "~/store/Auth";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
 import Loading from "~/components/loading.vue";
 import { useTournamentDetailPage } from "~/features/tournament/detail/composables/logic/useTournamentDetailPage";
+import { getActiveOutletView } from "~/features/tournament/detail/utils/tournamentNavigation.utils";
 
 const props = defineProps<{ id: string }>();
 
+const route = useRoute();
 const userStore = useMyAuthStore();
 const { isAdmin } = storeToRefs(userStore);
 const phaseStore = useTournamentPhaseStore();
 const { pending, tour, refresh, winnersSorted, showWinnersSection } =
   await useTournamentDetailPage(props.id);
+
+const activeOutlet = computed(() =>
+  getActiveOutletView(route, props.id),
+);
 
 watch(
   [tour, isAdmin],
@@ -65,5 +85,4 @@ const wrappedRefresh = async () => {
   await refresh();
   if (tour.value) phaseStore.syncFromTour(tour.value, isAdmin.value);
 };
-
 </script>

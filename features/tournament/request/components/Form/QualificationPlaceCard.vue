@@ -64,7 +64,7 @@
           <AsyncDatePicker
             v-model="place.startAt"
             :disabled="disabled"
-            :min-date="new Date()"
+            :min-date="minStartDate ?? new Date()"
             @update:model-value="emit('blur')"
           />
         </UFormField>
@@ -125,6 +125,7 @@ defineProps<{
   index: number;
   canRemove: boolean;
   disabled?: boolean;
+  minStartDate?: Date;
   errors?: {
     locationDescription?: string;
     location?: string;

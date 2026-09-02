@@ -179,7 +179,7 @@ const deletingId = ref<string | null>(null);
 const filters = ref<GetTournamentParams>({
   PageNumber: 1,
   PageSize: 10,
-  OrderByStartAtDirection: OrderByStartAtDirection.ASC,
+  OrderByStartAtDirection: OrderByStartAtDirection.DESC,
   States: [
     TournamentState.Upcoming,
     TournamentState.Running,

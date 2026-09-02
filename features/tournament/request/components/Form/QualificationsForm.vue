@@ -12,7 +12,7 @@
           أماكن مرحلة التصفيات
         </h2>
         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          اختياري — فعّل التصفيات وأضف أماكن اللعب قبل قوانين البطولة
+          اختياري — فعّل التصفيات وأضف أماكن اللعب. البداية بعد نهاية طلبات الانضمام
         </p>
         <UButton
           v-if="managePlacesHref"
@@ -38,6 +38,7 @@
         :disabled="disabledFields?.qualificationsStageInfo"
         :error="errors?.qualificationsStageInfo"
         :errors="errors"
+        :min-start-date="minStartDate"
         @blur="onFieldBlur?.('qualificationsStageInfo')"
       />
     </UForm>
@@ -47,6 +48,7 @@
 <script lang="ts" setup>
 import QualificationsStageToggle from "~/features/tournament/request/components/Form/QualificationsStageToggle.vue";
 import QualificationPlacesEditor from "~/features/tournament/request/components/Form/QualificationPlacesEditor.vue";
+import { minQualificationStartDate } from "~/features/tournament/request/composables/tournamentRequestDateUtils";
 
 const props = defineProps<{
   errors?: Record<string, string | undefined>;
@@ -56,6 +58,10 @@ const props = defineProps<{
 
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<any>({ required: true });
+
+const minStartDate = computed(() =>
+  minQualificationStartDate(model.value.addPlayersByQydha, model.value.joinRequestEndAt),
+);
 
 const route = useRoute();
 const managePlacesHref = computed(() => {

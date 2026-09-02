@@ -7,7 +7,16 @@ import {
   type GetTeamJoinRequestsParams,
   type GetTeamJoinRequestsResponse,
   type TeamJoinRequestPatchAction,
+  type UpdateTournamentTeamJoinRequestsRequest,
 } from "~/features/tournament/models/TournamentJoinRequest";
+import {
+  allApplicableBody,
+  buildTeamJoinRequestsQuery,
+  extractApiErrorMessage,
+  randomRequestsBody,
+  selectedIdsBody,
+} from "~/features/tournament/join-request/composables/joinRequestQuery.utils";
+import { appKeys } from "~/composables/queryKeys";
 
 const TournamentJoinRequestTypeLabel: Record<
   TournamentJoinRequestType,
@@ -47,17 +56,9 @@ const TournamentJoinRequestStateColors: Record<
   [TournamentJoinRequestState.Withdrawn]: "neutral",
 };
 
-function buildTeamJoinRequestsQuery(p: GetTeamJoinRequestsParams): string {
-  const qs = new URLSearchParams();
-  qs.set("pageNumber", String(p.pageNumber));
-  qs.set("pageSize", String(p.pageSize));
-  if (p.searchToken) qs.set("searchToken", p.searchToken);
-  for (const s of p.GetOnlyStates ?? []) qs.append("GetOnlyStates", s);
-  return qs.toString();
-}
-
-const refreshJoinRequestLists = () =>
+const refreshJoinRequestLists = (tournamentId?: string) =>
   refreshAppData(
+    ...(tournamentId ? [appKeys.tournament(tournamentId)] : []),
     appKeys.tournamentJoinRequests,
     appKeys.tournamentAcceptedTeams,
     appKeys.tournamentAcceptedSingles,
@@ -67,7 +68,6 @@ export const useTournamentJoinRequest = () => {
   const { $api } = useNuxtApp();
   const toast = useToast();
 
-  /** Team join requests (single list endpoint, `GetOnlyStates` filter). */
   const getTeamJoinRequests = (
     tournamentId: string,
     params: Ref<GetTeamJoinRequestsParams>,
@@ -87,56 +87,96 @@ export const useTournamentJoinRequest = () => {
     );
   };
 
-  const patchTeamJoinRequests = async (
+  const patchJoinRequests = async (
     tournamentId: string,
     action: TeamJoinRequestPatchAction,
-    joinRequestIds?: string[],
-  ) => {
-    if (!joinRequestIds?.length && action !== "approve") {
-      toast.add({ title: "اختر طلباً واحداً على الأقل", color: "warning" });
+    body?: UpdateTournamentTeamJoinRequestsRequest,
+  ): Promise<boolean> => {
+    if (action === "approve") {
+      try {
+        await $api(
+          `/tournaments/${tournamentId}/tournament-team-join-requests/approve`,
+          { method: "patch" },
+        );
+        toast.add({ title: "تم اعتماد طلبات الانضمام", color: "success" });
+        await refreshJoinRequestLists(tournamentId);
+        return true;
+      } catch (error) {
+        toast.add({
+          title: extractApiErrorMessage(error),
+          color: "error",
+        });
+        return false;
+      }
+    }
+
+    if (!body) {
+      toast.add({ title: "بيانات الطلب غير صالحة", color: "warning" });
       return false;
     }
+
     try {
       await $api(
         `/tournaments/${tournamentId}/tournament-team-join-requests/${action}`,
-        {
-          method: "patch",
-          body: {
-            joinRequestIds,
-            updateSelectionType: "SelectedIds ",
-          },
-        },
+        { method: "patch", body },
       );
       toast.add({ title: "تم تنفيذ الإجراء", color: "success" });
+      await refreshJoinRequestLists(tournamentId);
       return true;
-    } catch {
-      toast.add({ title: "تعذر تنفيذ الإجراء", color: "error" });
+    } catch (error) {
+      toast.add({
+        title: extractApiErrorMessage(error),
+        color: "error",
+      });
       return false;
     }
   };
 
-  const IntialApproveTeams = async (
+  /** @deprecated Use patchJoinRequests with selectedIdsBody / randomRequestsBody */
+  const patchTeamJoinRequests = async (
     tournamentId: string,
-    numberOfTeams: number,
+    action: TeamJoinRequestPatchAction,
+    joinRequestIds?: string[],
+    targetedPlaceId: string | null = null,
   ) => {
-    try {
-      await $api(
-        `/tournaments/${tournamentId}/tournament-team-join-requests/consider`,
-        {
-          method: "patch",
-          body: {
-            randomRequestsCount: numberOfTeams,
-            updateSelectionType: "RandomRequests",
-          },
-        },
-      );
-    } catch {
-      toast.add({ title: "تعذر تنفيذ الإجراء", color: "error" });
+    if (action === "approve") {
+      return patchJoinRequests(tournamentId, "approve");
+    }
+    if (!joinRequestIds?.length) {
+      toast.add({ title: "اختر طلباً واحداً على الأقل", color: "warning" });
       return false;
     }
-    toast.add({ title: "تم الموافقة الأوليه بنجاح", color: "success" });
-    return true;
+    return patchJoinRequests(
+      tournamentId,
+      action,
+      selectedIdsBody(joinRequestIds, action === "consider" ? targetedPlaceId : null),
+    );
   };
+
+  const considerAllApplicable = (tournamentId: string) =>
+    patchJoinRequests(tournamentId, "consider", allApplicableBody());
+
+  const considerRandom = (
+    tournamentId: string,
+    randomRequestsCount: number,
+    targetedPlaceId: string,
+  ) =>
+    patchJoinRequests(
+      tournamentId,
+      "consider",
+      randomRequestsBody(randomRequestsCount, targetedPlaceId),
+    );
+
+  const considerSelected = (
+    tournamentId: string,
+    joinRequestIds: string[],
+    targetedPlaceId: string,
+  ) =>
+    patchJoinRequests(
+      tournamentId,
+      "consider",
+      selectedIdsBody(joinRequestIds, targetedPlaceId),
+    );
 
   const getTournamentJoinRequests = (
     tournamentId: string,
@@ -183,7 +223,6 @@ export const useTournamentJoinRequest = () => {
         const teamsCount = teamsResponse.data?.totalCount ?? 0;
         const singlesCount = singlesResponse.data?.totalCount ?? 0;
 
-        // Teams count is multiplied by 2 (assuming 2 players per team)
         return teamsCount * 2 + singlesCount;
       },
     );
@@ -237,7 +276,7 @@ export const useTournamentJoinRequest = () => {
           `/tournaments/${_tournamentId}/join-request/${_joinRequestId}/accept`,
           { method: "patch" },
         );
-        await refreshJoinRequestLists();
+        await refreshJoinRequestLists(_tournamentId);
         toast.add({ title: "تم القبول بنجاح", color: "success" });
       });
     };
@@ -268,7 +307,7 @@ export const useTournamentJoinRequest = () => {
           `/tournaments/${_tournamentId}/join-request/${_joinRequestId}/revert`,
           { method: "patch" },
         );
-        await refreshJoinRequestLists();
+        await refreshJoinRequestLists(_tournamentId);
         toast.add({ title: "تم التراجع بنجاح", color: "success" });
       });
     };
@@ -302,7 +341,7 @@ export const useTournamentJoinRequest = () => {
           `/tournaments/${_tournamentId}/join-request/auto-complete`,
           { method: "patch" },
         );
-        await refreshJoinRequestLists();
+        await refreshJoinRequestLists(_tournamentId);
         toast.add({ title: "تم الاكمال التلقائي بنجاح", color: "success" });
       });
     };
@@ -362,13 +401,16 @@ export const useTournamentJoinRequest = () => {
   return {
     getTournamentJoinRequests,
     getTeamJoinRequests,
+    patchJoinRequests,
     patchTeamJoinRequests,
+    considerAllApplicable,
+    considerRandom,
+    considerSelected,
     getTouranmentnumberofUserWantstoIn,
     getTournamnetAcceptedSingleJoinRequest,
     getTournamnetAcceptedTeamsJoinRequest,
     AcceptJoinRequest,
     RejectJoinRequest,
-    IntialApproveTeams,
     RevertJoinRequest,
     AutoCompleteJoinRequest,
     getTournamentJoinRequestStateOptions,

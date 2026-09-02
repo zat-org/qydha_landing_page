@@ -4,6 +4,7 @@ import type {
   TournamentDetailedState,
   TournamentState,
 } from "~/features/tournament/models/tournament";
+import type { TournamentOutletView } from "~/features/tournament/detail/types/navigation.types";
 
 export interface PhaseAlertConfig {
   color: "info" | "success" | "warning" | "neutral";
@@ -73,9 +74,18 @@ export interface PhaseAction {
   ) => Promise<void>;
 }
 
+export type PhaseManageRoute = TournamentOutletView | "bracket" | null;
+
+export interface PhaseLifecycleConfig {
+  inlineSummary: Component | null;
+  manageRoute: PhaseManageRoute;
+  manageLabel: string;
+}
+
 export interface PhaseStateConfig {
   label: string;
   ui: PhaseUiConfig;
   view: Component | null;
+  lifecycle: PhaseLifecycleConfig;
   actions: PhaseAction[];
 }

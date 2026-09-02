@@ -34,16 +34,14 @@
       v-model:open="qualGenerateOpen"
       :tournament-id="context.tournamentId"
       :is-regenerate="isRegenerateQual"
-      @success="emit('refreshed')"
+      @success="onPhaseRefreshed"
     />
   </TournamentPhaseContent>
 
-  <component
-    :is="phaseConfig.view"
-    v-if="phaseConfig.view"
-    class="mt-4"
+  <TournamentLifecyclePanel
     :tournament-id="context.tournamentId"
-    @done="emit('refreshed')"
+    :lifecycle="phaseConfig.lifecycle"
+    :summary="summary"
   />
 </template>
 
@@ -52,18 +50,21 @@ import TournamentApprovePlanConfirmModal from "../../shared/TournamentApprovePla
 import TournamentStartConfirmModal from "../../shared/TournamentStartConfirmModal.vue";
 import GenerateQualificationBracketsDrawer from "~/features/tournament/detail/components/GenerateQualificationBracketsDrawer.vue";
 import TournamentPhaseContent from "./TournamentPhaseContent.vue";
+import TournamentLifecyclePanel from "../lifecycle/TournamentLifecyclePanel.vue";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import type {
   PhaseAction,
   PhaseStateConfig,
   TournamentPhaseContext,
 } from "~/features/tournament/detail/types/phase.types";
+import type { TournamentLifecycleSummary } from "~/features/tournament/detail/composables/logic/useTournamentLifecycleSummary";
 import { useTournamentPhaseActions } from "~/features/tournament/detail/composables/logic/useTournamentPhaseActions";
 
 const props = defineProps<{
   context: TournamentPhaseContext;
   phaseConfig: PhaseStateConfig;
   visibleActions: PhaseAction[];
+  summary: TournamentLifecycleSummary;
 }>();
 
 const emit = defineEmits<{ refreshed: [] }>();
@@ -85,6 +86,11 @@ const {
   confirmApprovePlan,
   confirmStart,
 } = useTournamentPhaseActions(props.context.tournamentId, () =>
-  emit("refreshed"),
+  onPhaseRefreshed(),
 );
+
+async function onPhaseRefreshed() {
+  await props.summary.refresh();
+  emit("refreshed");
+}
 </script>

@@ -11,7 +11,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "knip": "knip"
+    "knip": "knip",
+    "simulate:join": "node --env-file=.env scripts/simulate-mobile-team-join.mjs"
   },
   "dependencies": {
     "@dagrejs/dagre": "^3.0.0",

@@ -1,8 +1,12 @@
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
-import type { PhaseStateConfig } from "~/features/tournament/detail/types/phase.types";
-import TournamentTeam from "~/features/tournament/teams/components/TournamentTeam.vue";
-import TournamentJoiningRequest from "~/features/tournament/join-request/components/TournamentJoiningRequest.vue";
-import TournamentGroup from "~/features/tournament/group/components/TournamentGroup.vue";
+import type {
+  PhaseLifecycleConfig,
+  PhaseStateConfig,
+} from "~/features/tournament/detail/types/phase.types";
+import TeamsLifecycleSummary from "~/features/tournament/detail/components/TournamentGet/lifecycle/TeamsLifecycleSummary.vue";
+import JoinRequestsLifecycleSummary from "~/features/tournament/detail/components/TournamentGet/lifecycle/JoinRequestsLifecycleSummary.vue";
+import GroupsLifecycleSummary from "~/features/tournament/detail/components/TournamentGet/lifecycle/GroupsLifecycleSummary.vue";
+import FinalGroupLifecycleSummary from "~/features/tournament/detail/components/TournamentGet/lifecycle/FinalGroupLifecycleSummary.vue";
 import {
   approvePlanAction,
   confirmFinalStageTeamsAction,
@@ -18,6 +22,39 @@ import {
   startAction,
 } from "./phaseActions";
 
+const LIFECYCLE = {
+  teams: {
+    inlineSummary: TeamsLifecycleSummary,
+    manageRoute: "team",
+    manageLabel: "عرض كل الفرق",
+  },
+  joinRequests: {
+    inlineSummary: JoinRequestsLifecycleSummary,
+    manageRoute: "joinRequest",
+    manageLabel: "إدارة الطلبات",
+  },
+  groupsHierarchy: {
+    inlineSummary: GroupsLifecycleSummary,
+    manageRoute: "group",
+    manageLabel: "إدارة المجموعات",
+  },
+  finalGroup: {
+    inlineSummary: FinalGroupLifecycleSummary,
+    manageRoute: "group",
+    manageLabel: "إدارة المجموعات",
+  },
+  bracket: {
+    inlineSummary: null,
+    manageRoute: "bracket",
+    manageLabel: "عرض الخريطة",
+  },
+  none: {
+    inlineSummary: null,
+    manageRoute: null,
+    manageLabel: "",
+  },
+} satisfies Record<string, PhaseLifecycleConfig>;
+
 export const UNKNOWN_PHASE_CONFIG: PhaseStateConfig = {
   label: "حالة غير معروفة",
   ui: {
@@ -29,6 +66,7 @@ export const UNKNOWN_PHASE_CONFIG: PhaseStateConfig = {
     },
   },
   view: null,
+  lifecycle: LIFECYCLE.none,
   actions: [],
 };
 
@@ -41,16 +79,18 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
     ui: {
       description: "ابدأ بإعداد البطولة والفرق حسب سياسة الانضمام.",
     },
-    view: TournamentTeam,
+    view: null,
+    lifecycle: LIFECYCLE.teams,
     actions: [],
   },
   [TournamentDetailedState.ReceivingJoinRequests]: {
     label: "استقبال طلبات الانضمام",
     ui: {
       description:
-        "مرحلة استقبال الطلبات — عرض الطلبات دون اتخاذ إجراء من لوحة التحكم هنا.",
+        "مرحلة استقبال الطلبات — راجع الطلبات الواردة ثم انتقل لإدارتها.",
     },
-    view: TournamentJoiningRequest,
+    view: null,
+    lifecycle: LIFECYCLE.joinRequests,
     actions: [],
   },
   [TournamentDetailedState.ManagingJoinRequests]: {
@@ -58,7 +98,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
     ui: {
       description: "يمكنك قبول الطلبات أو رفضها.",
     },
-    view: TournamentJoiningRequest,
+    view: null,
+    lifecycle: LIFECYCLE.joinRequests,
     actions: [],
   },
   [TournamentDetailedState.ManagingTeams]: {
@@ -68,7 +109,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       description:
         "أضف الفرق واللاعبين، ثم ابدأ تنظيم البطولة للانتقال للمرحلة التالية.",
     },
-    view: TournamentTeam,
+    view: null,
+    lifecycle: LIFECYCLE.teams,
     actions: [organizeAction],
   },
   [TournamentDetailedState.LinkingQualificationStageTeams]: {
@@ -81,7 +123,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
           "وزّع الفرق على مجموعات التصفيات أو قم بتوليد المباريات.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.groupsHierarchy,
     actions: [
       revertQualificationTeamLinkingAction,
       generateQualificationBracketsAction,
@@ -97,7 +140,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
           "راجع مباريات مجموعات التصفيات، يمكنك إعادة الإنشاء أو التراجع أو اعتماد الجدول للانتقال للبدء.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.groupsHierarchy,
     actions: [
       revertQualificationGeneratedBracketsAction,
       generateQualificationBracketsAction,
@@ -111,10 +155,11 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
         color: "info",
         title: "جاهز لبدء مرحلة التصفيات",
         description:
-          "تم اعتماد جدول التصفيات. يمكنك بدء تشغيل المجموعات من صفحة المجموعات أدناه.",
+          "تم اعتماد جدول التصفيات. يمكنك بدء تشغيل المجموعات من صفحة المجموعات.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.groupsHierarchy,
     actions: [],
   },
   [TournamentDetailedState.QualificationStageRunning]: {
@@ -123,11 +168,11 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       alert: {
         color: "success",
         title: "مرحلة التصفيات جارية",
-        description:
-          "تابع مباريات التصفيات وتحديث حالة المجموعات من صفحة المجموعات أدناه.",
+        description: "تابع مباريات التصفيات وتحديث حالة المجموعات.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.groupsHierarchy,
     actions: [],
   },
   [TournamentDetailedState.QualificationStageFinished]: {
@@ -140,7 +185,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
           "انتهت جميع مجموعات التصفيات. يمكنك استئناف أي مجموعة أو اعتماد النتائج لتأهيل الفرق للمرحلة النهائية.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.groupsHierarchy,
     actions: [confirmQualificationResultsAction],
   },
   [TournamentDetailedState.ManagingFinalStageQualifiedTeams]: {
@@ -150,7 +196,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       description:
         "راجع الفرق المتأهلة ويمكنك إضافة الفرق المباشرة للنهائي ثم اعتمادها.",
     },
-    view: TournamentTeam,
+    view: null,
+    lifecycle: LIFECYCLE.teams,
     actions: [confirmFinalStageTeamsAction],
   },
   [TournamentDetailedState.LinkingFinalGroupTeams]: {
@@ -163,7 +210,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
           "وزع الفرق على المجموعة النهائية ثم كوّن المباريات من صفحة المجموعات.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.finalGroup,
     actions: [revertFinalGroupTeamsLinksAction],
   },
   [TournamentDetailedState.ManagingFinalGroupBracket]: {
@@ -172,7 +220,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       description:
         "ولّد المباريات وراجع الخريطة قبل الموافقة على المخطط وبدء اللعب.",
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.finalGroup,
     actions: [approvePlanAction],
   },
   [TournamentDetailedState.WaitingFinalGroupStarting]: {
@@ -186,6 +235,7 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       },
     },
     view: null,
+    lifecycle: LIFECYCLE.bracket,
     actions: [startAction],
   },
   [TournamentDetailedState.FinalGroupRunning]: {
@@ -197,7 +247,8 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
         description: "تابع المباريات من الخريطة أو حدّث النتائج حسب صلاحياتك.",
       },
     },
-    view: TournamentGroup,
+    view: null,
+    lifecycle: LIFECYCLE.bracket,
     actions: [finishAction],
   },
   [TournamentDetailedState.Finished]: {
@@ -209,6 +260,7 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
       },
     },
     view: null,
+    lifecycle: LIFECYCLE.bracket,
     actions: [resumeAction],
   },
 };

@@ -95,7 +95,7 @@ export interface GetTournamentAcceptedTeamsJoinRequestResponse {
   hasNext: boolean;
 }
 
-/** GET /tournaments/{id}/tournament-team-join-requests — `GetOnlyStates` query (teams only). */
+/** GET /tournaments/{id}/tournament-team-join-requests — organizer list. */
 export enum TeamJoinRequestWorkflowState {
   WaitingTeammateAcceptance = "WaitingTeammateAcceptance",
   CanceledByCreator = "CanceledByCreator",
@@ -106,14 +106,23 @@ export enum TeamJoinRequestWorkflowState {
   ApprovedByOrganizer = "ApprovedByOrganizer",
   Withdrawn = "Withdrawn",
   Expired = "Expired",
+  InWaitingList = "InWaitingList",
+  WithdrawnFromWaitingList = "WithdrawnFromWaitingList",
+  WithdrawnAfterApproval = "WithdrawnAfterApproval",
+  ApprovedFromWaitingList = "ApprovedFromWaitingList",
 }
 
 export interface GetTeamJoinRequestsParams {
-  pageNumber: number;
-  pageSize: number;
+  pageNumber?: number;
+  pageSize?: number;
   searchToken?: string | null;
-  /** Sent as repeated `GetOnlyStates` query keys. */
-  GetOnlyStates: TeamJoinRequestWorkflowState[];
+  /** Repeated `getOnlyStates` query keys. Omit for backend default. */
+  getOnlyStates?: TeamJoinRequestWorkflowState[];
+  useSelectedQualificationsPlaceIdFilter?: boolean;
+  selectedQualificationsPlaceId?: string | null;
+  assignedPlaceId?: string | null;
+  /** When true, filter assignedPlaceId=null (empty query value). */
+  useAssignedPlaceNullFilter?: boolean;
 }
 
 
@@ -128,7 +137,6 @@ export interface GetTeamJoinRequestsParams {
 
 
 export interface TeamJoinRequestListItem {
-  requesterUserId: string;
   joinRequestId: string;
   tournamentId: string;
   tournamentName: string;
@@ -136,19 +144,22 @@ export interface TeamJoinRequestListItem {
   teamName: string;
   state: TeamJoinRequestWorkflowState;
   createdAt: string;
+  selectedQualificationsPlaceId: string | null;
+  assignedPlaceId: string | null;
+  acceptsWaitingListPlacement: boolean;
   creatorId: string;
   creatorUsername: string;
   creatorName: string | null;
-  creatorBirthDate: string | null;
+  creatorAge: number | null;
   teammateId: string;
   teammateUsername: string;
   teammateName: string | null;
-  teammateBirthDate: string | null;
-  creatorAge: number | null;
   teammateAge: number | null;
-  overallStatus: string;
-  selectedQualificationsPlaceId: string | null;
-  acceptsWaitingListPlacement: boolean;
+  /** Legacy fields — may be absent on newer API payloads */
+  requesterUserId?: string;
+  creatorBirthDate?: string | null;
+  teammateBirthDate?: string | null;
+  overallStatus?: string;
 }
 
 export interface GetTeamJoinRequestsResponse {
@@ -157,8 +168,22 @@ export interface GetTeamJoinRequestsResponse {
   totalPages: number;
   totalCount: number;
   pageSize: number;
-  hasPervious: boolean;
+  hasPrevious: boolean;
   hasNext: boolean;
+  /** Legacy typo from older API */
+  hasPervious?: boolean;
+}
+
+export type TeamJoinRequestUpdateSelectionType =
+  | "SelectedIds"
+  | "RandomRequests"
+  | "AllApplicable";
+
+export interface UpdateTournamentTeamJoinRequestsRequest {
+  updateSelectionType: TeamJoinRequestUpdateSelectionType;
+  joinRequestIds: string[];
+  randomRequestsCount: number;
+  targetedPlaceId: string | null;
 }
 
 export type TeamJoinRequestPatchAction =
@@ -166,6 +191,8 @@ export type TeamJoinRequestPatchAction =
   | "revert-cancel"
   | "consider"
   | "revert-consideration"
+  | "move-to-waiting-list"
+  | "revert-waiting-list"
   | "approve";
 
 export const TEAM_JOIN_STATE_LABEL: Record<TeamJoinRequestWorkflowState, string> = {
@@ -178,6 +205,10 @@ export const TEAM_JOIN_STATE_LABEL: Record<TeamJoinRequestWorkflowState, string>
   [TeamJoinRequestWorkflowState.ApprovedByOrganizer]: "تمت الموافقة النهائية",
   [TeamJoinRequestWorkflowState.Withdrawn]: "منسحب",
   [TeamJoinRequestWorkflowState.Expired]: "منتهي",
+  [TeamJoinRequestWorkflowState.InWaitingList]: "قائمة الانتظار",
+  [TeamJoinRequestWorkflowState.WithdrawnFromWaitingList]: "انسحب من قائمة الانتظار",
+  [TeamJoinRequestWorkflowState.WithdrawnAfterApproval]: "انسحب بعد الموافقة",
+  [TeamJoinRequestWorkflowState.ApprovedFromWaitingList]: "مقبول من قائمة الانتظار",
 };
 
 export const TEAM_JOIN_STATE_COLOR: Record<TeamJoinRequestWorkflowState, string> = {
@@ -190,9 +221,13 @@ export const TEAM_JOIN_STATE_COLOR: Record<TeamJoinRequestWorkflowState, string>
   [TeamJoinRequestWorkflowState.ApprovedByOrganizer]: "success",
   [TeamJoinRequestWorkflowState.Withdrawn]: "neutral",
   [TeamJoinRequestWorkflowState.Expired]: "neutral",
+  [TeamJoinRequestWorkflowState.InWaitingList]: "info",
+  [TeamJoinRequestWorkflowState.WithdrawnFromWaitingList]: "neutral",
+  [TeamJoinRequestWorkflowState.WithdrawnAfterApproval]: "warning",
+  [TeamJoinRequestWorkflowState.ApprovedFromWaitingList]: "success",
 };
 
-/** States listed on the main tab (every workflow state except «consideration» bucket). */
+/** @deprecated Use getOnlyStates on GetTeamJoinRequestsParams */
 export const TEAM_JOIN_MAIN_TAB_STATES: TeamJoinRequestWorkflowState[] = Object.values(
   TeamJoinRequestWorkflowState,
 ).filter((s) => s !== TeamJoinRequestWorkflowState.WaitingOrganizerApproval);

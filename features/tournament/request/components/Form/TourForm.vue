@@ -149,40 +149,6 @@
       </UFormField>
 
       <UFormField
-        label="مكان البطولة"
-        name="locationDescription"
-        required
-        :error="errors?.locationDescription"
-      >
-        <UInput
-          v-model="modelValue.locationDescription"
-          :disabled="disabledFields?.locationDescription"
-          placeholder="أدخل عنوان البطولة"
-          @blur="onFieldBlur?.('locationDescription')"
-        />
-      </UFormField>
-      <UFormField
-        label="موقع البطولة"
-        name="location"
-        required
-        :error="errors?.location"
-        :help="
-          modelValue.location.latitude != 0 &&
-          modelValue.location.longitude != 0
-            ? `الإحداثيات: ${modelValue.location.latitude}, ${modelValue.location.longitude}`
-            : 'يرجى لصق رابط Google Maps واستخراج الموقع'
-        "
-      >
-        <MapGoogleMapsUrlInput
-          v-model:location="modelValue.location"
-          v-model:location-name="modelValue.locationDescription"
-          :disabled="disabledFields?.location"
-          name="location"
-          label="رابط Google Maps"
-          @parsed="onLocationParsed"
-        />
-      </UFormField>
-      <UFormField
         label="نوع البطولة"
         name="type"
         required
@@ -282,11 +248,6 @@ const props = defineProps<{
   initialLogoUrl?: string;
 }>();
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
-
-const onLocationParsed = () => {
-  props.onFieldBlur?.("location");
-  props.onFieldBlur?.("locationDescription");
-};
 
 const sponsersAvilabel = ref(false);
 const logoImageUrl = ref<string>("");
