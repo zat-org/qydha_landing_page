@@ -116,6 +116,15 @@
                       name="i-mdi-map-marker-question-outline"
                       class="size-4 shrink-0 text-gray-400"
                     />
+                    <UTooltip
+                      v-else-if="isPlaceCapacityMet(row)"
+                      text="اكتمل العدد المطلوب لهذا المكان"
+                    >
+                      <UIcon
+                        name="i-mdi-check-circle"
+                        class="size-4 shrink-0 text-success"
+                      />
+                    </UTooltip>
                     {{ row.label }}
                   </span>
                 </td>
@@ -217,6 +226,11 @@ function formatCell(
   if (row.isNoPreference) return "—";
   const value = row[field];
   return value ?? "—";
+}
+
+function isPlaceCapacityMet(row: JoinRequestPlaceSummaryRow): boolean {
+  if (row.isNoPreference || row.remaining == null) return false;
+  return row.remaining <= 0;
 }
 
 async function onBulkSuccess() {
