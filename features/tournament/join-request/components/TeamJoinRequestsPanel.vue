@@ -85,16 +85,6 @@
         <UInput placeholder="اسم الفريق أو اللاعب" @input="debouncedSearch" />
       </UFormField>
 
-      <UFormField class="min-w-0 flex-1" label="تصفية حسب المكان (اختيار اللاعب)">
-        <USelect
-          v-model="selectedPlaceFilter"
-          class="w-full"
-          :items="placeFilterOptions"
-          value-key="value"
-          label-key="label"
-        />
-      </UFormField>
-
       <UFormField
         v-if="activeTab === 'approval'"
         class="min-w-0 flex-1"
@@ -324,21 +314,11 @@ const { placeLabel } = useTournamentPlaces(() => tourREQ.data.value);
 const allPlaces = computed(() => placesREQ.data.value ?? []);
 const targetPlaces = computed(() => getJoinRequestTargetPlaces(allPlaces.value));
 
-const selectedPlaceFilter = ref<string>("all");
 const assignedPlaceFilter = ref<string>("all");
 const expandedIds = ref(new Set<string>());
 
 const considerModalOpen = ref(false);
 const considerModalRows = ref<TeamJoinRequestListItem[]>([]);
-
-const placeFilterOptions = computed(() => [
-  { label: "كل الأماكن", value: "all" },
-  { label: "بدون تفضيل", value: "none" },
-  ...targetPlaces.value.map((p) => ({
-    label: placeLabel(p.id),
-    value: p.id,
-  })),
-]);
 
 const assignedPlaceFilterOptions = computed(() => [
   { label: "كل الأماكن المعيّنة", value: "all" },
@@ -360,23 +340,17 @@ watch(
   (tab) => {
     params.value.getOnlyStates = JOIN_REQUEST_TAB_STATES[tab];
     params.value.pageNumber = 1;
+    params.value.useSelectedQualificationsPlaceIdFilter = undefined;
+    params.value.selectedQualificationsPlaceId = undefined;
+    params.value.assignedPlaceId = undefined;
+    params.value.useAssignedPlaceNullFilter = false;
+    assignedPlaceFilter.value = "all";
     selectedIds.value = [];
     expandedIds.value = new Set();
   },
 );
 
-watch([selectedPlaceFilter, assignedPlaceFilter], () => {
-  if (selectedPlaceFilter.value === "none") {
-    params.value.useSelectedQualificationsPlaceIdFilter = true;
-    params.value.selectedQualificationsPlaceId = null;
-  } else if (selectedPlaceFilter.value !== "all") {
-    params.value.useSelectedQualificationsPlaceIdFilter = true;
-    params.value.selectedQualificationsPlaceId = selectedPlaceFilter.value;
-  } else {
-    params.value.useSelectedQualificationsPlaceIdFilter = undefined;
-    params.value.selectedQualificationsPlaceId = undefined;
-  }
-
+watch(assignedPlaceFilter, () => {
   if (props.activeTab === "approval" && assignedPlaceFilter.value !== "all") {
     params.value.assignedPlaceId = assignedPlaceFilter.value;
     params.value.useAssignedPlaceNullFilter = false;
