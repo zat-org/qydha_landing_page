@@ -1,61 +1,6 @@
 <template>
   <div class="fixed top-0 left-0 right-0 z-50 flex flex-col backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs">
-    <!-- Groups pill selector bar -->
-    <div
-      v-if="tourStore.tournament.length > 0"
-      class="flex items-center gap-2 overflow-x-auto px-3 py-2 scrollbar-none w-full"
-    >
-      <button
-        v-for="item in tourStore.tournament"
-        :key="item.data.id"
-        type="button"
-        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none shrink-0"
-        :class="
-          tourStore.selectedGroup?.data.id === item.data.id
-            ? 'bg-primary text-white shadow-sm shadow-primary/30 ring-2 ring-primary/20'
-            : 'bg-gray-100 text-gray-700 hover:bg-gray-200/80 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-        "
-        @click="handleGroupSelection(item.data.id.toString())"
-      >
-        <UIcon
-          :name="
-            item.data.type === GroupType.Final || item.data.stageType === 'Final'
-              ? 'i-heroicons-trophy-20-solid'
-              : 'i-heroicons-squares-2x2-20-solid'
-          "
-          class="size-3.5 shrink-0"
-        />
-        <span>{{ item.data.name }}</span>
-        <span
-          v-if="item.data.placeId && placeLabel(item.data.placeId) !== 'أي مكان'"
-          class="text-[10px] opacity-80 font-normal"
-        >
-          · {{ placeLabel(item.data.placeId) }}
-        </span>
-        <span
-          v-if="item.data.type === GroupType.Final || item.data.stageType === 'Final'"
-          class="text-[10px] px-1.5 py-0.2 rounded-full font-bold"
-          :class="
-            tourStore.selectedGroup?.data.id === item.data.id
-              ? 'bg-white/20 text-white'
-              : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-          "
-        >
-          النهائي
-        </span>
-        <span
-          v-else
-          class="text-[10px] px-1.5 py-0.2 rounded-full font-medium"
-          :class="
-            tourStore.selectedGroup?.data.id === item.data.id
-              ? 'bg-white/20 text-white'
-              : 'bg-primary/10 text-primary dark:text-primary-400'
-          "
-        >
-          تصفيات
-        </span>
-      </button>
-    </div>
+    <BracketGroupPills />
 
     <!-- Admin actions and rounds toolbar -->
     <div
@@ -180,7 +125,7 @@ import {
   startAction,
 } from "~/features/tournament/phase/phaseActions";
 import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
-import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
+import BracketGroupPills from "./BracketGroupPills.vue";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -200,7 +145,6 @@ const route = useRoute();
 const tourid = route.params.id?.toString() || '';
 const getTourRequest = await useSingleTournament().getSingelTournament(tourid);
 const tour = computed(() => getTourRequest.data.value);
-const { placeLabel } = useTournamentPlaces(() => tour.value);
 
 watch(
   [tour, isAdmin],
@@ -243,13 +187,6 @@ watch(
     selectedRoundId.value = id;
   },
 );
-
-const handleGroupSelection = (group_id: string) => {
-  useRouter().push({
-    path: route.path,
-    query: { ...route.query, group: group_id },
-  });
-};
 
 const onRoundSelected = (id?: string) => {
   if (!id) return;
