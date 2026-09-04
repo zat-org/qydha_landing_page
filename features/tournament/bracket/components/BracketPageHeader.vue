@@ -4,7 +4,7 @@
 
     <!-- Admin actions and rounds toolbar -->
     <div
-      v-if="isAdminOrStaff && tourStore.selectedGroup"
+      v-if="canAccessRounds && tourStore.selectedGroup"
       class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-200/60 dark:border-gray-800/60 px-3 py-1.5 bg-gray-50/70 dark:bg-gray-900/40"
     >
       <!-- Action buttons -->
@@ -137,7 +137,7 @@ const emit = defineEmits<{
 }>();
 
 const userStore = useMyAuthStore();
-const { user, isAdmin } = storeToRefs(userStore);
+const { isAdmin, isOrganizer } = storeToRefs(userStore);
 const phaseStore = useTournamentPhaseStore();
 
 const tourStore = useTournamentBracketStore();
@@ -154,10 +154,9 @@ watch(
   { immediate: true },
 );
 
-const isAdminOrStaff = computed(() => {
-  const roles = user.value?.user.roles;
-  return !!roles?.includes("SuperAdmin") || !!roles?.includes("StaffAdmin");
-});
+const canAccessRounds = computed(
+  () => !!isAdmin.value || !!isOrganizer.value,
+);
 
 const isFinalGroupSelected = computed(
   () => tourStore.selectedGroup?.data.type === GroupType.Final,
@@ -202,7 +201,7 @@ const clearRoundSelection = () => {
 
 const canEditSelectedRound = computed(() => {
   return Boolean(
-    isAdminOrStaff.value &&
+    canAccessRounds.value &&
     tourStore.selectedGroup &&
     tourStore.selectedRound?.id
   );

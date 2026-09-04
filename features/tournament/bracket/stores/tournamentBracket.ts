@@ -9,9 +9,11 @@ import {
 import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
 import { useGroup } from '~/features/tournament/group/composables/group';
 import { useMatch } from '~/features/tournament/shared/composables/match';
+import { useMyAuthStore } from '~/store/Auth';
 
 export const useTournamentBracketStore = defineStore('tournamentBracket', () => {
   const route = useRoute();
+  const authStore = useMyAuthStore();
   const groupApi = useGroup();
   const games = ref<{ id: string; game: IMatchData; statistics: IMathStat }[]>(
     [],
@@ -179,10 +181,16 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       selectedTournamentId.value || route.params.id?.toString() || '';
     if (!tournamentId || !groupId) return;
 
-    // 1. Fetch rounds for this group
-    await roundsREQ.fetchREQ(tournamentId, groupId);
-    if (roundsREQ.status.value === 'success' && roundsREQ.data?.value) {
-      rounds.value = roundsREQ.data.value.rounds ?? [];
+    // 1. Fetch rounds only for admin, staff, or organizer
+    const canLoadRounds = !!authStore.isAdmin || !!authStore.isOrganizer;
+    if (canLoadRounds) {
+      await roundsREQ.fetchREQ(tournamentId, groupId);
+      if (roundsREQ.status.value === 'success' && roundsREQ.data?.value) {
+        rounds.value = roundsREQ.data.value.rounds ?? [];
+      }
+    } else {
+      rounds.value = [];
+      selectedRound.value = undefined;
     }
 
     // 2. Fetch matches if not cached or forced

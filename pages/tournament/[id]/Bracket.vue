@@ -8,7 +8,7 @@
     <div v-if="!obsMode" class="shrink-0">
       <BracketPageHeader
         v-if="
-          userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)
+          userStore.user && (userStore.isAdmin || userStore.isOrganizer)
         "
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
         @open-start-confirm="openStartTournamentConfirm"
@@ -91,7 +91,7 @@
     <template v-if="!obsMode">
       <UpdateRoundDrawer
         v-if="
-          userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)
+          userStore.user && (userStore.isAdmin || userStore.isOrganizer)
         "
         ref="updateRoundDrawer"
         :round="roundBeingEdited"
