@@ -5,15 +5,15 @@
   >
     <div class="flex items-center gap-0.5 sm:gap-1">
       <UButton
-        v-if="clipLeft"
-        icon="i-heroicons-chevron-left-20-solid"
+        v-if="clipRight"
+        icon="i-heroicons-chevron-right-20-solid"
         size="xs"
         color="neutral"
         variant="ghost"
         square
         class="shrink-0"
-        aria-label="المجموعات السابقة"
-        @click="scrollPage(-1)"
+        aria-label="المزيد من المجموعات"
+        @click="scrollPage(1)"
       />
 
       <div
@@ -69,15 +69,15 @@
       </div>
 
       <UButton
-        v-if="clipRight"
-        icon="i-heroicons-chevron-right-20-solid"
+        v-if="clipLeft"
+        icon="i-heroicons-chevron-left-20-solid"
         size="xs"
         color="neutral"
         variant="ghost"
         square
         class="shrink-0"
-        aria-label="المزيد من المجموعات"
-        @click="scrollPage(1)"
+        aria-label="المجموعات السابقة"
+        @click="scrollPage(-1)"
       />
     </div>
 
