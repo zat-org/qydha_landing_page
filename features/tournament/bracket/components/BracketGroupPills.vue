@@ -26,7 +26,7 @@
           v-for="item in tourStore.tournament"
           :key="item.data.id"
           type="button"
-          class="inline-flex snap-start items-center gap-1.5 px-3.5 py-2.5 min-h-10 rounded-full text-sm font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none shrink-0"
+          class="inline-flex snap-start items-center gap-1.5 px-3.5 py-2.5 min-h-10 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 cursor-pointer select-none shrink-0"
           :class="
             tourStore.selectedGroup?.data.id === item.data.id
               ? 'bg-primary text-white shadow-sm shadow-primary/30 ring-2 ring-primary/20'

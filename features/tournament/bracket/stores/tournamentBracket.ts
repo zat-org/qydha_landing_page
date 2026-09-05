@@ -14,6 +14,7 @@ import {
   bracketGroupsProbeOrder,
   defaultBracketGroup,
   hasRequesterMatches,
+  lastRequesterMatchId,
 } from '~/features/tournament/bracket/utils/defaultBracketGroup';
 
 export const useTournamentBracketStore = defineStore('tournamentBracket', () => {
@@ -183,6 +184,26 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     return ids.some((id) => String(id) === String(matchId));
   };
 
+  const requesterGroup = computed(() => {
+    const groups = tournament.value.map((entry) => entry.data);
+    const target = defaultBracketGroup(groups);
+    return target && hasRequesterMatches(target) ? target : undefined;
+  });
+
+  const myMatchId = computed(() =>
+    lastRequesterMatchId(requesterGroup.value?.requesterMatchIds),
+  );
+
+  const myMatchFocusNonce = ref(0);
+
+  const goToMyMatch = async () => {
+    const group = requesterGroup.value;
+    const matchId = myMatchId.value;
+    if (!group || !matchId) return;
+    await syncGroupQuery(group.id);
+    myMatchFocusNonce.value += 1;
+  };
+
   const loadMatchesForGroup = async (
     tournamentId: string,
     groupId: string,
@@ -323,6 +344,9 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
         await syncGroupQuery(groupId);
         await fetchGroupData(groupId, false);
       }
+      if (myMatchId.value) {
+        myMatchFocusNonce.value += 1;
+      }
     } finally {
       skipSelectedGroupWatch.value = false;
     }
@@ -425,6 +449,9 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     loserMatches,
     selectedGroup,
     isRequesterMatch,
+    myMatchId,
+    myMatchFocusNonce,
+    goToMyMatch,
     games,
     fetchGame,
     closeConnection,

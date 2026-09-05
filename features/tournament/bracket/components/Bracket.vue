@@ -40,9 +40,11 @@ provide(
 
 const tourStore = useTournamentBracketStore();
 const { layoutFromMatchesTree } = useLayout();
-const { matchesTree, loserMatches, games } = storeToRefs(tourStore);
+const { matchesTree, loserMatches, games, myMatchId, myMatchFocusNonce } =
+  storeToRefs(tourStore);
 
 let flow: VueFlowStore | null = null;
+let lastHandledFocusNonce = 0;
 
 const direction = computed(() => {
   return ((props.group.type.toLowerCase() == "final" && games.value.length > 32) || (loserMatches.value?.length && loserMatches.value.length > 0))
@@ -77,26 +79,71 @@ function onFlowInit(instance: VueFlowStore) {
   void scheduleFit();
 }
 
+function fitAll(duration = 300) {
+  flow?.fitView({
+    padding: 0.2,
+    includeHiddenNodes: false,
+    duration,
+  });
+}
+
+function zoomToMatch(matchId: string) {
+  if (!flow) return;
+  const node = flow.findNode(matchId);
+  if (!node) {
+    fitAll();
+    return;
+  }
+
+  const width = node.dimensions?.width || 450;
+  const height = node.dimensions?.height || 100;
+  flow.setCenter(node.position.x + width / 2, node.position.y + height / 2, {
+    zoom: 1,
+    duration: 400,
+  });
+}
+
+function focusTargetMatchId() {
+  const matchId = myMatchId.value;
+  if (!matchId || props.obsMode) return undefined;
+  const exists = OrderedNodes.value?.nodes.some(
+    (node) => node.id === String(matchId),
+  );
+  return exists ? String(matchId) : undefined;
+}
+
 async function scheduleFit() {
   if (!flow || !OrderedNodes.value?.nodes?.length) return;
 
   await nextTick();
+
+  const matchId = focusTargetMatchId();
+  const shouldFocus =
+    !!matchId && myMatchFocusNonce.value > lastHandledFocusNonce;
+
   requestAnimationFrame(() => {
-    flow?.fitView({
-      padding: 0.2,
-      includeHiddenNodes: false,
-      duration: 300,
-    });
+    if (shouldFocus && matchId) {
+      lastHandledFocusNonce = myMatchFocusNonce.value;
+      zoomToMatch(matchId);
+      setTimeout(() => zoomToMatch(matchId), 160);
+      return;
+    }
+    if (matchId && lastHandledFocusNonce === myMatchFocusNonce.value) {
+      return;
+    }
+    fitAll(300);
   });
 
-  setTimeout(() => {
-    flow?.fitView({
-      padding: 0.2,
-      includeHiddenNodes: false,
-      duration: 0,
-    });
-  }, 120);
+  if (!shouldFocus && !(matchId && lastHandledFocusNonce === myMatchFocusNonce.value)) {
+    setTimeout(() => {
+      fitAll(0);
+    }, 120);
+  }
 }
+
+watch(myMatchFocusNonce, () => {
+  void scheduleFit();
+});
 
 
 watch(

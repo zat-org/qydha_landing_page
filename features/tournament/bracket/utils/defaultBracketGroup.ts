@@ -8,6 +8,11 @@ export function isFinalGroup(group: Group) {
   );
 }
 
+export function lastRequesterMatchId(ids?: string[]) {
+  if (!ids?.length) return undefined;
+  return String(ids[ids.length - 1]);
+}
+
 export function hasRequesterMatches(group: Group) {
   return (group.requesterMatchIds?.length ?? 0) > 0;
 }

@@ -69,6 +69,17 @@
             </span>
           </button>
         </UDropdownMenu>
+        <UButton
+          v-if="tourStore.myMatchId"
+          color="primary"
+          variant="solid"
+          size="xs"
+          class="mt-2 w-20 justify-center px-1 text-center leading-tight"
+          icon="i-heroicons-map-pin"
+          @click="tourStore.goToMyMatch()"
+        >
+          مباراتي
+        </UButton>
       </div>
 
       <!-- bracket -->
