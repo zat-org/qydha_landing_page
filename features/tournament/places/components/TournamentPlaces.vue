@@ -156,6 +156,13 @@
                 :can-mutate="canMutateReferees"
               />
             </template>
+            <template #moderators>
+              <PlaceModeratorsExpand
+                :tour-id="tour_id"
+                :place-id="place.id"
+                :can-mutate="canMutatePlaceModerators"
+              />
+            </template>
           </UAccordion>
         </div>
       </template>
@@ -170,6 +177,7 @@ import AddPlaceModal from "./AddPlaceModal.vue";
 import UpdatePlaceModal from "./UpdatePlaceModal.vue";
 import PlaceTablesExpand from "./PlaceTablesExpand.vue";
 import PlaceRefereesExpand from "./PlaceRefereesExpand.vue";
+import PlaceModeratorsExpand from "./PlaceModeratorsExpand.vue";
 import { canMutateTournamentPlaces } from "../utils";
 import { useMyAuthStore } from "~/store/Auth";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
@@ -194,7 +202,7 @@ const deleteREQ = useTournamentPlacesApi().deletePlace();
 const places = computed(() => getPlacesREQ.data.value ?? []);
 const deletingId = ref<string | null>(null);
 const selectedPlaceId = ref("");
-const openSections = ref(["tables", "referees"]);
+const openSections = ref(["tables", "referees", "moderators"]);
 
 const placeTabItems = computed(() =>
   places.value.map((place) => ({
@@ -220,6 +228,12 @@ const sectionItems = [
     icon: "i-mdi-account-group",
     slot: "referees",
     value: "referees",
+  },
+  {
+    label: "مشرفو المكان",
+    icon: "i-mdi-account-supervisor-outline",
+    slot: "moderators",
+    value: "moderators",
   },
 ];
 
@@ -247,6 +261,13 @@ const canMutateReferees = computed(
   () =>
     tourREQ.data.value?.tournament?.detailedState !=
     TournamentDetailedState.Finished,
+);
+
+const canMutatePlaceModerators = computed(
+  () =>
+    (!!userStore.isAdmin || !!userStore.isOrganizer) &&
+    tourREQ.data.value?.tournament?.detailedState !=
+      TournamentDetailedState.Finished,
 );
 
 function canDeletePlace(place: GetTournamentPlace) {

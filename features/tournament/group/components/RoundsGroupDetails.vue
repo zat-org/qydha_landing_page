@@ -155,11 +155,19 @@
                         </UBadge>
                     </template>
 
-                    <template #actions-cell="{ row }">
-                        <UButton icon="i-mdi-pencil-outline" color="warning" variant="soft" size="sm" square
-                            aria-label="تعديل الجولة" class="rounded-lg"
-                            @click.stop="openUpdateRoundDrawer((row.original as RoundRow).round.id)" />
-                    </template>
+                                    <template #actions-cell="{ row }">
+                                        <UButton
+                                            v-if="canModify"
+                                            icon="i-mdi-pencil-outline"
+                                            color="warning"
+                                            variant="soft"
+                                            size="sm"
+                                            square
+                                            aria-label="تعديل الجولة"
+                                            class="rounded-lg"
+                                            @click.stop="openUpdateRoundDrawer((row.original as RoundRow).round.id)"
+                                        />
+                                    </template>
 
                     <template #expanded="{ row }">
                         <div
@@ -218,7 +226,7 @@
                                         </div>
                                     </template>
                                     <template #actions-cell="{ row: m }">
-                                        <div class="flex items-center gap-1.5" v-if="canModify">
+                                        <div class="flex items-center gap-1.5" v-if="canManagePlaceMatch">
                                             <UButton 
                                                 icon="i-heroicons-pencil-square" 
                                                 color="warning" 
@@ -244,7 +252,18 @@
                                                 />
                                             </UDropdownMenu>
                                             <UButton
-                                                v-else-if="m.original.state === 'Running' || m.original.state === 'Ended'"
+                                                v-if="m.original.state === 'Ended'"
+                                                icon="i-heroicons-arrow-left"
+                                                color="neutral"
+                                                variant="soft"
+                                                size="xs"
+                                                label="رجوع"
+                                                class="rounded-lg"
+                                                :loading="matchBackReq.status.value === 'pending'"
+                                                @click="handleBackMatch(m.original)"
+                                            />
+                                            <UButton
+                                                v-if="m.original.state === 'Running' || m.original.state === 'Ended' || m.original.state === 'Paused'"
                                                 icon="i-heroicons-arrow-path"
                                                 color="neutral"
                                                 variant="soft"
@@ -298,6 +317,7 @@ import { useGroup } from "~/features/tournament/group/composables/group";
 import { useQualificationStage } from "~/features/tournament/detail/composables/api/useQualificationStage";
 import { useMatch } from "~/features/tournament/shared/composables/match";
 import { useMyAuthStore } from "~/store/Auth";
+import { matchManagementErrorDescription } from "~/features/tournament/match/utils/matchManagementError";
 
 const route = useRoute();
 const tour_id = route.params.id?.toString() ?? "";
@@ -323,6 +343,10 @@ const isQualificationGroup = computed(
 const canModify = computed(() => {
     return authStore.isAdmin || authStore.permissions.includes("ModifyTournamentData");
 });
+
+const canManagePlaceMatch = computed(
+    () => canModify.value || !!props.group.isRequesterPlaceModerator,
+);
 
 const canRevertOrRegenerateFinalGroup = computed(() => {
     return (
@@ -483,9 +507,10 @@ const matchDrawer = overlay.create(UpdateMatchDrawer);
 const editMatchModal = overlay.create(EditModal);
 const confirmationModal = overlay.create(ConfirmationModal);
 
-const { MatchWithdraw, MatchReset } = useMatch();
+const { MatchWithdraw, MatchReset, MatchBack } = useMatch();
 const matchWithdrawReq = MatchWithdraw();
 const matchResetReq = MatchReset();
+const matchBackReq = MatchBack();
 
 const openEditMatchModal = (match: Match) => {
     editMatchModal.open({
@@ -505,7 +530,10 @@ const handleWithdraw = async (match: Match, side: "Us" | "Them" | "All") => {
     } else {
         toast.add({
             title: "تعذّر تسجيل الانسحاب",
-            description: matchWithdrawReq.error.value?.message || "حدث خطأ أثناء الانسحاب",
+            description: matchManagementErrorDescription(
+                matchWithdrawReq.error.value,
+                "حدث خطأ أثناء الانسحاب",
+            ),
             color: "error",
         });
     }
@@ -527,7 +555,36 @@ const handleResetMatch = async (match: Match) => {
         } else {
             toast.add({
                 title: "تعذّر إعادة الضبط",
-                description: matchResetReq.error.value?.message || "حدث خطأ أثناء إعادة الضبط",
+                description: matchManagementErrorDescription(
+                    matchResetReq.error.value,
+                    "حدث خطأ أثناء إعادة الضبط",
+                ),
+                color: "error",
+            });
+        }
+    }
+};
+
+const handleBackMatch = async (match: Match) => {
+    if (!match.qydhaGameId) {
+        toast.add({ title: "معرف لعبة قيدها غير متوفر", color: "error" });
+        return;
+    }
+    const instance = confirmationModal.open({
+        message: `هل أنت متأكد من مسح آخر مشتري لهذه المباراة؟`,
+    });
+    if (await instance.result) {
+        await matchBackReq.fetchREQ(match.qydhaGameId);
+        if (matchBackReq.status.value === "success") {
+            toast.add({ title: "تمت العودة بنجاح", color: "success" });
+            await rounGroupDetailsREQ.refresh();
+        } else {
+            toast.add({
+                title: "تعذّر الرجوع",
+                description: matchManagementErrorDescription(
+                    matchBackReq.error.value,
+                    "حدث خطأ أثناء الرجوع",
+                ),
                 color: "error",
             });
         }

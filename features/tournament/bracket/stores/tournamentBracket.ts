@@ -134,6 +134,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
             g.requesterMatchIds?.length
               ? g.requesterMatchIds
               : previous?.data.requesterMatchIds,
+          isRequesterPlaceModerator: g.isRequesterPlaceModerator ?? false,
         },
         matches: previous?.matches ?? [],
       };
@@ -154,12 +155,16 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     groupId: string,
     matches: Match[],
     requesterMatchIds?: string[],
+    isRequesterPlaceModerator?: boolean,
   ) => {
     const entry = tournament.value.find((e) => e.data.id === groupId);
     if (!entry) return;
     entry.matches = matches;
     if (requesterMatchIds !== undefined) {
       entry.data.requesterMatchIds = requesterMatchIds;
+    }
+    if (isRequesterPlaceModerator !== undefined) {
+      entry.data.isRequesterPlaceModerator = isRequesterPlaceModerator;
     }
     linkMatchTree(entry.matches);
   };
@@ -391,22 +396,26 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     groupId: string,
     groupMatchesJson: string,
     requesterMatchIds?: string[],
+    isRequesterPlaceModerator?: boolean,
   ) => {
     applyMatchesToGroup(
       groupId,
       JSON.parse(groupMatchesJson) as Match[],
       requesterMatchIds ?? [],
+      isRequesterPlaceModerator,
     );
   };
   const handleBracketUpdated = (
     groupId: string,
     groupMatches: string,
     requesterMatchIds?: string[],
+    isRequesterPlaceModerator?: boolean,
   ) => {
     applyMatchesToGroup(
       groupId,
       JSON.parse(groupMatches) as Match[],
       requesterMatchIds ?? [],
+      isRequesterPlaceModerator,
     );
   };
   const joinTournamentGroup = async (

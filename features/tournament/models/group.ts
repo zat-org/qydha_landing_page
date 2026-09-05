@@ -26,6 +26,7 @@ export interface Group {
   stageId: string;
   stageType: TournamentStageType;
   requesterMatchIds?: string[];
+  isRequesterPlaceModerator?: boolean;
 }
 
 export interface DetailGroup {

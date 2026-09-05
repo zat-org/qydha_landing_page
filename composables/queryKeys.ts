@@ -40,6 +40,8 @@ export const appKeys = {
     `getGroupDetails-${tourId}-${groupId}`,
   tournamentReferees: (id: string, placeId: string) =>
     `getTournamentRefree-${id}-${placeId}`,
+  placeModerators: (id: string, placeId: string) =>
+    `getPlaceModerators-${id}-${placeId}`,
   tournamentModerators: "getAllmoderators",
   tournamentPlayers: "getPlayer",
   tournamentJoinRequests: "getTournamentJoinRequests",

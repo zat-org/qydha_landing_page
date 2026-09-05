@@ -119,7 +119,7 @@
         <span class="truncate">{{ sakkaText }}</span>
       </span>
       <UDropdownMenu
-        v-if="userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin)"
+        v-if="userStore.user && hasStaffOrAdminPrivileges"
         :items="adminActionItems"
         :popper="{ placement: 'bottom-end' }"
       >
@@ -167,6 +167,7 @@ import MatchAdminActionConfirmModal from "./MatchAdminActionConfirmModal.vue";
 import { useMatchNodeShared } from "~/features/tournament/bracket/composables/useMatchNodeShared";
 import type { MatchActionType } from "~/features/tournament/match/types/matchAction.types";
 import { useMatch } from "~/features/tournament/shared/composables/match";
+import { matchManagementErrorDescription } from "~/features/tournament/match/utils/matchManagementError";
 
 const userStore = useMyAuthStore();
 const props = defineProps<{ data: { match: Match; showLogo?: boolean } }>();
@@ -239,6 +240,13 @@ const confirmReset = async () => {
   }
   toast.add({
     title: MatchResetREQ.status.value === "success" ? "تم الضبط بنجاح" : "خطأ في الضبط",
+    description:
+      MatchResetREQ.status.value === "success"
+        ? undefined
+        : matchManagementErrorDescription(
+            MatchResetREQ.error.value,
+            "حدث خطأ أثناء إعادة الضبط",
+          ),
     color: MatchResetREQ.status.value === "success" ? "success" : "error",
   });
 };
@@ -250,6 +258,13 @@ const confirmBack = async () => {
   }
   toast.add({
     title: MatchBackREQ.status.value === "success" ? "تم العودة بنجاح" : "خطأ في العودة",
+    description:
+      MatchBackREQ.status.value === "success"
+        ? undefined
+        : matchManagementErrorDescription(
+            MatchBackREQ.error.value,
+            "حدث خطأ أثناء العودة",
+          ),
     color: MatchBackREQ.status.value === "success" ? "success" : "error",
   });
 };

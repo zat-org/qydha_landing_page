@@ -31,6 +31,7 @@ export function resolveAdminActions(
   match: Match,
   ctx: MatchViewContext,
 ): MatchAction[] {
+  if (!ctx.hasStaffOrAdminPrivileges) return [];
   return config.actions
     .filter((type) => {
       if (type === "reset") return resolveCanReset(config, ctx);

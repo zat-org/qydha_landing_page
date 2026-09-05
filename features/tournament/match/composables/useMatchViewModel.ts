@@ -15,10 +15,16 @@ export function useMatchViewModel(match: Ref<Match>) {
   const authStore = useMyAuthStore();
   const { privilege } = storeToRefs(authStore);
 
+  const canUsePlaceModeratorControls = computed(
+    () =>
+      hasStaffOrAdminPrivileges(privilege.value) ||
+      (tourStore.selectedGroup?.data.isRequesterPlaceModerator ?? false),
+  );
+
   const vm = computed(() =>
     toMatchViewModel(match.value, {
       isGroupRunning: tourStore.selectedGroup?.data.state === GroupState.MatchesRunning,
-      hasStaffOrAdminPrivileges: hasStaffOrAdminPrivileges(privilege.value),
+      hasStaffOrAdminPrivileges: canUsePlaceModeratorControls.value,
     }),
   );
 
@@ -32,14 +38,10 @@ export function useMatchViewModel(match: Ref<Match>) {
     tourStore.isRequesterMatch(match.value.id) ? "match-card--requester" : "",
   );
 
-  const hasStaffOrAdminPrivilegesRef = computed(() =>
-    hasStaffOrAdminPrivileges(privilege.value),
-  );
-
   return {
     vm,
     roundOpacityClass,
     requesterMatchClass,
-    hasStaffOrAdminPrivileges: hasStaffOrAdminPrivilegesRef,
+    hasStaffOrAdminPrivileges: canUsePlaceModeratorControls,
   };
 }

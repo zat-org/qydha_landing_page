@@ -74,6 +74,7 @@ import type { Match } from "~/features/tournament/models/group";
 import { useMatchEditChoices } from "~/features/tournament/bracket/composables/useMatchEditChoices";
 import loading from "~/components/loading.vue";
 import { useMatch } from "~/features/tournament/shared/composables/match";
+import { matchManagementErrorDescription } from "~/features/tournament/match/utils/matchManagementError";
 
 const form = useTemplateRef("form");
 const props = defineProps<{ match: Match }>();
@@ -104,7 +105,7 @@ const onSubmit = async () => {
     toast.add({ title: "تم التحديث بنجاح", color: "success" });
     emit("close");
   } else if (updateREQ.error.value) {
-    toast.add({ title: "خطأ في التحديث", description: updateREQ.error.value.message || "حدث خطأ أثناء التحديث", color: "error" });
+    toast.add({ title: "خطأ في التحديث", description: matchManagementErrorDescription(updateREQ.error.value, "حدث خطأ أثناء التحديث"), color: "error" });
   }
 };
 
@@ -114,6 +115,15 @@ const onReset = async () => {
   if (MatchResetREQ.status.value === "success") {
     toast.add({ title: "تم الضبط بنجاح", color: "success" });
     emit("close");
+  } else {
+    toast.add({
+      title: "خطأ في الضبط",
+      description: matchManagementErrorDescription(
+        MatchResetREQ.error.value,
+        "حدث خطأ أثناء إعادة الضبط",
+      ),
+      color: "error",
+    });
   }
 };
 
@@ -126,7 +136,7 @@ const withdrawItems = [[
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {
-        toast.add({ title: "تعذّر الانسحاب", description: MatchWithdrawREQ.error.value?.message || "حدث خطأ أثناء الانسحاب", color: "error" });
+        toast.add({ title: "تعذّر الانسحاب", description: matchManagementErrorDescription(MatchWithdrawREQ.error.value, "حدث خطأ أثناء الانسحاب"), color: "error" });
       }
       emit("close");
     }
@@ -137,7 +147,7 @@ const withdrawItems = [[
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {
-        toast.add({ title: "تعذّر الانسحاب", description: MatchWithdrawREQ.error.value?.message || "حدث خطأ أثناء الانسحاب", color: "error" });
+        toast.add({ title: "تعذّر الانسحاب", description: matchManagementErrorDescription(MatchWithdrawREQ.error.value, "حدث خطأ أثناء الانسحاب"), color: "error" });
       }
       emit("close");
     }
@@ -148,7 +158,7 @@ const withdrawItems = [[
       if (MatchWithdrawREQ.status.value === "success") {
         toast.add({ title: "تم الانسحاب بنجاح", color: "success" });
       } else {
-        toast.add({ title: "تعذّر الانسحاب", description: MatchWithdrawREQ.error.value?.message || "حدث خطأ أثناء الانسحاب", color: "error" });
+        toast.add({ title: "تعذّر الانسحاب", description: matchManagementErrorDescription(MatchWithdrawREQ.error.value, "حدث خطأ أثناء الانسحاب"), color: "error" });
       }
       emit("close");
     }

@@ -11,6 +11,7 @@ export * from "./match";
 export * from "./MatchStat";
 export * from "./Table";
 export * from "./place";
+export * from "./placeModerator";
 export * from "./tournamenetType";
 export * from "./Player";
 export * from "./Refre";
