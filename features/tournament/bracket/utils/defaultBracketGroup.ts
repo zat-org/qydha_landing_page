@@ -8,13 +8,22 @@ export function isFinalGroup(group: Group) {
   );
 }
 
+export function hasRequesterMatches(group: Group) {
+  return (group.requesterMatchIds?.length ?? 0) > 0;
+}
+
+/** Final first, then other groups — used when probing matches for the requester. */
+export function bracketGroupsProbeOrder(groups: Group[]): Group[] {
+  const finals = groups.filter(isFinalGroup);
+  const rest = groups.filter((group) => !isFinalGroup(group));
+  return [...finals, ...rest];
+}
+
 export function defaultBracketGroup(groups: Group[]): Group | undefined {
   if (groups.length === 0) return undefined;
 
   const final = groups.find(isFinalGroup);
-  const withMatches = groups.filter(
-    (group) => (group.requesterMatchIds?.length ?? 0) > 0,
-  );
+  const withMatches = groups.filter(hasRequesterMatches);
 
   const finalWithMatches = withMatches.find(isFinalGroup);
   if (finalWithMatches) return finalWithMatches;
