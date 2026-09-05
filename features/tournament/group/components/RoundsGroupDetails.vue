@@ -122,14 +122,15 @@
             <div class="overflow-x-auto">
                 <UTable v-model:expanded="expandedRows" :data="tableData" :columns="roundColumns"
                     :get-row-can-expand="() => true" :ui="{
+                        tr: 'cursor-pointer',
                         td: 'align-middle',
                         th: 'text-gray-600 dark:text-gray-300 font-semibold text-xs uppercase tracking-wide',
-                    }" class="min-w-160">
+                    }" class="min-w-160" @select="onRoundRowSelect">
                     <template #expand-cell="{ row }">
                         <UButton variant="ghost" color="neutral" size="sm" square :aria-expanded="row.getIsExpanded()"
                             :aria-label="row.getIsExpanded() ? 'طي المباريات' : 'عرض المباريات'"
                             :icon="row.getIsExpanded() ? 'i-mdi-chevron-up' : 'i-mdi-chevron-down'" class="rounded-lg"
-                            @click="row.toggleExpanded()" />
+                            @click.stop="row.toggleExpanded()" />
                     </template>
 
                     <template #name-cell="{ row }">
@@ -157,7 +158,7 @@
                     <template #actions-cell="{ row }">
                         <UButton icon="i-mdi-pencil-outline" color="warning" variant="soft" size="sm" square
                             aria-label="تعديل الجولة" class="rounded-lg"
-                            @click="openUpdateRoundDrawer((row.original as RoundRow).round.id)" />
+                            @click.stop="openUpdateRoundDrawer((row.original as RoundRow).round.id)" />
                     </template>
 
                     <template #expanded="{ row }">
@@ -409,6 +410,14 @@ const tableData = computed<RoundRow[]>(() => {
 });
 
 const expandedRows = ref<Record<string, boolean>>({});
+
+const onRoundRowSelect = (
+    eventOrRow: unknown,
+    maybeRow?: { toggleExpanded?: () => void },
+) => {
+    const row = maybeRow ?? (eventOrRow as { toggleExpanded?: () => void });
+    row?.toggleExpanded?.();
+};
 
 const getMatchStateLabel = (state: string): string => {
     const stateMap: Record<string, string> = {

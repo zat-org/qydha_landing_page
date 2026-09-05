@@ -1,5 +1,5 @@
 <template>
-  <UModal class="h-[80vh]" title="تعديل المباراة" description="تعديل المباراة">
+  <UModal title="تعديل المباراة" description="تعديل المباراة" :ui="{ content: 'h-auto max-h-[90vh]', body: 'overflow-visible' }">
     <template #body>
       <div class="p-4">
         <div v-if="choicesREQ && (choicesREQ.pending as any).value" class="flex justify-center items-center py-12">
@@ -13,18 +13,6 @@
 
         <UForm v-else-if="matchChoices" :state="state" :schema="schema" @submit="onSubmit" class="flex flex-col gap-5"
           ref="form">
-          <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }" class="w-full">
-            <div class="flex flex-col gap-2">
-              <div class="flex gap-2 items-center">
-                <USelectMenu v-model="state.refereeId" :items="refereeItems" label-key="username" value-key="id"
-                  :search-attributes="['username']" class="flex-1"
-                  :placeholder="selectedRefereeDisplay || 'اختر الحكم'" />
-                <UButton v-if="state.refereeId" icon="i-heroicons-x-mark" color="neutral" variant="soft" size="sm"
-                  @click="state.refereeId = undefined" :title="'إزالة الحكم'" />
-              </div>
-            </div>
-          </UFormField>
-
           <UFormField label="الطاولة" name="tableId" class="w-full">
             <div class="flex flex-col gap-2">
               <div v-if="hasSingleTableChoice" class="flex min-h-9 items-center rounded-md border border-gray-200 bg-gray-50 px-3 text-sm dark:border-gray-800 dark:bg-gray-900/40">
@@ -36,6 +24,18 @@
                   :placeholder="selectedTableDisplay || 'اختر الطاولة'" />
                 <UButton v-if="state.tableId" icon="i-heroicons-x-mark" color="neutral" variant="soft" size="sm"
                   @click="state.tableId = undefined" :title="'إزالة الطاولة'" />
+              </div>
+            </div>
+          </UFormField>
+
+          <UFormField label="الحكم" name="refereeId" :ui="{ error: 'm-0' }" class="w-full">
+            <div class="flex flex-col gap-2">
+              <div class="flex gap-2 items-center">
+                <USelectMenu v-model="state.refereeId" :items="refereeItems" label-key="username" value-key="id"
+                  :search-attributes="['username']" class="flex-1"
+                  :placeholder="selectedRefereeDisplay || 'اختر الحكم'" />
+                <UButton v-if="state.refereeId" icon="i-heroicons-x-mark" color="neutral" variant="soft" size="sm"
+                  @click="state.refereeId = undefined" :title="'إزالة الحكم'" />
               </div>
             </div>
           </UFormField>
