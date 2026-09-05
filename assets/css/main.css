@@ -12,11 +12,39 @@
   scroll-behavior: smooth;
 }
 
+input:not([dir="ltr"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+textarea:not([dir="ltr"]) {
+  text-align: right;
+}
+
+input[dir="ltr"],
+textarea[dir="ltr"] {
+  text-align: left;
+}
+
+input[type="number"] {
+  text-align: right;
+}
+
+/* [data-slot="trailing"] {
+  left: 3;
+  right: auto;
+} */
+
 
 /* Vue Tel Input - Simple CSS */
 .vue-tel-input {
+  direction: ltr;
+  text-align: left;
   border-color: #d1d5db;
   background: #ffffff;
+}
+
+.vue-tel-input input,
+.vue-tel-input .vti__input,
+.vue-tel-input .vti__phone {
+  direction: ltr !important;
+  text-align: left !important;
 }
 
 .dark .vue-tel-input {

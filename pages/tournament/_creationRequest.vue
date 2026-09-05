@@ -111,14 +111,6 @@
               <h3 class="text-sm font-semibold text-gray-800 dark:text-gray-200">موقع البطولة</h3>
             </div>
 
-            <UFormField label="مكان البطولة" name="locationDescription" required>
-              <UInput 
-                v-model="formData.locationDescription" 
-                placeholder="عنوان البطولة" 
-                size="sm"
-              />
-            </UFormField>
-
             <UFormField
               label="الموقع على الخريطة"
               name="location"
@@ -138,6 +130,14 @@
                   <span>تم</span>
                 </div>
               </div>
+            </UFormField>
+
+            <UFormField label="مكان البطولة" name="locationDescription" required>
+              <UInput 
+                v-model="formData.locationDescription" 
+                placeholder="عنوان البطولة" 
+                size="sm"
+              />
             </UFormField>
           </div>
 

@@ -119,7 +119,7 @@
                         {{ place.locationDescription }}
                       </span>
                       <span class="text-xs text-gray-500 dark:text-gray-400">
-                        {{ formatDate(place.startAt) }} — {{ formatDate(place.endAt) }}
+                        {{ formatDateTime(place.startAt) }} — {{ formatDateTime(place.endAt) }}
                         · {{ place.availableTablesCount }} طاولة
                       </span>
                     </li>
@@ -129,8 +129,8 @@
                   class="rounded-xl border border-gray-200/80 bg-white/85 p-3 dark:border-gray-700/80 dark:bg-gray-900/50">
                   <p class="text-xs text-gray-500 dark:text-gray-400">الفترة الزمنية</p>
                   <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {{ formatDate(tour.tournament?.startAt) }} <span class="text-gray-400">—</span> {{
-                      formatDate(tour.tournament?.endAt) }}
+                    {{ formatDateTime(tour.tournament?.startAt) }} <span class="text-gray-400">—</span> {{
+                      formatDateTime(tour.tournament?.endAt) }}
                   </p>
                 </div>
                 <div
@@ -149,10 +149,10 @@
                   class="rounded-xl border border-gray-200/80 bg-white/85 p-3 dark:border-gray-700/80 dark:bg-gray-900/50">
                   <p class="text-xs text-gray-500 dark:text-gray-400">نافذة الانضمام</p>
                   <p class="mt-1 text-sm font-semibold text-gray-900 dark:text-gray-100">
-                    {{ tour.tournament?.joinRequestStartAt ? formatDate(tour.tournament.joinRequestStartAt) : 'غير محدد'
+                    {{ tour.tournament?.joinRequestStartAt ? formatDateTime(tour.tournament.joinRequestStartAt) : 'غير محدد'
                     }}
                     <span class="text-gray-400">—</span>
-                    {{ tour.tournament?.joinRequestEndAt ? formatDate(tour.tournament.joinRequestEndAt) : 'غير محدد' }}
+                    {{ tour.tournament?.joinRequestEndAt ? formatDateTime(tour.tournament.joinRequestEndAt) : 'غير محدد' }}
                   </p>
                 </div>
                 <div v-if="tour.tournament?.joinRequestMaxCount"
@@ -297,7 +297,7 @@
 import {
   type DetailTournament,
 } from "~/features/tournament/models/tournament";
-import { formatDate } from "~/utils/formatDate";
+import { formatDateTime } from "~/utils/formatDate";
 import { useTournamentPhaseStore } from '~/store/tournamentPhase';
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 import { useTournamentLookups } from "~/features/tournament/detail/composables/logic/useTournamentLookups";

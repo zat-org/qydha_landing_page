@@ -1,18 +1,6 @@
 <template>
   <div class="flex flex-col gap-4">
     <UFormField
-      label="وصف المكان"
-      name="locationDescription"
-      required
-    >
-      <UInput
-        v-model="place.locationDescription"
-        maxlength="255"
-        placeholder="أدخل عنوان المكان"
-      />
-    </UFormField>
-
-    <UFormField
       label="موقع المكان"
       name="location"
       required
@@ -27,6 +15,18 @@
         v-model:location-name="place.locationDescription"
         name="place-location"
         label="رابط Google Maps"
+      />
+    </UFormField>
+
+    <UFormField
+      label="وصف المكان"
+      name="locationDescription"
+      required
+    >
+      <UInput
+        v-model="place.locationDescription"
+        maxlength="255"
+        placeholder="أدخل عنوان المكان"
       />
     </UFormField>
 

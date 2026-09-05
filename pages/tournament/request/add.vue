@@ -1,6 +1,8 @@
 <template>
     <ClientOnly>
-      <TournamentRequestForm  :mode/>
+      <div class="flex h-[calc(100dvh-4rem)] min-h-0 flex-col overflow-hidden">
+        <TournamentRequestForm class="flex h-full min-h-0 flex-1 flex-col overflow-hidden" :mode />
+      </div>
     </ClientOnly>
   </template>
   <script lang="ts" setup>

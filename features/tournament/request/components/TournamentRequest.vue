@@ -20,7 +20,7 @@
 
         <div class="flex flex-col md:flex-row gap-4 items-center w-full ">
           <UFormField label="بحث " class="flex-2">
-            <UInput v-model="filters.searchToken" placeholder=" العنوان | الوصف ..." />
+            <UInput v-model="searchInput" placeholder=" العنوان | الوصف ..." />
           </UFormField>
           <UFormField label="الحالة " class="flex-1">
             <USelect :items="stateOptions" class="w-full " value-key="value" label-key="label"
@@ -36,12 +36,23 @@
 
     <div class="  flex flex-col flex-1  ">
       <Loading v-if="status == 'pending' " class="mt-10" />
-      <component v-else :is="userStore.isStaffAdmin || userStore.isSuperAdmin
-        ? AdminRequestTable
-        : OrganizerRequestTable" />
+      <component
+        v-else
+        :is="
+          userStore.isStaffAdmin || userStore.isSuperAdmin
+            ? AdminRequestTable
+            : OrganizerRequestTable
+        "
+        :items="data?.items ?? []"
+      />
 
-      <UPagination class="mx-auto mt-auto" v-if="data && data.totalPages > 1" v-model:page="filters.pageNumber"
-        :total="data.totalCount" />
+      <UPagination
+        v-if="data && data.totalPages > 1"
+        v-model:page="filters.pageNumber"
+        class="mx-auto mt-auto"
+        :total="data.totalCount"
+        :items-per-page="filters.pageSize"
+      />
     </div>
   </UCard>
 </template>
@@ -61,8 +72,20 @@ const filters = ref<GetTournamentRequestParams>({
   searchToken: undefined,
   state: undefined,
   pageNumber: 1,
-  pageSize: 9
-})
+  pageSize: 9,
+});
+
+const searchInput = ref("");
+let searchDebounce: ReturnType<typeof setTimeout> | undefined;
+watch(searchInput, (value) => {
+  if (searchDebounce) clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    filters.value.searchToken = value.trim() || undefined;
+  }, 400);
+});
+onBeforeUnmount(() => {
+  if (searchDebounce) clearTimeout(searchDebounce);
+});
 
 const isAdmin = computed(() => {
   return user.value?.user.roles.includes('SuperAdmin') ||
@@ -71,11 +94,7 @@ const isAdmin = computed(() => {
 
 const { getTournamnetStateOptions, getTournamentTypeOptions, AdminGetTournamentRequests } = useTournamentRequest();
 
-const apiResult = computed(() => {
-    return AdminGetTournamentRequests
-})
-
-const { data, pending, status } = apiResult.value(filters)
+const { data, pending, status } = AdminGetTournamentRequests(filters);
 
 const stateOptions = getTournamnetStateOptions()
 const typeOptions = getTournamentTypeOptions()

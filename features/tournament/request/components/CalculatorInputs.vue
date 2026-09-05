@@ -3,23 +3,23 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <UFormField label="عدد الفرق" name="teamsCount">
         <USelect v-model="teamsCountOption" :items="TeamsCountOptions" size="xs" placeholder="اختر عدد الفرق" />
-        <UInput v-if="teamsCountOption === 'custom'" v-model="teamsCount" type="number" min="1" placeholder="أدخل عدد الفرق" size="xs" class="mt-2" />
+        <AppNumberInput v-if="teamsCountOption === 'custom'" v-model="teamsCount" integer :min="1" placeholder="أدخل عدد الفرق" size="xs" class="mt-2" />
       </UFormField>
 
       <UFormField label="عدد الطاولات" name="tablesCount">
         <USelect v-model="tablesCountOption" :items="TablesCountOptions" size="xs" placeholder="اختر عدد الطاولات" />
-        <UInput v-if="tablesCountOption === 'custom'" v-model="tablesCount" type="number" min="1" placeholder="أدخل عدد الطاولات" size="xs" class="mt-2" />
+        <AppNumberInput v-if="tablesCountOption === 'custom'" v-model="tablesCount" integer :min="1" placeholder="أدخل عدد الطاولات" size="xs" class="mt-2" />
       </UFormField>
 
       <UFormField label="عدد الأيام" name="dayNumber">
-        <UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" />
+        <AppNumberInput v-model="dayNumber" integer :min="1" placeholder="أدخل عدد الأيام" size="xs" />
       </UFormField>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime"><UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" /></UFormField>
-      <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3"><UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" /></UFormField>
-      <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5"><UInput v-model="sakkTime5" type="number" min="1" placeholder="وقت 5 صكات" size="xs" /></UFormField>
+      <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime"><AppNumberInput v-model="sakkTime" integer :min="1" placeholder="وقت صكة واحدة" size="xs" /></UFormField>
+      <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3"><AppNumberInput v-model="sakkTime3" integer :min="1" placeholder="وقت 3 صكات" size="xs" /></UFormField>
+      <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5"><AppNumberInput v-model="sakkTime5" integer :min="1" placeholder="وقت 5 صكات" size="xs" /></UFormField>
     </div>
   </div>
 </template>

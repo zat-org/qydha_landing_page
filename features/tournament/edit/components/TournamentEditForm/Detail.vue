@@ -89,23 +89,23 @@
         <UFormField label=" عدد الفرق" name="teamsCount" :error="errors?.teamsCount">
           <div class="flex flex-col items-center gap-2">
             <USelect v-model="TeamsCount" :disabled="disabledFields?.teamsCount" :items="TeamsCountOptions" @update:model-value="onFieldBlur?.('teamsCount')" />
-            <UInput v-if="TeamsCount === 'custom'" v-model="model.teamsCount" type="number" min="1" placeholder="0" :disabled="disabledFields?.teamsCount" @input="validatePositiveNumber" @blur="onFieldBlur?.('teamsCount')" />
+            <AppNumberInput v-if="TeamsCount === 'custom'" v-model="model.teamsCount" integer :min="1" placeholder="0" :disabled="disabledFields?.teamsCount" @blur="onFieldBlur?.('teamsCount')" />
           </div>
         </UFormField>
         <UFormField label=" عدد الطاولات" name="tablesCount" :error="errors?.tablesCount">
-          <UInput v-model="model.tablesCount" type="number" placeholder="0" :disabled="disabledFields?.tablesCount" @blur="onFieldBlur?.('tablesCount')" />
+          <AppNumberInput v-model="model.tablesCount" integer :min="1" placeholder="0" :disabled="disabledFields?.tablesCount" @blur="onFieldBlur?.('tablesCount')" />
         </UFormField>
         <UFormField label="عدد الأيام" name="dayNumber">
-          <UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" />
+          <AppNumberInput v-model="dayNumber" integer :min="1" placeholder="أدخل عدد الأيام" size="xs" />
         </UFormField>
         <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime">
-          <UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" />
+          <AppNumberInput v-model="sakkTime" integer :min="1" placeholder="وقت صكة واحدة" size="xs" />
         </UFormField>
         <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3">
-          <UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" />
+          <AppNumberInput v-model="sakkTime3" integer :min="1" placeholder="وقت 3 صكات" size="xs" />
         </UFormField>
         <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5">
-          <UInput v-model="sakkTime5" type="number" min="1" placeholder="وقت 5 صكات" size="xs" />
+          <AppNumberInput v-model="sakkTime5" integer :min="1" placeholder="وقت 5 صكات" size="xs" />
         </UFormField>
       </div>
       <TournamentRequestCalculatorRounds :rounds="rounds" :sakka-options="sakkaOptions" :format-time="formatTime" />

@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-6">
+  <div class="min-h-full space-y-6">
     <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
       <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">قوانين البطولة</h2>
     </div>

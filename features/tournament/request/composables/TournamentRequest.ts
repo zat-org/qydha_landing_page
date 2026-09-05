@@ -11,6 +11,18 @@ import { TournamentType } from "~/features/tournament/models/tournamenetType";
 
 type TournamentRequestsPage = getTournamentRequestResponse["data"];
 
+const toCreationRequestListQuery = (params: GetTournamentRequestParams) => {
+  const query: Record<string, string | number> = {
+    PageNumber: params.pageNumber,
+    PageSize: params.pageSize,
+  };
+  const search = params.searchToken?.trim();
+  if (search) query.SearchToken = search;
+  if (params.type) query.Type = params.type;
+  if (params.state) query.State = params.state;
+  return query;
+};
+
 const tournamentStateLabels: Record<TournamentRequestState, string> = {
   [TournamentRequestState.Pending]: "جاري المراجعة",
   [TournamentRequestState.Approved]: "تم الموافقة ",
@@ -53,6 +65,18 @@ const tournamentprizeCurrencyLable: Record<TournamentPrizeCurrency, string> = {
 
 export const useTournamentRequest = () => {
   const { $api } = useNuxtApp();
+
+  const invalidateTournamentRequestList = async () => {
+    const prefix = `${appKeys.adminTourRequests}:`;
+    const isListKey = (key: string) =>
+      key === appKeys.adminTourRequests || key.startsWith(prefix);
+    const nuxtApp = useNuxtApp();
+    const keys = Object.keys(nuxtApp.payload.data ?? {}).filter(isListKey);
+    clearNuxtData((key) => isListKey(String(key)));
+    if (keys.length) {
+      await refreshNuxtData(keys);
+    }
+  };
 
   const AddTournamentRequest = () => {
     const { pending, status, error, execute } = useMutationRequest();
@@ -129,7 +153,7 @@ export const useTournamentRequest = () => {
           method: "post",
           body,
         });
-        await refreshAppData(appKeys.adminTourRequests);
+        await invalidateTournamentRequestList();
       });
     };
     return { pending, status, error, fetchREQ };
@@ -143,7 +167,7 @@ export const useTournamentRequest = () => {
         await $api(`/tournaments/creation-requests/${_id}/cancel`, {
           method: "post",
         });
-        await refreshAppData(appKeys.adminTourRequests);
+        await invalidateTournamentRequestList();
       });
     };
     return { pending, status, error, fetchREQ };
@@ -152,25 +176,24 @@ export const useTournamentRequest = () => {
   const AdminGetTournamentRequests = (
     params: Ref<GetTournamentRequestParams>,
   ) => {
-    const param = ref(params.value);
     watch(
       [
-        () => param.value.searchToken,
-        () => param.value.state,
-        () => param.value.type,
+        () => params.value.searchToken,
+        () => params.value.state,
+        () => params.value.type,
       ],
       () => {
-        param.value.pageNumber = 1;
+        params.value.pageNumber = 1;
       },
     );
 
     const { data, status, pending } = useAppApiData<TournamentRequestsPage>(
-      appKeys.adminTourRequests,
-      () => $api("tournaments/creation-requests", { params: unref(param) }),
-      {
-        watch: [unref(param)],
-        deep: true,
-      },
+      () => buildAppDataKey(appKeys.adminTourRequests, toCreationRequestListQuery(params.value)),
+      () =>
+        $api("tournaments/creation-requests", {
+          query: toCreationRequestListQuery(params.value),
+        }),
+      { watch: [params] },
     );
     return { data, status, pending };
   };
@@ -183,7 +206,7 @@ export const useTournamentRequest = () => {
         await $api(`/tournaments/creation-requests/${_id}/approve`, {
           method: "post",
         });
-        await refreshAppData(appKeys.adminTourRequests);
+        await invalidateTournamentRequestList();
         clearNuxtData((key) => key.startsWith("getAllTournament"));
       });
     };
@@ -198,7 +221,7 @@ export const useTournamentRequest = () => {
         await $api(`/tournaments/creation-requests/${_id}/reject`, {
           method: "post",
         });
-        await refreshAppData(appKeys.adminTourRequests);
+        await invalidateTournamentRequestList();
       });
     };
     return { pending, status, error, fetchREQ };
@@ -294,10 +317,8 @@ export const useTournamentRequest = () => {
           method: "put",
           body,
         });
-        await refreshAppData(
-          appKeys.adminTourRequests,
-          appKeys.adminSingleTourRequest(id),
-        );
+        await invalidateTournamentRequestList();
+        await refreshAppData(appKeys.adminSingleTourRequest(id));
       });
     };
     return { pending, status, error, fetchReq };

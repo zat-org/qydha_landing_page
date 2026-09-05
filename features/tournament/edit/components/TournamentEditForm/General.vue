@@ -30,7 +30,6 @@
       <UFormField
         label="وصف البطولة"
         name="description"
-        required
         :error="errors?.description"
       >
         <UTextarea
@@ -149,19 +148,6 @@
       </UFormField>
 
       <UFormField
-        label="مكان البطولة"
-        name="locationDescription"
-        required
-        :error="errors?.locationDescription"
-      >
-        <UInput
-          v-model="modelValue.locationDescription"
-          :disabled="disabledFields?.locationDescription"
-          placeholder="أدخل عنوان البطولة"
-          @blur="onFieldBlur?.('locationDescription')"
-        />
-      </UFormField>
-      <UFormField
         label="موقع البطولة"
         name="location"
         required
@@ -180,6 +166,19 @@
           name="location"
           label="رابط Google Maps"
           @parsed="onFieldBlur?.('location')"
+        />
+      </UFormField>
+      <UFormField
+        label="مكان البطولة"
+        name="locationDescription"
+        required
+        :error="errors?.locationDescription"
+      >
+        <UInput
+          v-model="modelValue.locationDescription"
+          :disabled="disabledFields?.locationDescription"
+          placeholder="أدخل عنوان البطولة"
+          @blur="onFieldBlur?.('locationDescription')"
         />
       </UFormField>
       <UFormField

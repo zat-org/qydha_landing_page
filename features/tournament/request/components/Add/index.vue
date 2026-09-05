@@ -1,6 +1,6 @@
 <template>
   <UCard
-    class="flex min-h-0 flex-col overflow-hidden shadow-none ring-0"
+    class="flex h-full min-h-0 flex-1 flex-col overflow-hidden shadow-none ring-0"
     :ui="cardUi"
   >
     <template #header>
@@ -51,10 +51,10 @@
       ref="scrollContainer"
       class="form-scroll-area min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-2 py-1 sm:px-4 sm:py-1"
     >
-      <div class="mx-auto w-full max-w-7xl">
           <KeepAlive>
             <TournamentRequestFormTourForm
               v-show="currentStepValue === 0"
+              class="mx-auto min-h-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -63,6 +63,7 @@
           <KeepAlive>
             <TournamentRequestFormJoinRequestForm
               v-show="currentStepValue === 1"
+              class="mx-auto min-h-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -71,6 +72,7 @@
           <KeepAlive>
             <TournamentRequestFormQualificationsForm
               v-show="currentStepValue === 2"
+              class="mx-auto min-h-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -79,6 +81,7 @@
           <KeepAlive>
             <TournamentRequestFormTourDetailForm
               v-show="currentStepValue === 3"
+              class="mx-auto min-h-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -87,12 +90,12 @@
           <KeepAlive>
             <TournamentRequestFormRulesForm
               v-show="currentStepValue === 4"
+              class="mx-auto min-h-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
             />
           </KeepAlive>
-      </div>
     </div>
 
     <template #footer>
@@ -107,7 +110,8 @@
             size="lg"
             label="السابق"
             icon="i-heroicons-arrow-right"
-            class="min-w-28"
+            class="min-w-28 justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             @click="previousStep"
           />
           <UButton
@@ -116,7 +120,8 @@
             size="lg"
             label="التالي"
             trailing-icon="i-heroicons-arrow-left"
-            class="min-w-28 ms-auto"
+            class="min-w-28 ms-auto justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             @click="validateAndNext"
           />
           <UButton
@@ -125,7 +130,8 @@
             size="lg"
             label="إرسال الطلب"
             icon="i-heroicons-paper-airplane"
-            class="min-w-32 ms-auto"
+            class="min-w-32 ms-auto justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             :loading="isSubmittingValue"
             @click="handelSubmit"
           />
@@ -155,10 +161,10 @@ import TournamentRequestFormRulesForm from '~/features/tournament/request/compon
 import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 
 const cardUi = {
-  root: 'flex flex-col max-h-[calc(100dvh-6vh)] min-h-[min(640px,calc(100dvh-6vh))] overflow-hidden shadow-none ring-0 p-0',
-  header: 'border-b border-gray-200/90 bg-white/95 px-2 py-1.5 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-3 sm:py-2',
-  body: 'flex min-h-0 flex-1 flex-col p-0',
-  footer: 'border-t border-gray-200/90 bg-white/95 px-3 py-3 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-5 sm:py-4',
+  root: 'flex h-full min-h-0 max-h-full flex-col overflow-hidden shadow-none ring-0 p-0',
+  header: 'shrink-0 border-b border-gray-200/90 bg-white/95 px-2 py-1.5 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-3 sm:py-2',
+  body: 'flex min-h-0 flex-1 flex-col overflow-hidden p-0',
+  footer: 'shrink-0 border-t border-gray-200/90 bg-white/95 px-3 py-3 backdrop-blur-sm dark:border-gray-800/90 dark:bg-gray-950/95 sm:px-5 sm:py-4',
 };
 
 const scrollContainer = useTemplateRef<HTMLDivElement>("scrollContainer");

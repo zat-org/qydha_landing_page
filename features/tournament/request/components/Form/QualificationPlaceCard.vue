@@ -19,21 +19,6 @@
 
     <div class="flex flex-col gap-4">
       <UFormField
-        label="وصف المكان"
-        :name="`qualificationsStageInfo.places[${index}].locationDescription`"
-        required
-        :error="errors?.locationDescription"
-      >
-        <UInput
-          v-model="place.locationDescription"
-          :disabled="disabled"
-          maxlength="255"
-          placeholder="أدخل عنوان مكان التصفيات"
-          @blur="emit('blur')"
-        />
-      </UFormField>
-
-      <UFormField
         label="موقع المكان"
         :name="`qualificationsStageInfo.places[${index}].location`"
         required
@@ -51,6 +36,21 @@
           :name="`place-location-${index}`"
           label="رابط Google Maps"
           @parsed="emit('blur')"
+        />
+      </UFormField>
+
+      <UFormField
+        label="وصف المكان"
+        :name="`qualificationsStageInfo.places[${index}].locationDescription`"
+        required
+        :error="errors?.locationDescription"
+      >
+        <UInput
+          v-model="place.locationDescription"
+          :disabled="disabled"
+          maxlength="255"
+          placeholder="أدخل عنوان مكان التصفيات"
+          @blur="emit('blur')"
         />
       </UFormField>
 
@@ -87,10 +87,10 @@
           required
           :error="errors?.competingTeamsCount"
         >
-          <UInput
-            v-model.number="place.competingTeamsCount"
-            type="number"
-            min="1"
+          <AppNumberInput
+            v-model="place.competingTeamsCount"
+            integer
+            :min="1"
             :disabled="disabled"
             placeholder="1"
             @blur="emit('blur')"
@@ -102,10 +102,10 @@
           required
           :error="errors?.availableTablesCount"
         >
-          <UInput
-            v-model.number="place.availableTablesCount"
-            type="number"
-            min="1"
+          <AppNumberInput
+            v-model="place.availableTablesCount"
+            integer
+            :min="1"
             :disabled="disabled"
             placeholder="1"
             @blur="emit('blur')"

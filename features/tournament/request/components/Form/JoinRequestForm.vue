@@ -1,10 +1,11 @@
 <template>
   <UCard
     :ui="{
+      root: 'min-h-full overflow-visible',
       body: 'px-3 py-3 sm:p-4',
       header: 'px-3 py-2 sm:px-4 sm:py-3',
     }"
-    class="mx-auto max-w-7xl bg-gray-50 dark:bg-gray-900"
+    class="mx-auto min-h-full max-w-7xl bg-gray-50 dark:bg-gray-900"
   >
     <template #header>
       <div>
@@ -62,9 +63,10 @@
           name="joinRequestMaxCount"
           :error="errors?.joinRequestMaxCount"
         >
-          <UInput
+          <AppNumberInput
             v-model="model.joinRequestMaxCount"
-            type="number"
+            integer
+            :min="0"
             :disabled="disabledFields?.joinRequestMaxCount"
             @blur="onFieldBlur?.('joinRequestMaxCount')"
           />
@@ -88,10 +90,10 @@
           name="minimumSubscriptionDays"
           :error="errors?.minimumSubscriptionDays"
         >
-          <UInput
+          <AppNumberInput
             v-model="model.minimumSubscriptionDays"
-            type="number"
-            min="0"
+            integer
+            :min="0"
             placeholder="0"
             :disabled="disabledFields?.minimumSubscriptionDays"
             @blur="onFieldBlur?.('minimumSubscriptionDays')"

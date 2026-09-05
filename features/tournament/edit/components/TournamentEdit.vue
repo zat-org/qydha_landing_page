@@ -64,7 +64,8 @@
             size="lg"
             label="السابق"
             icon="i-heroicons-arrow-right"
-            class="min-w-28"
+            class="min-w-28 justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             @click="previousStep"
           />
           <UButton
@@ -73,7 +74,8 @@
             size="lg"
             label="التالي"
             trailing-icon="i-heroicons-arrow-left"
-            class="min-w-28 ms-auto"
+            class="min-w-28 ms-auto justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             @click="validateAndNext"
           />
           <UButton
@@ -82,7 +84,8 @@
             size="lg"
             label="حفظ التعديلات"
             icon="i-heroicons-paper-airplane"
-            class="min-w-32 ms-auto"
+            class="min-w-32 ms-auto justify-center gap-2"
+            :ui="{ base: 'justify-center gap-2' }"
             :loading="isSubmittingValue"
             @click="handelSubmit"
           />

@@ -2,7 +2,13 @@
   <div class="space-y-6">
     <h3 class="text-lg font-medium text-gray-700 dark:text-gray-200">إدارة الجوائز</h3>
     <UFormField label="جائزة البطولة" name="prizes">
-      <USelect v-model="selectedprizeOptions" :items="prizeOptions" @change="onPrizeOptionChange" />
+      <USelect
+        v-model="selectedprizeOptions"
+        :items="prizeOptions"
+        value-key="value"
+        label-key="label"
+        @update:model-value="onPrizeOptionChange"
+      />
     </UFormField>
     <div v-for="(prize, index) in model.prizes" :key="index" class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border">
       <UFormField :label="`المركز ${index + 1}`" :name="`prizes[${index}]`">
@@ -14,7 +20,7 @@
       </UFormField>
       <div class="flex flex-col gap-3">
         <UFormField v-show="prize.isFinancial" :label="`قيمة الجائزة`" :name="`prizes[${index}].financialPrizeAmount`">
-          <UInput dir="ltr" v-model.number="prize.financialPrizeAmount" type="number" @update:model-value="updatePrizeMoney(index, $event)" />
+          <AppNumberInput v-model="prize.financialPrizeAmount" :min="0" />
         </UFormField>
         <UFormField v-show="prize.isFinancial" :label="`العملة`" :name="`prizes[${index}].financialPrizeCurrency`">
           <CurrencyInput v-model="prize.financialPrizeCurrency as any" />
@@ -51,16 +57,23 @@ const prizeOptions = [
   { label: "مركز الاول والثاني والثالث فقط", value: 3, pos: [TournamentPrizeType.one, TournamentPrizeType.two, TournamentPrizeType.three] },
   { label: "مركز الاول والثاني والثالث والرابع فقط", value: 4, pos: [TournamentPrizeType.one, TournamentPrizeType.two, TournamentPrizeType.three,TournamentPrizeType.four] }
 ];
+
+watch(
+  () => model.value.prizes?.length,
+  (len) => {
+    if (len && prizeOptions.some((option) => option.value === len)) {
+      selectedprizeOptions.value = len;
+    }
+  },
+  { immediate: true },
+);
+
 const onPrizeOptionChange = () => {
   let selectedprizeOptionsObject  = prizeOptions.find(op=>op.value == unref(selectedprizeOptions))
   if(!selectedprizeOptionsObject) selectedprizeOptionsObject =prizeOptions[0]
   model.value.prizes = Array.from({ length: unref(selectedprizeOptions) }, (_, index) => ({
     isFinancial: true, isNonFinancial: false, type:selectedprizeOptionsObject?.pos[index], financialPrizeAmount: 1000, financialPrizeCurrency: "SAR", nonFinancialPrizes: [],
   }));
-};
-const updatePrizeMoney = (index: number, value: string | number) => {
-  const n = typeof value === 'string' ? Number(value) : value;
-  model.value.prizes[index].financialPrizeAmount = Number.isFinite(n) ? n : 0;
 };
 const onInputFocus = (index: number) => { if (parentForm?.value) parentForm.value.clear?.(`prizes[${index}].nonFinancialPrizes`); };
 const addItem = async (index: number, value: string) => {

@@ -1,5 +1,6 @@
 <template>
   <ClientOnly>
+    <div dir="ltr" class="w-full">
     <VueTelInput v-bind="$attrs" :validCharactersOnly="true" :autoFormat="true" mode="international" :dropdownOptions="{
       showDialCodeInSelection: true,
       showFlags: true,
@@ -10,8 +11,9 @@
         showDialCode: true,
         placeholder: 'ادخل رقم الجوال',
         type: 'tel',
-        styleClasses: 'w-full rounded-lg border border-[var(--color-border)] px-4 py-2 '
+        styleClasses: 'w-full rounded-lg border border-[var(--color-border)] px-4 py-2 text-left'
       }" v-model="inputValue" @on-input="handlePhoneInput" />
+    </div>
   </ClientOnly>
 </template>
 

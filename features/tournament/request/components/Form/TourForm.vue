@@ -1,5 +1,5 @@
 <template>
-  <UCard class="max-w-7xl mx-auto bg-gray-50 dark:bg-gray-900">
+  <UCard class="mx-auto min-h-full max-w-7xl bg-gray-50 dark:bg-gray-900" :ui="{ root: 'min-h-full overflow-visible' }">
     <template #header>
       <div class="form-header mb-6">
         <h2
@@ -30,7 +30,6 @@
       <UFormField
         label="وصف البطولة"
         name="description"
-        required
         :error="errors?.description"
       >
         <UTextarea

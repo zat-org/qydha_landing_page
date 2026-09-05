@@ -1,3 +1,4 @@
+import { formatDateTime } from "~/utils/formatDate";
 import { GroupType } from "~/features/tournament/models/group";
 import type { DetailGroup, Match } from "~/features/tournament/models/group";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
@@ -114,19 +115,23 @@ export function useTournamentLifecycleSummary(
       const [finalDetail, ...matchResults] = await Promise.all([
         ...detailPromises,
         ...groups.map((group) =>
-          $api<Match[]>(`/tournaments/${id}/groups/${group.id}/matches`).catch(
+          $api(`/tournaments/${id}/groups/${group.id}/matches`).catch(
             () => [] as Match[],
           ),
         ),
       ]);
 
-      finalGroupTeamsLinked.value = finalDetail?.teams?.length ?? 0;
+      const unwrappedFinal = unwrapApiData<DetailGroup>(finalDetail);
+      finalGroupTeamsLinked.value = unwrappedFinal?.teams?.length ?? 0;
 
       const entries = groups.map((group, index) => {
-        const matches = matchResults[index] as Match[];
-        return [group.id, aggregateMatches(matches ?? [])] as const;
+        const matches = unwrapApiData<Match[]>(matchResults[index]) ?? [];
+        return [group.id, aggregateMatches(matches)] as const;
       });
       matchMap.value = new Map(entries);
+    } catch {
+      matchMap.value = new Map();
+      finalGroupTeamsLinked.value = 0;
     } finally {
       matchesPending.value = false;
     }
@@ -290,12 +295,8 @@ export function useTournamentLifecycleSummary(
         });
       }
 
-      const start = t.joinRequestStartAt
-        ? new Date(t.joinRequestStartAt).toLocaleDateString("ar-EG")
-        : "—";
-      const end = t.joinRequestEndAt
-        ? new Date(t.joinRequestEndAt).toLocaleDateString("ar-EG")
-        : "—";
+      const start = formatDateTime(t.joinRequestStartAt);
+      const end = formatDateTime(t.joinRequestEndAt);
 
       joinSummary.value = {
         total,

@@ -1,7 +1,7 @@
 <template>
   <UCard
-    :ui="{ body: 'px-3 py-1 sm:p-1', header: 'px-2 py-1 sm:p-1 ', footer: 'px-2 py-1 sm:p-1' }"
-    class="mx-auto max-w-7xl bg-gray-50 dark:bg-gray-900"
+    :ui="{ body: 'px-3 py-1 sm:p-1', header: 'px-2 py-1 sm:p-1 ', footer: 'px-2 py-1 sm:p-1', root: 'min-h-full overflow-visible' }"
+    class="mx-auto min-h-full max-w-7xl bg-gray-50 dark:bg-gray-900"
   >
     <template #header>
       <div>
@@ -15,20 +15,6 @@
     </template>
 
     <UForm :state="model" class="flex flex-col space-y-4">
-      <UFormField
-        label="مكان النهائي"
-        name="locationDescription"
-        required
-        :error="errors?.locationDescription"
-      >
-        <UInput
-          v-model="model.locationDescription"
-          :disabled="disabledFields?.locationDescription"
-          placeholder="أدخل عنوان مكان النهائي"
-          @blur="onFieldBlur?.('locationDescription')"
-        />
-      </UFormField>
-
       <UFormField
         label="موقع النهائي"
         name="location"
@@ -47,6 +33,20 @@
           name="location"
           label="رابط Google Maps"
           @parsed="onLocationParsed"
+        />
+      </UFormField>
+
+      <UFormField
+        label="مكان النهائي"
+        name="locationDescription"
+        required
+        :error="errors?.locationDescription"
+      >
+        <UInput
+          v-model="model.locationDescription"
+          :disabled="disabledFields?.locationDescription"
+          placeholder="أدخل عنوان مكان النهائي"
+          @blur="onFieldBlur?.('locationDescription')"
         />
       </UFormField>
 
@@ -85,40 +85,40 @@
               :items="TeamsCountOptions"
               @update:model-value="onFieldBlur?.('teamsCount')"
             />
-            <UInput
+            <AppNumberInput
               v-if="TeamsCount === 'custom'"
               v-model="model.teamsCount"
+              integer
+              :min="1"
               :disabled="disabledFields?.teamsCount"
-              type="number"
-              min="1"
               placeholder="0"
-              @input="validatePositiveNumber"
               @blur="onFieldBlur?.('teamsCount')"
             />
           </div>
         </UFormField>
 
         <UFormField label="عدد الطاولات في النهائي" name="tablesCount" :error="errors?.tablesCount">
-          <UInput
+          <AppNumberInput
             v-model="model.tablesCount"
+            integer
+            :min="1"
             :disabled="disabledFields?.tablesCount"
-            type="number"
             placeholder="0"
             @blur="onFieldBlur?.('tablesCount')"
           />
         </UFormField>
 
         <UFormField label="عدد الأيام" name="dayNumber">
-          <UInput v-model="dayNumber" type="number" min="1" placeholder="أدخل عدد الأيام" size="xs" />
+          <AppNumberInput v-model="dayNumber" integer :min="1" placeholder="أدخل عدد الأيام" size="xs" />
         </UFormField>
         <UFormField label="وقت صكة واحدة (دقيقة)" name="sakkTime">
-          <UInput v-model="sakkTime" type="number" min="1" placeholder="وقت صكة واحدة" size="xs" />
+          <AppNumberInput v-model="sakkTime" integer :min="1" placeholder="وقت صكة واحدة" size="xs" />
         </UFormField>
         <UFormField label="وقت 3 صكات (دقيقة)" name="sakkTime3">
-          <UInput v-model="sakkTime3" type="number" min="1" placeholder="وقت 3 صكات" size="xs" />
+          <AppNumberInput v-model="sakkTime3" integer :min="1" placeholder="وقت 3 صكات" size="xs" />
         </UFormField>
         <UFormField label="وقت 5 صكات (دقيقة)" name="sakkTime5">
-          <UInput v-model="sakkTime5" type="number" min="1" placeholder="وقت 5 صكات" size="xs" />
+          <AppNumberInput v-model="sakkTime5" integer :min="1" placeholder="وقت 5 صكات" size="xs" />
         </UFormField>
       </div>
 

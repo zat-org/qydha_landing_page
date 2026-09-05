@@ -1,3 +1,4 @@
+import { formatDateTime } from "~/utils/formatDate";
 import {
   GroupType,
   type Group,
@@ -101,17 +102,18 @@ export interface MatchAggregates {
   running: number;
 }
 
-export function aggregateMatches(matches: Match[]): MatchAggregates {
+export function aggregateMatches(matches: Match[] | unknown): MatchAggregates {
+  const list = Array.isArray(matches) ? (matches as Match[]) : [];
   let finished = 0;
   let running = 0;
 
-  for (const match of matches) {
+  for (const match of list) {
     if (match.state === "Ended") finished += 1;
     else if (match.state === "Running" || match.state === "Paused")
       running += 1;
   }
 
-  return { total: matches.length, finished, running };
+  return { total: list.length, finished, running };
 }
 
 export function toDateKey(iso: string | null | undefined): string | null {
@@ -137,12 +139,10 @@ export function eachCalendarDay(startAt: string, endAt: string): string[] {
 }
 
 export function formatPlaceDateWindow(place: GetTournamentPlace): string {
-  const start = new Date(place.startAt);
-  const end = new Date(place.endAt);
-  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return "—";
-  const fmt = (d: Date) =>
-    d.toLocaleDateString("ar-EG", { day: "numeric", month: "short" });
-  return `${fmt(start)}–${fmt(end)}`;
+  const start = formatDateTime(place.startAt);
+  const end = formatDateTime(place.endAt);
+  if (start === "—" || end === "—") return "—";
+  return `${start} – ${end}`;
 }
 
 export function countTeamsByPlace(teams: ITeam[], placeId: string): number {

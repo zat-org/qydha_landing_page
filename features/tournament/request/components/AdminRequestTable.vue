@@ -44,14 +44,13 @@
     </UTable>
 </template>
 <script setup lang="ts">
-import { type getTournamentRequestResponse, TournamentRequestState } from '~/features/tournament/models/tournamentRequest';
+import { TournamentRequestState, type TournamentRequest } from '~/features/tournament/models/tournamentRequest';
 import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 
-const { data: res } = useNuxtData<getTournamentRequestResponse['data']>(appKeys.adminTourRequests)
-const rows = computed(() => {
-    return unref(res)?.items ?? []
-})
 const { getTournamentTypeOptions, getTournamnetStateOptions, AdminApproveRequest, AdminRejectRequest } = useTournamentRequest()
+
+const props = defineProps<{ items: TournamentRequest[] }>();
+const rows = computed(() => props.items);
 const stateOptions = getTournamnetStateOptions()
 const typeOptions = getTournamentTypeOptions()
 const approveReq = AdminApproveRequest()
