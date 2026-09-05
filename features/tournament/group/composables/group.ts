@@ -2,7 +2,7 @@ import type {
   CreateMatch,
   DetailGroup,
   Group,
-  Match,
+  GroupMatchesPayload,
   RoundGroupDetails,
 } from "~/features/tournament/models/group";
 import { useMyAuthStore } from "~/store/Auth";
@@ -84,7 +84,7 @@ export const useGroup = () => {
     const TOURID = ref(tour_id);
     const GROUPID = ref(group_id);
 
-    const result = useAppApiData<Match[]>(
+    const result = useAppApiData<GroupMatchesPayload>(
       () => appKeys.match("getGroupMatch", TOURID.value, GROUPID.value),
       () =>
         $api(`tournaments/${TOURID.value}/groups/${GROUPID.value}/matches`),

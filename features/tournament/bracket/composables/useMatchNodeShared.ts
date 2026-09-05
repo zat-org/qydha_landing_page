@@ -30,7 +30,8 @@ function buildTeamDisplay(
 }
 
 export function useMatchNodeShared(match: Ref<Match>) {
-  const { vm, roundOpacityClass, hasStaffOrAdminPrivileges } = useMatchViewModel(match);
+  const { vm, roundOpacityClass, requesterMatchClass, hasStaffOrAdminPrivileges } =
+    useMatchViewModel(match);
 
   const usTeamDisplay = computed(() =>
     buildTeamDisplay(match.value, match.value.usTeamName, match.value.usTeamId),
@@ -67,6 +68,7 @@ export function useMatchNodeShared(match: Ref<Match>) {
   return {
     vm,
     roundOpacityClass,
+    requesterMatchClass,
     hasStaffOrAdminPrivileges,
     usTeamPrimary,
     usTeamSecondary,

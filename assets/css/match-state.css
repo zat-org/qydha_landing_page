@@ -16,6 +16,10 @@
   @apply bg-linear-to-br from-slate-50 via-zinc-50 to-stone-50 text-slate-900 dark:from-stone-900/50 dark:via-zinc-900/45 dark:to-slate-900/55 dark:text-stone-100;
 }
 
+.match-card--requester {
+  @apply ring-2 ring-primary ring-offset-2 ring-offset-white bg-primary/15 shadow-md shadow-primary/25 dark:ring-offset-gray-950 dark:bg-primary/20;
+}
+
 .match-status-badge--created {
   @apply bg-orange-600 text-white dark:bg-orange-500;
 }

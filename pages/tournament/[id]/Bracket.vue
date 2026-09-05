@@ -2,6 +2,7 @@
   <div
     class="bracket-page flex min-h-screen flex-col"
     :class="{ 'bracket-page--obs': obsMode }"
+    :style="{ '--bracket-header-height': `${bracketHeaderHeightPx}px` }"
     :tabindex="obsMode ? -1 : undefined"
   >
     <!-- header -->
@@ -10,6 +11,7 @@
         v-if="
           userStore.user && (userStore.isAdmin || userStore.isOrganizer)
         "
+        :ref="setBracketHeaderEl"
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
         @open-start-confirm="openStartTournamentConfirm"
         @edit-round="onEditRoundFromHeader"
@@ -19,6 +21,7 @@
       />
       <div
         v-else-if="tourStore.tournament.length > 0"
+        :ref="setBracketHeaderEl"
         class="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-950/80 border-b border-gray-200/80 dark:border-gray-800/80 shadow-xs"
       >
         <BracketGroupPills />
@@ -413,6 +416,42 @@ const confirmAndStartTournamentMap = async () => {
 const roundBeingEdited = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef("updateRoundDrawer");
 
+const DEFAULT_BRACKET_HEADER_HEIGHT_PX = 56;
+const bracketHeaderHeightPx = ref(DEFAULT_BRACKET_HEADER_HEIGHT_PX);
+let bracketHeaderObserver: ResizeObserver | null = null;
+
+function unwrapHeaderEl(el: unknown): HTMLElement | null {
+  if (el instanceof HTMLElement) return el;
+  if (
+    el &&
+    typeof el === "object" &&
+    "$el" in el &&
+    (el as { $el: unknown }).$el instanceof HTMLElement
+  ) {
+    return (el as { $el: HTMLElement }).$el;
+  }
+  return null;
+}
+
+function setBracketHeaderEl(el: unknown) {
+  bracketHeaderObserver?.disconnect();
+  bracketHeaderObserver = null;
+
+  const node = unwrapHeaderEl(el);
+  if (!node || !import.meta.client) return;
+
+  const syncHeight = () => {
+    bracketHeaderHeightPx.value = Math.max(
+      DEFAULT_BRACKET_HEADER_HEIGHT_PX,
+      Math.ceil(node.getBoundingClientRect().height),
+    );
+  };
+
+  bracketHeaderObserver = new ResizeObserver(syncHeight);
+  bracketHeaderObserver.observe(node);
+  syncHeight();
+}
+
 const onEditRoundFromHeader = (round: RoundGroupDetails["rounds"][0]) => {
   roundBeingEdited.value = round;
   if (updateRoundDrawer.value) {
@@ -430,6 +469,8 @@ watch(obsMode, (active) => applyObsDocumentClass(active), { immediate: true });
 onUnmounted(() => {
   applyObsDocumentClass(false);
   tourStore.closeConnection();
+  bracketHeaderObserver?.disconnect();
+  bracketHeaderObserver = null;
 });
 </script>
 

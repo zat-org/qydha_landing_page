@@ -28,6 +28,10 @@ export function useMatchViewModel(match: Ref<Match>) {
       : "",
   );
 
+  const requesterMatchClass = computed(() =>
+    tourStore.isRequesterMatch(match.value.id) ? "match-card--requester" : "",
+  );
+
   const hasStaffOrAdminPrivilegesRef = computed(() =>
     hasStaffOrAdminPrivileges(privilege.value),
   );
@@ -35,6 +39,7 @@ export function useMatchViewModel(match: Ref<Match>) {
   return {
     vm,
     roundOpacityClass,
+    requesterMatchClass,
     hasStaffOrAdminPrivileges: hasStaffOrAdminPrivilegesRef,
   };
 }

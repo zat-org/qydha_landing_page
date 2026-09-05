@@ -155,7 +155,7 @@ html.bracket-obs .bracket-container .vue-flow__edge {
 
 .bracket-logo-theme {
   position: absolute;
-  top: 45px;
+  top: calc(var(--bracket-header-height, 56px) + 8px);
   left: 16px;
   z-index: 20;
   display: flex;

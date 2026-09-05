@@ -18,7 +18,7 @@ const API_BASE = (process.env.QydhaApiBase || process.env.API_BASE || "").replac
 const APP_TOKEN = process.env.QydhaToken || "";
 const PLAYER_PASSWORD = process.env.PLAYER_PASSWORD || "";
 const TOURNAMENT_ID =
-  process.env.TOURNAMENT_ID || "4c78cd9a-9d4e-4b33-94e3-def23ae07a92";
+  process.env.TOURNAMENT_ID || "61633519-605f-45b7-8684-9673be94ecb9";
 const USER_PREFIX = process.env.JOIN_USER_PREFIX || "user";
 const USER_START = Number(process.env.JOIN_USER_START || 1);
 const USER_END = Number(process.env.JOIN_USER_END || 16);

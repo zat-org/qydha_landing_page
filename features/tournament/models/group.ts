@@ -25,6 +25,7 @@ export interface Group {
   placeId?: string;
   stageId: string;
   stageType: TournamentStageType;
+  requesterMatchIds?: string[];
 }
 
 export interface DetailGroup {
@@ -153,6 +154,32 @@ export interface Match {
   endReason: string | null;
   maxSakkasCountFromGame: number;
   parentMatch: Match | null;
+}
+
+export type GroupMatchesPayload = {
+  matches: Match[];
+  requesterMatchIds: string[];
+};
+
+export function parseGroupMatchesPayload(raw: unknown): GroupMatchesPayload {
+  if (Array.isArray(raw)) {
+    return { matches: raw as Match[], requesterMatchIds: [] };
+  }
+  if (!raw || typeof raw !== "object") {
+    return { matches: [], requesterMatchIds: [] };
+  }
+  const obj = raw as {
+    matches?: Match[];
+    Matches?: Match[];
+    requesterMatchIds?: string[];
+    RequesterMatchIds?: string[];
+  };
+  const matches = obj.matches ?? obj.Matches;
+  const requesterMatchIds = obj.requesterMatchIds ?? obj.RequesterMatchIds;
+  return {
+    matches: Array.isArray(matches) ? matches : [],
+    requesterMatchIds: Array.isArray(requesterMatchIds) ? requesterMatchIds : [],
+  };
 }
 
 export interface MatchWithPlayer extends Match {

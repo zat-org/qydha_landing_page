@@ -2,7 +2,7 @@
   <div
     dir="rtl"
     class="flex w-[450px] flex-col gap-2 overflow-hidden rounded-2xl p-2 text-sm font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 hover:shadow-xl dark:bg-gray-800 dark:ring-white/10"
-    :class="[vm.cardToneClass, roundOpacityClass]"
+    :class="[vm.cardToneClass, roundOpacityClass, requesterMatchClass]"
   >
     <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-1.5">
       <div
@@ -183,6 +183,7 @@ const match = computed(() => props.data.match);
 const {
   vm,
   roundOpacityClass,
+  requesterMatchClass,
   hasStaffOrAdminPrivileges,
   usTeamPrimary,
   usTeamSecondary,

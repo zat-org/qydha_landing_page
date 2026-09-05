@@ -1,6 +1,6 @@
 import { formatDateTime } from "~/utils/formatDate";
-import { GroupType } from "~/features/tournament/models/group";
-import type { DetailGroup, Match } from "~/features/tournament/models/group";
+import { GroupType, parseGroupMatchesPayload } from "~/features/tournament/models/group";
+import type { DetailGroup } from "~/features/tournament/models/group";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import type { ITeam } from "~/features/tournament/models/tournamentTeam";
@@ -116,7 +116,7 @@ export function useTournamentLifecycleSummary(
         ...detailPromises,
         ...groups.map((group) =>
           $api(`/tournaments/${id}/groups/${group.id}/matches`).catch(
-            () => [] as Match[],
+            () => ({ matches: [], requesterMatchIds: [] }),
           ),
         ),
       ]);
@@ -125,8 +125,10 @@ export function useTournamentLifecycleSummary(
       finalGroupTeamsLinked.value = unwrappedFinal?.teams?.length ?? 0;
 
       const entries = groups.map((group, index) => {
-        const matches = unwrapApiData<Match[]>(matchResults[index]) ?? [];
-        return [group.id, aggregateMatches(matches)] as const;
+        const payload = parseGroupMatchesPayload(
+          unwrapApiData(matchResults[index]),
+        );
+        return [group.id, aggregateMatches(payload.matches)] as const;
       });
       matchMap.value = new Map(entries);
     } catch {
@@ -268,7 +270,6 @@ export function useTournamentLifecycleSummary(
           const assignedCount = placeCounts[index * 2 + 1] ?? 0;
           return {
             placeId: place.id,
-            isNoPreference: false,
             label: placeOptionLabel(place),
             capacity: place.competingTeamsCount,
             choseCount,
@@ -282,18 +283,6 @@ export function useTournamentLifecycleSummary(
           };
         },
       );
-
-      if (noPreferenceWaiting > 0) {
-        placeRows.push({
-          placeId: null,
-          isNoPreference: true,
-          label: "بدون تفضيل مكان",
-          capacity: null,
-          choseCount: noPreferenceWaiting,
-          assignedCount: null,
-          remaining: null,
-        });
-      }
 
       const start = formatDateTime(t.joinRequestStartAt);
       const end = formatDateTime(t.joinRequestEndAt);

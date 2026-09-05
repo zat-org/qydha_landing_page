@@ -1,18 +1,20 @@
 import { defineStore } from 'pinia';
 import type { HubConnection } from '@microsoft/signalr';
 import {
-  GroupType,
   type Group,
   type Match,
   type RoundGroupDetails,
+  parseGroupMatchesPayload,
 } from '~/features/tournament/models/group';
 import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
 import { useGroup } from '~/features/tournament/group/composables/group';
 import { useMatch } from '~/features/tournament/shared/composables/match';
 import { useMyAuthStore } from '~/store/Auth';
+import { defaultBracketGroup } from '~/features/tournament/bracket/utils/defaultBracketGroup';
 
 export const useTournamentBracketStore = defineStore('tournamentBracket', () => {
   const route = useRoute();
+  const router = useRouter();
   const authStore = useMyAuthStore();
   const groupApi = useGroup();
   const games = ref<{ id: string; game: IMatchData; statistics: IMathStat }[]>(
@@ -118,24 +120,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       tournament.value.map((entry) => [entry.data.id, entry.matches]),
     );
 
-    const sortedGroups = [...groups].sort((a, b) => {
-      const aIsFinal =
-        a.type === GroupType.Final ||
-        a.stageType === 'Final' ||
-        a.type?.toLowerCase() === 'final';
-      const bIsFinal =
-        b.type === GroupType.Final ||
-        b.stageType === 'Final' ||
-        b.type?.toLowerCase() === 'final';
-
-      if (aIsFinal && !bIsFinal) return 1;
-      if (!aIsFinal && bIsFinal) return -1;
-      return (a.name || '').localeCompare(b.name || '', 'ar', {
-        numeric: true,
-      });
-    });
-
-    tournament.value = sortedGroups.map((g) => ({
+    tournament.value = groups.map((g) => ({
       data: g,
       matches: matchesByGroupId.get(g.id) ?? [],
     }));
@@ -151,30 +136,39 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     { immediate: true },
   );
 
-  const applyMatchesToGroup = (groupId: string, matches: Match[]) => {
+  const applyMatchesToGroup = (
+    groupId: string,
+    matches: Match[],
+    requesterMatchIds?: string[],
+  ) => {
     const entry = tournament.value.find((e) => e.data.id === groupId);
     if (!entry) return;
     entry.matches = matches;
+    if (requesterMatchIds !== undefined) {
+      entry.data.requesterMatchIds = requesterMatchIds;
+    }
     linkMatchTree(entry.matches);
   };
 
   const selectedGroup = computed(() => {
     if (tournament.value.length === 0) return null;
+    const fallbackId = defaultBracketGroup(
+      tournament.value.map((entry) => entry.data),
+    )?.id;
+    const fallback =
+      tournament.value.find((entry) => entry.data.id === fallbackId) ??
+      tournament.value[0];
     const groupIdStr = route.query.group as string | undefined;
-    const finalGroup = tournament.value.find(
-      (d) =>
-        d.data.type === GroupType.Final ||
-        d.data.type?.toLowerCase() === 'final',
-    );
-    if (!groupIdStr) {
-      return finalGroup ?? tournament.value[tournament.value.length - 1];
-    }
+    if (!groupIdStr) return fallback;
     return (
-      tournament.value.find((g) => g.data.id === groupIdStr) ??
-      finalGroup ??
-      tournament.value[tournament.value.length - 1]
+      tournament.value.find((g) => g.data.id === groupIdStr) ?? fallback
     );
   });
+
+  const isRequesterMatch = (matchId: string) => {
+    const ids = selectedGroup.value?.data.requesterMatchIds ?? [];
+    return ids.some((id) => String(id) === String(matchId));
+  };
 
   const fetchGroupData = async (groupId: string, forceMatches = false) => {
     const tournamentId =
@@ -201,7 +195,8 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
 
     await matchesREQ.fetchREQ(tournamentId, groupId);
     if (matchesREQ.status.value === 'success' && matchesREQ.data?.value) {
-      applyMatchesToGroup(groupId, matchesREQ.data.value);
+      const payload = parseGroupMatchesPayload(matchesREQ.data.value);
+      applyMatchesToGroup(groupId, payload.matches, payload.requesterMatchIds);
     }
   };
 
@@ -211,6 +206,24 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       if (newGroupId) {
         await fetchGroupData(newGroupId);
       }
+    },
+  );
+
+  watch(
+    () => ({
+      hasGroups: tournament.value.length > 0,
+      queryGroup: route.query.group,
+    }),
+    ({ hasGroups, queryGroup }) => {
+      if (!hasGroups || queryGroup) return;
+      const target = defaultBracketGroup(
+        tournament.value.map((entry) => entry.data),
+      );
+      if (!target) return;
+      router.replace({
+        path: route.path,
+        query: { ...route.query, group: target.id },
+      });
     },
   );
 
@@ -289,30 +302,57 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       });
     }
   };
-  const handleBracketChanged = (groupId: string, groupMatches: string) => {
-    applyMatchesToGroup(groupId, JSON.parse(groupMatches) as Match[]);
+  const handleBracketChanged = (
+    groupId: string,
+    groupMatchesJson: string,
+    requesterMatchIds?: string[],
+  ) => {
+    applyMatchesToGroup(
+      groupId,
+      JSON.parse(groupMatchesJson) as Match[],
+      requesterMatchIds ?? [],
+    );
   };
-  const handleBracketUpdated = (groupId: string, groupMatches: string) => {
-    applyMatchesToGroup(groupId, JSON.parse(groupMatches) as Match[]);
+  const handleBracketUpdated = (
+    groupId: string,
+    groupMatches: string,
+    requesterMatchIds?: string[],
+  ) => {
+    applyMatchesToGroup(
+      groupId,
+      JSON.parse(groupMatches) as Match[],
+      requesterMatchIds ?? [],
+    );
+  };
+  const joinTournamentGroup = async (
+    conn: HubConnection,
+    tournamentId: string,
+  ) => {
+    await conn.invoke('AddToTournamentGroup', tournamentId);
   };
   const initWebsocket = async (tournamentId: string) => {
     const signalR = await import('@microsoft/signalr');
     const config = useRuntimeConfig();
     const conn = new signalR.HubConnectionBuilder()
       .withUrl(`${config.public.qydhaapiBase}/tournaments-hub`, {
-        withCredentials: true,
+        accessTokenFactory: () => authStore.user?.jwtToken ?? '',
       })
+      .withAutomaticReconnect()
       .build();
 
-    try {
-      await conn.start();
-      await conn.invoke('AddToTournamentGroup', tournamentId);
-    } catch (error) {
-      console.log('errror', error);
-    }
     conn.on('MatchStateChanged', handleMatchStateChanged);
     conn.on('TournamentBracketChanged', handleBracketChanged);
     conn.on('braket updated', handleBracketUpdated);
+    conn.onreconnected(async () => {
+      await joinTournamentGroup(conn, tournamentId);
+    });
+
+    try {
+      await conn.start();
+      await joinTournamentGroup(conn, tournamentId);
+    } catch (error) {
+      console.log('errror', error);
+    }
     return conn;
   };
   return {
@@ -323,6 +363,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     matchesTree,
     loserMatches,
     selectedGroup,
+    isRequesterMatch,
     games,
     fetchGame,
     closeConnection,

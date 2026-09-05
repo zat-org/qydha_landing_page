@@ -11,6 +11,7 @@
 
       <div class="flex flex-wrap gap-2">
         <LifecycleStatChip
+          color="primary"
           icon="i-mdi-inbox-arrow-down"
           label="الطلبات"
           :value="
@@ -20,30 +21,52 @@
           "
         />
         <LifecycleStatChip
+          color="warning"
           icon="i-mdi-clock-outline"
           label="قيد المراجعة"
           :value="summary.pending"
         />
         <LifecycleStatChip
+          color="info"
           icon="i-mdi-eye-outline"
           label="بانتظار الموافقة"
           :value="summary.underReview"
         />
         <LifecycleStatChip
+          color="success"
           icon="i-mdi-check-circle-outline"
           label="مقبولة"
           :value="summary.accepted"
         />
         <LifecycleStatChip
+          color="neutral"
           icon="i-mdi-format-list-bulleted"
           label="قائمة الانتظار"
           :value="summary.waitingList"
         />
         <LifecycleStatChip
+          color="error"
           icon="i-mdi-cancel"
           label="ملغاة"
           :value="summary.canceled"
         />
+      </div>
+
+      <div
+        v-if="summary.noPreferenceWaiting > 0"
+        class="flex items-start gap-2 rounded-xl border border-info/25 bg-info/10 px-3 py-2.5 text-sm text-info"
+      >
+        <UIcon
+          name="i-mdi-map-marker-question-outline"
+          class="mt-0.5 size-4 shrink-0"
+        />
+        <p>
+          <span class="font-semibold tabular-nums">
+            {{ summary.noPreferenceWaiting }}
+          </span>
+          طلب قيد المراجعة بدون تفضيل مكان — لا يظهرون في جدول الأماكن، ويمكن
+          تعيينهم لأي مكان عند الموافقة الأولية.
+        </p>
       </div>
 
       <div v-if="summary.placeRows.length" class="space-y-0">
@@ -106,18 +129,13 @@
             <tbody class="divide-y divide-gray-200/80 dark:divide-gray-800">
               <tr
                 v-for="row in summary.placeRows"
-                :key="row.isNoPreference ? 'no-preference' : row.placeId!"
+                :key="row.placeId!"
                 class="bg-white/40 dark:bg-gray-900/20"
               >
                 <td class="px-3 py-2.5 font-medium text-gray-900 dark:text-white">
                   <span class="inline-flex items-center gap-1.5">
-                    <UIcon
-                      v-if="row.isNoPreference"
-                      name="i-mdi-map-marker-question-outline"
-                      class="size-4 shrink-0 text-gray-400"
-                    />
                     <UTooltip
-                      v-else-if="isPlaceCapacityMet(row)"
+                      v-if="isPlaceCapacityMet(row)"
                       text="اكتمل العدد المطلوب لهذا المكان"
                     >
                       <UIcon
@@ -223,13 +241,11 @@ function formatCell(
   row: JoinRequestPlaceSummaryRow,
   field: "capacity" | "assignedCount" | "remaining",
 ): string | number {
-  if (row.isNoPreference) return "—";
-  const value = row[field];
-  return value ?? "—";
+  return row[field] ?? "—";
 }
 
 function isPlaceCapacityMet(row: JoinRequestPlaceSummaryRow): boolean {
-  if (row.isNoPreference || row.remaining == null) return false;
+  if (row.remaining == null) return false;
   return row.remaining <= 0;
 }
 
