@@ -4,11 +4,21 @@
 
     <!-- Admin actions and rounds toolbar -->
     <div
-      v-if="canAccessRounds && tourStore.selectedGroup"
+      v-if="tourStore.selectedGroup && (canAccessRounds || canSendGroupNotification)"
       class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-200/60 dark:border-gray-800/60 px-3 py-1.5 bg-gray-50/70 dark:bg-gray-900/40"
     >
       <!-- Action buttons -->
       <div class="flex flex-wrap items-center gap-1.5">
+        <UButton
+          v-if="canSendGroupNotification"
+          icon="i-heroicons-bell"
+          color="primary"
+          variant="soft"
+          size="xs"
+          label="إشعار المجموعة"
+          @click="emit('open-group-notification')"
+        />
+
         <UButton
           v-if="showRegenerateFinalMatchesButton"
           icon="i-mdi-refresh"
@@ -126,6 +136,7 @@ import {
 } from "~/features/tournament/phase/phaseActions";
 import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 import BracketGroupPills from "./BracketGroupPills.vue";
+import { useCanSendGroupNotification } from "~/features/tournament/bracket/composables/useCanSendGroupNotification";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -134,6 +145,7 @@ const emit = defineEmits<{
   "finish-tournament": [];
   "resume-final-group-after-finish": [];
   "open-start-confirm-map": [];
+  "open-group-notification": [];
 }>();
 
 const userStore = useMyAuthStore();
@@ -153,6 +165,8 @@ watch(
   },
   { immediate: true },
 );
+
+const { canSend: canSendGroupNotification } = useCanSendGroupNotification();
 
 const canAccessRounds = computed(
   () => !!isAdmin.value || !!isOrganizer.value,

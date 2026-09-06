@@ -8,9 +8,7 @@
     <!-- header -->
     <div v-if="!obsMode" class="shrink-0">
       <BracketPageHeader
-        v-if="
-          userStore.user && (userStore.isAdmin || userStore.isOrganizer)
-        "
+        v-if="showOperatorHeader"
         :ref="setBracketHeaderEl"
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
         @open-start-confirm="openStartTournamentConfirm"
@@ -18,6 +16,7 @@
         @finish-tournament="finishTournament"
         @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
         @open-start-confirm-map="openStartTournamentConfirmMap"
+        @open-group-notification="openGroupNotificationDrawer"
       />
       <div
         v-else-if="tourStore.tournament.length > 0"
@@ -113,6 +112,13 @@
         :group-id="tourStore.selectedGroup?.data.id || ''"
       />
 
+      <GroupNotificationDrawer
+        v-if="canSendGroupNotification"
+        ref="groupNotificationDrawer"
+        :tournament-id="tourid"
+        :group="tourStore.selectedGroup?.data ?? null"
+      />
+
       <CreateMatchDrawer
         v-if="
           userStore.user &&
@@ -152,6 +158,7 @@ import {
   Bracket,
   BracketPageHeader,
   BracketGroupPills,
+  GroupNotificationDrawer,
 } from "~/features/tournament/bracket/components";
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
@@ -160,6 +167,7 @@ import QydhaLogo from "@/assets/images/qydha-logo.svg";
 import TournamentApprovePlanConfirmModal from "~/features/tournament/detail/components/shared/TournamentApprovePlanConfirmModal.vue";
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useMyAuthStore } from "~/store/Auth";
+import { useCanSendGroupNotification } from "~/features/tournament/bracket/composables/useCanSendGroupNotification";
 import { GroupState } from "~/features/tournament/models/group";
 import { useStartFinalGroupTournament } from "~/features/tournament/detail/composables/api/useStartFinalGroupTournament";
 import { useFinishTournament } from "~/features/tournament/detail/composables/api/useFinishTournament";
@@ -237,6 +245,15 @@ function goToObsMode(theme: BracketTheme) {
 }
 
 const userStore = useMyAuthStore();
+const { canSend: canSendGroupNotification } = useCanSendGroupNotification();
+
+const showOperatorHeader = computed(
+  () =>
+    !!userStore.user &&
+    (userStore.isAdmin ||
+      userStore.isOrganizer ||
+      canSendGroupNotification.value),
+);
 
 const canUseObsMode = computed(
   () => !!userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin),
@@ -426,6 +443,13 @@ const confirmAndStartTournamentMap = async () => {
 
 const roundBeingEdited = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef("updateRoundDrawer");
+const groupNotificationDrawer = useTemplateRef("groupNotificationDrawer");
+
+const openGroupNotificationDrawer = () => {
+  if (groupNotificationDrawer.value) {
+    groupNotificationDrawer.value.open = true;
+  }
+};
 
 const DEFAULT_BRACKET_HEADER_HEIGHT_PX = 56;
 const bracketHeaderHeightPx = ref(DEFAULT_BRACKET_HEADER_HEIGHT_PX);
