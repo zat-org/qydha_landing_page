@@ -124,6 +124,20 @@
           </template>
         </Suspense>
       </template>
+      <template #accepted>
+        <Suspense>
+          <TeamJoinRequestsPanel
+            v-model:selected-ids="selectedIds"
+            :tournament-id="id"
+            :can-mutate="false"
+            active-tab="accepted"
+            @mutated="refreshAll"
+          />
+          <template #fallback>
+            <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
+          </template>
+        </Suspense>
+      </template>
     </UTabs>
 
     <JoinRequestRandomConsiderModal
@@ -228,6 +242,12 @@ const tabItems = [
     slot: "waitingList" as const,
     icon: "i-mdi-format-list-bulleted",
     value: "waitingList",
+  },
+  {
+    label: "مقبولة",
+    slot: "accepted" as const,
+    icon: "i-heroicons-check-badge",
+    value: "accepted",
   },
 ];
 

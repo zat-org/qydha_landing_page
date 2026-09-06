@@ -82,11 +82,11 @@
       class="flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white/60 p-3 dark:border-gray-800 dark:bg-gray-900/40 sm:flex-row sm:flex-wrap sm:items-end"
     >
       <UFormField class="min-w-0 flex-1" label="بحث">
-        <UInput placeholder="اسم الفريق أو اللاعب" @input="debouncedSearch" />
+        <UInput placeholder="اسم الفريق أو المستخدم" @input="debouncedSearch" />
       </UFormField>
 
       <UFormField
-        v-if="activeTab === 'approval'"
+        v-if="activeTab === 'approval' || activeTab === 'accepted'"
         class="min-w-0 flex-1"
         label="تصفية حسب المكان المعيّن"
       >
@@ -164,14 +164,10 @@
                 v-if="!expandedIds.has(item.joinRequestId)"
                 class="truncate text-xs text-gray-500 dark:text-gray-400"
               >
-                <template v-if="activeTab === 'consideration'">
-                  <span>{{ preferredPlaceRowLabel(item) }}</span>
-                  <span class="mx-1 opacity-40">·</span>
-                </template>
-                <template v-else-if="activeTab === 'approval'">
-                  <span>{{ assignedPlaceRowLabel(item) }}</span>
-                  <span class="mx-1 opacity-40">·</span>
-                </template>
+                <span>مفضل: {{ preferredPlaceRowLabel(item) }}</span>
+                <span class="mx-1 opacity-40">·</span>
+                <span>معيّن: {{ assignedPlaceRowLabel(item) }}</span>
+                <span class="mx-1 opacity-40">·</span>
                 {{ item.creatorUsername }} · {{ item.teammateUsername }}
               </p>
             </div>
@@ -235,12 +231,12 @@
               <div>
                 <dt class="text-xs text-gray-500">مكان مفضل</dt>
                 <dd>
-                  {{ placeLabel(item.selectedQualificationsPlaceId) }}
+                  {{ preferredPlaceRowLabel(item) }}
                 </dd>
               </div>
-              <div v-if="activeTab === 'approval'">
+              <div>
                 <dt class="text-xs text-gray-500">مكان معيّن</dt>
-                <dd>{{ placeLabel(item.assignedPlaceId) }}</dd>
+                <dd>{{ assignedPlaceRowLabel(item) }}</dd>
               </div>
               <div v-if="activeTab === 'consideration'">
                 <dt class="text-xs text-gray-500">يقبل قائمة الانتظار</dt>
@@ -293,7 +289,8 @@ export type JoinRequestListTab =
   | "consideration"
   | "approval"
   | "canceled"
-  | "waitingList";
+  | "waitingList"
+  | "accepted";
 
 const props = defineProps<{
   tournamentId: string;
@@ -351,7 +348,10 @@ watch(
 );
 
 watch(assignedPlaceFilter, () => {
-  if (props.activeTab === "approval" && assignedPlaceFilter.value !== "all") {
+  if (
+    (props.activeTab === "approval" || props.activeTab === "accepted") &&
+    assignedPlaceFilter.value !== "all"
+  ) {
     params.value.assignedPlaceId = assignedPlaceFilter.value;
     params.value.useAssignedPlaceNullFilter = false;
   } else {

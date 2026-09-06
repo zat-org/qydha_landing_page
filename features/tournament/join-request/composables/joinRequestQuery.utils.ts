@@ -133,11 +133,12 @@ export const ORGANIZER_VISIBLE_JOIN_STATES: TeamJoinRequestWorkflowState[] = [
 
 /** Tab presets for organizer list views. */
 export const JOIN_REQUEST_TAB_STATES: Record<
-  "consideration" | "approval" | "canceled" | "waitingList",
+  "consideration" | "approval" | "canceled" | "waitingList" | "accepted",
   TeamJoinRequestWorkflowState[]
 > = {
   consideration: [TeamJoinRequestWorkflowState.WaitingOrganizerConsideration],
   approval: [TeamJoinRequestWorkflowState.WaitingOrganizerApproval],
   canceled: [TeamJoinRequestWorkflowState.CanceledByOrganizer],
   waitingList: [TeamJoinRequestWorkflowState.InWaitingList],
+  accepted: [TeamJoinRequestWorkflowState.ApprovedByOrganizer],
 };
