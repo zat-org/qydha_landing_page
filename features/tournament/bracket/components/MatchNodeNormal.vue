@@ -200,7 +200,7 @@ const showRefereeIcon = computed(
 const tableText = computed(() => props.data.match.tableName || "بدون طاولة");
 const roundText = computed(() => props.data.match.roundName || "بدون جولة");
 const timeText = computed(() =>
-  props.data.match.startAt ? formatDateTime(props.data.match.startAt) : "بدون وقت",
+  props.data.match.startAt ? formatMatchNodeDateTime(props.data.match.startAt) : "بدون وقت",
 );
 const sakkaText = computed(() => {
   const count = props.data.match.maxSakkasCountFromGame;
