@@ -343,6 +343,12 @@ function reversedMoshtaras<
 
 type StatKey = keyof IMathStat["usStatistics"];
 
+const OPTIONAL_STAT_KEYS: StatKey[] = ["ekak", "aklat"];
+
+function hasStatValue(value: unknown): boolean {
+  return value !== null && value !== undefined && value !== "";
+}
+
 const statDefinitions: { key: StatKey; label: string }[] = [
   { key: "ekak", label: "عدد الاكك" },
   { key: "aklat", label: "الاكلات" },
@@ -360,12 +366,20 @@ const statDefinitions: { key: StatKey; label: string }[] = [
 ];
 
 const statRows = computed(() =>
-  statDefinitions.map(({ key, label }) => ({
-    key,
-    label,
-    them: statusThem.value?.[key],
-    us: statusUs.value?.[key],
-  })),
+  statDefinitions
+    .filter(({ key }) => {
+      if (!OPTIONAL_STAT_KEYS.includes(key)) return true;
+      return (
+        hasStatValue(statusUs.value?.[key]) ||
+        hasStatValue(statusThem.value?.[key])
+      );
+    })
+    .map(({ key, label }) => ({
+      key,
+      label,
+      them: statusThem.value?.[key],
+      us: statusUs.value?.[key],
+    })),
 );
 
 const items = [

@@ -7,6 +7,7 @@ function buildTeamDisplay(
   match: Match,
   teamName?: string | null,
   hasTeamId?: string | null,
+  qualifyFromMatchId?: string | null,
 ) {
   const normalizedName = (teamName || "").trim();
   const state = normalizeMatchState(match.state);
@@ -22,6 +23,10 @@ function buildTeamDisplay(
     };
   }
 
+  if (!qualifyFromMatchId) {
+    return { primary: "فريق منسحب", secondary: "" };
+  }
+
   if (!hasTeamId && state !== "Ended") {
     return { primary: "لم يحدد بعد", secondary: " " };
   }
@@ -34,10 +39,20 @@ export function useMatchNodeShared(match: Ref<Match>) {
     useMatchViewModel(match);
 
   const usTeamDisplay = computed(() =>
-    buildTeamDisplay(match.value, match.value.usTeamName, match.value.usTeamId),
+    buildTeamDisplay(
+      match.value,
+      match.value.usTeamName,
+      match.value.usTeamId,
+      match.value.matchQualifyUsTeamId,
+    ),
   );
   const themTeamDisplay = computed(() =>
-    buildTeamDisplay(match.value, match.value.themTeamName, match.value.themTeamId),
+    buildTeamDisplay(
+      match.value,
+      match.value.themTeamName,
+      match.value.themTeamId,
+      match.value.matchQualifyThemTeamId,
+    ),
   );
 
   const usTeamPrimary = computed(() => usTeamDisplay.value.primary);
