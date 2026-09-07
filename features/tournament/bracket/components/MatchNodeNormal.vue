@@ -292,21 +292,30 @@ const onEdit = () => {
 };
 
 const copyStream = async () => {
-  console.log("copyStream");
+  const tableId = props.data.match.tableId;
+  if (!tournamentId || !tableId) {
+    toast.add({
+      title: "Error",
+      description: "لا يمكن نسخ رابط البث بدون البطولة والطاولة",
+      color: "error",
+    });
+    return;
+  }
+
   try {
-    const streamUrl = `${config.public.streamBase}/${tournamentId}/${props.data.match.id}`;
-    await navigator.clipboard.writeText(streamUrl);
+    const streamUrl = new URL(String(config.public.streamBase));
+    streamUrl.searchParams.set("tourId", tournamentId);
+    streamUrl.searchParams.set("tableId", tableId);
+    await navigator.clipboard.writeText(streamUrl.toString());
     toast.add({
       title: "Copied!",
       description: "Stream URL copied to clipboard",
       duration: 2000,
     });
-  }
-  catch (error) {
+  } catch (error) {
     console.error("Failed to copy text to clipboard:", error);
     toast.add({ title: "Error", description: "Failed to copy to clipboard", color: "error" });
   }
-
 };
 
 const runAdminAction = (type: MatchActionType) => {
