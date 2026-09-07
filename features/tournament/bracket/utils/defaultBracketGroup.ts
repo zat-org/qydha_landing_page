@@ -24,6 +24,16 @@ export function bracketGroupsProbeOrder(groups: Group[]): Group[] {
   return [...finals, ...rest];
 }
 
+export function isPlaceModeratorGroup(group: Group) {
+  return Boolean(group.isRequesterPlaceModerator);
+}
+
+export function defaultPlaceModeratorGroup(groups: Group[]): Group | undefined {
+  const assigned = groups.filter(isPlaceModeratorGroup);
+  if (assigned.length === 0) return undefined;
+  return defaultBracketGroup(assigned);
+}
+
 export function defaultBracketGroup(groups: Group[]): Group | undefined {
   if (groups.length === 0) return undefined;
 

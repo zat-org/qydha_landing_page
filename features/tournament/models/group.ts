@@ -160,7 +160,25 @@ export interface Match {
 export type GroupMatchesPayload = {
   matches: Match[];
   requesterMatchIds: string[];
+  isRequesterPlaceModerator?: boolean;
 };
+
+function coerceBool(value: unknown): boolean | undefined {
+  if (typeof value === "boolean") return value;
+  if (value === "true" || value === "True") return true;
+  if (value === "false" || value === "False") return false;
+  return undefined;
+}
+
+export function readIsRequesterPlaceModerator(source: unknown): boolean | undefined {
+  if (!source || typeof source !== "object") return undefined;
+  const obj = source as Record<string, unknown>;
+  return coerceBool(
+    obj.isRequesterPlaceModerator ??
+      obj.IsRequesterPlaceModerator ??
+      obj.isPlaceModerator,
+  );
+}
 
 export function parseGroupMatchesPayload(raw: unknown): GroupMatchesPayload {
   if (Array.isArray(raw)) {
@@ -180,6 +198,7 @@ export function parseGroupMatchesPayload(raw: unknown): GroupMatchesPayload {
   return {
     matches: Array.isArray(matches) ? matches : [],
     requesterMatchIds: Array.isArray(requesterMatchIds) ? requesterMatchIds : [],
+    isRequesterPlaceModerator: readIsRequesterPlaceModerator(raw),
   };
 }
 

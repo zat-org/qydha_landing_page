@@ -5,14 +5,17 @@ import {
   type Match,
   type RoundGroupDetails,
   parseGroupMatchesPayload,
+  readIsRequesterPlaceModerator,
 } from '~/features/tournament/models/group';
 import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
 import { useGroup } from '~/features/tournament/group/composables/group';
 import { useMatch } from '~/features/tournament/shared/composables/match';
 import { useMyAuthStore } from '~/store/Auth';
+import { Privilege } from '~/models/user';
 import {
   bracketGroupsProbeOrder,
   defaultBracketGroup,
+  defaultPlaceModeratorGroup,
   hasRequesterMatches,
   lastRequesterMatchId,
 } from '~/features/tournament/bracket/utils/defaultBracketGroup';
@@ -134,7 +137,10 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
             g.requesterMatchIds?.length
               ? g.requesterMatchIds
               : previous?.data.requesterMatchIds,
-          isRequesterPlaceModerator: g.isRequesterPlaceModerator ?? false,
+          isRequesterPlaceModerator:
+            readIsRequesterPlaceModerator(g) ??
+            previous?.data.isRequesterPlaceModerator ??
+            false,
         },
         matches: previous?.matches ?? [],
       };
@@ -169,11 +175,18 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     linkMatchTree(entry.matches);
   };
 
+  const preferredGroupWithoutQuery = (groups: Group[]) => {
+    if (!authStore.isAdmin) {
+      const moderatorGroup = defaultPlaceModeratorGroup(groups);
+      if (moderatorGroup) return moderatorGroup;
+    }
+    return defaultBracketGroup(groups);
+  };
+
   const selectedGroup = computed(() => {
     if (tournament.value.length === 0) return null;
-    const fallbackId = defaultBracketGroup(
-      tournament.value.map((entry) => entry.data),
-    )?.id;
+    const allGroups = tournament.value.map((entry) => entry.data);
+    const fallbackId = preferredGroupWithoutQuery(allGroups)?.id;
     const fallback =
       tournament.value.find((entry) => entry.data.id === fallbackId) ??
       tournament.value[0];
@@ -222,7 +235,12 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     await matchesREQ.fetchREQ(tournamentId, groupId);
     if (matchesREQ.status.value === 'success' && matchesREQ.data?.value) {
       const payload = parseGroupMatchesPayload(matchesREQ.data.value);
-      applyMatchesToGroup(groupId, payload.matches, payload.requesterMatchIds);
+      applyMatchesToGroup(
+        groupId,
+        payload.matches,
+        payload.requesterMatchIds,
+        payload.isRequesterPlaceModerator,
+      );
     }
   };
 
@@ -231,8 +249,11 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       selectedTournamentId.value || route.params.id?.toString() || '';
     if (!tournamentId || !groupId) return;
 
-    // 1. Fetch rounds only for admin, staff, or organizer
-    const canLoadRounds = !!authStore.isAdmin || !!authStore.isOrganizer;
+    const privilege = String(authStore.privilege ?? '').toLowerCase();
+    const canLoadRounds =
+      !!authStore.isAdmin ||
+      privilege === Privilege.Owner.toLowerCase() ||
+      privilege === Privilege.Admin.toLowerCase();
     if (canLoadRounds) {
       await roundsREQ.fetchREQ(tournamentId, groupId);
       if (roundsREQ.status.value === 'success' && roundsREQ.data?.value) {
@@ -257,7 +278,35 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
   const resolveInitialGroupId = async (tournamentId: string) => {
     const groups = () => tournament.value.map((entry) => entry.data);
 
-    let target = defaultBracketGroup(groups());
+    if (!authStore.isAdmin) {
+      let mine = defaultPlaceModeratorGroup(groups());
+      if (!mine && authStore.user) {
+        for (const group of bracketGroupsProbeOrder(groups())) {
+          await loadMatchesForGroup(tournamentId, group.id, true);
+          mine = defaultPlaceModeratorGroup(groups());
+          if (mine) break;
+        }
+      }
+      if (mine) {
+        const queryGroup = route.query.group as string | undefined;
+        const queryIsAssigned = groups().some(
+          (group) =>
+            group.id === queryGroup && group.isRequesterPlaceModerator,
+        );
+        return queryIsAssigned ? queryGroup : mine.id;
+      }
+    }
+
+    const queryGroup = route.query.group as string | undefined;
+    if (
+      queryGroup &&
+      tournament.value.some((entry) => entry.data.id === queryGroup)
+    ) {
+      return queryGroup;
+    }
+
+    let target = preferredGroupWithoutQuery(groups());
+
     if (authStore.user) {
       if (target && hasRequesterMatches(target)) {
         return target.id;
@@ -265,16 +314,11 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
 
       for (const group of bracketGroupsProbeOrder(groups())) {
         await loadMatchesForGroup(tournamentId, group.id, true);
-        target = defaultBracketGroup(groups());
+        target = preferredGroupWithoutQuery(groups());
         if (target && hasRequesterMatches(target)) {
           return target.id;
         }
       }
-    }
-
-    const queryGroup = route.query.group as string | undefined;
-    if (queryGroup && tournament.value.some((entry) => entry.data.id === queryGroup)) {
-      return queryGroup;
     }
 
     return target?.id;
@@ -297,7 +341,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     }),
     ({ hasGroups, queryGroup }) => {
       if (!hasGroups || queryGroup) return;
-      const target = defaultBracketGroup(
+      const target = preferredGroupWithoutQuery(
         tournament.value.map((entry) => entry.data),
       );
       if (!target) return;
