@@ -15,7 +15,7 @@
           color="primary"
           variant="soft"
           size="xs"
-          label="إشعار المجموعة"
+          label="إشعار اللاعبين"
           @click="emit('open-group-notification')"
         />
 

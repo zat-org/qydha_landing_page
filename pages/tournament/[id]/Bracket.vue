@@ -117,6 +117,7 @@
         ref="groupNotificationDrawer"
         :tournament-id="tourid"
         :group="tourStore.selectedGroup?.data ?? null"
+        :groups="bracketGroups"
       />
 
       <CreateMatchDrawer
@@ -303,6 +304,9 @@ watch(
 );
 
 const tourStore = useTournamentBracketStore();
+const bracketGroups = computed(
+  () => tourStore.tournament.map((entry) => entry.data),
+);
 
 const BRACKET_VISIBLE_GROUP_STATES = new Set<GroupState>([
   GroupState.MatchesGenerated,

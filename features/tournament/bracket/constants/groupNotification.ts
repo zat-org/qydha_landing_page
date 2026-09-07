@@ -62,7 +62,7 @@ export const GROUP_NOTIFICATION_TEMPLATES: {
     icon: "i-heroicons-clock",
     title: "{TournamentTitle}",
     description:
-      "يا {PlayerName}، مباراة فريق {TeamName} القادمة يوم {MatchDate} الساعة {MatchTime} على طاولة {TableName} في {LocationDescription}. {AdditionalMessage}",
+      "يا {PlayerName}، مباراة فريق {TeamName} القادمة يوم {MatchDate} الساعة {MatchTime} على طاولة {TableName} في {LocationDescription}.",
   },
   {
     id: "placeAndTable",
@@ -71,7 +71,7 @@ export const GROUP_NOTIFICATION_TEMPLATES: {
     icon: "i-heroicons-map-pin",
     title: "{TournamentTitle} — {GroupName}",
     description:
-      "يا {PlayerName}، موعد مباراة فريق {TeamName} هو {MatchDate} الساعة {MatchTime} أمام {OpponentTeamName} على طاولة {TableName}. {AdditionalMessage}",
+      "يا {PlayerName}، موعد مباراة فريق {TeamName} هو {MatchDate} الساعة {MatchTime} أمام {OpponentTeamName} على طاولة {TableName}.",
   },
   {
     id: "custom",
@@ -79,7 +79,7 @@ export const GROUP_NOTIFICATION_TEMPLATES: {
     hint: "اكتب رسالتك",
     icon: "i-heroicons-pencil-square",
     title: "{TournamentTitle}",
-    description: "يا {PlayerName}، {AdditionalMessage}",
+    description: "يا {PlayerName}، نتمنى لكم التوفيق.",
   },
 ];
 

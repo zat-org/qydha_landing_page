@@ -1,12 +1,14 @@
 import type { ApiResponse } from "~/composables/useAppData";
 import type { GroupNotificationActionType } from "~/features/tournament/bracket/constants/groupNotification";
 
+const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
+
 export type SendTournamentGroupNotificationPayload = {
   title: string;
   description: string;
   actionPath: string;
   actionType: GroupNotificationActionType;
-  templateValues?: Record<string, string>;
+  targetedGroupIds?: string[];
   popUpImage?: File | null;
 };
 
@@ -17,28 +19,33 @@ export function useSendTournamentGroupNotification() {
 
   const fetchREQ = async (
     tournamentId: string,
-    groupId: string,
     payload: SendTournamentGroupNotificationPayload,
   ) => {
     recipientCount.value = null;
     await execute(async () => {
       const body = new FormData();
-      body.append("title", payload.title);
-      body.append("description", payload.description);
-      body.append("actionPath", payload.actionPath);
-      body.append("actionType", payload.actionType);
+      body.append("Title", payload.title);
+      body.append("Description", payload.description);
+      body.append("ActionPath", payload.actionPath);
+      body.append("ActionType", payload.actionType);
 
       if (payload.popUpImage instanceof File) {
-        body.append("popUpImage", payload.popUpImage);
+        body.append("PopUpImage", payload.popUpImage);
       }
 
-      for (const [key, value] of Object.entries(payload.templateValues ?? {})) {
-        if (!value.trim()) continue;
-        body.append(`templateValues[${key}]`, value);
+      const groupIds = [
+        ...new Set(
+          (payload.targetedGroupIds ?? []).filter(
+            (id) => id && id !== EMPTY_GUID,
+          ),
+        ),
+      ];
+      for (const id of groupIds) {
+        body.append("TargetedGroupIds", id);
       }
 
       const response = await $api<ApiResponse<number>>(
-        `/tournaments/${tournamentId}/groups/${groupId}/notifications`,
+        `/tournaments/${tournamentId}/groups/notifications`,
         {
           method: "POST",
           body,

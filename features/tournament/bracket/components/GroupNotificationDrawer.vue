@@ -14,65 +14,199 @@
     }"
   >
     <template #header>
-      <div class="flex items-start gap-3 p-3 text-start">
-        <div
-          class="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20"
-        >
-          <UIcon name="i-heroicons-bell" class="size-5" />
+      <div class="space-y-3 p-3 text-start">
+        <div class="flex items-start gap-3">
+          <div
+            class="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20"
+          >
+            <UIcon name="i-heroicons-bell" class="size-5" />
+          </div>
+          <div class="min-w-0">
+            <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+              إشعار لاعبي البطولة
+            </h2>
+            <p class="text-sm font-semibold text-primary">
+              المستلمون: {{ audienceFooter }}
+            </p>
+          </div>
         </div>
-        <div class="min-w-0 space-y-1">
-          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-            إشعار المجموعة
-          </h2>
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            سيصل إشعار شخصي لكل لاعب مسجّل في
-            <span class="font-semibold text-gray-800 dark:text-gray-200">
-              {{ groupName || "المجموعة المحددة" }}
-            </span>
-          </p>
-        </div>
+
+        <UFieldGroup class="w-full">
+          <UButton
+            class="flex-1 justify-center"
+            :color="targetMode === 'all' ? 'primary' : 'neutral'"
+            :variant="targetMode === 'all' ? 'solid' : 'outline'"
+            icon="i-heroicons-globe-alt"
+            label="كل اللاعبين"
+            @click="targetMode = 'all'"
+          />
+          <UButton
+            class="flex-1 justify-center"
+            :color="targetMode === 'selected' ? 'primary' : 'neutral'"
+            :variant="targetMode === 'selected' ? 'solid' : 'outline'"
+            icon="i-heroicons-squares-2x2"
+            label="مجموعات محددة"
+            @click="useSelectedGroups()"
+          />
+        </UFieldGroup>
       </div>
     </template>
 
     <template #body>
       <div class="flex min-h-0 flex-col gap-5 px-4 py-4">
         <section
-          class="overflow-hidden rounded-2xl border border-gray-200/90 bg-white/80 shadow-sm dark:border-gray-800 dark:bg-gray-900/40"
+          class="overflow-hidden rounded-2xl border-2 border-primary/30 bg-white shadow-sm dark:border-primary/40 dark:bg-gray-900/50"
         >
           <div
-            class="flex items-center gap-2 border-b border-gray-200/80 bg-gray-50/80 px-4 py-2 text-xs font-semibold text-gray-600 dark:border-gray-800 dark:bg-gray-950/40 dark:text-gray-300"
+            class="flex items-center justify-between gap-2 border-b border-primary/15 bg-primary/10 px-4 py-3 dark:bg-primary/15"
           >
-            <UIcon name="i-heroicons-user-group" class="size-4 text-primary" />
-            سيُرسل إلى هذه المجموعة
-          </div>
-          <div class="flex flex-wrap gap-2 px-4 py-3">
-            <UBadge color="primary" variant="subtle" size="md">
-              {{ groupName || "مجموعة" }}
-            </UBadge>
-            <UBadge color="neutral" variant="subtle" size="md">
-              {{ stageLabel }}
-            </UBadge>
-            <UBadge
-              v-if="hasPlace"
-              color="neutral"
-              variant="subtle"
-              size="md"
-              icon="i-heroicons-map-pin"
-            >
-              {{ placeLabel }}
-            </UBadge>
-            <UBadge
-              v-if="tournamentTitle"
-              color="neutral"
-              variant="subtle"
-              size="md"
-            >
-              {{ tournamentTitle }}
+            <div class="flex items-center gap-2">
+              <UIcon name="i-heroicons-users" class="size-5 text-primary" />
+              <div>
+                <p class="text-sm font-bold text-gray-900 dark:text-white">
+                  إلى من يُرسل؟
+                </p>
+                <p class="text-[11px] text-gray-500">اختر خياراً واحداً أولاً</p>
+              </div>
+            </div>
+            <UBadge color="primary" variant="subtle" size="sm">
+              {{ audienceFooter }}
             </UBadge>
           </div>
-          <p class="px-4 pb-3 text-xs leading-5 text-gray-500 dark:text-gray-400">
-            الموعد في الرسالة هو أول مباراة لكل فريق لم تبدأ بعد في هذه المجموعة، وليس الجولة الظاهرة في الفلتر.
-          </p>
+
+          <div class="grid gap-3 p-4 sm:grid-cols-2">
+            <button
+              type="button"
+              class="rounded-2xl border-2 p-4 text-start transition"
+              :class="
+                targetMode === 'all'
+                  ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                  : 'border-gray-200 bg-gray-50/80 hover:border-primary/40 dark:border-gray-700 dark:bg-gray-950/40'
+              "
+              @click="targetMode = 'all'"
+            >
+              <UIcon
+                name="i-heroicons-globe-alt"
+                class="mb-2 size-7"
+                :class="targetMode === 'all' ? 'text-primary' : 'text-gray-400'"
+              />
+              <p class="text-base font-bold text-gray-900 dark:text-white">
+                كل اللاعبين
+              </p>
+              <p class="mt-1 text-xs leading-5 text-gray-500">
+                كل المجموعات في المرحلة الحالية — {{ groups.length }} مجموعة
+              </p>
+            </button>
+
+            <button
+              type="button"
+              class="rounded-2xl border-2 p-4 text-start transition"
+              :class="
+                targetMode === 'selected'
+                  ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                  : 'border-gray-200 bg-gray-50/80 hover:border-primary/40 dark:border-gray-700 dark:bg-gray-950/40'
+              "
+              @click="useSelectedGroups()"
+            >
+              <UIcon
+                name="i-heroicons-squares-2x2"
+                class="mb-2 size-7"
+                :class="
+                  targetMode === 'selected' ? 'text-primary' : 'text-gray-400'
+                "
+              />
+              <p class="text-base font-bold text-gray-900 dark:text-white">
+                مجموعات محددة
+              </p>
+              <p class="mt-1 text-xs leading-5 text-gray-500">
+                اختر مجموعة أو أكثر من القائمة
+              </p>
+            </button>
+          </div>
+
+          <div
+            v-if="targetMode === 'selected'"
+            class="border-t border-gray-200/80 px-4 py-3 dark:border-gray-800"
+          >
+            <div class="mb-2 flex flex-wrap items-center justify-between gap-2">
+              <p class="text-xs font-semibold text-gray-700 dark:text-gray-200">
+                حدد المجموعات ({{ selectedGroupIds.length }}/{{ groups.length }})
+              </p>
+              <div class="flex gap-1">
+                <UButton
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                  label="الكل"
+                  @click="selectAllGroups"
+                />
+                <UButton
+                  size="xs"
+                  color="neutral"
+                  variant="ghost"
+                  label="مسح"
+                  @click="selectedGroupIds = []"
+                />
+              </div>
+            </div>
+            <div
+              class="flex max-h-56 flex-col gap-1.5 overflow-y-auto rounded-xl border border-gray-200/80 p-2 dark:border-gray-800"
+            >
+              <button
+                v-for="item in groups"
+                :key="item.id"
+                type="button"
+                class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start transition"
+                :class="
+                  selectedGroupIds.includes(item.id)
+                    ? 'bg-primary/10 ring-1 ring-primary/30'
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-800/60'
+                "
+                @click="
+                  toggleGroup(item.id, !selectedGroupIds.includes(item.id))
+                "
+              >
+                <span
+                  class="flex size-5 shrink-0 items-center justify-center rounded-md border"
+                  :class="
+                    selectedGroupIds.includes(item.id)
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-300 dark:border-gray-600'
+                  "
+                >
+                  <UIcon
+                    v-if="selectedGroupIds.includes(item.id)"
+                    name="i-heroicons-check"
+                    class="size-3.5"
+                  />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span
+                    class="flex items-center gap-2 font-medium text-gray-900 dark:text-white"
+                  >
+                    {{ item.name }}
+                    <UBadge
+                      v-if="item.id === group?.id"
+                      color="primary"
+                      variant="subtle"
+                      size="xs"
+                    >
+                      المعروضة
+                    </UBadge>
+                  </span>
+                  <span class="mt-0.5 block text-[11px] text-gray-500">
+                    {{ groupStageLabel(item) }}
+                    <template v-if="groupPlaceLabel(item)">
+                      · {{ groupPlaceLabel(item) }}
+                    </template>
+                  </span>
+                </span>
+              </button>
+              <p v-if="!groups.length" class="px-2 py-3 text-xs text-gray-500">
+                لا توجد مجموعات محملة
+              </p>
+            </div>
+          </div>
         </section>
 
         <section
@@ -249,17 +383,6 @@
                 />
               </div>
             </div>
-
-            <UFormField
-              label="سطر إضافي للجميع"
-              help="يظهر مكان {AdditionalMessage} في القالب"
-            >
-              <UInput
-                v-model="formState.additionalMessage"
-                maxlength="512"
-                placeholder="نتمنى لكم التوفيق"
-              />
-            </UFormField>
           </section>
 
           <section
@@ -397,30 +520,23 @@
 
     <template #footer>
       <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3">
-        <div>
-          <UButton
-            color="neutral"
-            variant="soft"
-            label="إلغاء"
-            class="min-h-10"
-            :disabled="isPending"
-            @click="open = false"
-          />
-        </div>
-        <div class="flex flex-col items-end gap-1">
-          <p class="max-w-xs text-end text-[11px] leading-4 text-gray-500">
-            إرسال إلى لاعبي {{ groupName || "المجموعة" }} — يمكن تكرار الإرسال لاحقاً
-          </p>
-          <UButton
-            color="primary"
-            icon="i-heroicons-paper-airplane"
-            label="إرسال الإشعار"
-            class="min-h-10"
-            :loading="isPending"
-            :disabled="isPending || !canSubmit"
-            @click="handleSubmit"
-          />
-        </div>
+        <UButton
+          color="neutral"
+          variant="soft"
+          label="إلغاء"
+          class="min-h-10"
+          :disabled="isPending"
+          @click="open = false"
+        />
+        <UButton
+          color="primary"
+          icon="i-heroicons-paper-airplane"
+          :label="sendButtonLabel"
+          class="min-h-10"
+          :loading="isPending"
+          :disabled="isPending || !canSubmit"
+          @click="handleSubmit"
+        />
       </div>
     </template>
   </UDrawer>
@@ -452,6 +568,7 @@ import type { Group } from "~/features/tournament/models/group";
 const props = defineProps<{
   tournamentId: string;
   group: Group | null;
+  groups?: Group[];
 }>();
 
 const open = ref(false);
@@ -464,6 +581,8 @@ const titleCaret = ref(0);
 const descriptionCaret = ref(0);
 const selectedTemplateId = ref<GroupNotificationTemplateId>("upcomingMatch");
 const showAdvanced = ref(false);
+const targetMode = ref<"all" | "selected">("selected");
+const selectedGroupIds = ref<string[]>([]);
 const sendReq = useSendTournamentGroupNotification();
 const isPending = computed(() => sendReq.pending.value);
 
@@ -477,15 +596,31 @@ const { placeLabel: resolvePlaceLabel } = useTournamentPlaces(
 const tournamentTitle = computed(
   () => tourReq.data.value?.tournament?.title ?? "",
 );
-const groupName = computed(() => props.group?.name ?? "");
-const stageLabel = computed(() =>
-  props.group?.stageType === "Final" || props.group?.type === "Final"
-    ? "نهائي"
-    : "تصفيات",
+const groups = computed(() => props.groups ?? []);
+
+function groupStageLabel(item: Group) {
+  return item.stageType === "Final" || item.type === "Final" ? "نهائي" : "تصفيات";
+}
+
+function groupPlaceLabel(item: Group | null | undefined) {
+  if (!item) return "";
+  const label = resolvePlaceLabel(item.placeId);
+  if (!label || label === "أي مكان") return "";
+  return label;
+}
+
+const audienceFooter = computed(() =>
+  targetMode.value === "all"
+    ? "كل مجموعات المرحلة الحالية"
+    : selectedGroupIds.value.length
+      ? `${selectedGroupIds.value.length} مجموعة`
+      : "لا توجد مجموعات محددة",
 );
-const placeLabel = computed(() => resolvePlaceLabel(props.group?.placeId));
-const hasPlace = computed(
-  () => Boolean(placeLabel.value) && placeLabel.value !== "أي مكان",
+
+const sendButtonLabel = computed(() =>
+  targetMode.value === "all"
+    ? "إرسال لكل اللاعبين"
+    : `إرسال إلى ${selectedGroupIds.value.length} مجموعة`,
 );
 
 const actionKindItems = [
@@ -504,7 +639,6 @@ const actionKindItems = [
 const formState = reactive({
   title: GROUP_NOTIFICATION_TEMPLATES[0]!.title,
   description: GROUP_NOTIFICATION_TEMPLATES[0]!.description,
-  additionalMessage: "نتمنى لكم التوفيق",
   isPopup: false,
   actionKind:
     GROUP_NOTIFICATION_ACTION_KIND.GoToScreen as GroupNotificationActionKind,
@@ -529,16 +663,16 @@ const actionPathFieldLabel = computed(() =>
 
 const previewSamples = computed<Record<string, string>>(() => ({
   TournamentTitle: tournamentTitle.value || "اسم البطولة",
-  GroupName: groupName.value || "المجموعة",
+  GroupName: props.group?.name || "المجموعة",
   PlayerName: "أحمد",
   TeamName: "فريق النور",
   OpponentTeamName: "فريق الأمل",
   MatchDate: "07/09/2026",
   MatchTime: "21:30",
   TableName: "طاولة 3",
-  LocationDescription: hasPlace.value ? placeLabel.value : "قاعة البطولة",
+  LocationDescription:
+    groupPlaceLabel(props.group ?? groups.value[0]) || "قاعة البطولة",
   RoundName: "دور الـ 16",
-  AdditionalMessage: formState.additionalMessage.trim(),
 }));
 
 const previewTitle = computed(() =>
@@ -585,6 +719,9 @@ const canSubmit = computed(() => {
     formState.actionKind === GROUP_NOTIFICATION_ACTION_KIND.GoToURL &&
     !formState.actionPath
   ) {
+    return false;
+  }
+  if (targetMode.value === "selected" && selectedGroupIds.value.length === 0) {
     return false;
   }
   return true;
@@ -638,14 +775,36 @@ watch(
 watch(open, (isOpen) => {
   if (!isOpen) return;
   applyTemplate("upcomingMatch");
-  formState.additionalMessage = "نتمنى لكم التوفيق";
   formState.isPopup = false;
   formState.actionKind = GROUP_NOTIFICATION_ACTION_KIND.GoToScreen;
   formState.actionPath = TOURNAMENT_GROUP_SCREEN_PATH;
   showAdvanced.value = false;
   activeField.value = "description";
+  targetMode.value = "selected";
+  selectedGroupIds.value = props.group?.id ? [props.group.id] : [];
   removeImage();
 });
+
+function selectAllGroups() {
+  selectedGroupIds.value = groups.value.map((item) => item.id);
+}
+
+function useSelectedGroups() {
+  targetMode.value = "selected";
+  if (!selectedGroupIds.value.length && props.group?.id) {
+    selectedGroupIds.value = [props.group.id];
+  }
+}
+
+function toggleGroup(id: string, checked: boolean) {
+  if (checked) {
+    if (!selectedGroupIds.value.includes(id)) {
+      selectedGroupIds.value = [...selectedGroupIds.value, id];
+    }
+    return;
+  }
+  selectedGroupIds.value = selectedGroupIds.value.filter((item) => item !== id);
+}
 
 function placeholdersByGroup(group: string) {
   return GROUP_NOTIFICATION_PLACEHOLDERS.filter((item) => item.group === group);
@@ -754,9 +913,9 @@ async function handleSubmit() {
     return;
   }
 
-  if (!props.group?.id) {
+  if (targetMode.value === "selected" && selectedGroupIds.value.length === 0) {
     toast.add({
-      title: "لا توجد مجموعة محددة",
+      title: "اختر مجموعة واحدة على الأقل",
       color: "error",
     });
     return;
@@ -771,14 +930,13 @@ async function handleSubmit() {
       ? TOURNAMENT_GROUP_SCREEN_PATH
       : formState.actionPath;
 
-  await sendReq.fetchREQ(props.tournamentId, props.group.id, {
+  await sendReq.fetchREQ(props.tournamentId, {
     title: formState.title,
     description: formState.description,
     actionPath,
     actionType,
-    templateValues: {
-      AdditionalMessage: formState.additionalMessage,
-    },
+    targetedGroupIds:
+      targetMode.value === "selected" ? selectedGroupIds.value : undefined,
     popUpImage: formState.isPopup ? formState.popUpImage : null,
   });
 
@@ -788,7 +946,7 @@ async function handleSubmit() {
       title: count === 0 ? "لا يوجد مستلمون" : "تم إرسال الإشعار",
       description:
         count === 0
-          ? "لا توجد فرق ظاهرة أو لاعبون مسجّلون في هذه المجموعة"
+          ? "لا توجد فرق ظاهرة أو لاعبون مسجّلون في المجموعات المستهدفة"
           : `تم الإرسال إلى ${count} لاعب`,
       color: count === 0 ? "warning" : "success",
     });
