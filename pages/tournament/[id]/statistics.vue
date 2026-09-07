@@ -55,7 +55,20 @@
         </div>
       </template>
 
-      <div v-if="error" class="flex flex-col items-center justify-center py-12">
+      <div
+        v-if="pending"
+        class="flex flex-col items-center justify-center py-12"
+      >
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="mb-4 h-12 w-12 animate-spin text-primary"
+        />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          جاري تحميل الإحصائيات
+        </p>
+      </div>
+
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-12">
         <UIcon name="i-mdi-alert-circle" class="mb-4 h-16 w-16 text-red-500" />
         <p class="text-lg text-gray-600 dark:text-gray-400">
           حدث خطأ أثناء تحميل الإحصائيات
@@ -99,7 +112,20 @@
     </UCard>
 
     <div v-else class="statistics-page__obs-content">
-      <div v-if="error" class="flex flex-col items-center justify-center py-12">
+      <div
+        v-if="pending"
+        class="flex flex-col items-center justify-center py-12"
+      >
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="mb-4 h-12 w-12 animate-spin text-primary"
+        />
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          جاري تحميل الإحصائيات
+        </p>
+      </div>
+
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-12">
         <UIcon name="i-mdi-alert-circle" class="mb-4 h-16 w-16 text-red-500" />
         <p class="text-lg text-gray-600 dark:text-gray-400">
           حدث خطأ أثناء تحميل الإحصائيات
@@ -295,6 +321,7 @@ onUnmounted(() => {
 const statsReq = await useTournamentStatistics(id);
 
 const error = computed(() => statsReq.error.value);
+const pending = computed(() => statsReq.pending.value);
 
 const apiData = computed(() => statsReq.data.value ?? null);
 const statistics = computed<Partial<TournamentStatistics["statistics"]>>(
