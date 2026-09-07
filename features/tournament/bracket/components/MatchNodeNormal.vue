@@ -303,10 +303,9 @@ const copyStream = async () => {
   }
 
   try {
-    const streamUrl = new URL(String(config.public.streamBase));
-    streamUrl.searchParams.set("tourId", tournamentId);
-    streamUrl.searchParams.set("tableId", tableId);
-    await navigator.clipboard.writeText(streamUrl.toString());
+    const base = String(config.public.streamBase).replace(/\/+$/, "");
+    const streamUrl = `${base}/tournament/${tournamentId}/${tableId}/`;
+    await navigator.clipboard.writeText(streamUrl);
     toast.add({
       title: "Copied!",
       description: "Stream URL copied to clipboard",
