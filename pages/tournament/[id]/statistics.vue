@@ -399,6 +399,22 @@ const statRows = computed(() =>
 
 const hasStatistics = computed(() => statRows.value.length > 0);
 
+watch(
+  [pending, error, apiData, hasStatistics, statistics],
+  () => {
+    console.log("[tournament-statistics] page state", {
+      tournamentId: id,
+      pending: pending.value,
+      error: error.value,
+      apiData: apiData.value,
+      hasStatistics: hasStatistics.value,
+      statistics: statistics.value,
+      statRows: statRows.value,
+    });
+  },
+  { immediate: true },
+);
+
 definePageMeta({
   layout: "custom",
   public: true,

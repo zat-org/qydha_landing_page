@@ -45,15 +45,28 @@ export function normalizeTournamentStatistics(
   const statsBag = asRecord(body.statistics ?? body.Statistics);
 
   const statistics = {} as TournamentStatistics["statistics"];
+  const missingKeys: string[] = [];
   for (const key of STAT_KEYS) {
-    statistics[key] = pickNumber(statsBag, key) ?? 0;
+    const parsed = pickNumber(statsBag, key);
+    if (parsed === undefined) missingKeys.push(key);
+    statistics[key] = parsed ?? 0;
   }
 
-  return {
+  const normalized = {
     matchesCount: pickNumber(body, "matchesCount") ?? 0,
     totalGames: pickNumber(body, "totalGames") ?? 0,
     statistics,
   };
+
+  console.log("[tournament-statistics] normalize", {
+    rawType: typeof raw,
+    bodyKeys: Object.keys(body),
+    statsBagKeys: Object.keys(statsBag),
+    missingKeys,
+    normalized,
+  });
+
+  return normalized;
 }
 
 export function useTournamentStatistics(tournamentId: string) {
@@ -62,19 +75,36 @@ export function useTournamentStatistics(tournamentId: string) {
   return useAppApiData<TournamentStatistics>(
     appKeys.tournamentStatistics(tournamentId),
     async () => {
-      const response = await $api(
-        `/tournaments/${tournamentId}/statistics`,
-      );
-      const envelope = asRecord(response);
-      const inner =
-        envelope.data !== undefined && envelope.data !== null
-          ? envelope.data
-          : response;
-      return {
-        data: normalizeTournamentStatistics(inner),
-        message:
-          typeof envelope.message === "string" ? envelope.message : undefined,
-      };
+      const path = `/tournaments/${tournamentId}/statistics`;
+      console.log("[tournament-statistics] request", { tournamentId, path });
+      try {
+        const response = await $api(path);
+        const envelope = asRecord(response);
+        const inner =
+          envelope.data !== undefined && envelope.data !== null
+            ? envelope.data
+            : response;
+        console.log("[tournament-statistics] network response", {
+          tournamentId,
+          path,
+          response,
+          usedInnerFromEnvelopeData:
+            envelope.data !== undefined && envelope.data !== null,
+          inner,
+        });
+        return {
+          data: normalizeTournamentStatistics(inner),
+          message:
+            typeof envelope.message === "string" ? envelope.message : undefined,
+        };
+      } catch (error) {
+        console.error("[tournament-statistics] network error", {
+          tournamentId,
+          path,
+          error,
+        });
+        throw error;
+      }
     },
   );
 }
