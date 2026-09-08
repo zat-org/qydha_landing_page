@@ -71,3 +71,40 @@
 .match-final--second {
   @apply bg-linear-to-br from-slate-200/95 via-zinc-100/95 to-slate-500/95 text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.45)] ring-1 ring-slate-400/50 dark:from-slate-600/45 dark:via-zinc-600/40 dark:to-slate-800/50 dark:text-slate-100 dark:ring-slate-500/30;
 }
+
+/* OBS overlay: always fully opaque (no round dimming / translucent fills) */
+.match-node--obs {
+  opacity: 1 !important;
+}
+
+.match-node--obs.match-card--created {
+  @apply dark:from-rose-950 dark:via-amber-950 dark:to-orange-950;
+}
+
+.match-node--obs.match-card--paused {
+  @apply dark:from-violet-900 dark:via-fuchsia-900 dark:to-purple-900;
+}
+
+.match-node--obs.match-card--ended {
+  @apply dark:from-stone-900 dark:via-zinc-900 dark:to-slate-900;
+}
+
+.match-node--obs .match-team--winner {
+  @apply dark:from-emerald-700 dark:to-green-700;
+}
+
+.match-node--obs .match-team--loser {
+  @apply dark:from-rose-900 dark:to-red-900;
+}
+
+.match-node--obs .match-team--default {
+  @apply bg-white dark:bg-slate-800;
+}
+
+.match-node--obs .match-final--first {
+  @apply dark:from-amber-500 dark:via-yellow-500 dark:to-amber-800;
+}
+
+.match-node--obs .match-final--second {
+  @apply dark:from-slate-600 dark:via-zinc-600 dark:to-slate-800;
+}

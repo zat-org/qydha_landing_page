@@ -1,8 +1,8 @@
 <template>
   <div
     dir="rtl"
-    class="match-node--obs flex w-[580px] flex-col gap-0 overflow-hidden rounded-2xl p-3 text-lg font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 dark:ring-white/10"
-    :class="[vm.cardToneClass, roundOpacityClass, requesterMatchClass]"
+    class="match-node--obs flex w-[580px] flex-col gap-0 overflow-hidden rounded-2xl p-3 text-lg font-semibold opacity-100 shadow-sm ring-1 ring-black/5 transition-all duration-300 dark:ring-white/10"
+    :class="[vm.cardToneClass, requesterMatchClass]"
   >
     <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-3">
       <div
@@ -30,7 +30,7 @@
       </div>
 
       <div
-        class="inline-flex items-center justify-center self-center rounded-full bg-white/80 px-4 py-2 text-base font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10"
+        class="inline-flex items-center justify-center self-center rounded-full bg-white px-4 py-2 text-base font-black text-slate-700 ring-1 ring-black/10 dark:bg-black dark:text-slate-100 dark:ring-white/10"
       >
         VS
       </div>
@@ -72,7 +72,6 @@ const match = computed(() => props.data.match);
 
 const {
   vm,
-  roundOpacityClass,
   requesterMatchClass,
   usTeamPrimary,
   usTeamSecondary,
