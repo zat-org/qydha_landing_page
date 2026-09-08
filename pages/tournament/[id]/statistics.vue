@@ -365,8 +365,6 @@ const labels: Record<StatKey, string> = {
 
 const statKeys: StatKey[] = [
   "playedSakkas",
-  "winnedSakkas",
-  "lostSakka",
   "moshtaraSunCount",
   "moshtaraHokmCount",
   "wonMoshtaraCount",
@@ -378,8 +376,6 @@ const statKeys: StatKey[] = [
   "khamsen",
   "me2a",
   "rob3ome2a",
-  "ekak",
-  "aklat",
 ];
 
 const hasStat = (key: StatKey): boolean => {
