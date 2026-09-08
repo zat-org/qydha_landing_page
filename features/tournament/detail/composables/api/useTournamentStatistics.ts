@@ -42,7 +42,8 @@ export function normalizeTournamentStatistics(
   const root = asRecord(raw);
   const nested = asRecord(root.data);
   const body = Object.keys(nested).length ? { ...root, ...nested } : root;
-  const statsBag = asRecord(body.statistics ?? body.Statistics);
+  const nestedStats = asRecord(body.statistics ?? body.Statistics);
+  const statsBag = Object.keys(nestedStats).length ? nestedStats : body;
 
   const statistics = {} as TournamentStatistics["statistics"];
   const missingKeys: string[] = [];
