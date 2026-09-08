@@ -69,7 +69,7 @@ const OrderedNodes = computed(() => {
     ...layout,
     edges: layout.edges.map((edge) => ({
       ...edge,
-      style: { strokeWidth: 5 },
+      style: { stroke: "#ffffff", strokeWidth: 7 },
     })),
   };
 });
@@ -185,19 +185,35 @@ html.bracket-obs .bracket-container .vue-flow__pane {
 }
 
 html.bracket-obs .bracket-container .vue-flow__edge-path {
-  stroke-width: 5px !important;
+  stroke: #ffffff !important;
+  stroke-width: 7px !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(1px 0 0 #000)
+    drop-shadow(-1px 0 0 #000)
+    drop-shadow(0 1px 0 #000)
+    drop-shadow(0 -1px 0 #000);
 }
 
 html.bracket-obs .bracket-container .vue-flow__edge {
-  stroke-width: 5px;
+  stroke-width: 7px;
 }
 
 .bracket-flow--obs :deep(.vue-flow__edge-path) {
-  stroke-width: 5px !important;
+  stroke: #ffffff !important;
+  stroke-width: 7px !important;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter:
+    drop-shadow(1px 0 0 #000)
+    drop-shadow(-1px 0 0 #000)
+    drop-shadow(0 1px 0 #000)
+    drop-shadow(0 -1px 0 #000);
 }
 
 .bracket-flow--obs :deep(.vue-flow__edge) {
-  stroke-width: 5px;
+  stroke-width: 7px;
 }
 
 .bracket-logo-theme {

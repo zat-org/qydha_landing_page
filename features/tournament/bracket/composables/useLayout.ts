@@ -26,8 +26,8 @@ export function useLayout() {
     direction: GraphDirection,
     obsMode = false,
   ) {
-    const nodeWidth = obsMode ? 580 : 460;
-    const nodeHeight = obsMode ? 88 : 100;
+    const nodeWidth = obsMode ? 800 : 460;
+    const nodeHeight = obsMode ? 120 : 100;
     let graphData: GraphData = { nodes: [], edges: [] };
     let dagreGraph = CreateDagreGraph("LR", obsMode);
 
