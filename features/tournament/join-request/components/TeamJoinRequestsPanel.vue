@@ -86,6 +86,20 @@
       </UFormField>
 
       <UFormField
+        v-if="activeTab === 'all'"
+        class="min-w-0 flex-1"
+        label="تصفية حسب الحالة"
+      >
+        <USelect
+          v-model="statusFilter"
+          class="w-full"
+          :items="statusFilterOptions"
+          value-key="value"
+          label-key="label"
+        />
+      </UFormField>
+
+      <UFormField
         v-if="activeTab === 'approval' || activeTab === 'accepted'"
         class="min-w-0 flex-1"
         label="تصفية حسب المكان المعيّن"
@@ -157,9 +171,20 @@
             />
 
             <div class="min-w-0">
-              <p class="truncate font-medium text-gray-900 dark:text-white">
-                {{ item.teamName || "—" }}
-              </p>
+              <div class="flex min-w-0 items-center gap-2">
+                <p class="truncate font-medium text-gray-900 dark:text-white">
+                  {{ item.teamName || "—" }}
+                </p>
+                <UBadge
+                  v-if="activeTab === 'all'"
+                  :color="TEAM_JOIN_STATE_COLOR[item.state]"
+                  variant="soft"
+                  size="xs"
+                  class="shrink-0"
+                >
+                  {{ TEAM_JOIN_STATE_LABEL[item.state] }}
+                </UBadge>
+              </div>
               <p
                 v-if="!expandedIds.has(item.joinRequestId)"
                 class="truncate text-xs text-gray-500 dark:text-gray-400"
@@ -248,6 +273,10 @@
                 <dt class="text-xs text-gray-500">تاريخ الطلب</dt>
                 <dd>{{ formatDate(item.createdAt) }}</dd>
               </div>
+              <div v-if="activeTab === 'all'">
+                <dt class="text-xs text-gray-500">الحالة</dt>
+                <dd>{{ TEAM_JOIN_STATE_LABEL[item.state] }}</dd>
+              </div>
             </dl>
           </div>
         </div>
@@ -270,6 +299,8 @@ import { useDebounceFn } from "@vueuse/core";
 import { formatDate } from "~/utils/formatDate";
 import {
   TeamJoinRequestWorkflowState,
+  TEAM_JOIN_STATE_COLOR,
+  TEAM_JOIN_STATE_LABEL,
   type GetTeamJoinRequestsParams,
   type TeamJoinRequestListItem,
   type TeamJoinRequestPatchAction,
@@ -286,6 +317,7 @@ import { useSingleTournament } from "~/features/tournament/detail/composables/ap
 import { useTournamentJoinRequest } from "~/features/tournament/join-request/composables/TournamentJoinRequest";
 
 export type JoinRequestListTab =
+  | "all"
   | "consideration"
   | "approval"
   | "canceled"
@@ -312,6 +344,7 @@ const allPlaces = computed(() => placesREQ.data.value ?? []);
 const targetPlaces = computed(() => getJoinRequestTargetPlaces(allPlaces.value));
 
 const assignedPlaceFilter = ref<string>("all");
+const statusFilter = ref<string>("all");
 const expandedIds = ref(new Set<string>());
 
 const considerModalOpen = ref(false);
@@ -325,16 +358,33 @@ const assignedPlaceFilterOptions = computed(() => [
   })),
 ]);
 
+const statusFilterOptions = computed(() => [
+  { label: "كل الحالات", value: "all" },
+  ...Object.values(TeamJoinRequestWorkflowState).map((state) => ({
+    label: TEAM_JOIN_STATE_LABEL[state],
+    value: state,
+  })),
+]);
+
+function statesForCurrentFilters(): TeamJoinRequestWorkflowState[] | undefined {
+  if (props.activeTab === "all") {
+    if (statusFilter.value === "all") return undefined;
+    return [statusFilter.value as TeamJoinRequestWorkflowState];
+  }
+  return JOIN_REQUEST_TAB_STATES[props.activeTab];
+}
+
 const params = ref<GetTeamJoinRequestsParams>({
   pageNumber: 1,
   pageSize: 10,
   searchToken: null,
-  getOnlyStates: JOIN_REQUEST_TAB_STATES[props.activeTab],
+  getOnlyStates: statesForCurrentFilters(),
 });
 
 watch(
   () => props.activeTab,
   (tab) => {
+    statusFilter.value = "all";
     params.value.getOnlyStates = JOIN_REQUEST_TAB_STATES[tab];
     params.value.pageNumber = 1;
     params.value.useSelectedQualificationsPlaceIdFilter = undefined;
@@ -346,6 +396,12 @@ watch(
     expandedIds.value = new Set();
   },
 );
+
+watch(statusFilter, () => {
+  if (props.activeTab !== "all") return;
+  params.value.getOnlyStates = statesForCurrentFilters();
+  params.value.pageNumber = 1;
+});
 
 watch(assignedPlaceFilter, () => {
   if (

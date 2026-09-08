@@ -66,6 +66,20 @@
       dir="rtl"
       :unmount-on-hide="false"
     >
+      <template #all>
+        <Suspense>
+          <TeamJoinRequestsPanel
+            v-model:selected-ids="selectedIds"
+            :tournament-id="id"
+            :can-mutate="false"
+            active-tab="all"
+            @mutated="refreshAll"
+          />
+          <template #fallback>
+            <Loading class="mt-6 py-4 sm:mt-10 sm:py-6" />
+          </template>
+        </Suspense>
+      </template>
       <template #consideration>
         <Suspense>
           <TeamJoinRequestsPanel
@@ -219,6 +233,12 @@ const canMutate = computed(
 );
 
 const tabItems = [
+  {
+    label: "الكل",
+    slot: "all" as const,
+    icon: "i-heroicons-squares-2x2",
+    value: "all",
+  },
   {
     label: "قيد المراجعة",
     slot: "consideration" as const,
