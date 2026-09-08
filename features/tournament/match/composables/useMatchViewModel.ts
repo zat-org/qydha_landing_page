@@ -3,6 +3,7 @@ import { GroupState, type Match } from "~/features/tournament/models/group";
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import { useMyAuthStore } from "~/store/Auth";
 import { toMatchViewModel } from "../mappers/toMatchViewModel";
+import { normalizeMatchState } from "../utils/matchState.utils";
 
 function hasStaffOrAdminPrivileges(privilege?: string): boolean {
   const p = privilege?.toLowerCase();
@@ -28,11 +29,17 @@ export function useMatchViewModel(match: Ref<Match>) {
     }),
   );
 
-  const roundOpacityClass = computed(() =>
-    selectedRound.value?.name && selectedRound.value.name !== match.value.roundName
-      ? "opacity-50"
-      : "",
-  );
+  const roundOpacityClass = computed(() => {
+    if (selectedRound.value?.name) {
+      return selectedRound.value.name !== match.value.roundName
+        ? "opacity-50"
+        : "";
+    }
+
+    return normalizeMatchState(match.value.state) === "Running"
+      ? "opacity-100"
+      : "opacity-70";
+  });
 
   const requesterMatchClass = computed(() =>
     tourStore.isRequesterMatch(match.value.id) ? "match-card--requester" : "",
