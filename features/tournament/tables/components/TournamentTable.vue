@@ -126,7 +126,7 @@ import type { ITable } from '~/features/tournament/models/Table';
 import UpdateModal from './UpdateModal.vue';
 import AddModal from './AddModal.vue';
 import ConfirmModal from '~/components/ConfirmationModal.vue';
-import { canMutateTournamentPlaces } from '~/features/tournament/places/utils';
+import { canAddTournamentTable } from '~/features/tournament/places/utils';
 import { useSingleTournament } from '~/features/tournament/detail/composables/api/useSingleTournament';
 import { useTournamentPlacesApi } from '~/features/tournament/places/composables/useTournamentPlacesApi';
 import { useTournamentTable } from '~/features/tournament/tables/composables/tournamentTable';
@@ -141,11 +141,19 @@ const tourREQ = await useSingleTournament().getSingelTournament(tour_id)
 const getPlacesREQ = useTournamentPlacesApi().getPlaces(tour_id)
 const selectedPlaceId = ref((route.query.placeId as string) || '')
 const getTableREQ = useTournamentTable().getTable(tour_id, selectedPlaceId)
+const places = computed(() => getPlacesREQ.data.value || [])
+
+const selectedPlace = computed(
+  () => places.value.find((p) => p.id === selectedPlaceId.value) ?? null,
+)
 
 const canAddTable = computed(() => {
   return (
     !!selectedPlaceId.value &&
-    canMutateTournamentPlaces(tourREQ.data.value?.tournament?.detailedState)
+    canAddTournamentTable(
+      tourREQ.data.value?.tournament?.detailedState,
+      selectedPlace.value?.stageType,
+    )
   )
 })
 
@@ -159,8 +167,6 @@ watch(() => getTableREQ.status.value, (status) => {
     })
   }
 })
-
-const places = computed(() => getPlacesREQ.data.value || [])
 
 const placeItems = computed(() =>
   places.value.map((p) => ({
