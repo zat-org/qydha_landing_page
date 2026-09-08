@@ -5,7 +5,10 @@
 }
 
 .match-card--running {
-  @apply bg-linear-to-br from-emerald-50 via-teal-50 to-cyan-50 text-emerald-950 dark:from-lime-900/35 dark:via-emerald-900/25 dark:to-cyan-900/35 dark:text-emerald-100;
+  @apply bg-linear-to-br from-emerald-400 via-green-500 to-teal-500 text-white
+    ring-2 ring-emerald-300 shadow-lg shadow-emerald-500/40
+    dark:from-emerald-500 dark:via-green-600 dark:to-teal-700 dark:text-white
+    dark:ring-emerald-400 dark:shadow-emerald-400/30;
 }
 
 .match-card--paused {
@@ -25,7 +28,7 @@
 }
 
 .match-status-badge--running {
-  @apply bg-emerald-600 text-white dark:bg-emerald-500;
+  @apply bg-emerald-700 text-white dark:bg-emerald-400 dark:text-emerald-950;
 }
 
 .match-status-badge--paused {
@@ -42,7 +45,7 @@
 }
 
 .match-node-status--running {
-  @apply bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300;
+  @apply bg-white/90 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-200;
 }
 
 .match-node-status--ended {

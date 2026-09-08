@@ -1,7 +1,7 @@
 <template>
   <div
     dir="rtl"
-    class="match-node--obs flex w-[580px] flex-col gap-0 overflow-hidden rounded-2xl p-3 text-lg font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 dark:bg-gray-800 dark:ring-white/10"
+    class="match-node--obs flex w-[580px] flex-col gap-0 overflow-hidden rounded-2xl p-3 text-lg font-semibold shadow-sm ring-1 ring-black/5 backdrop-blur-[1px] transition-all duration-300 dark:ring-white/10"
     :class="[vm.cardToneClass, roundOpacityClass, requesterMatchClass]"
   >
     <div class="grid grid-cols-[minmax(0,0.9fr)_auto_minmax(0,0.9fr)] items-stretch gap-3">
