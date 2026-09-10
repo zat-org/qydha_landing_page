@@ -203,7 +203,7 @@ const timeText = computed(() =>
   props.data.match.startAt ? formatMatchNodeDateTime(props.data.match.startAt) : "بدون وقت",
 );
 const sakkaText = computed(() => {
-  const count = props.data.match.maxSakkasCountFromGame;
+  const count = props.data.match.roundGameSettings?.sakkasCount;
   if (count == null || count <= 0) return "—";
   if (count === 1) return "صكة واحدة";
   if (count === 3) return "3 صكات";

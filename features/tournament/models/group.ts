@@ -154,6 +154,7 @@ export interface Match {
   winner: string | null;
   endReason: string | null;
   maxSakkasCountFromGame: number;
+  roundGameSettings?: DefaultGameSettings | null;
   parentMatch: Match | null;
 }
 
