@@ -30,9 +30,15 @@
       </div>
 
       <div
-        class="inline-flex items-center justify-center self-center rounded-full bg-white px-4 py-2 text-2xl font-black text-slate-700 ring-1 ring-black/10 dark:bg-black dark:text-slate-100 dark:ring-white/10"
+        dir="ltr"
+        class="inline-flex min-w-16 items-center justify-center gap-1 self-center rounded-full bg-white px-4 py-2 text-2xl font-black text-slate-700 ring-1 ring-black/10 dark:bg-black dark:text-slate-100 dark:ring-white/10"
       >
-        VS
+        <template v-if="showScore">
+          <span class="tabular-nums">{{ themScore ?? 0 }}</span>
+          <span class="opacity-60">:</span>
+          <span class="tabular-nums">{{ usScore ?? 0 }}</span>
+        </template>
+        <template v-else>VS</template>
       </div>
 
       <div
@@ -79,5 +85,8 @@ const {
   themTeamSecondary,
   firstTeamSurfaceClass,
   secondTeamSurfaceClass,
+  showScore,
+  usScore,
+  themScore,
 } = useMatchNodeShared(match);
 </script>

@@ -2,6 +2,9 @@ import type { Ref } from "vue";
 import type { Match } from "~/features/tournament/models/group";
 import { useMatchViewModel } from "~/features/tournament/match/composables/useMatchViewModel";
 import { normalizeMatchState } from "~/features/tournament/match/utils/matchState.utils";
+import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
+
+const SCORE_VISIBLE_STATES = new Set(["Running", "Paused", "Ended"]);
 
 function buildTeamDisplay(
   match: Match,
@@ -35,6 +38,7 @@ function buildTeamDisplay(
 }
 
 export function useMatchNodeShared(match: Ref<Match>) {
+  const gameStore = useTournamentBracketStore();
   const { vm, roundOpacityClass, requesterMatchClass, hasStaffOrAdminPrivileges } =
     useMatchViewModel(match);
 
@@ -59,6 +63,36 @@ export function useMatchNodeShared(match: Ref<Match>) {
   const usTeamSecondary = computed(() => usTeamDisplay.value.secondary);
   const themTeamPrimary = computed(() => themTeamDisplay.value.primary);
   const themTeamSecondary = computed(() => themTeamDisplay.value.secondary);
+
+  const liveGame = computed(() => {
+    const gameId = match.value.qydhaGameId;
+    if (!gameId) return undefined;
+    return gameStore.games.find((g) => g.id === gameId);
+  });
+
+  const usScore = computed(() => liveGame.value?.game.usGameScore ?? null);
+  const themScore = computed(() => liveGame.value?.game.themGameScore ?? null);
+  const showScore = computed(() => {
+    if (!match.value.qydhaGameId) return false;
+    if (!SCORE_VISIBLE_STATES.has(normalizeMatchState(match.value.state))) {
+      return false;
+    }
+    return liveGame.value != null;
+  });
+
+  watch(
+    () =>
+      [
+        match.value.qydhaGameId,
+        normalizeMatchState(match.value.state),
+      ] as const,
+    async ([gameId, state]) => {
+      if (!gameId || !SCORE_VISIBLE_STATES.has(state)) return;
+      if (gameStore.games.some((g) => g.id === gameId)) return;
+      await gameStore.fetchGame(gameId);
+    },
+    { immediate: true },
+  );
 
   const firstTeamSurfaceClass = computed(() => {
     const viewModel = vm.value;
@@ -91,5 +125,8 @@ export function useMatchNodeShared(match: Ref<Match>) {
     themTeamSecondary,
     firstTeamSurfaceClass,
     secondTeamSurfaceClass,
+    showScore,
+    usScore,
+    themScore,
   };
 }

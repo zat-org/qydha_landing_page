@@ -53,6 +53,17 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     { immediate: false },
   );
   const bracketRefreshPending = ref(false);
+  const isBracketReady = ref(false);
+  const groupDataPending = ref(false);
+
+  const isBracketLoading = computed(() => {
+    if (!isBracketReady.value) return true;
+    if (bracketRefreshPending.value) return true;
+    if (groupDataPending.value) return true;
+    if (groupsREQ.status?.value === 'pending') return true;
+    if (matchesREQ.status?.value === 'pending') return true;
+    return false;
+  });
 
   const matchesTree = computed((): Match[] | undefined => {
     if (!selectedGroup.value) return undefined;
@@ -247,24 +258,38 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
   const fetchGroupData = async (groupId: string, forceMatches = false) => {
     const tournamentId =
       selectedTournamentId.value || route.params.id?.toString() || '';
-    if (!tournamentId || !groupId) return;
-
-    const privilege = String(authStore.privilege ?? '').toLowerCase();
-    const canLoadRounds =
-      !!authStore.isAdmin ||
-      privilege === Privilege.Owner.toLowerCase() ||
-      privilege === Privilege.Admin.toLowerCase();
-    if (canLoadRounds) {
-      await roundsREQ.fetchREQ(tournamentId, groupId);
-      if (roundsREQ.status.value === 'success' && roundsREQ.data?.value) {
-        rounds.value = roundsREQ.data.value.rounds ?? [];
-      }
-    } else {
-      rounds.value = [];
-      selectedRound.value = undefined;
+    if (!tournamentId || !groupId) {
+      groupDataPending.value = false;
+      return;
     }
 
-    await loadMatchesForGroup(tournamentId, groupId, forceMatches);
+    const entry = tournament.value.find((e) => e.data.id === groupId);
+    const needsMatchesFetch =
+      forceMatches || !entry || entry.matches.length === 0;
+    if (needsMatchesFetch) {
+      groupDataPending.value = true;
+    }
+
+    try {
+      const privilege = String(authStore.privilege ?? '').toLowerCase();
+      const canLoadRounds =
+        !!authStore.isAdmin ||
+        privilege === Privilege.Owner.toLowerCase() ||
+        privilege === Privilege.Admin.toLowerCase();
+      if (canLoadRounds) {
+        await roundsREQ.fetchREQ(tournamentId, groupId);
+        if (roundsREQ.status.value === 'success' && roundsREQ.data?.value) {
+          rounds.value = roundsREQ.data.value.rounds ?? [];
+        }
+      } else {
+        rounds.value = [];
+        selectedRound.value = undefined;
+      }
+
+      await loadMatchesForGroup(tournamentId, groupId, forceMatches);
+    } finally {
+      groupDataPending.value = false;
+    }
   };
 
   const syncGroupQuery = async (groupId: string) => {
@@ -330,6 +355,12 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     () => selectedGroup.value?.data.id,
     async (newGroupId) => {
       if (skipSelectedGroupWatch.value || !newGroupId) return;
+
+      const entry = tournament.value.find((e) => e.data.id === newGroupId);
+      if (!entry || entry.matches.length === 0) {
+        groupDataPending.value = true;
+      }
+
       await fetchGroupData(newGroupId);
     },
   );
@@ -379,6 +410,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     const tournamentId = route.params.id?.toString() || '';
     selectedTournamentId.value = tournamentId;
 
+    isBracketReady.value = false;
     skipSelectedGroupWatch.value = true;
     try {
       tournament.value = [];
@@ -398,6 +430,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       }
     } finally {
       skipSelectedGroupWatch.value = false;
+      isBracketReady.value = true;
     }
 
     if (!connection.value) {
@@ -405,15 +438,25 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     }
   };
   const fetchGame = async (id: string) => {
+    if (games.value.some((g) => g.id === id)) return;
+
     const gameApi = useMatch();
     const matchData = gameApi.getMatchData();
     await matchData.fetchREQ(id);
-    if (matchData.status.value == 'success' && matchData.data.value)
-      games.value.push({
-        id: matchData.data.value.state.id,
-        game: matchData.data.value.state,
-        statistics: matchData.data.value.statistics,
-      });
+    if (matchData.status.value != 'success' || !matchData.data.value) return;
+
+    const next = {
+      id: matchData.data.value.state.id,
+      game: matchData.data.value.state,
+      statistics: matchData.data.value.statistics,
+    };
+    const existing = games.value.find((g) => g.id === next.id);
+    if (existing) {
+      existing.game = next.game;
+      existing.statistics = next.statistics;
+    } else {
+      games.value.push(next);
+    }
   };
 
   const handleMatchStateChanged = (
@@ -497,6 +540,8 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     initStore,
     refreshBracket,
     bracketRefreshPending,
+    isBracketReady,
+    isBracketLoading,
     tournament,
     matchesTree,
     loserMatches,
@@ -509,6 +554,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     fetchGame,
     closeConnection,
     groupsREQ,
+    matchesREQ,
     rounds,
     selectedRound,
     handleRoundSelection,

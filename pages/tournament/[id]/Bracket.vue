@@ -25,13 +25,6 @@
       >
         <BracketGroupPills />
       </div>
-
-      <loading
-        v-if="
-          tourStore.groupsREQ?.status &&
-          tourStore.groupsREQ?.status == 'pending'
-        "
-      />
     </div>
 
     <!-- logo  and theme toggle button -->
@@ -81,15 +74,21 @@
         </UButton>
       </div>
 
-      <!-- bracket -->
+      <!-- loading → bracket → unavailable -->
       <div
-        v-if="canShowBracket"
+        v-if="isBracketLoading"
+        class="flex flex-1 flex-col items-center justify-center"
+      >
+        <loading />
+      </div>
+      <div
+        v-else-if="canShowBracket"
         class="bracket-page__bracket-wrap relative min-h-0 w-full flex-1"
       >
         <Bracket :group="tourStore.selectedGroup!.data" :obs-mode="obsMode" />
       </div>
       <div
-        v-if="!canShowBracket"
+        v-else
         class="flex flex-1 flex-col items-center justify-center"
       >
         <UIcon
@@ -316,7 +315,11 @@ const BRACKET_VISIBLE_GROUP_STATES = new Set<GroupState>([
 ]);
 
 const canShowBracket = computed(() => {
+  if (tourStore.isBracketLoading) return false;
   if (!tourStore.selectedGroup) return false;
+
+  const hasMatches = (tourStore.selectedGroup.matches?.length ?? 0) > 0;
+  if (!hasMatches) return false;
 
   const groupState = tourStore.selectedGroup.data.state;
 
@@ -326,6 +329,8 @@ const canShowBracket = computed(() => {
     userStore.isSuperAdmin
   );
 });
+
+const isBracketLoading = computed(() => tourStore.isBracketLoading);
 
 const toast = useToast();
 const createMatchDrawer =

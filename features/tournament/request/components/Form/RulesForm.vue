@@ -5,23 +5,85 @@
     </div>
     <UForm :state="model" class="space-y-6">
       <div class="flex flex-col md:flex-row gap-3 px-2">
-       <UFormField name="Rules" label="قوانين البطولة" class="grow" :error="errors?.rules"><UInput v-model="newRule" :disabled="disabledFields?.rules" class="grow" @keyup.enter="addRule" @blur="onFieldBlur?.('rules')" /></UFormField>
-        <UButton color="primary" :loading="isAdding" :disabled="!newRule?.trim() || disabledFields?.rules" @click="addRule">إضافة قانون</UButton>
+        <UFormField name="Rules" label="قوانين البطولة" class="grow" :error="errors?.rules">
+          <UInput
+            v-model="newRule"
+            :disabled="disabledFields?.rules"
+            class="grow"
+            @keyup.enter="addRule"
+            @blur="onFieldBlur?.('rules')"
+          />
+        </UFormField>
+        <UButton
+          color="primary"
+          :loading="isAdding"
+          :disabled="!newRule?.trim() || disabledFields?.rules"
+          @click="addRule"
+        >
+          إضافة قانون
+        </UButton>
       </div>
-      <UFormField name="rules" class="hidden"><UInput :model-value="model?.rules.join(',')" class="hidden" /></UFormField>
-      <div v-if=" model?.rules && model?.rules.length > 0" class="space-y-3">
+
+      <div v-if="availableSuggestions.length > 0" class="space-y-2 px-2">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          اقتراحات سريعة — اضغط لإضافة القانون
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-for="suggestion in availableSuggestions"
+            :key="suggestion"
+            size="sm"
+            color="neutral"
+            variant="soft"
+            :disabled="disabledFields?.rules"
+            @click="addSuggestedRule(suggestion)"
+          >
+            {{ suggestion }}
+          </UButton>
+        </div>
+      </div>
+
+      <UFormField name="rules" class="hidden">
+        <UInput :model-value="model?.rules.join(',')" class="hidden" />
+      </UFormField>
+      <div v-if="model?.rules && model?.rules.length > 0" class="space-y-3">
         <TransitionGroup name="list">
-          <div v-for="(rule, index) in model.rules" :key="index" class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border">
+          <div
+            v-for="(rule, index) in model.rules"
+            :key="index"
+            class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border"
+          >
             <span class="font-bold text-sm">{{ index + 1 }}.</span>
             <div v-if="editingIndex === index" class="flex-grow flex gap-2">
-              <UInput v-model="editingRule" :disabled="disabledFields?.rules" class="flex-grow" @keyup.enter="updateRule(index)" />
-              <UButton color="primary" :disabled="disabledFields?.rules" @click="updateRule(index)">حفظ</UButton>
-              <UButton color="neutral" :disabled="disabledFields?.rules" @click="cancelEdit">إلغاء</UButton>
+              <UInput
+                v-model="editingRule"
+                :disabled="disabledFields?.rules"
+                class="flex-grow"
+                @keyup.enter="updateRule(index)"
+              />
+              <UButton color="primary" :disabled="disabledFields?.rules" @click="updateRule(index)">
+                حفظ
+              </UButton>
+              <UButton color="neutral" :disabled="disabledFields?.rules" @click="cancelEdit">
+                إلغاء
+              </UButton>
             </div>
             <p v-else class="flex-grow">{{ rule }}</p>
             <div class="flex gap-2">
-              <UButton color="primary" variant="ghost" icon="i-heroicons-pencil" :disabled="disabledFields?.rules" @click="startEdit(index, rule)" />
-              <UButton color="error" variant="ghost" icon="i-heroicons-trash" :disabled="disabledFields?.rules" @click="deleteRule(index)" />
+              <UButton
+                color="primary"
+                variant="ghost"
+                icon="i-heroicons-pencil"
+                :disabled="disabledFields?.rules"
+                @click="startEdit(index, rule)"
+              />
+              <UButton
+                color="error"
+                variant="ghost"
+                icon="i-heroicons-trash"
+                :disabled="disabledFields?.rules"
+                @click="deleteRule(index)"
+              />
             </div>
           </div>
         </TransitionGroup>
@@ -31,14 +93,65 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{ errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void; disabledFields?: Record<string, boolean> }>();
+import { SUGGESTED_TOURNAMENT_RULES } from "~/features/tournament/constants/suggestedRules";
+
+const props = defineProps<{
+  errors?: Record<string, string | undefined>;
+  onFieldBlur?: (field: string) => void;
+  disabledFields?: Record<string, boolean>;
+}>();
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
-const model = defineModel<{ rules: string[] }>({ default: () => ({ rules: [] }) })
-const {data:book} = await useAssets().getBook()
-const newRule = ref(""); const isAdding = ref(false); const editingIndex = ref(-1); const editingRule = ref("");
-const addRule = async () => { if (props.disabledFields?.rules || !newRule.value?.trim()) return; isAdding.value = true; try { model.value.rules.push(newRule.value.trim()); newRule.value = ""; props.onFieldBlur?.("rules"); } finally { isAdding.value = false; } };
-const startEdit = (index: number, rule: string) => { editingIndex.value = index; editingRule.value = rule; };
-const updateRule = (index: number) => { if (props.disabledFields?.rules) return; if (editingRule.value?.trim()) model.value.rules[index] = editingRule.value.trim(); props.onFieldBlur?.("rules"); cancelEdit(); };
-const cancelEdit = () => { editingIndex.value = -1; editingRule.value = ""; };
-const deleteRule = (index: number) => { if (props.disabledFields?.rules) return; model.value.rules.splice(index, 1); props.onFieldBlur?.("rules"); };
+const model = defineModel<{ rules: string[] }>({ default: () => ({ rules: [] }) });
+
+await useAssets().getBook();
+
+const newRule = ref("");
+const isAdding = ref(false);
+const editingIndex = ref(-1);
+const editingRule = ref("");
+
+const availableSuggestions = computed(() =>
+  SUGGESTED_TOURNAMENT_RULES.filter((rule) => !model.value.rules.includes(rule)),
+);
+
+function addSuggestedRule(rule: string) {
+  if (props.disabledFields?.rules || model.value.rules.includes(rule)) return;
+  model.value.rules.push(rule);
+  props.onFieldBlur?.("rules");
+}
+
+const addRule = async () => {
+  if (props.disabledFields?.rules || !newRule.value?.trim()) return;
+  isAdding.value = true;
+  try {
+    model.value.rules.push(newRule.value.trim());
+    newRule.value = "";
+    props.onFieldBlur?.("rules");
+  } finally {
+    isAdding.value = false;
+  }
+};
+
+const startEdit = (index: number, rule: string) => {
+  editingIndex.value = index;
+  editingRule.value = rule;
+};
+
+const updateRule = (index: number) => {
+  if (props.disabledFields?.rules) return;
+  if (editingRule.value?.trim()) model.value.rules[index] = editingRule.value.trim();
+  props.onFieldBlur?.("rules");
+  cancelEdit();
+};
+
+const cancelEdit = () => {
+  editingIndex.value = -1;
+  editingRule.value = "";
+};
+
+const deleteRule = (index: number) => {
+  if (props.disabledFields?.rules) return;
+  model.value.rules.splice(index, 1);
+  props.onFieldBlur?.("rules");
+};
 </script>

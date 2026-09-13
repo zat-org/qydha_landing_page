@@ -31,9 +31,15 @@
       </div>
 
       <div
-        class="inline-flex items-center justify-center self-center rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10"
+        dir="ltr"
+        class="inline-flex min-w-10 items-center justify-center gap-0.5 self-center rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10"
       >
-        VS
+        <template v-if="showScore">
+          <span class="tabular-nums">{{ themScore ?? 0 }}</span>
+          <span class="opacity-60">:</span>
+          <span class="tabular-nums">{{ usScore ?? 0 }}</span>
+        </template>
+        <template v-else>VS</template>
       </div>
 
       <div
@@ -192,6 +198,9 @@ const {
   themTeamSecondary,
   firstTeamSurfaceClass,
   secondTeamSurfaceClass,
+  showScore,
+  usScore,
+  themScore,
 } = useMatchNodeShared(match);
 
 const showRefereeIcon = computed(

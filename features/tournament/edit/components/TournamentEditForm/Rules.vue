@@ -7,26 +7,84 @@
     <UForm :state="model" class="space-y-6">
       <div class="flex flex-col gap-3 px-2 md:flex-row">
         <UFormField name="Rules" label="قوانين البطولة" class="grow" :error="errors?.rules">
-          <UInput v-model="newRule" class="grow" :disabled="disabledFields?.rules" @keyup.enter="addRule" @blur="onFieldBlur?.('rules')" />
+          <UInput
+            v-model="newRule"
+            class="grow"
+            :disabled="disabledFields?.rules"
+            @keyup.enter="addRule"
+            @blur="onFieldBlur?.('rules')"
+          />
         </UFormField>
-        <UButton color="primary" :loading="isAdding" :disabled="!newRule?.trim() || disabledFields?.rules" @click="addRule">إضافة قانون</UButton>
+        <UButton
+          color="primary"
+          :loading="isAdding"
+          :disabled="!newRule?.trim() || disabledFields?.rules"
+          @click="addRule"
+        >
+          إضافة قانون
+        </UButton>
       </div>
+
+      <div v-if="availableSuggestions.length > 0" class="space-y-2 px-2">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          اقتراحات سريعة — اضغط لإضافة القانون
+        </p>
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-for="suggestion in availableSuggestions"
+            :key="suggestion"
+            size="sm"
+            color="neutral"
+            variant="soft"
+            :disabled="disabledFields?.rules"
+            @click="addSuggestedRule(suggestion)"
+          >
+            {{ suggestion }}
+          </UButton>
+        </div>
+      </div>
+
       <UFormField name="rules" class="hidden">
         <UInput :model-value="model?.rules?.join(',')" class="hidden" />
       </UFormField>
       <div v-if="model?.rules?.length > 0" class="space-y-3">
         <TransitionGroup name="list">
-          <div v-for="(rule, index) in model.rules" :key="index" class="flex items-center gap-3 rounded-lg border bg-white p-3 dark:bg-gray-800">
+          <div
+            v-for="(rule, index) in model.rules"
+            :key="index"
+            class="flex items-center gap-3 rounded-lg border bg-white p-3 dark:bg-gray-800"
+          >
             <span class="text-sm font-bold">{{ index + 1 }}.</span>
             <div v-if="editingIndex === index" class="flex flex-grow gap-2">
-              <UInput v-model="editingRule" class="flex-grow" :disabled="disabledFields?.rules" @keyup.enter="updateRule(index)" />
-              <UButton color="primary" :disabled="disabledFields?.rules" @click="updateRule(index)">حفظ</UButton>
-              <UButton color="neutral" :disabled="disabledFields?.rules" @click="cancelEdit">إلغاء</UButton>
+              <UInput
+                v-model="editingRule"
+                class="flex-grow"
+                :disabled="disabledFields?.rules"
+                @keyup.enter="updateRule(index)"
+              />
+              <UButton color="primary" :disabled="disabledFields?.rules" @click="updateRule(index)">
+                حفظ
+              </UButton>
+              <UButton color="neutral" :disabled="disabledFields?.rules" @click="cancelEdit">
+                إلغاء
+              </UButton>
             </div>
             <p v-else class="flex-grow">{{ rule }}</p>
             <div class="flex gap-2">
-              <UButton color="primary" variant="ghost" icon="i-heroicons-pencil" :disabled="disabledFields?.rules" @click="startEdit(index, rule)" />
-              <UButton color="error" variant="ghost" icon="i-heroicons-trash" :disabled="disabledFields?.rules" @click="deleteRule(index)" />
+              <UButton
+                color="primary"
+                variant="ghost"
+                icon="i-heroicons-pencil"
+                :disabled="disabledFields?.rules"
+                @click="startEdit(index, rule)"
+              />
+              <UButton
+                color="error"
+                variant="ghost"
+                icon="i-heroicons-trash"
+                :disabled="disabledFields?.rules"
+                @click="deleteRule(index)"
+              />
             </div>
           </div>
         </TransitionGroup>
@@ -36,7 +94,13 @@
 </template>
 
 <script lang="ts" setup>
-const props = defineProps<{ errors?: Record<string, string | undefined>; onFieldBlur?: (field: string) => void; disabledFields?: Record<string, boolean> }>();
+import { SUGGESTED_TOURNAMENT_RULES } from "~/features/tournament/constants/suggestedRules";
+
+const props = defineProps<{
+  errors?: Record<string, string | undefined>;
+  onFieldBlur?: (field: string) => void;
+  disabledFields?: Record<string, boolean>;
+}>();
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<{ rules: string[] }>({ default: () => ({ rules: [] }) });
 
@@ -46,6 +110,16 @@ const newRule = ref("");
 const isAdding = ref(false);
 const editingIndex = ref(-1);
 const editingRule = ref("");
+
+const availableSuggestions = computed(() =>
+  SUGGESTED_TOURNAMENT_RULES.filter((rule) => !model.value.rules.includes(rule)),
+);
+
+function addSuggestedRule(rule: string) {
+  if (props.disabledFields?.rules || model.value.rules.includes(rule)) return;
+  model.value.rules.push(rule);
+  props.onFieldBlur?.("rules");
+}
 
 const addRule = async () => {
   if (props.disabledFields?.rules || !newRule.value?.trim()) return;
