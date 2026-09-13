@@ -85,10 +85,14 @@ export function useMatchNodeShared(match: Ref<Match>) {
 
   const showScore = computed(() => {
     if (!match.value.qydhaGameId) return false;
-    if (!SCORE_VISIBLE_STATES.has(normalizeMatchState(match.value.state))) {
-      return false;
-    }
-    return liveGame.value != null;
+    if (!liveGame.value) return false;
+
+    const matchState = normalizeMatchState(match.value.state);
+    const gameState = normalizeMatchState(liveGame.value.game.state);
+    return (
+      SCORE_VISIBLE_STATES.has(matchState) ||
+      SCORE_VISIBLE_STATES.has(gameState)
+    );
   });
 
   const showMoshtaraScore = computed(() => showScore.value && lastSakka.value != null);

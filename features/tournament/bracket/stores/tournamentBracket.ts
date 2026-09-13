@@ -11,6 +11,7 @@ import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchSt
 import { useGroup } from '~/features/tournament/group/composables/group';
 import { useMyAuthStore } from '~/store/Auth';
 import { Privilege } from '~/models/user';
+import { normalizeMatchState } from '~/features/tournament/match/utils/matchState.utils';
 import {
   bracketGroupsProbeOrder,
   defaultBracketGroup,
@@ -443,15 +444,31 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     game: IMatchData,
     statistics: IMathStat,
   ) => {
-    const existing = games.value.find((g) => g.id === id);
-    if (existing) {
-      existing.game = game;
-      existing.statistics = statistics;
+    const index = games.value.findIndex((g) => g.id === id);
+    const next = { id, game, statistics };
+    if (index >= 0) {
+      games.value.splice(index, 1, next);
       return;
     }
-    games.value.push({ id, game, statistics });
+    games.value.push(next);
   };
 
+  /** Keep bracket match lifecycle in sync from live game (no API). */
+  const syncMatchFromLiveGame = (game: IMatchData) => {
+    const gameId = String(game.id);
+    for (const entry of tournament.value) {
+      const match = entry.matches.find(
+        (m) => m.qydhaGameId && String(m.qydhaGameId) === gameId,
+      );
+      if (!match) continue;
+      match.state = normalizeMatchState(game.state);
+      if (game.winner != null) {
+        match.winner = game.winner;
+      }
+    }
+  };
+
+  /** Initial load only. Live scores come from websocket via upsertGame. */
   const fetchGame = async (id: string) => {
     if (!id) return;
     if (games.value.some((g) => g.id === id)) return;
@@ -492,6 +509,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     }
   };
 
+  /** Apply live game + stats from hub — no backend refetch. */
   const handleMatchStateChanged = (
     _eventName: string,
     game: string,
@@ -500,6 +518,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
     const gameObject: IMatchData = JSON.parse(game);
     const statisticsObject: IMathStat = JSON.parse(statistics);
     upsertGame(gameObject.id, gameObject, statisticsObject);
+    syncMatchFromLiveGame(gameObject);
   };
   const handleBracketChanged = (
     groupId: string,
