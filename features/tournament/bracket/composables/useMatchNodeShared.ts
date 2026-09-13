@@ -76,17 +76,12 @@ export function useMatchNodeShared(match: Ref<Match>) {
     return sakkas[sakkas.length - 1] ?? null;
   });
 
-  const lastMoshtara = computed(() => {
-    const moshtaras = lastSakka.value?.moshtaras ?? [];
-    if (!moshtaras.length) return null;
-    return moshtaras[moshtaras.length - 1] ?? null;
-  });
-
   const usScore = computed(() => liveGame.value?.game.usGameScore ?? null);
   const themScore = computed(() => liveGame.value?.game.themGameScore ?? null);
 
-  const usMoshtaraScore = computed(() => lastMoshtara.value?.usAbnat ?? null);
-  const themMoshtaraScore = computed(() => lastMoshtara.value?.themAbnat ?? null);
+  /** Points total inside the latest sakka (sum of moshtaras). */
+  const usMoshtaraScore = computed(() => lastSakka.value?.usSakkaScore ?? null);
+  const themMoshtaraScore = computed(() => lastSakka.value?.themSakkaScore ?? null);
 
   const showScore = computed(() => {
     if (!match.value.qydhaGameId) return false;
@@ -96,7 +91,7 @@ export function useMatchNodeShared(match: Ref<Match>) {
     return liveGame.value != null;
   });
 
-  const showMoshtaraScore = computed(() => showScore.value && lastMoshtara.value != null);
+  const showMoshtaraScore = computed(() => showScore.value && lastSakka.value != null);
 
   watch(
     () =>
