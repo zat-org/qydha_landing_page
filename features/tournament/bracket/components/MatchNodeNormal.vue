@@ -32,14 +32,34 @@
 
       <div
         dir="ltr"
-        class="inline-flex min-w-10 items-center justify-center gap-0.5 self-center rounded-full bg-white/80 px-2.5 py-1 text-[10px] font-black text-slate-700 ring-1 ring-black/10 dark:bg-black/35 dark:text-slate-100 dark:ring-white/10"
+        class="inline-flex min-w-12 flex-col items-center justify-center gap-0.5 self-center rounded-xl bg-white/90 px-2 py-1 text-slate-700 shadow-sm ring-1 ring-black/10 dark:bg-black/45 dark:text-slate-100 dark:ring-white/10"
       >
         <template v-if="showScore">
-          <span class="tabular-nums">{{ themScore ?? 0 }}</span>
-          <span class="opacity-60">:</span>
-          <span class="tabular-nums">{{ usScore ?? 0 }}</span>
+          <div class="flex items-center gap-1">
+            <span class="text-[11px] font-black tabular-nums leading-none">{{
+              themScore ?? 0
+            }}</span>
+            <span class="text-[9px] font-bold opacity-40">:</span>
+            <span class="text-[11px] font-black tabular-nums leading-none">{{
+              usScore ?? 0
+            }}</span>
+          </div>
+          <div
+            v-if="showMoshtaraScore"
+            class="flex items-center gap-1 border-t border-slate-200/80 pt-0.5 dark:border-white/10"
+          >
+            <span class="text-[9px] font-bold tabular-nums leading-none text-slate-500 dark:text-slate-300">{{
+              themMoshtaraScore ?? 0
+            }}</span>
+            <span class="text-[8px] font-semibold opacity-35">:</span>
+            <span class="text-[9px] font-bold tabular-nums leading-none text-slate-500 dark:text-slate-300">{{
+              usMoshtaraScore ?? 0
+            }}</span>
+          </div>
         </template>
-        <template v-else>VS</template>
+        <template v-else>
+          <span class="text-[10px] font-black tracking-wide">VS</span>
+        </template>
       </div>
 
       <div
@@ -199,8 +219,11 @@ const {
   firstTeamSurfaceClass,
   secondTeamSurfaceClass,
   showScore,
+  showMoshtaraScore,
   usScore,
   themScore,
+  usMoshtaraScore,
+  themMoshtaraScore,
 } = useMatchNodeShared(match);
 
 const showRefereeIcon = computed(

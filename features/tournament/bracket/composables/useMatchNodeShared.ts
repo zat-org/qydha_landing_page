@@ -70,8 +70,24 @@ export function useMatchNodeShared(match: Ref<Match>) {
     return gameStore.games.find((g) => g.id === gameId);
   });
 
+  const lastSakka = computed(() => {
+    const sakkas = liveGame.value?.game.sakkas ?? [];
+    if (!sakkas.length) return null;
+    return sakkas[sakkas.length - 1] ?? null;
+  });
+
+  const lastMoshtara = computed(() => {
+    const moshtaras = lastSakka.value?.moshtaras ?? [];
+    if (!moshtaras.length) return null;
+    return moshtaras[moshtaras.length - 1] ?? null;
+  });
+
   const usScore = computed(() => liveGame.value?.game.usGameScore ?? null);
   const themScore = computed(() => liveGame.value?.game.themGameScore ?? null);
+
+  const usMoshtaraScore = computed(() => lastMoshtara.value?.usAbnat ?? null);
+  const themMoshtaraScore = computed(() => lastMoshtara.value?.themAbnat ?? null);
+
   const showScore = computed(() => {
     if (!match.value.qydhaGameId) return false;
     if (!SCORE_VISIBLE_STATES.has(normalizeMatchState(match.value.state))) {
@@ -79,6 +95,8 @@ export function useMatchNodeShared(match: Ref<Match>) {
     }
     return liveGame.value != null;
   });
+
+  const showMoshtaraScore = computed(() => showScore.value && lastMoshtara.value != null);
 
   watch(
     () =>
@@ -126,7 +144,10 @@ export function useMatchNodeShared(match: Ref<Match>) {
     firstTeamSurfaceClass,
     secondTeamSurfaceClass,
     showScore,
+    showMoshtaraScore,
     usScore,
     themScore,
+    usMoshtaraScore,
+    themMoshtaraScore,
   };
 }
