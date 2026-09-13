@@ -9,7 +9,6 @@ import {
 } from '~/features/tournament/models/group';
 import type { IMatchData, IMathStat } from '~/features/tournament/models/MatchStat';
 import { useGroup } from '~/features/tournament/group/composables/group';
-import { useMatch } from '~/features/tournament/shared/composables/match';
 import { useMyAuthStore } from '~/store/Auth';
 import { Privilege } from '~/models/user';
 import {
@@ -28,6 +27,8 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
   const games = ref<{ id: string; game: IMatchData; statistics: IMathStat }[]>(
     [],
   );
+  const gameFetchInFlight = new Map<string, Promise<void>>();
+  const { $qaydhaapi } = useNuxtApp();
   const selectedTournamentId = ref<string>(route.params.id?.toString() || '');
   const tournament = ref<{ data: Group; matches: Match[] }[]>([]);
   const connection = ref<HubConnection>();
@@ -437,25 +438,57 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
       connection.value = await initWebsocket(tournamentId);
     }
   };
+  const upsertGame = (
+    id: string,
+    game: IMatchData,
+    statistics: IMathStat,
+  ) => {
+    const existing = games.value.find((g) => g.id === id);
+    if (existing) {
+      existing.game = game;
+      existing.statistics = statistics;
+      return;
+    }
+    games.value.push({ id, game, statistics });
+  };
+
   const fetchGame = async (id: string) => {
+    if (!id) return;
     if (games.value.some((g) => g.id === id)) return;
 
-    const gameApi = useMatch();
-    const matchData = gameApi.getMatchData();
-    await matchData.fetchREQ(id);
-    if (matchData.status.value != 'success' || !matchData.data.value) return;
+    const inflight = gameFetchInFlight.get(id);
+    if (inflight) {
+      await inflight;
+      return;
+    }
 
-    const next = {
-      id: matchData.data.value.state.id,
-      game: matchData.data.value.state,
-      statistics: matchData.data.value.statistics,
-    };
-    const existing = games.value.find((g) => g.id === next.id);
-    if (existing) {
-      existing.game = next.game;
-      existing.statistics = next.statistics;
-    } else {
-      games.value.push(next);
+    const promise = (async () => {
+      try {
+        const response = await $qaydhaapi<{
+          data: { state: IMatchData; statistics: IMathStat };
+          message?: string;
+        }>(`baloot-games/${id}/data`);
+
+        const payload =
+          response && typeof response === "object" && "data" in response
+            ? response.data
+            : (response as unknown as {
+                state: IMatchData;
+                statistics: IMathStat;
+              });
+
+        if (!payload?.state || !payload?.statistics) return;
+        upsertGame(id, payload.state, payload.statistics);
+      } catch (error) {
+        console.error("fetchGame failed", id, error);
+      }
+    })();
+
+    gameFetchInFlight.set(id, promise);
+    try {
+      await promise;
+    } finally {
+      gameFetchInFlight.delete(id);
     }
   };
 
@@ -466,18 +499,7 @@ export const useTournamentBracketStore = defineStore('tournamentBracket', () => 
   ) => {
     const gameObject: IMatchData = JSON.parse(game);
     const statisticsObject: IMathStat = JSON.parse(statistics);
-
-    const selectedGame = games.value.find((g) => g.id == gameObject.id);
-    if (selectedGame) {
-      selectedGame.game = gameObject;
-      selectedGame.statistics = statisticsObject;
-    } else {
-      games.value.push({
-        id: gameObject.id,
-        game: gameObject,
-        statistics: statisticsObject,
-      });
-    }
+    upsertGame(gameObject.id, gameObject, statisticsObject);
   };
   const handleBracketChanged = (
     groupId: string,

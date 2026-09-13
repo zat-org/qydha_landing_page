@@ -6,7 +6,30 @@
     :ui="{ body: 'p-0 px-0 py-0 sm:p-0' }"
   >
     <template #body>
+      <div
+        v-if="isGameLoading"
+        class="flex min-h-[40vh] flex-col items-center justify-center gap-2 p-6"
+      >
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="h-10 w-10 animate-spin text-slate-400"
+        />
+        <p class="text-sm text-slate-500 dark:text-slate-400">جاري التحميل</p>
+      </div>
+      <div
+        v-else-if="!game"
+        class="flex min-h-[40vh] flex-col items-center justify-center gap-2 p-6 text-center"
+      >
+        <UIcon
+          name="i-heroicons-exclamation-triangle"
+          class="h-10 w-10 text-warning-500"
+        />
+        <p class="text-sm text-slate-500 dark:text-slate-400">
+          تعذّر تحميل بيانات المباراة
+        </p>
+      </div>
       <UTabs
+        v-else
         :items="items"
         class="w-full p-2 sm:p-4 md:p-5"
         :ui="{
@@ -245,13 +268,20 @@ import { useTournamentBracketStore } from "~/features/tournament/bracket/stores"
 
 const props = defineProps<{ m: Match }>();
 const gameStore = useTournamentBracketStore();
+const isGameLoading = ref(true);
 
 const start = async () => {
-  const selectedGame = gameStore.games.find(
-    (g) => g.id === props.m.qydhaGameId,
-  );
-  if (!selectedGame) {
-    await gameStore.fetchGame(props.m.qydhaGameId);
+  isGameLoading.value = true;
+  try {
+    if (!props.m.qydhaGameId) return;
+    const selectedGame = gameStore.games.find(
+      (g) => g.id === props.m.qydhaGameId,
+    );
+    if (!selectedGame) {
+      await gameStore.fetchGame(props.m.qydhaGameId);
+    }
+  } finally {
+    isGameLoading.value = false;
   }
 };
 await start();

@@ -14,7 +14,7 @@ export const useMatch = () => {
       state: IMatchData;
       statistics: IMathStat;
     }>(
-      appKeys.match("getMatchData"),
+      () => appKeys.match("getMatchData", game_id.value || "pending"),
       () => $qaydhaapi(`baloot-games/${game_id.value}/data`),
       { immediate: false },
     );
@@ -29,7 +29,7 @@ export const useMatch = () => {
     const game_id = ref("");
     const { data, pending, error, refresh, status, execute } =
       useAppApiData<IMathStat>(
-        appKeys.match("getMatchStatstics"),
+        () => appKeys.match("getMatchStatstics", game_id.value || "pending"),
         () => $qaydhaapi(`baloot-games/${game_id.value}/statistics`),
         { immediate: false },
       );
