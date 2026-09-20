@@ -13,7 +13,7 @@ export function buildPhaseContextFromTour(
   isAdmin: boolean,
 ): TournamentPhaseContext {
   const finalGroup = tour.tournament.groups?.find(
-    (g) => g.type === GroupType.Final,
+    (g) => g.type === GroupType.Final || g.stageType === "Final",
   );
 
   return {

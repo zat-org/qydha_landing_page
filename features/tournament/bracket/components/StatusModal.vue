@@ -98,10 +98,11 @@
                 class="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 sm:gap-4"
               >
                 <div
-                  class="relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 pt-1 text-center sm:gap-1.5"
+                  class="flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-center sm:gap-1.5"
                 >
                   <span
-                    class="absolute -top-1 inset-s-0 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
+                    v-if="isMultiSakka"
+                    class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
                     :class="newsScoreBadgeClass('Them')"
                   >
                     {{ game?.game.themGameScore ?? 0 }} صكة
@@ -127,10 +128,11 @@
                 </span>
 
                 <div
-                  class="relative flex min-w-0 flex-col items-center justify-center gap-1 px-1 pt-1 text-center sm:gap-1.5"
+                  class="flex min-w-0 flex-col items-center justify-center gap-1 px-1 text-center sm:gap-1.5"
                 >
                   <span
-                    class="absolute -top-1 inset-e-0 inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
+                    v-if="isMultiSakka"
+                    class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
                     :class="newsScoreBadgeClass('Us')"
                   >
                     {{ game?.game.usGameScore ?? 0 }} صكة
@@ -315,6 +317,13 @@ const themTeamPrimary = computed(() => teamPrimaryName(props.m.themTeamName));
 const usTeamPrimary = computed(() => teamPrimaryName(props.m.usTeamName));
 const themTeamSecondary = computed(() => teamSecondaryName(props.m.themTeamName));
 const usTeamSecondary = computed(() => teamSecondaryName(props.m.usTeamName));
+
+const isMultiSakka = computed(() => {
+  const fromSettings = props.m.roundGameSettings?.sakkasCount;
+  if (fromSettings != null) return fromSettings > 1;
+  if (props.m.maxSakkasCountFromGame > 1) return true;
+  return (game.value?.game.maxSakkaPerGame ?? 0) > 1;
+});
 
 function normalizeGameSide(
   value: string | null | undefined,

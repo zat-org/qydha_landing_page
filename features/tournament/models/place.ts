@@ -27,7 +27,13 @@ export type GetTournamentPlace = {
   stageType: TournamentStageType;
   connectedTablesCount: number;
   connectedGroupsCount: number;
-  connectedJoinRequestsCount: number;
+  /** Player-preferred join requests still waiting consideration. */
+  selectedJoinRequestsCount?: number;
+  /** Join requests assigned to this place (awaiting / past approval). */
+  assignedJoinRequestsCount?: number;
+  connectedTeamsCount?: number;
+  connectedRefereesCount?: number;
+  connectedModeratorsCount?: number;
 };
 
 export type QualificationsStageInfo = {

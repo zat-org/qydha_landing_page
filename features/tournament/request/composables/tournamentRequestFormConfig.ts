@@ -7,7 +7,9 @@ export const tournamentRequestSteps = [
   { id: 1, title: "طلبات الانضمام", slot: "JoinRequest", icon: "i-heroicons-user-plus" },
   { id: 2, title: "أماكن التصفيات", slot: "TourPlaces", icon: "i-heroicons-map-pin" },
   { id: 3, title: "النهائي", slot: "TourDetail", icon: "i-heroicons-flag" },
-  { id: 4, title: "قوانين البطولة", slot: "TourRules", icon: "i-heroicons-scale" },
+  { id: 4, title: "الجوائز", slot: "TourPrizes", icon: "i-heroicons-gift" },
+  { id: 5, title: "الحاسبة", slot: "TourCalculator", icon: "i-lucide-calculator" },
+  { id: 6, title: "قوانين البطولة", slot: "TourRules", icon: "i-heroicons-scale" },
 ] as const;
 
 export const tournamentRequestStepFieldMap: Record<number, string[]> = {
@@ -38,9 +40,10 @@ export const tournamentRequestStepFieldMap: Record<number, string[]> = {
     "endAt",
     "teamsCount",
     "tablesCount",
-    "prizes",
   ],
-  4: ["rules"],
+  4: ["prizes"],
+  5: [],
+  6: ["rules"],
 };
 
 export const tournamentRequestUpdateStepFieldMap: Record<number, string[]> = {

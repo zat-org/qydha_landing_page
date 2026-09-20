@@ -6,9 +6,8 @@ import {
   type Match,
   type MatchLifecycleState,
 } from "~/features/tournament/models/group";
-import type { GetTournamentPlace } from "~/features/tournament/models/place";
+import type { GetTournamentPlace, TournamentStageType } from "~/features/tournament/models/place";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
-import type { ITeam } from "~/features/tournament/models/tournamentTeam";
 import { groupStateLabel } from "~/features/tournament/group/group-details/constants/group-state-labels";
 
 export interface TeamsByPlaceRow {
@@ -17,6 +16,7 @@ export interface TeamsByPlaceRow {
   teamsCount: number;
   capacity: number;
   dateWindow: string;
+  stageType: TournamentStageType;
 }
 
 export interface GroupSummaryRow {
@@ -145,22 +145,16 @@ export function formatPlaceDateWindow(place: GetTournamentPlace): string {
   return `${start} – ${end}`;
 }
 
-export function countTeamsByPlace(teams: ITeam[], placeId: string): number {
-  return teams.filter((team) =>
-    team.stageEntries?.some((entry) => entry.placeId === placeId),
-  ).length;
-}
-
 export function buildTeamsByPlace(
   places: GetTournamentPlace[],
-  teams: ITeam[],
 ): TeamsByPlaceRow[] {
   return places.map((place) => ({
     placeId: place.id,
     label: place.locationDescription || place.id,
-    teamsCount: countTeamsByPlace(teams, place.id),
+    teamsCount: place.connectedTeamsCount ?? 0,
     capacity: place.competingTeamsCount,
     dateWindow: formatPlaceDateWindow(place),
+    stageType: place.stageType,
   }));
 }
 
@@ -188,7 +182,6 @@ function buildGroupSummaryRow(
 export function buildPlacesTree(
   places: GetTournamentPlace[],
   groups: Group[],
-  teams: ITeam[],
   matchMap: Map<string, MatchAggregates>,
 ): PlaceTreeRow[] {
   const qualGroups = groups.filter((g) => g.type === GroupType.Qualification);
@@ -227,7 +220,7 @@ export function buildPlacesTree(
       placeId: place.id,
       label: place.locationDescription || place.id,
       dateWindow: formatPlaceDateWindow(place),
-      teamsCount: countTeamsByPlace(teams, place.id),
+      teamsCount: place.connectedTeamsCount ?? 0,
       capacity: place.competingTeamsCount,
       days,
     };
@@ -239,7 +232,9 @@ export function buildFinalGroupSummary(
   teamsLinked: number,
   matchMap: Map<string, MatchAggregates>,
 ): FinalGroupSummary | null {
-  const finalGroup = groups.find((g) => g.type === GroupType.Final);
+  const finalGroup = groups.find(
+    (g) => g.type === GroupType.Final || g.stageType === "Final",
+  );
   if (!finalGroup) return null;
 
   const aggregates = matchMap.get(finalGroup.id) ?? {

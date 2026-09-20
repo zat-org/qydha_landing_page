@@ -18,7 +18,7 @@ export function buildTeamJoinRequestsQuery(
   if (p.useSelectedQualificationsPlaceIdFilter) {
     qs.set("useSelectedQualificationsPlaceIdFilter", "true");
     if (p.selectedQualificationsPlaceId === null) {
-      qs.set("selectedQualificationsPlaceId", "");
+      // qs.set("selectedQualificationsPlaceId", null as  );
     } else if (p.selectedQualificationsPlaceId) {
       qs.set("selectedQualificationsPlaceId", p.selectedQualificationsPlaceId);
     }

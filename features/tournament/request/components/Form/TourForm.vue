@@ -1,5 +1,8 @@
 <template>
-  <UCard class="mx-auto min-h-full max-w-7xl bg-gray-50 dark:bg-gray-900" :ui="{ root: 'min-h-full overflow-visible' }">
+  <UCard
+    class="mx-auto w-full max-w-7xl bg-gray-50 dark:bg-gray-900"
+    :ui="{ root: 'h-auto flex-none overflow-visible', body: 'flex-none overflow-visible' }"
+  >
     <template #header>
       <div class="form-header mb-6">
         <h2

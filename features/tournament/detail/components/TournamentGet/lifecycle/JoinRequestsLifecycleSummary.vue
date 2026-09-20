@@ -52,23 +52,6 @@
         />
       </div>
 
-      <div
-        v-if="summary.noPreferenceWaiting > 0"
-        class="flex items-start gap-2 rounded-xl border border-info/25 bg-info/10 px-3 py-2.5 text-sm text-info"
-      >
-        <UIcon
-          name="i-mdi-map-marker-question-outline"
-          class="mt-0.5 size-4 shrink-0"
-        />
-        <p>
-          <span class="font-semibold tabular-nums">
-            {{ summary.noPreferenceWaiting }}
-          </span>
-          طلب قيد المراجعة بدون تفضيل مكان — لا يظهرون في جدول الأماكن، ويمكن
-          تعيينهم لأي مكان عند الموافقة الأولية.
-        </p>
-      </div>
-
       <div v-if="summary.placeRows.length" class="space-y-0">
         <div
           class="flex flex-col gap-2 rounded-t-xl border border-b-0 border-gray-200/80 bg-gray-50/80 px-3 py-2.5 dark:border-gray-800 dark:bg-gray-900/40 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
@@ -129,8 +112,12 @@
             <tbody class="divide-y divide-gray-200/80 dark:divide-gray-800">
               <tr
                 v-for="row in summary.placeRows"
-                :key="row.placeId!"
-                class="bg-white/40 dark:bg-gray-900/20"
+                :key="row.placeId ?? 'no-preference'"
+                :class="
+                  row.isNoPreference
+                    ? 'bg-info/5 dark:bg-info/10'
+                    : 'bg-white/40 dark:bg-gray-900/20'
+                "
               >
                 <td class="px-3 py-2.5 font-medium text-gray-900 dark:text-white">
                   <span class="inline-flex items-center gap-1.5">
@@ -143,6 +130,11 @@
                         class="size-4 shrink-0 text-success"
                       />
                     </UTooltip>
+                    <UIcon
+                      v-else-if="row.isNoPreference"
+                      name="i-mdi-map-marker-question-outline"
+                      class="size-4 shrink-0 text-info"
+                    />
                     {{ row.label }}
                   </span>
                 </td>
@@ -245,7 +237,7 @@ function formatCell(
 }
 
 function isPlaceCapacityMet(row: JoinRequestPlaceSummaryRow): boolean {
-  if (row.remaining == null) return false;
+  if (row.isNoPreference || row.remaining == null) return false;
   return row.remaining <= 0;
 }
 

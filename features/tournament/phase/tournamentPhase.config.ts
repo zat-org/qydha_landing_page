@@ -13,6 +13,7 @@ import {
   confirmQualificationBracketsAction,
   confirmQualificationResultsAction,
   finishAction,
+  generateFinalGroupMatchesAction,
   generateQualificationBracketsAction,
   organizeAction,
   resumeAction,
@@ -207,12 +208,12 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
         color: "info",
         title: "ربط الفرق بالمجموعة",
         description:
-          "وزع الفرق على المجموعة النهائية ثم كوّن المباريات من صفحة المجموعات.",
+          "وزع الفرق على المجموعة النهائية ثم كوّن المباريات من الملخص أو صفحة المجموعات.",
       },
     },
     view: null,
     lifecycle: LIFECYCLE.finalGroup,
-    actions: [revertFinalGroupTeamsLinksAction],
+    actions: [generateFinalGroupMatchesAction, revertFinalGroupTeamsLinksAction],
   },
   [TournamentDetailedState.ManagingFinalGroupBracket]: {
     label: "إدارة المجموعة والمباريات",
@@ -222,7 +223,7 @@ export const TOURNAMENT_PHASE_CONFIG: Record<
     },
     view: null,
     lifecycle: LIFECYCLE.finalGroup,
-    actions: [approvePlanAction],
+    actions: [generateFinalGroupMatchesAction, approvePlanAction],
   },
   [TournamentDetailedState.WaitingFinalGroupStarting]: {
     label: "في انتظار بدء البطولة",

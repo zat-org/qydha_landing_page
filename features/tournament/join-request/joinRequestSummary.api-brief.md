@@ -2,15 +2,15 @@
 
 Frontend: `useTournamentLifecycleSummary` / `JoinRequestsLifecycleSummary.vue`
 
-## Current approach (no full list fetch)
+## Current approach
 
-All summary calls use the **existing** organizer list endpoint with `pageSize=1` and read **`totalCount`** only:
+### Global chips (6 calls)
+
+All chip totals still use the organizer list endpoint with `pageSize=1` and read **`totalCount`** only:
 
 ```
 GET /tournaments/{tournamentId}/tournament-team-join-requests
 ```
-
-### Global chips (5 calls)
 
 | UI chip | Query |
 |---------|--------|
@@ -19,43 +19,43 @@ GET /tournaments/{tournamentId}/tournament-team-join-requests
 | مقبولة | `getOnlyStates=ApprovedByOrganizer` |
 | قائمة الانتظار | `getOnlyStates=InWaitingList` |
 | ملغاة | `getOnlyStates=CanceledByOrganizer` |
+| بدون تفضيل مكان | `WaitingOrganizerConsideration` + `useSelectedQualificationsPlaceIdFilter=true` + empty `selectedQualificationsPlaceId` |
 
-**Total requests** = sum of the five states above (organizer-visible pipeline).
+**Total requests** = sum of the five state chips (organizer-visible pipeline).
 
-### Per qualification place (2 calls × N places)
-
-For each place `P`:
-
-| UI label | Query |
-|----------|--------|
-| **اختاروا** (player preferred) | `getOnlyStates=WaitingOrganizerConsideration` + `useSelectedQualificationsPlaceIdFilter=true` + `selectedQualificationsPlaceId={P}` |
-| **معيّنة** (system assigned) | `getOnlyStates=WaitingOrganizerApproval` + `assignedPlaceId={P}` |
-
-### No place preference (1 call)
-
-| UI | Query |
-|----|--------|
-| بدون تفضيل مكان | `getOnlyStates=WaitingOrganizerConsideration` + `useSelectedQualificationsPlaceIdFilter=true` + `selectedQualificationsPlaceId=` (empty / null) |
-
-### Place capacity
-
-From existing places API (not join-requests):
+### Per-place table
 
 ```
 GET /tournaments/{tournamentId}/places
 ```
 
-Use `competingTeamsCount` per place as **السعة**.
+| UI label | Field |
+|----------|--------|
+| **السعة** | `competingTeamsCount` |
+| **اختاروا** (player preferred) | `selectedJoinRequestsCount` |
+| **معيّنة** (system assigned) | `assignedJoinRequestsCount` |
+
+Plus a virtual table row **بدون تفضيل مكان** (`isNoPreference`) whose **اختاروا** count comes from the no-preference join-request list call above (not from `/places`).
+
+### Teams summary (same places API)
+
+| UI label | Field |
+|----------|--------|
+| الفرق الموجودة | `connectedTeamsCount` |
+| الفرق المطلوبة | `competingTeamsCount` |
+
+Tournament total teams still uses one `GET /teams?PageNumber=1&PageSize=1` for `totalCount` only (no page-loop).
 
 ---
 
 ## Required backend behaviour
 
 1. **`totalCount` must be accurate** when `pageSize=1` (paged wrapper: `data.totalCount` or root `totalCount`).
-2. **Place filters must work on staging** (organizer list already documents these params):
-   - `useSelectedQualificationsPlaceIdFilter` + `selectedQualificationsPlaceId`
-   - `assignedPlaceId`
-3. **`getOnlyStates`**: one state per request is enough; **do not** require multi-state arrays for summary (multi-state list currently returns 400 on staging).
+2. **Places counts** must stay in sync with join-request / team assignment state:
+   - `selectedJoinRequestsCount`
+   - `assignedJoinRequestsCount`
+   - `connectedTeamsCount`
+3. **`getOnlyStates`**: one state per request is enough for global chips.
 4. **Invalid filter states** (not in list enum): do not use in `getOnlyStates` until supported:
    - `ApprovedFromWaitingList`, `WithdrawnAfterApproval`, `WithdrawnFromWaitingList`
 
@@ -63,7 +63,7 @@ Use `competingTeamsCount` per place as **السعة**.
 
 ## Optional improvement (recommended)
 
-Single summary endpoint to replace **6 + 2N** list calls:
+Single summary endpoint to replace the **6** remaining list calls for chips:
 
 ```
 GET /tournaments/{tournamentId}/tournament-team-join-requests/summary
@@ -78,16 +78,8 @@ Example response:
   "accepted": 0,
   "waitingList": 0,
   "canceled": 0,
-  "noPreferenceWaiting": 8,
-  "places": [
-    {
-      "placeId": "...",
-      "choseCount": 0,
-      "assignedCount": 0,
-      "capacity": 4
-    }
-  ]
+  "noPreferenceWaiting": 8
 }
 ```
 
-Frontend can switch to this when available and drop parallel count fan-out.
+Place rows already come from `GET /places`.

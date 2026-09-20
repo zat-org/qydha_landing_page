@@ -25,5 +25,5 @@ import DetailSectionCard from "./DetailSectionCard.vue";
 
 defineProps<{ data: DetailTournamentRequest }>();
 
-const section = tournamentRequestSteps[4]!;
+const section = tournamentRequestSteps[6]!;
 </script>

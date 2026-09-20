@@ -24,16 +24,12 @@
         />
         <DetailFieldRow
           v-if="data.joinRequestMaxCount"
-          label="أقصى عدد طلبات الانضمام"
+          label="أقصى عدد طلبات تم الموافقة عليها من الطرفين يتم استقبالها"
           :value="data.joinRequestMaxCount"
         />
         <DetailFieldRow
-          label="نوع طلبات الانضمام"
-          :value="getJoinRequestTypeLabel(data.allowedJoinRequestType)"
-        />
-        <DetailFieldRow
-          label="عدد الأيام الأدنى للاشتراك"
-          :value="data.minimumSubscriptionDays ?? 0"
+          label="الحد الأدنى لأيام الاشتراك"
+          :value="(data.minimumSubscriptionDays ?? 0) === 0 ? 'مجاني' : data.minimumSubscriptionDays"
         />
       </template>
     </div>
@@ -43,7 +39,6 @@
 <script setup lang="ts">
 import type { DetailTournamentRequest } from "~/features/tournament/models/tournamentRequest";
 import { tournamentRequestSteps } from "~/features/tournament/request/composables/tournamentRequestFormConfig";
-import { getJoinRequestTypeLabel } from "~/features/tournament/request/composables/tournamentRequestDetailUtils";
 import { formatDate } from "~/utils/formatDate";
 import DetailFieldRow from "./DetailFieldRow.vue";
 import DetailSectionCard from "./DetailSectionCard.vue";

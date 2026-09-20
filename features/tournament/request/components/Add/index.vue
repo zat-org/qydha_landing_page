@@ -54,7 +54,7 @@
           <KeepAlive>
             <TournamentRequestFormTourForm
               v-show="currentStepValue === 0"
-              class="mx-auto min-h-full max-w-7xl"
+              class="mx-auto w-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -63,7 +63,7 @@
           <KeepAlive>
             <TournamentRequestFormJoinRequestForm
               v-show="currentStepValue === 1"
-              class="mx-auto min-h-full max-w-7xl"
+              class="mx-auto w-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -72,7 +72,7 @@
           <KeepAlive>
             <TournamentRequestFormQualificationsForm
               v-show="currentStepValue === 2"
-              class="mx-auto min-h-full max-w-7xl"
+              class="mx-auto w-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -81,7 +81,25 @@
           <KeepAlive>
             <TournamentRequestFormTourDetailForm
               v-show="currentStepValue === 3"
-              class="mx-auto min-h-full max-w-7xl"
+              class="mx-auto w-full max-w-7xl"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+          <KeepAlive>
+            <TournamentRequestFormPrizesForm
+              v-show="currentStepValue === 4"
+              class="mx-auto w-full max-w-7xl"
+              v-model="formData"
+              :errors="visibleErrors"
+              :on-field-blur="onFieldBlur"
+            />
+          </KeepAlive>
+          <KeepAlive>
+            <TournamentRequestFormCalculatorForm
+              v-show="currentStepValue === 5"
+              class="mx-auto w-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -89,8 +107,8 @@
           </KeepAlive>
           <KeepAlive>
             <TournamentRequestFormRulesForm
-              v-show="currentStepValue === 4"
-              class="mx-auto min-h-full max-w-7xl"
+              v-show="currentStepValue === 6"
+              class="mx-auto w-full max-w-7xl"
               v-model="formData"
               :errors="visibleErrors"
               :on-field-blur="onFieldBlur"
@@ -157,6 +175,8 @@ import TournamentRequestFormTourForm from '~/features/tournament/request/compone
 import TournamentRequestFormJoinRequestForm from '~/features/tournament/request/components/Form/JoinRequestForm.vue';
 import TournamentRequestFormTourDetailForm from '~/features/tournament/request/components/Form/TourDetailForm/index.vue';
 import TournamentRequestFormQualificationsForm from '~/features/tournament/request/components/Form/QualificationsForm.vue';
+import TournamentRequestFormPrizesForm from '~/features/tournament/request/components/Form/PrizesForm.vue';
+import TournamentRequestFormCalculatorForm from '~/features/tournament/request/components/Form/CalculatorForm.vue';
 import TournamentRequestFormRulesForm from '~/features/tournament/request/components/Form/RulesForm.vue';
 import { useTournamentRequest } from '~/features/tournament/request/composables/TournamentRequest';
 

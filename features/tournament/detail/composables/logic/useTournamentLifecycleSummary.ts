@@ -3,13 +3,11 @@ import { GroupType, parseGroupMatchesPayload } from "~/features/tournament/model
 import type { DetailGroup } from "~/features/tournament/models/group";
 import type { DetailTournament } from "~/features/tournament/models/tournament";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
-import type { ITeam } from "~/features/tournament/models/tournamentTeam";
 import type { GetTournamentPlace } from "~/features/tournament/models/place";
 import {
   TeamJoinRequestWorkflowState,
   type GetTeamJoinRequestsParams,
 } from "~/features/tournament/models/TournamentJoinRequest";
-import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 import {
   buildTeamJoinRequestsQuery,
   pagedListTotal,
@@ -32,20 +30,14 @@ import {
   type TeamsByPlaceRow,
 } from "./tournamentLifecycleSummary.utils";
 
-type TeamsPage = {
-  items: ITeam[];
-  totalCount: number;
-};
-
 export function useTournamentLifecycleSummary(
   tour: Ref<DetailTournament | null | undefined>,
 ) {
   const { $api } = useNuxtApp();
   const tournamentId = computed(() => tour.value?.tournament.id ?? "");
 
-  const { places } = useTournamentPlaces(() => tour.value);
-
-  const teams = ref<ITeam[]>([]);
+  /** Places from GET /places (Final + Qualification) for teams / groups summary. */
+  const teamsPlaces = ref<GetTournamentPlace[]>([]);
   const totalTeams = ref(0);
   const teamsPending = ref(false);
   const finalGroupTeamsLinked = ref(0);
@@ -53,35 +45,43 @@ export function useTournamentLifecycleSummary(
   async function loadTeams() {
     const id = tournamentId.value;
     if (!id) {
-      teams.value = [];
       totalTeams.value = 0;
+      teamsPlaces.value = [];
       return;
     }
 
     teamsPending.value = true;
     try {
-      const page = await $api<TeamsPage>(`/tournaments/${id}/teams`, {
-        query: { PageNumber: 1, PageSize: 10_000 },
-      });
-      teams.value = page?.items ?? [];
-      totalTeams.value = page?.totalCount ?? 0;
+      const [placesRes, teamsRes] = await Promise.all([
+        $api(`/tournaments/${id}/places`),
+        $api(`/tournaments/${id}/teams`, {
+          query: { PageNumber: 1, PageSize: 1 },
+        }),
+      ]);
+
+      const allPlaces = unwrapApiData<GetTournamentPlace[]>(placesRes) ?? [];
+      teamsPlaces.value = allPlaces.filter(
+        (p) => p.stageType === "Qualification" || p.stageType === "Final",
+      );
+      totalTeams.value = pagedListTotal(teamsRes);
     } catch {
-      teams.value = [];
       totalTeams.value = 0;
+      teamsPlaces.value = [];
     } finally {
       teamsPending.value = false;
     }
   }
+
   const expectedTeams = computed(
     () => tour.value?.tournament.expectedTeamsCount ?? 0,
   );
 
   const teamsByPlace = computed<TeamsByPlaceRow[]>(() =>
-    buildTeamsByPlace(places.value, teams.value),
+    buildTeamsByPlace(teamsPlaces.value),
   );
 
   const unassignedTeamsCount = computed(() => {
-    if (!places.value.length) return 0;
+    if (!teamsPlaces.value.length) return 0;
     const assigned = teamsByPlace.value.reduce(
       (sum, row) => sum + row.teamsCount,
       0,
@@ -103,7 +103,9 @@ export function useTournamentLifecycleSummary(
 
     matchesPending.value = true;
     try {
-      const finalGroup = groups.find((g) => g.type === GroupType.Final);
+      const finalGroup = groups.find(
+        (g) => g.type === GroupType.Final || g.stageType === "Final",
+      );
       const detailPromises = finalGroup
         ? [
             $api<DetailGroup>(
@@ -151,11 +153,17 @@ export function useTournamentLifecycleSummary(
 
   const placesTree = computed<PlaceTreeRow[]>(() =>
     buildPlacesTree(
-      places.value,
+      teamsPlaces.value.filter((p) => p.stageType === "Qualification"),
       tour.value?.tournament.groups ?? [],
-      teams.value,
       matchMap.value,
     ),
+  );
+
+  const finalGroup = computed(
+    () =>
+      tour.value?.tournament.groups?.find(
+        (g) => g.type === GroupType.Final || g.stageType === "Final",
+      ) ?? null,
   );
 
   const finalGroupSummary = computed<FinalGroupSummary | null>(() =>
@@ -164,6 +172,10 @@ export function useTournamentLifecycleSummary(
       finalGroupTeamsLinked.value,
       matchMap.value,
     ),
+  );
+
+  const detailedState = computed(
+    () => tour.value?.tournament.detailedState,
   );
 
   const joinSummary = ref<JoinRequestsSummary | null>(null);
@@ -217,7 +229,6 @@ export function useTournamentLifecycleSummary(
         waitingList,
         canceled,
         noPreferenceWaiting,
-        ...placeCounts
       ] = await Promise.all([
         fetchJoinRequestCount(id, {
           getOnlyStates: [
@@ -245,29 +256,14 @@ export function useTournamentLifecycleSummary(
           useSelectedQualificationsPlaceIdFilter: true,
           selectedQualificationsPlaceId: null,
         }),
-        ...targetPlaces.flatMap((place) => [
-          fetchJoinRequestCount(id, {
-            getOnlyStates: [
-              TeamJoinRequestWorkflowState.WaitingOrganizerConsideration,
-            ],
-            useSelectedQualificationsPlaceIdFilter: true,
-            selectedQualificationsPlaceId: place.id,
-          }),
-          fetchJoinRequestCount(id, {
-            getOnlyStates: [
-              TeamJoinRequestWorkflowState.WaitingOrganizerApproval,
-            ],
-            assignedPlaceId: place.id,
-          }),
-        ]),
       ]);
 
       const total = pending + underReview + accepted + waitingList + canceled;
 
-      const placeRows: JoinRequestPlaceSummaryRow[] = targetPlaces.map(
-        (place, index) => {
-          const choseCount = placeCounts[index * 2] ?? 0;
-          const assignedCount = placeCounts[index * 2 + 1] ?? 0;
+      const placeRows: JoinRequestPlaceSummaryRow[] = [
+        ...targetPlaces.map((place) => {
+          const choseCount = place.selectedJoinRequestsCount ?? 0;
+          const assignedCount = place.assignedJoinRequestsCount ?? 0;
           return {
             placeId: place.id,
             label: placeOptionLabel(place),
@@ -281,8 +277,17 @@ export function useTournamentLifecycleSummary(
               isManagingJoinRequests,
             ),
           };
+        }),
+        {
+          placeId: null,
+          label: "بدون تفضيل مكان",
+          isNoPreference: true,
+          capacity: null,
+          choseCount: noPreferenceWaiting,
+          assignedCount: null,
+          remaining: null,
         },
-      );
+      ];
 
       const start = formatDateTime(t.joinRequestStartAt);
       const end = formatDateTime(t.joinRequestEndAt);
@@ -320,13 +325,16 @@ export function useTournamentLifecycleSummary(
   return {
     tournamentId,
     teamsPending,
+    matchesPending,
     totalTeams,
     expectedTeams,
     teamsByPlace,
     unassignedTeamsCount,
     placesTree,
     groupsHierarchyPending,
+    finalGroup,
     finalGroupSummary,
+    detailedState,
     joinSummary,
     joinPending,
     joinRequestPlaces,

@@ -22,6 +22,7 @@ export function useTournamentPhaseActions(
   const approveConfirmOpen = ref(false);
   const startConfirmOpen = ref(false);
   const qualGenerateOpen = ref(false);
+  const finalGenerateOpen = ref(false);
 
   const setupModal = overlay.create(SetupTournamentModal, {
     props: { tournamentId },
@@ -32,6 +33,8 @@ export function useTournamentPhaseActions(
     organize: pending.value && runningId.value === "organize",
     generateQualificationBrackets:
       pending.value && runningId.value === "generateQualificationBrackets",
+    generateFinalGroupMatches:
+      pending.value && runningId.value === "generateFinalGroupMatches",
     revertQualificationTeamLinking:
       pending.value && runningId.value === "revertQualificationTeamLinking",
     revertQualificationGeneratedBrackets:
@@ -53,6 +56,7 @@ export function useTournamentPhaseActions(
   const successTitle: Record<PhaseActionId, string> = {
     organize: "تم بدء تنظيم البطولة",
     generateQualificationBrackets: "تم توليد مباريات التصفيات",
+    generateFinalGroupMatches: "تم إنشاء مباريات المجموعة النهائية",
     revertQualificationTeamLinking: "تم التراجع عن تنظيم التصفيات",
     revertQualificationGeneratedBrackets: "تم التراجع عن إنشاء مباريات التصفيات",
     confirmQualificationBrackets: "تم اعتماد جدول مباريات التصفيات",
@@ -124,6 +128,10 @@ export function useTournamentPhaseActions(
     }
     if (action.confirm === "generateQualificationBrackets") {
       qualGenerateOpen.value = true;
+      return;
+    }
+    if (action.confirm === "generateFinalGroupMatches") {
+      finalGenerateOpen.value = true;
       return;
     }
     if (action.confirm === "approvePlan") {
@@ -212,6 +220,7 @@ export function useTournamentPhaseActions(
     approveConfirmOpen,
     startConfirmOpen,
     qualGenerateOpen,
+    finalGenerateOpen,
     approvePending: computed(() => pendingByAction.value.approvePlan),
     startPending: computed(() => pendingByAction.value.start),
     pendingByAction,

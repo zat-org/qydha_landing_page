@@ -147,9 +147,23 @@ export const confirmFinalStageTeamsAction: PhaseAction = {
   },
 };
 
+export const generateFinalGroupMatchesAction: PhaseAction = {
+  id: "generateFinalGroupMatches",
+  label: "إنشاء المباريات",
+  icon: "i-mdi-tournament",
+  variant: "solid",
+  color: "success",
+  confirm: "generateFinalGroupMatches",
+  canExecute: (ctx) =>
+    canModifyTournament(ctx) &&
+    (ctx.detailedState === TournamentDetailedState.LinkingFinalGroupTeams ||
+      ctx.detailedState === TournamentDetailedState.ManagingFinalGroupBracket),
+  service: async () => {},
+};
+
 export const revertFinalGroupTeamsLinksAction: PhaseAction = {
   id: "revertFinalGroupTeamsLinks",
-  label: "تراجع عن ربط الفرق",
+  label: "التراجع لتعديل الفرق",
   icon: "i-mdi-undo",
   variant: "outline",
   color: "neutral",

@@ -105,7 +105,14 @@
                   مجموعات {{ place.connectedGroupsCount ?? 0 }}
                 </UBadge>
                 <UBadge color="neutral" variant="outline" size="xs">
-                  طلبات {{ place.connectedJoinRequestsCount ?? 0 }}
+                  طلبات
+                  {{
+                    (place.selectedJoinRequestsCount ?? 0) +
+                    (place.assignedJoinRequestsCount ?? 0)
+                  }}
+                </UBadge>
+                <UBadge color="neutral" variant="outline" size="xs">
+                  فرق {{ place.connectedTeamsCount ?? 0 }}
                 </UBadge>
               </div>
             </div>
@@ -271,10 +278,14 @@ const canMutatePlaceModerators = computed(
 );
 
 function canDeletePlace(place: GetTournamentPlace) {
+  const joinRequests =
+    (place.selectedJoinRequestsCount ?? 0) +
+    (place.assignedJoinRequestsCount ?? 0);
   return (
     canMutatePlaces.value &&
     place.stageType === "Qualification" &&
-    (place.connectedJoinRequestsCount ?? 0) === 0
+    joinRequests === 0 &&
+    (place.connectedTeamsCount ?? 0) === 0
   );
 }
 

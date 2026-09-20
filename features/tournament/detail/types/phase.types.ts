@@ -31,6 +31,7 @@ export interface TournamentPhaseContext {
 export type PhaseActionId =
   | "organize"
   | "generateQualificationBrackets"
+  | "generateFinalGroupMatches"
   | "revertQualificationTeamLinking"
   | "revertQualificationGeneratedBrackets"
   | "confirmQualificationBrackets"
@@ -45,6 +46,7 @@ export type PhaseActionId =
 export type PhaseActionConfirm =
   | "setup"
   | "generateQualificationBrackets"
+  | "generateFinalGroupMatches"
   | "revertQualificationTeamLinking"
   | "revertQualificationGeneratedBrackets"
   | "confirmQualificationBrackets"

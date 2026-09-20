@@ -36,6 +36,13 @@
       :is-regenerate="isRegenerateQual"
       @success="onPhaseRefreshed"
     />
+
+    <CreateMatchDrawer
+      v-if="finalGroup"
+      ref="finalCreateMatchDrawer"
+      :group="finalGroup"
+      @success="onPhaseRefreshed"
+    />
   </TournamentPhaseContent>
 
   <TournamentLifecyclePanel
@@ -49,6 +56,7 @@
 import TournamentApprovePlanConfirmModal from "../../shared/TournamentApprovePlanConfirmModal.vue";
 import TournamentStartConfirmModal from "../../shared/TournamentStartConfirmModal.vue";
 import GenerateQualificationBracketsDrawer from "~/features/tournament/detail/components/GenerateQualificationBracketsDrawer.vue";
+import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
 import TournamentPhaseContent from "./TournamentPhaseContent.vue";
 import TournamentLifecyclePanel from "../lifecycle/TournamentLifecyclePanel.vue";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
@@ -75,10 +83,16 @@ const isRegenerateQual = computed(
     TournamentDetailedState.ManagingQualificationStageBrackets,
 );
 
+const finalGroup = computed(() => unref(props.summary.finalGroup));
+
+const finalCreateMatchDrawer =
+  useTemplateRef<InstanceType<typeof CreateMatchDrawer>>("finalCreateMatchDrawer");
+
 const {
   approveConfirmOpen,
   startConfirmOpen,
   qualGenerateOpen,
+  finalGenerateOpen,
   approvePending,
   startPending,
   pendingByAction,
@@ -87,6 +101,28 @@ const {
   confirmStart,
 } = useTournamentPhaseActions(props.context.tournamentId, () =>
   onPhaseRefreshed(),
+);
+
+watch(finalGenerateOpen, async (open) => {
+  if (!open) return;
+  await nextTick();
+  if (finalCreateMatchDrawer.value) {
+    finalCreateMatchDrawer.value.open = true;
+  } else {
+    useToast().add({
+      title: "المجموعة النهائية غير متاحة",
+      description: "تأكد من إنشاء المجموعة النهائية ثم أعد المحاولة.",
+      color: "warning",
+    });
+  }
+  finalGenerateOpen.value = false;
+});
+
+watch(
+  () => finalCreateMatchDrawer.value?.open,
+  (open) => {
+    if (open === false) finalGenerateOpen.value = false;
+  },
 );
 
 async function onPhaseRefreshed() {
