@@ -69,6 +69,7 @@
       <template #all>
         <Suspense>
           <TeamJoinRequestsPanel
+            ref="allPanelRef"
             v-model:selected-ids="selectedIds"
             :tournament-id="id"
             :can-mutate="false"
@@ -83,7 +84,7 @@
       <template #consideration>
         <Suspense>
           <TeamJoinRequestsPanel
-            ref="panelRef"
+            ref="considerationPanelRef"
             v-model:selected-ids="selectedIds"
             :tournament-id="id"
             :can-mutate="canMutate"
@@ -113,6 +114,7 @@
       <template #canceled>
         <Suspense>
           <TeamJoinRequestsPanel
+            ref="canceledPanelRef"
             v-model:selected-ids="selectedIds"
             :tournament-id="id"
             :can-mutate="canMutate"
@@ -127,6 +129,7 @@
       <template #waitingList>
         <Suspense>
           <TeamJoinRequestsPanel
+            ref="waitingListPanelRef"
             v-model:selected-ids="selectedIds"
             :tournament-id="id"
             :can-mutate="canMutate"
@@ -141,6 +144,7 @@
       <template #accepted>
         <Suspense>
           <TeamJoinRequestsPanel
+            ref="acceptedPanelRef"
             v-model:selected-ids="selectedIds"
             :tournament-id="id"
             :can-mutate="false"
@@ -290,8 +294,14 @@ const allApplicablePatching = ref(false);
 const randomPatching = ref(false);
 const selectedIds = ref<string[]>([]);
 
-const panelRef = ref<{ refresh: () => Promise<void> } | null>(null);
-const approvalPanelRef = ref<{ refresh: () => Promise<void> } | null>(null);
+type PanelExpose = { refresh: () => Promise<void> };
+
+const allPanelRef = ref<PanelExpose | null>(null);
+const considerationPanelRef = ref<PanelExpose | null>(null);
+const approvalPanelRef = ref<PanelExpose | null>(null);
+const canceledPanelRef = ref<PanelExpose | null>(null);
+const waitingListPanelRef = ref<PanelExpose | null>(null);
+const acceptedPanelRef = ref<PanelExpose | null>(null);
 
 async function confirmFinalApprove() {
   finalApprovePatching.value = true;
@@ -335,8 +345,12 @@ const refreshAll = async () => {
   await Promise.all([
     getTourREQ.refresh() ?? Promise.resolve(),
     placesREQ.refresh?.() ?? Promise.resolve(),
-    panelRef.value?.refresh?.() ?? Promise.resolve(),
+    allPanelRef.value?.refresh?.() ?? Promise.resolve(),
+    considerationPanelRef.value?.refresh?.() ?? Promise.resolve(),
     approvalPanelRef.value?.refresh?.() ?? Promise.resolve(),
+    canceledPanelRef.value?.refresh?.() ?? Promise.resolve(),
+    waitingListPanelRef.value?.refresh?.() ?? Promise.resolve(),
+    acceptedPanelRef.value?.refresh?.() ?? Promise.resolve(),
   ]);
 };
 </script>

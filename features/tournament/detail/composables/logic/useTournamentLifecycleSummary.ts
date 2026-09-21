@@ -318,6 +318,14 @@ export function useTournamentLifecycleSummary(
     () => teamsPending.value || matchesPending.value,
   );
 
+  async function refreshJoinSummary() {
+    await loadJoinSummary();
+  }
+
+  async function refreshTeams() {
+    await loadTeams();
+  }
+
   async function refresh() {
     await Promise.all([loadTeams(), loadGroupMatches(), loadJoinSummary()]);
   }
@@ -339,6 +347,8 @@ export function useTournamentLifecycleSummary(
     joinPending,
     joinRequestPlaces,
     canMutateJoinRequests,
+    refreshJoinSummary,
+    refreshTeams,
     refresh,
   };
 }

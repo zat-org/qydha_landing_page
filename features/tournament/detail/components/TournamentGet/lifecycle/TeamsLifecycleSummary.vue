@@ -1,10 +1,10 @@
 <template>
   <div class="space-y-3">
-    <div v-if="pending" class="py-4">
-      <Loading />
-    </div>
-    <template v-else>
-      <p class="text-sm text-gray-600 dark:text-gray-300">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p
+        v-if="!pending"
+        class="text-sm text-gray-600 dark:text-gray-300"
+      >
         إجمالي الفرق:
         <span class="font-semibold tabular-nums text-gray-900 dark:text-white">
           {{ totalTeams }} / {{ expectedTeams || "—" }}
@@ -16,7 +16,23 @@
           ({{ unassignedTeamsCount }} غير موزعة)
         </span>
       </p>
+      <span v-else />
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        icon="i-heroicons-arrow-path"
+        :loading="pending"
+        :disabled="pending"
+        aria-label="تحديث الفرق"
+        @click="() => void onRefresh()"
+      />
+    </div>
 
+    <div v-if="pending" class="py-4">
+      <Loading />
+    </div>
+    <template v-else>
       <div
         v-if="teamsByPlace.length"
         class="overflow-x-auto rounded-xl border border-gray-200/80 dark:border-gray-800"
@@ -105,5 +121,9 @@ const teamsByPlace = computed(() => props.lifecycleSummary.teamsByPlace.value);
 
 function isPlaceCapacityMet(row: TeamsByPlaceRow): boolean {
   return row.capacity > 0 && row.teamsCount >= row.capacity;
+}
+
+async function onRefresh() {
+  await props.lifecycleSummary.refreshTeams();
 }
 </script>

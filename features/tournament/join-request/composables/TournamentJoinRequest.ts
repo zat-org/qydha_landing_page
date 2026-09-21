@@ -56,13 +56,19 @@ const TournamentJoinRequestStateColors: Record<
   [TournamentJoinRequestState.Withdrawn]: "neutral",
 };
 
-const refreshJoinRequestLists = (tournamentId?: string) =>
-  refreshAppData(
-    ...(tournamentId ? [appKeys.tournament(tournamentId)] : []),
+const TEAM_JOIN_REQUESTS_KEY_PREFIX = "getTeamJoinRequests-";
+
+const refreshJoinRequestLists = async (tournamentId?: string) => {
+  clearNuxtData((key) => String(key).startsWith(TEAM_JOIN_REQUESTS_KEY_PREFIX));
+  await refreshAppData(
+    ...(tournamentId
+      ? [appKeys.tournament(tournamentId), appKeys.tournamentPlaces(tournamentId)]
+      : []),
     appKeys.tournamentJoinRequests,
     appKeys.tournamentAcceptedTeams,
     appKeys.tournamentAcceptedSingles,
   );
+};
 
 export const useTournamentJoinRequest = () => {
   const { $api } = useNuxtApp();

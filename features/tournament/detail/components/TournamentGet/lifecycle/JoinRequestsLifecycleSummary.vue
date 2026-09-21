@@ -1,14 +1,30 @@
 <template>
   <div class="space-y-3">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <p
+        v-if="summary && !pending"
+        class="text-sm text-gray-600 dark:text-gray-300"
+      >
+        نافذة الاستقبال: {{ summary.joinWindow }}
+      </p>
+      <span v-else />
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        icon="i-heroicons-arrow-path"
+        :loading="pending"
+        :disabled="pending"
+        aria-label="تحديث طلبات الانضمام"
+        @click="() => void onRefresh()"
+      />
+    </div>
+
     <div v-if="pending" class="py-4">
       <Loading />
     </div>
 
     <template v-else-if="summary">
-      <p class="text-sm text-gray-600 dark:text-gray-300">
-        نافذة الاستقبال: {{ summary.joinWindow }}
-      </p>
-
       <div class="flex flex-wrap gap-2">
         <LifecycleStatChip
           color="primary"
@@ -241,8 +257,12 @@ function isPlaceCapacityMet(row: JoinRequestPlaceSummaryRow): boolean {
   return row.remaining <= 0;
 }
 
+async function onRefresh() {
+  await props.lifecycleSummary.refreshJoinSummary();
+}
+
 async function onBulkSuccess() {
-  await props.lifecycleSummary.refresh();
+  await props.lifecycleSummary.refreshJoinSummary();
 }
 
 async function confirmFinalApprove() {
@@ -254,7 +274,7 @@ async function confirmFinalApprove() {
     const ok = await patchJoinRequests(id, "approve");
     if (ok) {
       approveOpen.value = false;
-      await props.lifecycleSummary.refresh();
+      await props.lifecycleSummary.refreshJoinSummary();
     }
   } finally {
     finalApprovePatching.value = false;
