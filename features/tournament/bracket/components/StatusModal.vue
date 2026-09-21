@@ -105,7 +105,7 @@
                     class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
                     :class="newsScoreBadgeClass('Them')"
                   >
-                    {{ game?.game.themGameScore ?? 0 }} صكة
+                    {{ game?.game.themGameScore ?? 0 }} فوز
                   </span>
                   <p
                     class="w-full truncate text-sm font-bold leading-tight text-slate-900 dark:text-slate-100 sm:text-base md:text-lg"
@@ -135,7 +135,7 @@
                     class="inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold tabular-nums sm:text-xs"
                     :class="newsScoreBadgeClass('Us')"
                   >
-                    {{ game?.game.usGameScore ?? 0 }} صكة
+                    {{ game?.game.usGameScore ?? 0 }} فوز
                   </span>
                   <p
                     class="w-full truncate text-sm font-bold leading-tight text-slate-900 dark:text-slate-100 sm:text-base md:text-lg"
