@@ -28,6 +28,8 @@
     "@unhead/vue": "^2.0.14",
     "@vee-validate/yup": "^4.15.1",
     "@vue-flow/core": "^1.45.0",
+    "html-to-image": "^1.11.13",
+    "jspdf": "^4.2.1",
     "jwt-decode": "^4.0.0",
     "nuxt": "^4.4.8",
     "nuxt-aos": "^1.2.5",

@@ -10,6 +10,7 @@
       <BracketPageHeader
         v-if="showOperatorHeader"
         :ref="setBracketHeaderEl"
+        :exporting="isBracketExporting"
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
         @open-start-confirm="openStartTournamentConfirm"
         @edit-round="onEditRoundFromHeader"
@@ -17,6 +18,7 @@
         @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
         @open-start-confirm-map="openStartTournamentConfirmMap"
         @open-group-notification="openGroupNotificationDrawer"
+        @export-bracket="onExportBracket"
       />
       <div
         v-else-if="tourStore.tournament.length > 0"
@@ -85,7 +87,11 @@
         v-else-if="canShowBracket"
         class="bracket-page__bracket-wrap relative min-h-0 w-full flex-1"
       >
-        <Bracket :group="tourStore.selectedGroup!.data" :obs-mode="obsMode" />
+        <Bracket
+          ref="bracketRef"
+          :group="tourStore.selectedGroup!.data"
+          :obs-mode="obsMode"
+        />
       </div>
       <div
         v-else
@@ -168,6 +174,7 @@ import TournamentApprovePlanConfirmModal from "~/features/tournament/detail/comp
 import type { DropdownMenuItem } from "@nuxt/ui";
 import { useMyAuthStore } from "~/store/Auth";
 import { useCanSendGroupNotification } from "~/features/tournament/bracket/composables/useCanSendGroupNotification";
+import type { BracketExportFormat } from "~/features/tournament/bracket/composables/useExportBracket";
 import { GroupState } from "~/features/tournament/models/group";
 import { useStartFinalGroupTournament } from "~/features/tournament/detail/composables/api/useStartFinalGroupTournament";
 import { useFinishTournament } from "~/features/tournament/detail/composables/api/useFinishTournament";
@@ -453,6 +460,20 @@ const confirmAndStartTournamentMap = async () => {
 const roundBeingEdited = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef("updateRoundDrawer");
 const groupNotificationDrawer = useTemplateRef("groupNotificationDrawer");
+const bracketRef = useTemplateRef<{
+  exportBracket: (format: BracketExportFormat) => Promise<void>;
+  exporting: boolean | Ref<boolean>;
+}>("bracketRef");
+
+const isBracketExporting = computed(() => {
+  const exposed = bracketRef.value?.exporting;
+  if (typeof exposed === "boolean") return exposed;
+  return !!exposed?.value;
+});
+
+async function onExportBracket(format: BracketExportFormat) {
+  await bracketRef.value?.exportBracket(format);
+}
 
 const openGroupNotificationDrawer = () => {
   if (groupNotificationDrawer.value) {

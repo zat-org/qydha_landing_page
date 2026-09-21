@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="rootEl"
     class="bracket-container"
     :class="{
       'bg-gray-50 dark:bg-gray-950': !obsMode,
@@ -30,8 +31,14 @@ import type { Group } from "@/features/tournament/models/group";
 import { useTournamentBracketStore } from "~/features/tournament/bracket/stores";
 import MatchNode from "./MatchNode.vue";
 import { useLayout } from "~/features/tournament/bracket/composables/useLayout";
+import {
+  buildBracketExportFilename,
+  useExportBracket,
+  type BracketExportFormat,
+} from "~/features/tournament/bracket/composables/useExportBracket";
 
 const props = defineProps<{ group: Group; obsMode?: boolean }>();
+const rootEl = ref<HTMLElement | null>(null);
 
 provide(
   "bracketObsMode",
@@ -152,6 +159,35 @@ watch(
     void scheduleFit();
   },
 );
+
+const colorMode = useColorMode();
+const { exporting, exportFromFlow } = useExportBracket();
+
+async function exportBracket(format: BracketExportFormat) {
+  const filenameBase = buildBracketExportFilename([
+    "bracket",
+    props.group.name,
+    props.group.type,
+  ]);
+  const backgroundColor =
+    colorMode.value === "dark" ? "#030712" : "#f9fafb";
+
+  await exportFromFlow({
+    format,
+    filenameBase,
+    backgroundColor,
+    prepare: () => {
+      fitAll(0);
+    },
+    getElement: () =>
+      rootEl.value?.querySelector(".vue-flow") as HTMLElement | null,
+  });
+}
+
+defineExpose({
+  exportBracket,
+  exporting,
+});
 </script>
 
 <style>

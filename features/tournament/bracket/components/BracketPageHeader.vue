@@ -4,12 +4,27 @@
 
     <!-- Admin actions and rounds toolbar -->
     <div
-      v-if="tourStore.selectedGroup && (canAccessRounds || canSendGroupNotification || canSeeWithdrawPanel)"
+      v-if="tourStore.selectedGroup && (canAccessRounds || canSendGroupNotification || canSeeWithdrawPanel || isAdmin)"
       class="flex flex-wrap items-center justify-between gap-2 border-t border-gray-200/60 dark:border-gray-800/60 px-3 py-1.5 bg-gray-50/70 dark:bg-gray-900/40"
     >
       <!-- Action buttons -->
       <div class="flex flex-wrap items-center gap-1.5">
         <GroupWithdrawSummary v-if="canSeeWithdrawPanel" :counts="withdrawCounts" />
+        <UDropdownMenu
+          v-if="isAdmin"
+          :items="exportMenuItems"
+          :popper="{ placement: 'bottom-start' }"
+        >
+          <UButton
+            icon="i-heroicons-arrow-down-tray"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            label="تصدير الخريطة"
+            :loading="exporting"
+            :disabled="exporting"
+          />
+        </UDropdownMenu>
         <UButton
           v-if="canSendGroupNotification"
           icon="i-heroicons-bell"
@@ -140,6 +155,8 @@ import BracketGroupPills from "./BracketGroupPills.vue";
 import GroupWithdrawSummary from "./GroupWithdrawSummary.vue";
 import { useCanSendGroupNotification } from "~/features/tournament/bracket/composables/useCanSendGroupNotification";
 import { useGroupWithdrawSummary } from "~/features/tournament/bracket/composables/useGroupWithdrawSummary";
+import type { BracketExportFormat } from "~/features/tournament/bracket/composables/useExportBracket";
+import type { DropdownMenuItem } from "@nuxt/ui";
 
 const emit = defineEmits<{
   "regenerate-final-matches": [];
@@ -149,7 +166,14 @@ const emit = defineEmits<{
   "resume-final-group-after-finish": [];
   "open-start-confirm-map": [];
   "open-group-notification": [];
+  "export-bracket": [format: BracketExportFormat];
 }>();
+
+const props = defineProps<{
+  exporting?: boolean;
+}>();
+
+const exporting = computed(() => !!props.exporting);
 
 const userStore = useMyAuthStore();
 const { isAdmin, isOrganizer } = storeToRefs(userStore);
@@ -232,4 +256,24 @@ const openSelectedRoundEdit = () => {
   if (!round || !tourStore.selectedGroup) return;
   emit("edit-round", round);
 };
+
+const exportMenuItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: "PNG",
+      icon: "i-heroicons-photo",
+      onSelect: () => emit("export-bracket", "png"),
+    },
+    {
+      label: "JPG",
+      icon: "i-heroicons-photo",
+      onSelect: () => emit("export-bracket", "jpg"),
+    },
+    {
+      label: "PDF",
+      icon: "i-heroicons-document",
+      onSelect: () => emit("export-bracket", "pdf"),
+    },
+  ],
+]);
 </script>
