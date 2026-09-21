@@ -76,6 +76,24 @@
         </UButton>
       </div>
 
+      <!-- OBS: admin-only export (header is hidden in overlay mode) -->
+      <div v-else-if="canExportInObs" class="bracket-obs-export">
+        <UDropdownMenu
+          :items="obsExportMenuItems"
+          :popper="{ placement: 'bottom-start' }"
+        >
+          <UButton
+            icon="i-heroicons-arrow-down-tray"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            label="تصدير"
+            :loading="isBracketExporting"
+            :disabled="isBracketExporting"
+          />
+        </UDropdownMenu>
+      </div>
+
       <!-- loading → bracket → unavailable -->
       <div
         v-if="isBracketLoading"
@@ -265,6 +283,30 @@ const showOperatorHeader = computed(
 const canUseObsMode = computed(
   () => !!userStore.user && (userStore.isStaffAdmin || userStore.isSuperAdmin),
 );
+
+const canExportInObs = computed(
+  () => obsMode.value && !!userStore.isAdmin && canShowBracket.value,
+);
+
+const obsExportMenuItems = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: "PNG",
+      icon: "i-heroicons-photo",
+      onSelect: () => onExportBracket("png"),
+    },
+    {
+      label: "JPG",
+      icon: "i-heroicons-photo",
+      onSelect: () => onExportBracket("jpg"),
+    },
+    {
+      label: "PDF",
+      icon: "i-heroicons-document",
+      onSelect: () => onExportBracket("pdf"),
+    },
+  ],
+]);
 
 const themeMenuItems = computed<DropdownMenuItem[][]>(() => {
   const items: DropdownMenuItem[][] = [
@@ -461,7 +503,7 @@ const roundBeingEdited = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef("updateRoundDrawer");
 const groupNotificationDrawer = useTemplateRef("groupNotificationDrawer");
 const bracketRef = useTemplateRef<{
-  exportBracket: (format: BracketExportFormat) => Promise<void>;
+  exportBracket: (format: BracketExportFormat) => void;
   exporting: boolean | Ref<boolean>;
 }>("bracketRef");
 
@@ -471,8 +513,9 @@ const isBracketExporting = computed(() => {
   return !!exposed?.value;
 });
 
-async function onExportBracket(format: BracketExportFormat) {
-  await bracketRef.value?.exportBracket(format);
+function onExportBracket(format: BracketExportFormat) {
+  // Fire-and-forget — export runs as a background job inside Bracket.
+  bracketRef.value?.exportBracket(format);
 }
 
 const openGroupNotificationDrawer = () => {
@@ -560,6 +603,21 @@ onUnmounted(() => {
   min-height: 100vh;
   height: 100vh;
   background: transparent !important;
+}
+
+/* Compact admin export control — outside Vue Flow capture target */
+.bracket-obs-export {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 40;
+  opacity: 0.35;
+  transition: opacity 0.15s ease;
+}
+
+.bracket-obs-export:hover,
+.bracket-obs-export:focus-within {
+  opacity: 1;
 }
 </style>
 

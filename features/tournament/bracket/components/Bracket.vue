@@ -163,16 +163,26 @@ watch(
 const colorMode = useColorMode();
 const { exporting, exportFromFlow } = useExportBracket();
 
-async function exportBracket(format: BracketExportFormat) {
+function exportBracket(format: BracketExportFormat) {
   const filenameBase = buildBracketExportFilename([
     "bracket",
+    props.obsMode ? "obs" : null,
     props.group.name,
     props.group.type,
   ]);
-  const backgroundColor =
-    colorMode.value === "dark" ? "#030712" : "#f9fafb";
 
-  await exportFromFlow({
+  // OBS: transparent PNG when possible; solid fill for JPG / PDF.
+  const backgroundColor = props.obsMode
+    ? format === "png"
+      ? undefined
+      : colorMode.value === "dark"
+        ? "#030712"
+        : "#ffffff"
+    : colorMode.value === "dark"
+      ? "#030712"
+      : "#f9fafb";
+
+  exportFromFlow({
     format,
     filenameBase,
     backgroundColor,
