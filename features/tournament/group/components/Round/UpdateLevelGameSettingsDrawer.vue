@@ -280,12 +280,19 @@ const loadError = computed(() => getLevelsREQ.status.value === "error");
 const isSaving = computed(() => updateLevelREQ.status.value === "pending");
 const levels = computed(() => getLevelsREQ.data.value ?? []);
 
+function getLevelLabel(level: number): string {
+  if (level === 1) return "نهائي";
+  if (level === 2) return "نصف نهائي";
+  if (level === 3) return "ربع نهائي";
+  return `الدور ${2 ** (level - 1)}`;
+}
+
 const levelOptions = computed(() =>
   levels.value
     .slice()
     .sort((a, b) => a.level - b.level)
     .map((item) => ({
-      label: `المستوى ${item.level}`,
+      label: getLevelLabel(item.level),
       value: item.level,
     })),
 );
@@ -347,7 +354,7 @@ const handleSubmit = async () => {
     if (updateLevelREQ.status.value === "success") {
       toast.add({
         title: "نجح التحديث",
-        description: `تم تحديث إعدادات المستوى ${selectedLevel.value}`,
+        description: `تم تحديث إعدادات ${getLevelLabel(selectedLevel.value)}`,
         color: "success",
       });
       open.value = false;

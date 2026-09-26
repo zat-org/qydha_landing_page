@@ -34,38 +34,27 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap items-end gap-3">
-          <UFormField
-            label="بحث"
+        <div class="flex flex-nowrap items-center gap-3">
+          <UInput
+            v-model="searchInput"
             class="min-w-48 flex-1"
-            help="اسم الفريق أو اسم اللاعب"
-          >
-            <UInput
-              v-model="searchInput"
-              class="w-full"
-              icon="i-heroicons-magnifying-glass"
-              placeholder="اسم الفريق أو اللاعب"
-              :loading="getTeamsREQ.pending.value"
-            />
-          </UFormField>
-          <UFormField label="المرحلة" class="min-w-40 flex-1 sm:flex-none">
-            <USelect
-              v-model="stageFilter"
-              class="w-full min-w-40"
-              :items="stageFilterOptions"
-              value-key="value"
-              label-key="label"
-            />
-          </UFormField>
-          <UFormField label="الحالة" class="min-w-40 flex-1 sm:flex-none">
-            <USelect
-              v-model="stateFilter"
-              class="w-full min-w-40"
-              :items="stateFilterOptions"
-              value-key="value"
-              label-key="label"
-            />
-          </UFormField>
+            placeholder="اسم الفريق أو اللاعب"
+            :loading="getTeamsREQ.pending.value"
+          />
+          <USelect
+            v-model="stageFilter"
+            class="w-40 shrink-0"
+            :items="stageFilterOptions"
+            value-key="value"
+            label-key="label"
+          />
+          <USelect
+            v-model="stateFilter"
+            class="w-40 shrink-0"
+            :items="stateFilterOptions"
+            value-key="value"
+            label-key="label"
+          />
         </div>
       </div>
     </template>
@@ -427,14 +416,14 @@ const canManageTeams = computed(() => {
 });
 
 const page = ref(1);
-/** Empty string = no StageFilter (all stages). */
-const stageFilter = ref<"" | TournamentTeamStageFilter>("");
+/** `"All"` = no StageFilter (all stages). Empty string is invalid for USelect. */
+const stageFilter = ref<"All" | TournamentTeamStageFilter>("All");
 const stateFilter = ref<TournamentTeamStateFilter>("All");
 const searchInput = ref("");
 const searchToken = ref<string | null>(null);
 
 const stageFilterOptions = [
-  { label: "الكل", value: "" },
+  { label: "الكل", value: "All" },
   { label: "نهائي", value: "Final" },
   { label: "تصفيات", value: "Qualification" },
 ] as const;
@@ -447,7 +436,10 @@ const stateFilterOptions = [
 
 const teamsQueryParams = () => ({
   page: page.value,
-  stageFilter: (stageFilter.value || null) as TournamentTeamStageFilter | null,
+  stageFilter:
+    stageFilter.value === "All"
+      ? null
+      : (stageFilter.value as TournamentTeamStageFilter),
   state: stateFilter.value,
   searchToken: searchToken.value,
 });
