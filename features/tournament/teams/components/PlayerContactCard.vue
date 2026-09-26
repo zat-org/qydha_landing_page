@@ -87,17 +87,17 @@
           @click.stop="copyPlayerData"
         />
       </UTooltip>
-      <UTooltip :text="phone ? 'اتصال' : 'لا يوجد رقم'">
+      <UTooltip :text="phone ? 'نسخ رقم الجوال' : 'لا يوجد رقم'">
         <UButton
           icon="i-heroicons-phone"
-          label="اتصال"
+          label="نسخ الرقم"
           color="success"
           variant="ghost"
           size="xs"
           class="flex-1 justify-center"
           :disabled="!phone"
-          aria-label="اتصال"
-          @click.stop="callPhone"
+          aria-label="نسخ رقم الجوال"
+          @click.stop="copyPhoneNumber"
         />
       </UTooltip>
     </div>
@@ -147,49 +147,35 @@ const initials = computed(() => {
   return source.slice(0, 2).toUpperCase();
 });
 
-function normalizePhoneForTel(value: string) {
-  return value.replace(/[^\d+]/g, "");
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.cssText = "position:fixed;left:-9999px;top:0;";
+      document.body.appendChild(textarea);
+      textarea.select();
+      const ok = document.execCommand("copy");
+      textarea.remove();
+      return ok;
+    } catch {
+      return false;
+    }
+  }
 }
 
-function callPhone() {
+async function copyPhoneNumber() {
   if (!phone.value) return;
 
-  const normalized = normalizePhoneForTel(phone.value);
-  if (!normalized) {
-    toast.add({
-      title: "رقم الجوال غير صالح",
-      color: "warning",
-    });
-    return;
-  }
-
-  const telUrl = `tel:${normalized}`;
-
-  // Prefer a real <a tel:> click — works better than NuxtLink inside many WebViews.
-  try {
-    const anchor = document.createElement("a");
-    anchor.href = telUrl;
-    anchor.rel = "noopener noreferrer";
-    anchor.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;";
-    document.body.appendChild(anchor);
-    anchor.click();
-    window.setTimeout(() => {
-      anchor.remove();
-    }, 0);
-    return;
-  } catch {
-    // fall through
-  }
-
-  try {
-    window.location.assign(telUrl);
-  } catch {
-    toast.add({
-      title: "تعذّر فتح الاتصال",
-      description: "جرّب نسخ الرقم والاتصال يدوياً",
-      color: "error",
-    });
-  }
+  const ok = await copyText(phone.value);
+  toast.add({
+    title: ok ? "تم نسخ رقم الجوال" : "تعذّر نسخ الرقم",
+    color: ok ? "success" : "error",
+  });
 }
 
 async function copyPlayerData() {
@@ -209,17 +195,10 @@ async function copyPlayerData() {
     return;
   }
 
-  try {
-    await navigator.clipboard.writeText(text);
-    toast.add({
-      title: "تم نسخ البيانات",
-      color: "success",
-    });
-  } catch {
-    toast.add({
-      title: "تعذّر النسخ",
-      color: "error",
-    });
-  }
+  const ok = await copyText(text);
+  toast.add({
+    title: ok ? "تم نسخ البيانات" : "تعذّر النسخ",
+    color: ok ? "success" : "error",
+  });
 }
 </script>
