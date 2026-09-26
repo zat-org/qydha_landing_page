@@ -96,10 +96,8 @@
           size="xs"
           class="flex-1 justify-center"
           :disabled="!phone"
-          :to="phone ? `tel:${phone}` : undefined"
-          :external="!!phone"
           aria-label="اتصال"
-          @click.stop
+          @click.stop="callPhone"
         />
       </UTooltip>
     </div>
@@ -148,6 +146,51 @@ const initials = computed(() => {
   }
   return source.slice(0, 2).toUpperCase();
 });
+
+function normalizePhoneForTel(value: string) {
+  return value.replace(/[^\d+]/g, "");
+}
+
+function callPhone() {
+  if (!phone.value) return;
+
+  const normalized = normalizePhoneForTel(phone.value);
+  if (!normalized) {
+    toast.add({
+      title: "رقم الجوال غير صالح",
+      color: "warning",
+    });
+    return;
+  }
+
+  const telUrl = `tel:${normalized}`;
+
+  // Prefer a real <a tel:> click — works better than NuxtLink inside many WebViews.
+  try {
+    const anchor = document.createElement("a");
+    anchor.href = telUrl;
+    anchor.rel = "noopener noreferrer";
+    anchor.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0;";
+    document.body.appendChild(anchor);
+    anchor.click();
+    window.setTimeout(() => {
+      anchor.remove();
+    }, 0);
+    return;
+  } catch {
+    // fall through
+  }
+
+  try {
+    window.location.assign(telUrl);
+  } catch {
+    toast.add({
+      title: "تعذّر فتح الاتصال",
+      description: "جرّب نسخ الرقم والاتصال يدوياً",
+      color: "error",
+    });
+  }
+}
 
 async function copyPlayerData() {
   const lines = [
