@@ -31,23 +31,11 @@
       </div>
 
       <div v-else class="flex flex-col gap-3 py-1">
-        <div
+        <PlayerContactCard
           v-for="player in players"
           :key="player.id"
-          class="rounded-xl border border-gray-200/90 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900/50"
-        >
-          <div class="min-w-0 space-y-1">
-            <p class="font-semibold text-gray-900 dark:text-white">
-              {{ player.name }}
-            </p>
-            <p v-if="player.phone" class="text-xs text-gray-500" dir="ltr">
-              {{ player.phone }}
-            </p>
-            <p v-if="player.email" class="text-xs text-gray-500" dir="ltr">
-              {{ player.email }}
-            </p>
-          </div>
-        </div>
+          :player="player"
+        />
       </div>
     </template>
 
@@ -67,6 +55,7 @@
 <script lang="ts" setup>
 import type { ITeam } from "~/features/tournament/models/tournamentTeam";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
+import PlayerContactCard from "~/features/tournament/teams/components/PlayerContactCard.vue";
 
 const props = defineProps<{
   tournamentId: string;

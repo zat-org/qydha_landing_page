@@ -177,46 +177,33 @@
           </div>
 
           <div v-else class="grid gap-3 sm:grid-cols-2">
-            <div
+            <PlayerContactCard
               v-for="player in row.original.players"
               :key="player.id"
-              class="rounded-xl border border-gray-200/90 bg-white p-3 shadow-sm dark:border-gray-700 dark:bg-gray-900/50"
+              :player="player"
             >
-              <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0 space-y-1">
-                  <p class="font-semibold text-gray-900 dark:text-white">
-                    {{ player.name }}
-                  </p>
-                  <p v-if="player.phone" class="text-xs text-gray-500" dir="ltr">
-                    {{ player.phone }}
-                  </p>
-                  <p v-if="player.email" class="text-xs text-gray-500" dir="ltr">
-                    {{ player.email }}
-                  </p>
-                </div>
-                <div
-                  v-if="canManageTeams && isTeamNotJoinRequest(row.original)"
-                  class="flex shrink-0 items-center gap-1"
-                >
-                  <UButton
-                    icon="i-lucide-x"
-                    color="error"
-                    variant="ghost"
-                    size="xs"
-                    square
-                    @click.stop="removePlayer(row.original, player.id)"
-                  />
-                  <UButton
-                    icon="i-material-symbols:settings"
-                    color="warning"
-                    variant="ghost"
-                    size="xs"
-                    square
-                    @click.stop="openUpdatePlayerModal(row.original, player)"
-                  />
-                </div>
-              </div>
-            </div>
+              <template
+                v-if="canManageTeams && isTeamNotJoinRequest(row.original)"
+                #actions
+              >
+                <UButton
+                  icon="i-lucide-x"
+                  color="error"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click.stop="removePlayer(row.original, player.id)"
+                />
+                <UButton
+                  icon="i-material-symbols:settings"
+                  color="warning"
+                  variant="ghost"
+                  size="xs"
+                  square
+                  @click.stop="openUpdatePlayerModal(row.original, player)"
+                />
+              </template>
+            </PlayerContactCard>
           </div>
         </div>
       </template>
@@ -278,6 +265,7 @@ import TournamentTeamAddForm from "~/features/tournament/teams/components/AddFor
 import TournamentTeamUpdateForm from "~/features/tournament/teams/components/UpdateForm.vue";
 import TournamentTeamAddPlayerForm from "~/features/tournament/teams/components/AddPlayerForm.vue";
 import TournamentTeamUpdatePlayerForm from "~/features/tournament/teams/components/UpdatePlayerForm.vue";
+import PlayerContactCard from "~/features/tournament/teams/components/PlayerContactCard.vue";
 import { useSingleTournament } from "~/features/tournament/detail/composables/api/useSingleTournament";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";

@@ -66,29 +66,11 @@
             لا يوجد لاعبون في هذا الفريق
           </div>
 
-          <div
+          <PlayerContactCard
             v-for="player in teamCache[winner.teamId]?.team?.players ?? []"
             :key="player.id"
-            class="rounded-lg border border-gray-200/80 bg-gray-50/80 p-2.5 dark:border-gray-700 dark:bg-gray-950/40"
-          >
-            <p class="text-sm font-semibold text-gray-900 dark:text-white">
-              {{ player.name }}
-            </p>
-            <p
-              v-if="player.phone"
-              class="mt-0.5 text-xs text-gray-500"
-              dir="ltr"
-            >
-              {{ player.phone }}
-            </p>
-            <p
-              v-if="player.email"
-              class="mt-0.5 text-xs text-gray-500"
-              dir="ltr"
-            >
-              {{ player.email }}
-            </p>
-          </div>
+            :player="player"
+          />
         </div>
       </article>
     </div>
@@ -99,6 +81,7 @@
 import type { TournamentWinner } from '~/features/tournament/models/tournament';
 import type { ITeam } from '~/features/tournament/models/tournamentTeam';
 import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
+import PlayerContactCard from '~/features/tournament/teams/components/PlayerContactCard.vue';
 
 type CachedTeam = {
   pending: boolean;
