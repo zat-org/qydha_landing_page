@@ -167,11 +167,6 @@
             <UBadge color="neutral" variant="soft" size="xs" class="rounded-full">
               {{ row.original.players?.length ?? 0 }}
             </UBadge>
-            <UIcon
-              v-if="isTeamUsersLoading(row.original.id)"
-              name="i-mdi-loading"
-              class="size-4 animate-spin text-primary"
-            />
           </div>
 
           <div
@@ -223,7 +218,7 @@
               </div>
 
               <div
-                v-if="player.qydhaUserData?.id"
+                v-if="player.qydhaUserData"
                 class="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:bg-primary/10"
               >
                 <div class="mb-2 flex items-center gap-2">
@@ -231,78 +226,36 @@
                   <span class="text-xs font-semibold text-primary">مستخدم قيدها</span>
                 </div>
 
-                <div
-                  v-if="userCache[player.qydhaUserData.id]?.pending"
-                  class="flex items-center gap-2 text-xs text-gray-500"
-                >
-                  <UIcon name="i-mdi-loading" class="size-3.5 animate-spin" />
-                  جاري تحميل بيانات المستخدم…
-                </div>
-
-                <div
-                  v-else-if="userCache[player.qydhaUserData.id]?.error"
-                  class="text-xs text-red-500"
-                >
-                  تعذر تحميل بيانات المستخدم
-                </div>
-
-                <div
-                  v-else-if="userCache[player.qydhaUserData.id]?.user"
-                  class="space-y-1.5 text-xs text-gray-700 dark:text-gray-300"
-                >
-                  <div class="flex flex-wrap items-center gap-2">
-                    <img
-                      v-if="userCache[player.qydhaUserData.id]?.user?.avatarUrl"
-                      :src="userCache[player.qydhaUserData.id]!.user!.avatarUrl"
-                      alt=""
-                      class="size-8 rounded-full object-cover"
-                    >
-                    <UIcon
-                      v-else
-                      name="i-heroicons-user-circle"
-                      class="size-8 text-primary"
-                    />
-                    <div>
-                      <p class="font-semibold">
-                        {{ userCache[player.qydhaUserData.id]?.user?.username }}
-                      </p>
-                      <p
-                        v-if="userCache[player.qydhaUserData.id]?.user?.name"
-                        class="text-gray-500"
-                      >
-                        {{ userCache[player.qydhaUserData.id]?.user?.name }}
-                      </p>
-                    </div>
-                  </div>
-                  <p v-if="userCache[player.qydhaUserData.id]?.user?.phone" dir="ltr">
-                    {{ userCache[player.qydhaUserData.id]?.user?.phone }}
-                  </p>
-                  <p v-if="userCache[player.qydhaUserData.id]?.user?.email" dir="ltr">
-                    {{ userCache[player.qydhaUserData.id]?.user?.email }}
-                  </p>
-                  <div
-                    v-if="userCache[player.qydhaUserData.id]?.user?.roles?.length"
-                    class="flex flex-wrap gap-1 pt-1"
+                <div class="flex flex-wrap items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
+                  <img
+                    v-if="player.qydhaUserData.avatarUrl"
+                    :src="player.qydhaUserData.avatarUrl"
+                    alt=""
+                    class="size-8 rounded-full object-cover"
                   >
-                    <UBadge
-                      v-for="role in userCache[player.qydhaUserData.id]!.user!.roles"
-                      :key="role"
-                      :color="getUserRoleColor(role)"
-                      variant="soft"
-                      size="xs"
+                  <UIcon
+                    v-else
+                    name="i-heroicons-user-circle"
+                    class="size-8 text-primary"
+                  />
+                  <div class="min-w-0">
+                    <p class="font-semibold">
+                      {{ player.qydhaUserData.username }}
+                    </p>
+                    <p
+                      v-if="player.qydhaUserData.name"
+                      class="text-gray-500"
                     >
-                      {{ getUserRoleLabel(role) ?? role }}
-                    </UBadge>
+                      {{ player.qydhaUserData.name }}
+                    </p>
+                    <p
+                      v-if="player.qydhaUserData.phone"
+                      class="text-gray-500"
+                      dir="ltr"
+                    >
+                      {{ player.qydhaUserData.phone }}
+                    </p>
                   </div>
-                </div>
-
-                <div v-else class="text-xs text-gray-600 dark:text-gray-400">
-                  <p class="font-medium">
-                    {{ player.qydhaUserData.username }}
-                  </p>
-                  <p v-if="player.qydhaUserData.phone" dir="ltr">
-                    {{ player.qydhaUserData.phone }}
-                  </p>
                 </div>
               </div>
 
@@ -375,14 +328,6 @@ import { useSingleTournament } from "~/features/tournament/detail/composables/ap
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
 import { useTournamentPlaces } from "~/features/tournament/composables/useTournamentPlaces";
 import { useMyAuthStore } from "~/store/Auth";
-import type { ApiResponse } from "~/composables/useAppData";
-import type { ISingleUser, User } from "~/models/user";
-
-type CachedUser = {
-  pending: boolean;
-  error: boolean;
-  user: User | null;
-};
 
 const props = defineProps<{
   tournamentId?: string;
@@ -392,8 +337,6 @@ const tablekey = ref(Date.now());
 const route = useRoute();
 const tour_id = props.tournamentId ?? route.params.id.toString();
 const authStore = useMyAuthStore();
-const { $api } = useNuxtApp();
-const usersApi = useUsers();
 
 const getTourREQ = await useSingleTournament().getSingelTournament(tour_id, {
   immediate: false,
@@ -465,11 +408,6 @@ const selectedTeamId = ref<number | string | null>(null);
 const overlay = useOverlay();
 
 const expandedRows = ref<Record<string, boolean>>({});
-const userCache = reactive<Record<string, CachedUser>>({});
-const teamUsersLoading = reactive<Record<string, boolean>>({});
-
-const getUserRoleLabel = usersApi.getUserRoleLabel;
-const getUserRoleColor = usersApi.getUserRoleColor;
 
 const drawerConfig = computed(() => {
   switch (drawerMode.value) {
@@ -602,56 +540,8 @@ const isTeamNotJoinRequest = (team: ITeam) => {
   return team.teamJoinRequestId == null;
 };
 
-function isTeamUsersLoading(teamId: string | number) {
-  return !!teamUsersLoading[String(teamId)];
-}
-
-async function fetchQydhaUser(userId: string) {
-  if (!userId) return;
-  const cached = userCache[userId];
-  if (cached?.user || cached?.pending) return;
-
-  userCache[userId] = { pending: true, error: false, user: null };
-  try {
-    const res = await $api<ApiResponse<ISingleUser> | ISingleUser>(
-      `/users/${userId}`,
-    );
-    const payload =
-      res && typeof res === "object" && "data" in res
-        ? (res as ApiResponse<ISingleUser>).data
-        : (res as ISingleUser);
-    userCache[userId] = {
-      pending: false,
-      error: false,
-      user: payload?.user ?? null,
-    };
-  } catch {
-    userCache[userId] = { pending: false, error: true, user: null };
-  }
-}
-
-async function loadTeamQydhaUsers(team: ITeam) {
-  const teamKey = String(team.id);
-  const userIds = (team.players ?? [])
-    .map((p) => p.qydhaUserData?.id)
-    .filter((id): id is string => !!id);
-
-  if (!userIds.length) return;
-
-  teamUsersLoading[teamKey] = true;
-  try {
-    await Promise.all(userIds.map((id) => fetchQydhaUser(id)));
-  } finally {
-    teamUsersLoading[teamKey] = false;
-  }
-}
-
 function toggleTeamExpand(row: { original: ITeam; getIsExpanded: () => boolean; toggleExpanded: () => void }) {
-  const willExpand = !row.getIsExpanded();
   row.toggleExpanded();
-  if (willExpand) {
-    void loadTeamQydhaUsers(row.original);
-  }
 }
 
 const onTeamRowSelect = (

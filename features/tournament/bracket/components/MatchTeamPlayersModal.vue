@@ -49,7 +49,7 @@
           </div>
 
           <div
-            v-if="player.qydhaUserData?.id"
+            v-if="player.qydhaUserData"
             class="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:bg-primary/10"
           >
             <div class="mb-2 flex items-center gap-2">
@@ -57,21 +57,10 @@
               <span class="text-xs font-semibold text-primary">مستخدم قيدها</span>
             </div>
 
-            <div
-              v-if="userCache[player.qydhaUserData.id]?.pending"
-              class="flex items-center gap-2 text-xs text-gray-500"
-            >
-              <UIcon name="i-mdi-loading" class="size-3.5 animate-spin" />
-              جاري تحميل بيانات المستخدم…
-            </div>
-
-            <div
-              v-else-if="resolvedUser(player.qydhaUserData.id)"
-              class="flex flex-wrap items-center gap-2 text-xs text-gray-700 dark:text-gray-300"
-            >
+            <div class="flex flex-wrap items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
               <img
-                v-if="resolvedAvatar(player)"
-                :src="resolvedAvatar(player)!"
+                v-if="player.qydhaUserData.avatarUrl"
+                :src="player.qydhaUserData.avatarUrl"
                 alt=""
                 class="size-8 rounded-full object-cover"
               >
@@ -82,31 +71,22 @@
               />
               <div class="min-w-0">
                 <p class="font-semibold">
-                  {{ resolvedUsername(player) }}
+                  {{ player.qydhaUserData.username }}
                 </p>
                 <p
-                  v-if="resolvedName(player)"
+                  v-if="player.qydhaUserData.name"
                   class="text-gray-500"
                 >
-                  {{ resolvedName(player) }}
+                  {{ player.qydhaUserData.name }}
                 </p>
                 <p
-                  v-if="resolvedPhone(player)"
+                  v-if="player.qydhaUserData.phone"
                   class="text-gray-500"
                   dir="ltr"
                 >
-                  {{ resolvedPhone(player) }}
+                  {{ player.qydhaUserData.phone }}
                 </p>
               </div>
-            </div>
-
-            <div v-else class="space-y-1 text-xs text-gray-600 dark:text-gray-400">
-              <p class="font-medium">
-                {{ player.qydhaUserData.username }}
-              </p>
-              <p v-if="player.qydhaUserData.phone" dir="ltr">
-                {{ player.qydhaUserData.phone }}
-              </p>
             </div>
           </div>
 
@@ -131,16 +111,8 @@
 </template>
 
 <script lang="ts" setup>
-import type { IPlayer, ITeam } from "~/features/tournament/models/tournamentTeam";
+import type { ITeam } from "~/features/tournament/models/tournamentTeam";
 import { useTourrnamentTeam } from "~/features/tournament/teams/composables/tourrnamentTeam";
-import type { ApiResponse } from "~/composables/useAppData";
-import type { ISingleUser, User } from "~/models/user";
-
-type CachedUser = {
-  pending: boolean;
-  error: boolean;
-  user: User | null;
-};
 
 const props = defineProps<{
   tournamentId: string;
@@ -150,83 +122,17 @@ const props = defineProps<{
 
 const emit = defineEmits<{ close: [] }>();
 
-const { $api } = useNuxtApp();
 const getTourTeam = useTourrnamentTeam().getTourTeam();
 
 const pending = ref(true);
 const errorMessage = ref<string | null>(null);
 const team = ref<ITeam | null>(null);
-const userCache = reactive<Record<string, CachedUser>>({});
 
 const players = computed(() => team.value?.players ?? []);
 
 const modalTitle = computed(
   () => team.value?.name || props.teamName?.split("|")[0]?.trim() || "لاعبو الفريق",
 );
-
-async function fetchQydhaUser(userId: string) {
-  if (!userId) return;
-  const cached = userCache[userId];
-  if (cached?.user || cached?.pending) return;
-
-  userCache[userId] = { pending: true, error: false, user: null };
-  try {
-    const res = await $api<ApiResponse<ISingleUser> | ISingleUser>(
-      `/users/${userId}`,
-    );
-    const payload =
-      res && typeof res === "object" && "data" in res
-        ? (res as ApiResponse<ISingleUser>).data
-        : (res as ISingleUser);
-    userCache[userId] = {
-      pending: false,
-      error: false,
-      user: payload?.user ?? null,
-    };
-  } catch {
-    userCache[userId] = { pending: false, error: true, user: null };
-  }
-}
-
-function resolvedUser(userId: string) {
-  return userCache[userId]?.user ?? null;
-}
-
-function resolvedAvatar(player: IPlayer) {
-  const id = player.qydhaUserData?.id;
-  return (
-    (id && userCache[id]?.user?.avatarUrl) ||
-    player.qydhaUserData?.avatarUrl ||
-    null
-  );
-}
-
-function resolvedUsername(player: IPlayer) {
-  const id = player.qydhaUserData?.id;
-  return (
-    (id && userCache[id]?.user?.username) ||
-    player.qydhaUserData?.username ||
-    ""
-  );
-}
-
-function resolvedName(player: IPlayer) {
-  const id = player.qydhaUserData?.id;
-  return (
-    (id && userCache[id]?.user?.name) ||
-    player.qydhaUserData?.name ||
-    null
-  );
-}
-
-function resolvedPhone(player: IPlayer) {
-  const id = player.qydhaUserData?.id;
-  return (
-    (id && userCache[id]?.user?.phone) ||
-    player.qydhaUserData?.phone ||
-    null
-  );
-}
 
 async function loadTeam() {
   pending.value = true;
@@ -242,10 +148,6 @@ async function loadTeam() {
       return;
     }
     team.value = result;
-    const userIds = (result.players ?? [])
-      .map((p) => p.qydhaUserData?.id)
-      .filter((id): id is string => !!id);
-    await Promise.all(userIds.map((id) => fetchQydhaUser(id)));
   } catch (e: unknown) {
     const err = e as { data?: { detail?: string }; message?: string };
     errorMessage.value =
