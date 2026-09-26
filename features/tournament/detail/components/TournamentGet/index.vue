@@ -23,6 +23,7 @@
 
       <TournamentGetWinnersSection
         v-if="showWinnersSection && !activeOutlet"
+        :tournament-id="id"
         :winners="winnersSorted"
       />
 

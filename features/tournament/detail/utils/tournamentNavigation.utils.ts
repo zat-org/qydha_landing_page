@@ -10,8 +10,13 @@ import type {
   TournamentTabView,
 } from "../types/navigation.types";
 
+/** Embedded in TournamentGet via outlet. `team` uses its own page (NuxtPage). */
+const STANDALONE_OUTLET_SEGMENTS = new Set(["team"]);
+
 const EMBEDDED_OUTLET_SEGMENTS = new Set(
-  Object.values(OUTLET_PATH_SEGMENTS).map((segment) => segment.toLowerCase()),
+  Object.values(OUTLET_PATH_SEGMENTS)
+    .map((segment) => segment.toLowerCase())
+    .filter((segment) => !STANDALONE_OUTLET_SEGMENTS.has(segment)),
 );
 
 const PATH_SEGMENT_BY_VIEW = {

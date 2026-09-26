@@ -19,8 +19,113 @@
           <UBadge color="warning" variant="soft" size="sm">#{{ winner.order }}</UBadge>
         </div>
         <p class="mt-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
-          {{ winner.teamName }}
+          {{ teamCache[winner.teamId]?.team?.name ?? winner.teamName }}
         </p>
+
+        <div class="mt-3 space-y-2 border-t border-amber-100 pt-3 dark:border-amber-800/40">
+          <div class="flex items-center gap-1.5">
+            <UIcon name="i-mdi-account-multiple" class="size-4 text-amber-600 dark:text-amber-400" />
+            <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">
+              اللاعبون
+            </span>
+            <UBadge
+              v-if="teamCache[winner.teamId]?.team?.players?.length"
+              color="neutral"
+              variant="soft"
+              size="xs"
+              class="rounded-full"
+            >
+              {{ teamCache[winner.teamId]!.team!.players.length }}
+            </UBadge>
+            <UIcon
+              v-if="teamCache[winner.teamId]?.pending"
+              name="i-mdi-loading"
+              class="size-3.5 animate-spin text-amber-500"
+            />
+          </div>
+
+          <p
+            v-if="teamCache[winner.teamId]?.error"
+            class="text-xs text-red-500"
+          >
+            تعذر تحميل بيانات الفريق
+          </p>
+
+          <div
+            v-else-if="teamCache[winner.teamId]?.pending && !teamCache[winner.teamId]?.team"
+            class="flex items-center gap-2 py-2 text-xs text-gray-500"
+          >
+            <UIcon name="i-mdi-loading" class="size-3.5 animate-spin" />
+            جاري تحميل اللاعبين…
+          </div>
+
+          <div
+            v-else-if="!teamCache[winner.teamId]?.team?.players?.length"
+            class="rounded-lg border border-dashed border-gray-300 px-3 py-4 text-center text-xs text-gray-500 dark:border-gray-700"
+          >
+            لا يوجد لاعبون في هذا الفريق
+          </div>
+
+          <div
+            v-for="player in teamCache[winner.teamId]?.team?.players ?? []"
+            :key="player.id"
+            class="rounded-lg border border-gray-200/80 bg-gray-50/80 p-2.5 dark:border-gray-700 dark:bg-gray-950/40"
+          >
+            <p class="text-sm font-semibold text-gray-900 dark:text-white">
+              {{ player.name }}
+            </p>
+            <p
+              v-if="player.phone && !player.qydhaUserData"
+              class="mt-0.5 text-xs text-gray-500"
+              dir="ltr"
+            >
+              {{ player.phone }}
+            </p>
+
+            <div
+              v-if="player.qydhaUserData"
+              class="mt-2 rounded-md border border-primary/20 bg-primary/5 p-2 dark:bg-primary/10"
+            >
+              <div class="mb-1.5 flex items-center gap-1.5">
+                <UIcon name="i-mdi-account-check" class="size-3.5 text-primary" />
+                <span class="text-[11px] font-semibold text-primary">مستخدم قيدها</span>
+              </div>
+              <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
+                <div class="flex items-center gap-2">
+                  <img
+                    v-if="player.qydhaUserData.avatarUrl"
+                    :src="player.qydhaUserData.avatarUrl"
+                    alt=""
+                    class="size-7 rounded-full object-cover"
+                  >
+                  <UIcon
+                    v-else
+                    name="i-heroicons-user-circle"
+                    class="size-7 text-primary"
+                  />
+                  <div class="min-w-0">
+                    <p class="truncate font-semibold">
+                      {{ player.qydhaUserData.username }}
+                    </p>
+                    <p
+                      v-if="player.qydhaUserData.name"
+                      class="truncate text-gray-500"
+                    >
+                      {{ player.qydhaUserData.name }}
+                    </p>
+                  </div>
+                </div>
+                <p
+                  v-if="player.qydhaUserData.phone"
+                  class="ps-9"
+                  dir="ltr"
+                >
+                  {{ player.qydhaUserData.phone }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </article>
     </div>
   </section>
@@ -28,8 +133,54 @@
 
 <script lang="ts" setup>
 import type { TournamentWinner } from '~/features/tournament/models/tournament';
+import type { ITeam } from '~/features/tournament/models/tournamentTeam';
+import { useTourrnamentTeam } from '~/features/tournament/teams/composables/tourrnamentTeam';
 
-defineProps<{
+type CachedTeam = {
+  pending: boolean;
+  error: boolean;
+  team: ITeam | null;
+};
+
+const props = defineProps<{
+  tournamentId: string;
   winners: TournamentWinner[];
 }>();
+
+const { getTourTeam } = useTourrnamentTeam();
+const { fetchREQ } = getTourTeam();
+const teamCache = reactive<Record<string, CachedTeam>>({});
+
+async function loadWinnerTeam(teamId: string) {
+  if (!teamId || !props.tournamentId) return;
+  const cached = teamCache[teamId];
+  if (cached?.team || cached?.pending) return;
+
+  teamCache[teamId] = { pending: true, error: false, team: null };
+  try {
+    const team = await fetchREQ(props.tournamentId, teamId);
+    teamCache[teamId] = {
+      pending: false,
+      error: !team,
+      team,
+    };
+  } catch {
+    teamCache[teamId] = { pending: false, error: true, team: null };
+  }
+}
+
+async function loadWinnerTeams(winners: TournamentWinner[]) {
+  const teamIds = winners
+    .map((w) => w.teamId)
+    .filter((id): id is string => !!id);
+  await Promise.all(teamIds.map((id) => loadWinnerTeam(id)));
+}
+
+watch(
+  () => [props.tournamentId, props.winners.map((w) => w.teamId).join(',')] as const,
+  () => {
+    void loadWinnerTeams(props.winners);
+  },
+  { immediate: true },
+);
 </script>

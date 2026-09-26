@@ -22,18 +22,38 @@
       />
     </div>
 
+    <UAlert
+      v-if="loadError"
+      color="error"
+      variant="soft"
+      title="تعذر تحميل بيانات اللوحات"
+      description="أعد تحميل الصفحة أو سجّل الدخول مرة أخرى."
+      class="mx-4"
+    />
+
     <UTabs :items="items" dir="rtl">
       <template #baloot>
-        <StreamBalootTab />
+        <StreamBalootTab
+          :board-link="balootLink"
+          :pending="pending"
+          :load-error="loadError"
+        />
       </template>
       <template #hand>
-        <StreamHandTab />
+        <StreamHandTab
+          :board-link="handLink"
+          :pending="pending"
+          :load-error="loadError"
+        />
       </template>
     </UTabs>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useMyAuthStore } from "~/store/Auth";
+import { useUserPlayersApi } from "~/features/user/players/composables/useUserPlayersApi";
+
 const items = [
   {
     label: "بلوت ",
@@ -44,4 +64,36 @@ const items = [
     slot: "hand" as const,
   },
 ];
+
+const authStore = useMyAuthStore();
+const meReq = useUserPlayersApi().getMe();
+
+const pending = computed(() => meReq.pending.value);
+const loadError = computed(() => meReq.status.value === "error");
+
+const balootLink = computed(
+  () =>
+    authStore.user?.boardsLinks?.baloot ||
+    meReq.data.value?.boardsLinks?.baloot ||
+    null,
+);
+
+const handLink = computed(
+  () =>
+    authStore.user?.boardsLinks?.hand ||
+    meReq.data.value?.boardsLinks?.hand ||
+    null,
+);
+
+watch(
+  () => meReq.data.value,
+  (me) => {
+    if (!me?.boardsLinks || !authStore.user) return;
+    authStore.user.boardsLinks = {
+      baloot: me.boardsLinks.baloot ?? authStore.user.boardsLinks?.baloot ?? "",
+      hand: me.boardsLinks.hand ?? authStore.user.boardsLinks?.hand ?? "",
+    };
+  },
+  { immediate: true },
+);
 </script>

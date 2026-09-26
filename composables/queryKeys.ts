@@ -26,6 +26,8 @@ export const appKeys = {
     `getTable-${id}-${placeId}`,
   tournamentPlaces: (id: string) => `getPlaces-${id}`,
   tournamentTeams: "getAllTourTeams",
+  tournamentTeam: (tournamentId: string, teamId: string) =>
+    `getTourTeam-${tournamentId}-${teamId}`,
   tournamentNotInGroupTeams: "getNotInGroupTourTeams",
   tournamentGroups: (
     id: string,

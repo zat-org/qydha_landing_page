@@ -26,6 +26,23 @@ export type GetAllTourTeamsParams = {
 export const useTourrnamentTeam = () => {
   const { $api } = useNuxtApp();
 
+  const getTourTeam = () => {
+    const fetchREQ = async (
+      tour_id: string,
+      team_id: string,
+    ): Promise<ITeam | null> => {
+      const res = await $api<{ data: ITeam } | ITeam>(
+        `/tournaments/${tour_id}/teams/${team_id}`,
+      );
+      if (res && typeof res === "object" && "data" in res) {
+        return res.data ?? null;
+      }
+      return (res as ITeam) ?? null;
+    };
+
+    return { fetchREQ };
+  };
+
   const getAllTourTeams = async () => {
     const tourId = ref();
     const page = ref(1);
@@ -316,6 +333,7 @@ export const useTourrnamentTeam = () => {
   };
 
   return {
+    getTourTeam,
     getAllTourTeams,
     getNotInGroupTourTeams,
     addTourTeam,

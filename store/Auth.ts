@@ -12,10 +12,10 @@ export const useMyAuthStore = defineStore(
       return user.value?.user.roles;
     });
     const BalootBoardSettings = computed(() => {
-      return user.value?.boardSettings.baloot;
+      return user.value?.boardSettings?.baloot;
     });
     const HandBoardSettings = computed(() => {
-      return user.value?.boardSettings.hand;
+      return user.value?.boardSettings?.hand;
     });
     const permissions = ref<string[]>([]);
     const privilege = ref<Privilege>();
@@ -64,15 +64,18 @@ export const useMyAuthStore = defineStore(
   {
     persist: [
       {
-        // storage:piniaPluginPersistedstate.localStorage()
         storage: piniaPluginPersistedstate.cookies({
           maxAge: 60 * 60 * 24 * 2,
         }),
-        pick: ["user.jwtToken","user.user.roles","user.boardLink"],
+        pick: ["user.jwtToken", "user.user.roles"],
       },
       {
         storage: piniaPluginPersistedstate.localStorage(),
-        pick: ["user.jwtToken", "user.user.roles", "user.boardLink"],
+        pick: [
+          "user.jwtToken",
+          "user.user.roles",
+          "user.boardsLinks",
+        ],
       },
     ],
   }
