@@ -5,26 +5,36 @@
     <div class="mb-3 flex items-center gap-2">
       <UIcon name="i-mdi-trophy-award" class="size-5 text-amber-500 dark:text-amber-400" />
       <h3 class="text-base font-bold text-gray-900 dark:text-white">الفائزون</h3>
+      <UBadge color="warning" variant="soft" size="xs" class="rounded-full">
+        {{ winners.length }}
+      </UBadge>
     </div>
-    <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
-      <article
+
+    <UAccordion
+      v-model="openWinners"
+      type="multiple"
+      collapsible
+      dir="rtl"
+      :items="accordionItems"
+      class="w-full"
+      :ui="{
+        root: 'space-y-2',
+        item: 'rounded-xl border border-amber-200/70 overflow-hidden bg-white/90 dark:border-amber-700/40 dark:bg-gray-900/60',
+        trigger: 'px-3 py-3 text-start hover:bg-amber-50/70 dark:hover:bg-amber-950/20',
+        content: 'px-3 pb-3',
+      }"
+    >
+      <template
         v-for="winner in winners"
         :key="winner.teamId"
-        class="rounded-xl border border-amber-200/70 bg-white/90 p-3 shadow-sm dark:border-amber-700/40 dark:bg-gray-900/60"
+        #[`winner-${winner.teamId}`]
       >
-        <div class="flex items-center justify-between gap-2">
-          <p class="text-sm font-bold text-gray-900 dark:text-white">
-            المركز {{ winner.order }}
-          </p>
-          <UBadge color="warning" variant="soft" size="sm">#{{ winner.order }}</UBadge>
-        </div>
-        <p class="mt-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">
-          {{ teamCache[winner.teamId]?.team?.name ?? winner.teamName }}
-        </p>
-
-        <div class="mt-3 space-y-2 border-t border-amber-100 pt-3 dark:border-amber-800/40">
+        <div class="space-y-2 border-t border-amber-100 pt-3 dark:border-amber-800/40">
           <div class="flex items-center gap-1.5">
-            <UIcon name="i-mdi-account-multiple" class="size-4 text-amber-600 dark:text-amber-400" />
+            <UIcon
+              name="i-mdi-account-multiple"
+              class="size-4 text-amber-600 dark:text-amber-400"
+            />
             <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">
               اللاعبون
             </span>
@@ -66,14 +76,16 @@
             لا يوجد لاعبون في هذا الفريق
           </div>
 
-          <PlayerContactCard
-            v-for="player in teamCache[winner.teamId]?.team?.players ?? []"
-            :key="player.id"
-            :player="player"
-          />
+          <div v-else class="grid gap-2 sm:grid-cols-2">
+            <PlayerContactCard
+              v-for="player in teamCache[winner.teamId]?.team?.players ?? []"
+              :key="player.id"
+              :player="player"
+            />
+          </div>
         </div>
-      </article>
-    </div>
+      </template>
+    </UAccordion>
   </section>
 </template>
 
@@ -97,6 +109,20 @@ const props = defineProps<{
 const { getTourTeam } = useTourrnamentTeam();
 const { fetchREQ } = getTourTeam();
 const teamCache = reactive<Record<string, CachedTeam>>({});
+const openWinners = ref<string[]>([]);
+
+const accordionItems = computed(() =>
+  props.winners.map((winner) => {
+    const teamName =
+      teamCache[winner.teamId]?.team?.name ?? winner.teamName ?? 'فريق';
+    return {
+      label: `المركز ${winner.order} — ${teamName}`,
+      value: winner.teamId,
+      slot: `winner-${winner.teamId}`,
+      icon: 'i-mdi-trophy',
+    };
+  }),
+);
 
 async function loadWinnerTeam(teamId: string) {
   if (!teamId || !props.tournamentId) return;
@@ -116,18 +142,23 @@ async function loadWinnerTeam(teamId: string) {
   }
 }
 
-async function loadWinnerTeams(winners: TournamentWinner[]) {
-  const teamIds = winners
-    .map((w) => w.teamId)
-    .filter((id): id is string => !!id);
-  await Promise.all(teamIds.map((id) => loadWinnerTeam(id)));
-}
+watch(
+  openWinners,
+  (opened) => {
+    for (const teamId of opened) {
+      void loadWinnerTeam(teamId);
+    }
+  },
+  { deep: true },
+);
 
 watch(
   () => [props.tournamentId, props.winners.map((w) => w.teamId).join(',')] as const,
   () => {
-    void loadWinnerTeams(props.winners);
+    openWinners.value = [];
+    for (const key of Object.keys(teamCache)) {
+      delete teamCache[key];
+    }
   },
-  { immediate: true },
 );
 </script>
