@@ -14,6 +14,7 @@
         @regenerate-final-matches="openFinalGroupRegenerateDrawer"
         @open-start-confirm="openStartTournamentConfirm"
         @edit-round="onEditRoundFromHeader"
+        @edit-level-game-settings="openLevelGameSettingsDrawer"
         @finish-tournament="finishTournament"
         @resume-final-group-after-finish="resumeFinalGroupAfterFinish"
         @open-start-confirm-map="openStartTournamentConfirmMap"
@@ -135,6 +136,15 @@
         :group-id="tourStore.selectedGroup?.data.id || ''"
       />
 
+      <UpdateLevelGameSettingsDrawer
+        v-if="
+          userStore.user && (userStore.isAdmin || userStore.isOrganizer)
+        "
+        ref="levelGameSettingsDrawer"
+        :tour-id="tourid"
+        :stage-id="tourStore.selectedGroup?.data.stageId || ''"
+      />
+
       <GroupNotificationDrawer
         v-if="canSendGroupNotification"
         ref="groupNotificationDrawer"
@@ -185,6 +195,7 @@ import {
   GroupNotificationDrawer,
 } from "~/features/tournament/bracket/components";
 import UpdateRoundDrawer from "~/features/tournament/group/components/Round/UpdateRoundDrawer.vue";
+import UpdateLevelGameSettingsDrawer from "~/features/tournament/group/components/Round/UpdateLevelGameSettingsDrawer.vue";
 import CreateMatchDrawer from "~/features/tournament/group/components/CreateMatchDrawer.vue";
 import TournamentStartConfirmModal from "~/features/tournament/detail/components/shared/TournamentStartConfirmModal.vue";
 import QydhaLogo from "@/assets/images/qydha-logo.svg";
@@ -501,6 +512,7 @@ const confirmAndStartTournamentMap = async () => {
 
 const roundBeingEdited = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef("updateRoundDrawer");
+const levelGameSettingsDrawer = useTemplateRef("levelGameSettingsDrawer");
 const groupNotificationDrawer = useTemplateRef("groupNotificationDrawer");
 const bracketRef = useTemplateRef<{
   exportBracket: (format: BracketExportFormat) => void;
@@ -564,6 +576,12 @@ const onEditRoundFromHeader = (round: RoundGroupDetails["rounds"][0]) => {
   roundBeingEdited.value = round;
   if (updateRoundDrawer.value) {
     updateRoundDrawer.value.open = true;
+  }
+};
+
+const openLevelGameSettingsDrawer = () => {
+  if (levelGameSettingsDrawer.value) {
+    levelGameSettingsDrawer.value.open = true;
   }
 };
 

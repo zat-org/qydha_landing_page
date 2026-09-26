@@ -13,6 +13,8 @@ export type GetTournamentTeamsQuery = {
   PageSize?: number;
   StageFilter?: TournamentTeamStageFilter | null;
   State: TournamentTeamStateFilter;
+  /** Search team name or player name */
+  SearchToken?: string | null;
 };
 
 export type TeamStageEntryType = "Direct" | "Qualified";

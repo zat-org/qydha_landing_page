@@ -31,6 +31,17 @@
                         {{ roundsGroupDetails.rounds?.length ?? 0 }} جولة
                     </UBadge>
 
+                    <UButton
+                        v-if="canModify && props.group.stageId"
+                        icon="i-mdi-tune-variant"
+                        color="primary"
+                        variant="soft"
+                        size="sm"
+                        label="إعدادات المستويات"
+                        class="min-h-9"
+                        @click="openLevelGameSettingsDrawer"
+                    />
+
                     <!-- Final group controls -->
                     <template v-if="isFinalGroup && canRevertOrRegenerateFinalGroup">
                         <UButton icon="i-mdi-refresh" color="primary" variant="soft" size="sm"
@@ -297,7 +308,18 @@
         </div>
     </UCard>
 
-    <UpdateRoundDrawer ref="updateRoundDrawer" :round="selectedRound" :tour-id="tour_id" :group-id="props.group.id" />
+    <UpdateRoundDrawer
+      ref="updateRoundDrawer"
+      :round="selectedRound"
+      :tour-id="tour_id"
+      :group-id="props.group.id"
+    />
+
+    <UpdateLevelGameSettingsDrawer
+      ref="levelGameSettingsDrawer"
+      :tour-id="tour_id"
+      :stage-id="props.group.stageId"
+    />
 
     <CreateMatchDrawer ref="regenerateMatchesDrawer" :group="props.group" />
 </template>
@@ -309,6 +331,7 @@ import { GroupState } from "~/features/tournament/models/group";
 import { formatDateTime } from "~/utils/formatDate";
 import type { TableColumn } from "@nuxt/ui";
 import UpdateRoundDrawer from "./Round/UpdateRoundDrawer.vue";
+import UpdateLevelGameSettingsDrawer from "./Round/UpdateLevelGameSettingsDrawer.vue";
 import UpdateMatchDrawer from "./Match/UpdateMatchDrawer.vue";
 import EditModal from "~/features/tournament/bracket/components/EditModal.vue";
 import CreateMatchDrawer from "./CreateMatchDrawer.vue";
@@ -487,6 +510,7 @@ const matchColumns: TableColumn<Match>[] = [
 
 const selectedRound = ref<RoundGroupDetails["rounds"][0] | null>(null);
 const updateRoundDrawer = useTemplateRef<{ open: boolean }>("updateRoundDrawer");
+const levelGameSettingsDrawer = useTemplateRef<{ open: boolean }>("levelGameSettingsDrawer");
 const regenerateMatchesDrawer = useTemplateRef<InstanceType<typeof CreateMatchDrawer>>("regenerateMatchesDrawer");
 
 const openRegenerateMatchesDrawer = () => {
@@ -499,6 +523,12 @@ const openUpdateRoundDrawer = (roundId: string) => {
     selectedRound.value = roundsGroupDetails.value?.rounds?.find((r) => r.id === roundId) || null;
     if (updateRoundDrawer.value) {
         updateRoundDrawer.value.open = true;
+    }
+};
+
+const openLevelGameSettingsDrawer = () => {
+    if (levelGameSettingsDrawer.value) {
+        levelGameSettingsDrawer.value.open = true;
     }
 };
 

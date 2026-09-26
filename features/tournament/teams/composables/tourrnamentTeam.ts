@@ -20,6 +20,7 @@ export type GetAllTourTeamsParams = {
   page?: number;
   stageFilter?: TournamentTeamStageFilter | null;
   state?: TournamentTeamStateFilter;
+  searchToken?: string | null;
 };
 
 export const useTourrnamentTeam = () => {
@@ -30,6 +31,7 @@ export const useTourrnamentTeam = () => {
     const page = ref(1);
     const stageFilter = ref<TournamentTeamStageFilter | null>(null);
     const state = ref<TournamentTeamStateFilter>("All");
+    const searchToken = ref<string | null>(null);
     const { data, pending, error, refresh, status, execute } =
       await useAppApiData<TeamsPage>(
         appKeys.tournamentTeams,
@@ -40,6 +42,9 @@ export const useTourrnamentTeam = () => {
           };
           if (stageFilter.value) {
             query.StageFilter = stageFilter.value;
+          }
+          if (searchToken.value) {
+            query.SearchToken = searchToken.value;
           }
           return $api(`/tournaments/${tourId.value}/teams`, { query });
         },
@@ -61,6 +66,9 @@ export const useTourrnamentTeam = () => {
       }
       if (params.state !== undefined) {
         state.value = params.state;
+      }
+      if (params.searchToken !== undefined) {
+        searchToken.value = params.searchToken;
       }
       await execute();
     };

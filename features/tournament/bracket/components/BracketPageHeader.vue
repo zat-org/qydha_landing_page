@@ -96,44 +96,56 @@
         />
       </div>
 
-      <!-- Rounds filter -->
+      <!-- Rounds filter + level settings -->
       <div
-        v-if="tourStore.rounds && tourStore.rounds.length > 0"
+        v-if="canAccessRounds"
         class="flex items-center gap-1.5 mr-auto"
       >
-        <USelectMenu
-          v-model="selectedRoundId"
-          :items="tourStore.rounds"
-          label-key="name"
-          value-key="id"
+        <template v-if="tourStore.rounds && tourStore.rounds.length > 0">
+          <USelectMenu
+            v-model="selectedRoundId"
+            :items="tourStore.rounds"
+            label-key="name"
+            value-key="id"
+            size="xs"
+            :search-attributes="['name']"
+            class="w-48"
+            :placeholder="tourStore.selectedRound?.name || 'اختر الجولة'"
+            @update:model-value="onRoundSelected"
+          />
+
+          <UButton
+            icon="i-heroicons-pencil"
+            color="warning"
+            variant="soft"
+            size="xs"
+            :disabled="!canEditSelectedRound"
+            @click="openSelectedRoundEdit"
+          >
+            تعديل
+          </UButton>
+
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="neutral"
+            variant="soft"
+            size="xs"
+            :disabled="!tourStore.selectedRound"
+            @click="clearRoundSelection"
+          >
+            مسح
+          </UButton>
+        </template>
+
+        <UButton
+          icon="i-mdi-tune-variant"
+          color="primary"
+          variant="soft"
           size="xs"
-          :search-attributes="['name']"
-          class="w-48"
-          :placeholder="tourStore.selectedRound?.name || 'اختر الجولة'"
-          @update:model-value="onRoundSelected"
+          label="إعدادات المستويات"
+          :disabled="!tourStore.selectedGroup?.data.stageId"
+          @click="emit('edit-level-game-settings')"
         />
-
-        <UButton
-          icon="i-heroicons-pencil"
-          color="warning"
-          variant="soft"
-          size="xs"
-          :disabled="!canEditSelectedRound"
-          @click="openSelectedRoundEdit"
-        >
-          تعديل
-        </UButton>
-
-        <UButton
-          icon="i-heroicons-x-mark"
-          color="neutral"
-          variant="soft"
-          size="xs"
-          :disabled="!tourStore.selectedRound"
-          @click="clearRoundSelection"
-        >
-          مسح
-        </UButton>
       </div>
     </div>
   </div>
@@ -162,6 +174,7 @@ const emit = defineEmits<{
   "regenerate-final-matches": [];
   "open-start-confirm": [];
   "edit-round": [round: RoundGroupDetails["rounds"][0]];
+  "edit-level-game-settings": [];
   "finish-tournament": [];
   "resume-final-group-after-finish": [];
   "open-start-confirm-map": [];

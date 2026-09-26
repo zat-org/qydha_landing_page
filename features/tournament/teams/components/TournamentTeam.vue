@@ -35,6 +35,19 @@
         </div>
 
         <div class="flex flex-wrap items-end gap-3">
+          <UFormField
+            label="بحث"
+            class="min-w-48 flex-1"
+            help="اسم الفريق أو اسم اللاعب"
+          >
+            <UInput
+              v-model="searchInput"
+              class="w-full"
+              icon="i-heroicons-magnifying-glass"
+              placeholder="اسم الفريق أو اللاعب"
+              :loading="getTeamsREQ.pending.value"
+            />
+          </UFormField>
           <UFormField label="المرحلة" class="min-w-40 flex-1 sm:flex-none">
             <USelect
               v-model="stageFilter"
@@ -416,6 +429,8 @@ const page = ref(1);
 /** Empty string = no StageFilter (all stages). */
 const stageFilter = ref<"" | TournamentTeamStageFilter>("");
 const stateFilter = ref<TournamentTeamStateFilter>("All");
+const searchInput = ref("");
+const searchToken = ref<string | null>(null);
 
 const stageFilterOptions = [
   { label: "الكل", value: "" },
@@ -433,6 +448,7 @@ const teamsQueryParams = () => ({
   page: page.value,
   stageFilter: (stageFilter.value || null) as TournamentTeamStageFilter | null,
   state: stateFilter.value,
+  searchToken: searchToken.value,
 });
 
 const getTeamsREQ = await useTourrnamentTeam().getAllTourTeams();
@@ -515,6 +531,20 @@ watch([stageFilter, stateFilter], async () => {
   }
   await refreshTeamsList();
 });
+
+watch(
+  searchInput,
+  useDebounceFn((value: string) => {
+    const next = value.trim() ? value.trim() : null;
+    if (searchToken.value === next) return;
+    searchToken.value = next;
+    if (page.value !== 1) {
+      page.value = 1;
+      return;
+    }
+    void refreshTeamsList();
+  }, 400),
+);
 
 const columns = [
   { id: "expand", header: "" },
