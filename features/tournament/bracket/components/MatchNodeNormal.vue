@@ -9,7 +9,13 @@
         :class="[
           firstTeamSurfaceClass,
           'group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10',
+          canOpenUsTeamPlayers ? 'cursor-pointer hover:ring-primary/40' : '',
         ]"
+        :role="canOpenUsTeamPlayers ? 'button' : undefined"
+        :tabindex="canOpenUsTeamPlayers ? 0 : undefined"
+        :title="canOpenUsTeamPlayers ? 'عرض لاعبي الفريق' : undefined"
+        @click="openTeamPlayers('us')"
+        @keydown.enter.prevent="openTeamPlayers('us')"
       >
         <div class="flex min-h-[30px] h-full items-center justify-center gap-1">
           <div class="flex h-full grow flex-col items-center justify-center">
@@ -66,7 +72,13 @@
         :class="[
           secondTeamSurfaceClass,
           'group min-w-0 rounded-xl px-1.5 py-1.5 ring-1 ring-black/5 transition-all duration-200 dark:ring-white/10',
+          canOpenThemTeamPlayers ? 'cursor-pointer hover:ring-primary/40' : '',
         ]"
+        :role="canOpenThemTeamPlayers ? 'button' : undefined"
+        :tabindex="canOpenThemTeamPlayers ? 0 : undefined"
+        :title="canOpenThemTeamPlayers ? 'عرض لاعبي الفريق' : undefined"
+        @click="openTeamPlayers('them')"
+        @keydown.enter.prevent="openTeamPlayers('them')"
       >
         <div class="flex min-h-[30px] items-center justify-center gap-1">
           <UIcon
@@ -189,6 +201,7 @@ import type { Match } from "@/features/tournament/models/group";
 import { useMyAuthStore } from "@/store/Auth";
 import StatusModal from "./StatusModal.vue";
 import EditModal from "./EditModal.vue";
+import MatchTeamPlayersModal from "./MatchTeamPlayersModal.vue";
 import MatchAdminActionConfirmModal from "./MatchAdminActionConfirmModal.vue";
 import { useMatchNodeShared } from "~/features/tournament/bracket/composables/useMatchNodeShared";
 import type { MatchActionType } from "~/features/tournament/match/types/matchAction.types";
@@ -229,6 +242,39 @@ const {
 const showRefereeIcon = computed(
   () => hasStaffOrAdminPrivileges.value && props.data.match.referee,
 );
+const canOpenUsTeamPlayers = computed(
+  () =>
+    !!userStore.user &&
+    hasStaffOrAdminPrivileges.value &&
+    !!props.data.match.usTeamId,
+);
+const canOpenThemTeamPlayers = computed(
+  () =>
+    !!userStore.user &&
+    hasStaffOrAdminPrivileges.value &&
+    !!props.data.match.themTeamId,
+);
+
+const openTeamPlayers = (side: "us" | "them") => {
+  const teamId =
+    side === "us" ? props.data.match.usTeamId : props.data.match.themTeamId;
+  const teamName =
+    side === "us" ? props.data.match.usTeamName : props.data.match.themTeamName;
+  const canOpen =
+    side === "us" ? canOpenUsTeamPlayers.value : canOpenThemTeamPlayers.value;
+  if (!canOpen || !teamId || !tournamentId) return;
+
+  overlay
+    .create(MatchTeamPlayersModal, {
+      props: {
+        tournamentId,
+        teamId: String(teamId),
+        teamName,
+      },
+    })
+    .open();
+};
+
 const tableText = computed(() => props.data.match.tableName || "بدون طاولة");
 const roundText = computed(() => props.data.match.roundName || "بدون جولة");
 const timeText = computed(() =>
