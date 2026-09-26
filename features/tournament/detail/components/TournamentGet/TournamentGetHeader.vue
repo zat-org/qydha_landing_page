@@ -41,6 +41,7 @@ import TournamentJoinRequestSettingsDrawer from './TournamentJoinRequestSettings
 import { SETTINGS_MENU_TAB_VIEWS } from '~/features/tournament/detail/constants/tournamentNavigation.config';
 import {
   buildTabNavItems,
+  getPhaseViewPath,
   navigateToTabView,
 } from '~/features/tournament/detail/utils/tournamentNavigation.utils';
 import type { DetailTournament } from '~/features/tournament/models/tournament';
@@ -108,6 +109,14 @@ const settingsMenuItems = computed(() => {
       onSelect: () => { void navigateTo(`/tournament/${props.id}/edit`); },
     });
   }
+
+  items.push({
+    label: 'الفرق',
+    icon: 'i-mdi-account-group',
+    onSelect: () => {
+      void navigateTo(getPhaseViewPath('team', props.id));
+    },
+  });
 
   items.push(
     ...buildTabNavItems(SETTINGS_MENU_TAB_VIEWS, props.id).map((item) => ({

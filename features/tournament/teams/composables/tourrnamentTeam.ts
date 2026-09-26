@@ -1,6 +1,9 @@
 import type {
+  GetTournamentTeamsQuery,
   ITeam,
   ITeamCreate,
+  TournamentTeamStageFilter,
+  TournamentTeamStateFilter,
 } from "~/features/tournament/models/tournamentTeam";
 import { PlayerState } from "~/features/tournament/models/Player";
 
@@ -13,24 +16,52 @@ type TeamsPage = {
   currentPage: number;
 };
 
+export type GetAllTourTeamsParams = {
+  page?: number;
+  stageFilter?: TournamentTeamStageFilter | null;
+  state?: TournamentTeamStateFilter;
+};
+
 export const useTourrnamentTeam = () => {
   const { $api } = useNuxtApp();
 
   const getAllTourTeams = async () => {
     const tourId = ref();
-    const page = ref();
+    const page = ref(1);
+    const stageFilter = ref<TournamentTeamStageFilter | null>(null);
+    const state = ref<TournamentTeamStateFilter>("All");
     const { data, pending, error, refresh, status, execute } =
       await useAppApiData<TeamsPage>(
         appKeys.tournamentTeams,
-        () =>
-          $api(`/tournaments/${tourId.value}/teams`, {
-            query: { PageNumber: page.value },
-          }),
+        () => {
+          const query: GetTournamentTeamsQuery = {
+            PageNumber: page.value,
+            State: state.value,
+          };
+          if (stageFilter.value) {
+            query.StageFilter = stageFilter.value;
+          }
+          return $api(`/tournaments/${tourId.value}/teams`, { query });
+        },
         { immediate: false },
       );
-    const fetchREQ = async (tour_id: string, _page: number = 1) => {
-      page.value = _page;
+    const fetchREQ = async (
+      tour_id: string,
+      _pageOrParams: number | GetAllTourTeamsParams = 1,
+    ) => {
+      const params: GetAllTourTeamsParams =
+        typeof _pageOrParams === "number"
+          ? { page: _pageOrParams }
+          : _pageOrParams;
+
+      page.value = params.page ?? 1;
       tourId.value = tour_id;
+      if (params.stageFilter !== undefined) {
+        stageFilter.value = params.stageFilter;
+      }
+      if (params.state !== undefined) {
+        state.value = params.state;
+      }
       await execute();
     };
     return { data, pending, error, refresh, status, fetchREQ };
@@ -51,6 +82,7 @@ export const useTourrnamentTeam = () => {
               PageSize: pageSize.value,
               notInGroupId: groupId.value,
               playersCount: 2,
+              State: "All",
             },
           }),
         { immediate: false },

@@ -2,6 +2,19 @@ import type { PlayerState } from "./Player";
 import type { TournamentStageType } from "./place";
 import type { MinUser } from "~/models/user";
 
+/** GET /tournaments/{id}/teams — StageFilter (nullable) */
+export type TournamentTeamStageFilter = "Final" | "Qualification";
+
+/** GET /tournaments/{id}/teams — State (required) */
+export type TournamentTeamStateFilter = "Active" | "Withdrawn" | "All";
+
+export type GetTournamentTeamsQuery = {
+  PageNumber?: number;
+  PageSize?: number;
+  StageFilter?: TournamentTeamStageFilter | null;
+  State: TournamentTeamStateFilter;
+};
+
 export type TeamStageEntryType = "Direct" | "Qualified";
 
 export interface TeamStageEntry {

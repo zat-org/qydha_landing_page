@@ -55,7 +55,7 @@ export function useTournamentLifecycleSummary(
       const [placesRes, teamsRes] = await Promise.all([
         $api(`/tournaments/${id}/places`),
         $api(`/tournaments/${id}/teams`, {
-          query: { PageNumber: 1, PageSize: 1 },
+          query: { PageNumber: 1, PageSize: 1, State: "All" },
         }),
       ]);
 
