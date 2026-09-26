@@ -75,55 +75,19 @@
               {{ player.name }}
             </p>
             <p
-              v-if="player.phone && !player.qydhaUserData"
+              v-if="player.phone"
               class="mt-0.5 text-xs text-gray-500"
               dir="ltr"
             >
               {{ player.phone }}
             </p>
-
-            <div
-              v-if="player.qydhaUserData"
-              class="mt-2 rounded-md border border-primary/20 bg-primary/5 p-2 dark:bg-primary/10"
+            <p
+              v-if="player.email"
+              class="mt-0.5 text-xs text-gray-500"
+              dir="ltr"
             >
-              <div class="mb-1.5 flex items-center gap-1.5">
-                <UIcon name="i-mdi-account-check" class="size-3.5 text-primary" />
-                <span class="text-[11px] font-semibold text-primary">مستخدم قيدها</span>
-              </div>
-              <div class="space-y-1 text-xs text-gray-700 dark:text-gray-300">
-                <div class="flex items-center gap-2">
-                  <img
-                    v-if="player.qydhaUserData.avatarUrl"
-                    :src="player.qydhaUserData.avatarUrl"
-                    alt=""
-                    class="size-7 rounded-full object-cover"
-                  >
-                  <UIcon
-                    v-else
-                    name="i-heroicons-user-circle"
-                    class="size-7 text-primary"
-                  />
-                  <div class="min-w-0">
-                    <p class="truncate font-semibold">
-                      {{ player.qydhaUserData.username }}
-                    </p>
-                    <p
-                      v-if="player.qydhaUserData.name"
-                      class="truncate text-gray-500"
-                    >
-                      {{ player.qydhaUserData.name }}
-                    </p>
-                  </div>
-                </div>
-                <p
-                  v-if="player.qydhaUserData.phone"
-                  class="ps-9"
-                  dir="ltr"
-                >
-                  {{ player.qydhaUserData.phone }}
-                </p>
-              </div>
-            </div>
+              {{ player.email }}
+            </p>
           </div>
         </div>
       </article>

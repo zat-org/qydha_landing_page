@@ -216,52 +216,6 @@
                   />
                 </div>
               </div>
-
-              <div
-                v-if="player.qydhaUserData"
-                class="mt-3 rounded-lg border border-primary/20 bg-primary/5 p-2.5 dark:bg-primary/10"
-              >
-                <div class="mb-2 flex items-center gap-2">
-                  <UIcon name="i-mdi-account-check" class="size-4 text-primary" />
-                  <span class="text-xs font-semibold text-primary">مستخدم قيدها</span>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-2 text-xs text-gray-700 dark:text-gray-300">
-                  <img
-                    v-if="player.qydhaUserData.avatarUrl"
-                    :src="player.qydhaUserData.avatarUrl"
-                    alt=""
-                    class="size-8 rounded-full object-cover"
-                  >
-                  <UIcon
-                    v-else
-                    name="i-heroicons-user-circle"
-                    class="size-8 text-primary"
-                  />
-                  <div class="min-w-0">
-                    <p class="font-semibold">
-                      {{ player.qydhaUserData.username }}
-                    </p>
-                    <p
-                      v-if="player.qydhaUserData.name"
-                      class="text-gray-500"
-                    >
-                      {{ player.qydhaUserData.name }}
-                    </p>
-                    <p
-                      v-if="player.qydhaUserData.phone"
-                      class="text-gray-500"
-                      dir="ltr"
-                    >
-                      {{ player.qydhaUserData.phone }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <p v-else class="mt-2 text-xs text-gray-400">
-                لا يوجد حساب قيدها مرتبط
-              </p>
             </div>
           </div>
         </div>
