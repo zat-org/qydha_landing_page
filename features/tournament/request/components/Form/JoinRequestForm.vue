@@ -19,14 +19,33 @@
     </template>
 
     <UForm :state="model" class="flex flex-col space-y-4">
-      <UFormField name="addPlayersByQydha" size="xl">
-        <div class="flex gap-4">
-          <USwitch
-            v-model="model.addPlayersByQydha"
-            :disabled="disabledFields?.addPlayersByQydha"
-            size="xl"
-          />
-          <label>التسجيل من خلال قيدها</label>
+      <UFormField name="addPlayersByQydha" :error="errors?.addPlayersByQydha">
+        <div
+          class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/60 p-4 dark:border-gray-700 dark:bg-gray-800/60"
+        >
+          <div class="flex items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                التسجيل من خلال قيدها
+              </p>
+              <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                فعّل لاستقبال طلبات الانضمام عبر تطبيق قيدها
+              </p>
+            </div>
+            <USwitch
+              v-model="model.addPlayersByQydha"
+              :disabled="disabledFields?.addPlayersByQydha"
+              size="xl"
+              @update:model-value="onFieldBlur?.('addPlayersByQydha')"
+            />
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{
+              model.addPlayersByQydha
+                ? "مفعّل — حدّد نافذة الطلبات والحد الأقصى"
+                : "معطّل — لن تُستقبل طلبات عبر قيدها"
+            }}
+          </p>
         </div>
       </UFormField>
 
@@ -76,17 +95,31 @@
           name="minimumSubscriptionDays"
           :error="errors?.minimumSubscriptionDays"
         >
-          <div class="flex flex-col gap-3">
-            <div class="flex items-center gap-4">
+          <div
+            class="flex flex-col gap-3 rounded-lg border border-gray-200 bg-white/60 p-4 dark:border-gray-700 dark:bg-gray-800/60"
+          >
+            <div class="flex items-center justify-between gap-4">
+              <div>
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  اشتراك مدفوع
+                </p>
+                <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                  فعّل إذا كان الانضمام يتطلب حداً أدنى لأيام الاشتراك
+                </p>
+              </div>
               <USwitch
                 v-model="isPaidSubscription"
                 :disabled="disabledFields?.minimumSubscriptionDays"
                 size="xl"
               />
-              <label>
-                {{ isPaidSubscription ? "مدفوع — يتطلب أيام اشتراك" : "مجاني" }}
-              </label>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              {{
+                isPaidSubscription
+                  ? "مدفوع — أدخل عدد أيام الاشتراك المطلوبة"
+                  : "مجاني — لا يشترط أيام اشتراك"
+              }}
+            </p>
             <AppNumberInput
               v-if="isPaidSubscription"
               v-model="model.minimumSubscriptionDays"

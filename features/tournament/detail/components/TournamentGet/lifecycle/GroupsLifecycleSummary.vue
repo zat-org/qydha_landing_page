@@ -11,19 +11,46 @@
         <p class="text-xs font-medium text-gray-500 dark:text-gray-400">
           مجموعات التصفيات
         </p>
-        <UButton
-          v-if="canGenerateMatches"
-          size="sm"
-          color="primary"
-          :variant="isRegenerate ? 'soft' : 'solid'"
-          icon="i-mdi-tournament"
-          :label="
-            isRegenerate
-              ? 'إعادة إنشاء المباريات'
-              : 'إنشاء مباريات التصفيات'
-          "
-          @click="qualGenerateOpen = true"
-        />
+        <div class="flex flex-wrap items-center gap-2">
+          <UButton
+            v-if="canGenerateMatches && !isRegenerate"
+            size="sm"
+            color="primary"
+            icon="i-mdi-tournament"
+            label="إنشاء مباريات التصفيات"
+            @click="qualGenerateOpen = true"
+          />
+          <UButton
+            v-if="showGoToBracket"
+            size="sm"
+            color="primary"
+            variant="soft"
+            icon="i-mdi-sitemap-outline"
+            label="الذهاب للخريطة"
+            @click="goToBracket"
+          />
+          <UButton
+            v-if="startableGroups.length > 0"
+            size="sm"
+            color="primary"
+            variant="soft"
+            icon="i-mdi-play"
+            label="بدء المجموعات الجاهزة"
+            :loading="startingAll"
+            :disabled="isRowActionBusy"
+            @click="() => void startAllReadyGroups()"
+          />
+          <UButton
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-heroicons-arrow-path"
+            :loading="pending"
+            :disabled="pending"
+            aria-label="تحديث مجموعات التصفيات"
+            @click="() => void onRefresh()"
+          />
+        </div>
       </div>
 
       <div
@@ -40,6 +67,12 @@
               <th class="px-3 py-2.5 text-center font-medium">اليوم</th>
               <th class="px-3 py-2.5 text-center font-medium">الحالة</th>
               <th class="px-3 py-2.5 text-center font-medium">المباريات</th>
+              <th
+                v-if="showRowActions"
+                class="px-3 py-2.5 text-center font-medium"
+              >
+                #
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200/80 dark:divide-gray-800">
@@ -90,6 +123,32 @@
                   </template>
                 </span>
               </td>
+              <td v-if="showRowActions" class="px-3 py-2.5 text-center">
+                <div class="flex flex-wrap items-center justify-center gap-1">
+                  <UButton
+                    v-if="canStartGroup(row)"
+                    size="xs"
+                    color="primary"
+                    variant="soft"
+                    icon="i-mdi-play"
+                    label="بدء"
+                    :loading="startingGroupId === row.groupId"
+                    :disabled="isRowActionBusy"
+                    @click="() => void startGroup(row)"
+                  />
+                  <UButton
+                    v-if="canFinishGroup(row)"
+                    size="xs"
+                    color="success"
+                    variant="soft"
+                    icon="i-mdi-trophy"
+                    label="إنهاء"
+                    :loading="finishingGroupId === row.groupId"
+                    :disabled="isRowActionBusy"
+                    @click="() => void finishGroup(row)"
+                  />
+                </div>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -110,18 +169,31 @@
 
 <script lang="ts" setup>
 import Loading from "~/components/loading.vue";
+import ConfirmModal from "~/components/ConfirmationModal.vue";
 import GenerateQualificationBracketsDrawer from "~/features/tournament/detail/components/GenerateQualificationBracketsDrawer.vue";
 import { GroupState } from "~/features/tournament/models/group";
 import { TournamentDetailedState } from "~/features/tournament/models/tournament";
 import type { TournamentLifecycleSummary } from "~/features/tournament/detail/composables/logic/useTournamentLifecycleSummary";
 import { useTournamentPhaseStore } from "~/store/tournamentPhase";
+import { useQualificationStage } from "~/features/tournament/detail/composables/api/useQualificationStage";
+import { navigateToTabView } from "~/features/tournament/detail/utils/tournamentNavigation.utils";
 
 const props = defineProps<{
   lifecycleSummary: TournamentLifecycleSummary;
 }>();
 
 const phaseStore = useTournamentPhaseStore();
+const toast = useToast();
+const overlay = useOverlay();
+const confirmModal = overlay.create(ConfirmModal);
 const qualGenerateOpen = ref(false);
+const startingGroupId = ref<string | null>(null);
+const finishingGroupId = ref<string | null>(null);
+const startingAll = ref(false);
+
+const qualStageApi = useQualificationStage();
+const startGroupReq = qualStageApi.startGroup();
+const finishGroupReq = qualStageApi.finishGroup();
 
 const pending = computed(
   () => props.lifecycleSummary.groupsHierarchyPending.value,
@@ -129,6 +201,9 @@ const pending = computed(
 const placesTree = computed(() => props.lifecycleSummary.placesTree.value);
 const tournamentId = computed(
   () => props.lifecycleSummary.tournamentId.value,
+);
+const detailedState = computed(
+  () => props.lifecycleSummary.detailedState.value,
 );
 
 const canGenerateMatches = computed(() => {
@@ -143,6 +218,31 @@ const isRegenerate = computed(
     phaseStore.context.detailedState ===
     TournamentDetailedState.ManagingQualificationStageBrackets,
 );
+
+/** After brackets are created — manage / wait / run / finished. */
+const showGoToBracket = computed(() => {
+  const state = detailedState.value;
+  return (
+    state === TournamentDetailedState.ManagingQualificationStageBrackets ||
+    state === TournamentDetailedState.WaitingQualificationStageStarting ||
+    state === TournamentDetailedState.QualificationStageRunning ||
+    state === TournamentDetailedState.QualificationStageFinished
+  );
+});
+
+const canStartInTournamentState = computed(() => {
+  const state = detailedState.value;
+  return (
+    state === TournamentDetailedState.WaitingQualificationStageStarting ||
+    state === TournamentDetailedState.QualificationStageRunning
+  );
+});
+
+function goToBracket() {
+  const id = tournamentId.value;
+  if (!id) return;
+  navigateToTabView("bracket", id);
+}
 
 type GroupTableRow = {
   groupId: string;
@@ -180,6 +280,43 @@ const tableRows = computed<GroupTableRow[]>(() => {
   return rows;
 });
 
+function canStartGroup(row: GroupTableRow) {
+  return (
+    canStartInTournamentState.value &&
+    row.state === GroupState.WaitingMatchesStarting
+  );
+}
+
+/** Running group with every match finished — can end the group. */
+function canFinishGroup(row: GroupTableRow) {
+  return (
+    detailedState.value === TournamentDetailedState.QualificationStageRunning &&
+    row.state === GroupState.MatchesRunning &&
+    row.matchesTotal > 0 &&
+    row.matchesFinished >= row.matchesTotal &&
+    row.matchesRunning === 0
+  );
+}
+
+const startableGroups = computed(() =>
+  tableRows.value.filter((row) => canStartGroup(row)),
+);
+
+const showRowActions = computed(
+  () =>
+    tableRows.value.length > 0 &&
+    (canStartInTournamentState.value ||
+      detailedState.value ===
+        TournamentDetailedState.QualificationStageRunning),
+);
+
+const isRowActionBusy = computed(
+  () =>
+    startingAll.value ||
+    !!startingGroupId.value ||
+    !!finishingGroupId.value,
+);
+
 function groupBadgeColor(state: GroupState) {
   switch (state) {
     case GroupState.MatchesRunning:
@@ -194,6 +331,110 @@ function groupBadgeColor(state: GroupState) {
     default:
       return "neutral";
   }
+}
+
+async function startGroup(row: GroupTableRow) {
+  const id = tournamentId.value;
+  if (!id || !canStartGroup(row)) return;
+
+  startingGroupId.value = row.groupId;
+  try {
+    await startGroupReq.fetchREQ(id, row.groupId);
+    if (startGroupReq.status.value === "success") {
+      toast.add({
+        title: `تم بدء مباريات «${row.groupName}»`,
+        color: "success",
+      });
+      await props.lifecycleSummary.refresh();
+    } else {
+      const err = startGroupReq.error.value as {
+        data?: { message?: string };
+        message?: string;
+      } | null;
+      toast.add({
+        title: "تعذّر بدء المجموعة",
+        description: err?.data?.message ?? err?.message,
+        color: "error",
+      });
+    }
+  } finally {
+    startingGroupId.value = null;
+  }
+}
+
+async function startAllReadyGroups() {
+  const id = tournamentId.value;
+  const groups = startableGroups.value;
+  if (!id || groups.length === 0) return;
+
+  startingAll.value = true;
+  let successCount = 0;
+  try {
+    for (const row of groups) {
+      await startGroupReq.fetchREQ(id, row.groupId);
+      if (startGroupReq.status.value === "success") {
+        successCount += 1;
+      } else {
+        const err = startGroupReq.error.value as {
+          data?: { message?: string };
+          message?: string;
+        } | null;
+        toast.add({
+          title: `تعذّر بدء «${row.groupName}»`,
+          description: err?.data?.message ?? err?.message,
+          color: "error",
+        });
+      }
+    }
+    if (successCount > 0) {
+      toast.add({
+        title: `تم بدء ${successCount} مجموعة`,
+        color: "success",
+      });
+      await props.lifecycleSummary.refresh();
+    }
+  } finally {
+    startingAll.value = false;
+  }
+}
+
+async function finishGroup(row: GroupTableRow) {
+  const id = tournamentId.value;
+  if (!id || !canFinishGroup(row)) return;
+
+  const instance = confirmModal.open({
+    message: `هل أنت متأكد من إنهاء المجموعة «${row.groupName}» واحتساب الفرق المتأهلة؟`,
+  });
+  const confirmed = await instance.result;
+  if (!confirmed) return;
+
+  finishingGroupId.value = row.groupId;
+  try {
+    await finishGroupReq.fetchREQ(id, row.groupId);
+    if (finishGroupReq.status.value === "success") {
+      toast.add({
+        title: `تم إنهاء «${row.groupName}» بنجاح`,
+        color: "success",
+      });
+      await props.lifecycleSummary.refresh();
+    } else {
+      const err = finishGroupReq.error.value as {
+        data?: { message?: string };
+        message?: string;
+      } | null;
+      toast.add({
+        title: "تعذّر إنهاء المجموعة",
+        description: err?.data?.message ?? err?.message,
+        color: "error",
+      });
+    }
+  } finally {
+    finishingGroupId.value = null;
+  }
+}
+
+async function onRefresh() {
+  await props.lifecycleSummary.refresh();
 }
 
 async function onGenerateSuccess() {

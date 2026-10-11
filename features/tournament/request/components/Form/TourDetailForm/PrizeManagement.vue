@@ -10,7 +10,11 @@
         @update:model-value="onPrizeOptionChange"
       />
     </UFormField>
-    <div v-for="(prize, index) in model.prizes" :key="index" class="p-5 bg-gray-50 dark:bg-gray-800 rounded-lg border">
+    <div
+      v-for="(prize, index) in model.prizes"
+      :key="index"
+      class="rounded-lg border border-gray-200 bg-gray-50 p-5 dark:border-gray-700 dark:bg-gray-800"
+    >
       <UFormField :label="`المركز ${index + 1}`" :name="`prizes[${index}]`">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-sm font-semibold rounded-full p-2">المركز {{ index + 1 }}</span>

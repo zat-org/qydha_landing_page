@@ -111,7 +111,7 @@
         </KeepAlive>
         <KeepAlive>
           <TournamentRequestFormRulesForm
-            v-show="currentStepValue === 6"
+            v-if="currentStepValue === 6"
             class="mx-auto w-full max-w-7xl"
             v-model="formData"
             :errors="visibleErrors"

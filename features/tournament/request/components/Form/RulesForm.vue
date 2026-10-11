@@ -1,7 +1,19 @@
 <template>
   <div class="w-full space-y-6">
-    <div class="bg-gray-50 dark:bg-gray-800 p-4 rounded-xl">
-      <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">قوانين البطولة</h2>
+    <div
+      class="flex flex-col gap-3 rounded-xl bg-gray-50 p-4 sm:flex-row sm:items-center sm:justify-between dark:bg-gray-800"
+    >
+      <h2 class="text-xl font-bold text-gray-900 md:text-2xl dark:text-white">
+        قوانين البطولة
+      </h2>
+      <UButton
+        color="primary"
+        variant="soft"
+        icon="material-symbols:book"
+        :loading="bookPending"
+        label="كتاب البلوت"
+        @click="openBalootBook"
+      />
     </div>
     <UForm :state="model" class="space-y-6">
       <div class="flex flex-col md:flex-row gap-3 px-2">
@@ -51,7 +63,7 @@
           <div
             v-for="(rule, index) in model.rules"
             :key="index"
-            class="flex items-center gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg border"
+            class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-800"
           >
             <span class="font-bold text-sm">{{ index + 1 }}.</span>
             <div v-if="editingIndex === index" class="flex-grow flex gap-2">
@@ -103,7 +115,29 @@ const props = defineProps<{
 const { errors, onFieldBlur, disabledFields } = toRefs(props);
 const model = defineModel<{ rules: string[] }>({ default: () => ({ rules: [] }) });
 
-await useAssets().getBook();
+const toast = useToast();
+const {
+  data: bookData,
+  pending: bookPending,
+  execute: fetchBook,
+} = useAssets().getBook({ immediate: false });
+
+async function openBalootBook() {
+  if (!bookData.value?.url) {
+    await fetchBook();
+  }
+
+  if (bookData.value?.url) {
+    window.open(bookData.value.url, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  toast.add({
+    title: "تعذر فتح الكتاب",
+    description: "حدث خطأ أثناء جلب رابط كتاب البلوت",
+    color: "error",
+  });
+}
 
 const newRule = ref("");
 const isAdding = ref(false);

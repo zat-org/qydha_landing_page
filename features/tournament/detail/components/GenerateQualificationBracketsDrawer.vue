@@ -14,13 +14,24 @@
     }"
   >
     <template #header>
-      <div class="space-y-1 p-2 text-start">
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-          {{ isRegenerate ? "إعادة إنشاء مباريات التصفيات" : "توليد مباريات مرحلة التصفيات" }}
-        </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          اختر فترة اللعبة وإعدادات اللعب لمجموعات التصفيات. يتم استخدام جميع طاولات الأماكن تلقائياً.
-        </p>
+      <div class="flex items-start justify-between gap-3 p-2">
+        <div class="space-y-1 text-start">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+            {{ isRegenerate ? "إعادة إنشاء مباريات التصفيات" : "توليد مباريات مرحلة التصفيات" }}
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            اختر فترة اللعبة وإعدادات اللعب لمجموعات التصفيات. يتم استخدام جميع طاولات الأماكن تلقائياً.
+          </p>
+        </div>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-heroicons-x-mark"
+          aria-label="إغلاق"
+          :disabled="pending"
+          @click="closeDrawer"
+        />
       </div>
     </template>
 
@@ -215,9 +226,10 @@
         <UButton
           color="neutral"
           variant="soft"
-          label="إلغاء"
+          label="إغلاق"
           class="min-h-10"
-          @click="open = false"
+          :disabled="pending"
+          @click="closeDrawer"
         />
         <UButton
           color="primary"
@@ -247,7 +259,7 @@ const emit = defineEmits<{
   success: [];
 }>();
 
-const open = ref(false);
+const open = defineModel<boolean>("open", { default: false });
 const form = useTemplateRef<HTMLFormElement>("form");
 const toast = useToast();
 
@@ -330,17 +342,24 @@ const qualStageApi = useQualificationStage();
 const generateReq = qualStageApi.generateBrackets();
 const pending = computed(() => generateReq.status.value === "pending");
 
+function closeDrawer() {
+  if (pending.value) return;
+  open.value = false;
+}
+
 const handleSubmit = async () => {
   try {
     await form.value?.validate();
     await generateReq.fetchREQ(props.tournamentId, formState.value);
     if (generateReq.status.value === "success") {
       toast.add({
-        title: "تم توليد مباريات التصفيات بنجاح",
+        title: props.isRegenerate
+          ? "تم إعادة إنشاء مباريات التصفيات بنجاح"
+          : "تم توليد مباريات التصفيات بنجاح",
         color: "success",
       });
-      emit("success");
       open.value = false;
+      emit("success");
     } else {
       const err = generateReq.error.value as { message?: string } | null;
       toast.add({
@@ -353,8 +372,4 @@ const handleSubmit = async () => {
     /* validation failed */
   }
 };
-
-defineExpose({
-  open,
-});
 </script>

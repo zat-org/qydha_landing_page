@@ -6,9 +6,15 @@ export const useAssets = () => {
   const { $api } = useNuxtApp();
   const mockBanners = () => Boolean(useRuntimeConfig().public.mockAssetBanners);
 
-  const getBook = () =>
-    useAppApiData<{ url: string; lastUpdateAt: string }>(appKeys.book, () =>
-      $api("/assets/baloot-book"),
+  const getBook = (
+    options?: Parameters<
+      typeof useAppApiData<{ url: string; lastUpdateAt: string }>
+    >[2],
+  ) =>
+    useAppApiData<{ url: string; lastUpdateAt: string }>(
+      appKeys.book,
+      () => $api("/assets/baloot-book"),
+      options,
     );
 
   const updateBook = () => {

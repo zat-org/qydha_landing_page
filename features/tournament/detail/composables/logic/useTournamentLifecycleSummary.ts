@@ -330,8 +330,11 @@ export function useTournamentLifecycleSummary(
     await Promise.all([loadTeams(), loadGroupMatches(), loadJoinSummary()]);
   }
 
+  const tournament = computed(() => tour.value?.tournament ?? null);
+
   return {
     tournamentId,
+    tournament,
     teamsPending,
     matchesPending,
     totalTeams,

@@ -8,17 +8,37 @@
         نافذة الاستقبال: {{ summary.joinWindow }}
       </p>
       <span v-else />
-      <UButton
-        color="neutral"
-        variant="ghost"
-        size="sm"
-        icon="i-heroicons-arrow-path"
-        :loading="pending"
-        :disabled="pending"
-        aria-label="تحديث طلبات الانضمام"
-        @click="() => void onRefresh()"
-      />
+      <div class="flex items-center gap-1">
+        <UButton
+          v-if="canEditJoinSettings"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-mdi-pencil"
+          aria-label="تعديل إعدادات طلبات الانضمام"
+          label="تعديل"
+          @click="openJoinSettings"
+        />
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-heroicons-arrow-path"
+          :loading="pending"
+          :disabled="pending"
+          aria-label="تحديث طلبات الانضمام"
+          @click="() => void onRefresh()"
+        />
+      </div>
     </div>
+
+    <TournamentJoinRequestSettingsDrawer
+      v-if="tournamentId && tournament"
+      ref="joinSettingsDrawer"
+      :tournament-id="tournamentId"
+      :tournament="tournament"
+      @success="onJoinSettingsSuccess"
+    />
 
     <div v-if="pending" class="py-4">
       <Loading />
@@ -81,6 +101,7 @@
             class="flex flex-wrap items-center gap-2"
           >
             <JoinRequestBulkActions
+              v-if="!allPlacesCapacityMet"
               compact
               :tournament-id="tournamentId"
               :places="places"
@@ -216,6 +237,7 @@
 import Loading from "~/components/loading.vue";
 import LifecycleStatChip from "./LifecycleStatChip.vue";
 import JoinRequestBulkActions from "~/features/tournament/join-request/components/JoinRequestBulkActions.vue";
+import TournamentJoinRequestSettingsDrawer from "~/features/tournament/detail/components/TournamentGet/TournamentJoinRequestSettingsDrawer.vue";
 import { useTournamentJoinRequest } from "~/features/tournament/join-request/composables/TournamentJoinRequest";
 import type { JoinRequestPlaceSummaryRow } from "~/features/tournament/detail/composables/logic/tournamentLifecycleSummary.utils";
 import type { TournamentLifecycleSummary } from "~/features/tournament/detail/composables/logic/useTournamentLifecycleSummary";
@@ -230,7 +252,26 @@ const canMutate = computed(
   () => props.lifecycleSummary.canMutateJoinRequests.value,
 );
 const tournamentId = computed(() => props.lifecycleSummary.tournamentId.value);
+const tournament = computed(() => props.lifecycleSummary.tournament.value);
 const places = computed(() => props.lifecycleSummary.joinRequestPlaces.value);
+
+const canEditJoinSettings = computed(
+  () => !!tournamentId.value && !!tournament.value?.addPlayersByQydha,
+);
+
+const joinSettingsDrawer = useTemplateRef<
+  InstanceType<typeof TournamentJoinRequestSettingsDrawer>
+>("joinSettingsDrawer");
+
+function openJoinSettings() {
+  if (joinSettingsDrawer.value) joinSettingsDrawer.value.open = true;
+}
+
+async function onJoinSettingsSuccess() {
+  const id = tournamentId.value;
+  if (id) await refreshAppData(appKeys.tournament(id));
+  await props.lifecycleSummary.refreshJoinSummary();
+}
 
 const remainingLabel = computed(() =>
   summary.value?.isManagingJoinRequests ? "متبقي للتعيين" : "متبقي للسعة",
@@ -256,6 +297,16 @@ function isPlaceCapacityMet(row: JoinRequestPlaceSummaryRow): boolean {
   if (row.isNoPreference || row.remaining == null) return false;
   return row.remaining <= 0;
 }
+
+/** Hide bulk consider-all when every real place has filled its capacity. */
+const allPlacesCapacityMet = computed(() => {
+  const rows =
+    summary.value?.placeRows.filter((row) => !row.isNoPreference) ?? [];
+  if (rows.length === 0) return false;
+  return rows.every(
+    (row) => row.remaining != null && row.remaining <= 0,
+  );
+});
 
 async function onRefresh() {
   await props.lifecycleSummary.refreshJoinSummary();

@@ -2,17 +2,19 @@
   <UCard>
     <template #header>
       <div class="flex flex-col gap-6 w-full">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between gap-4">
           <div>
             <h1 class="text-3xl font-bold">البطولات</h1>
-            <!-- <p class="text-gray-500 mt-1">عرض وإدارة جميع البطولات</p> -->
           </div>
-          <!-- <div class="flex gap-3">
-            <UButton v-if="isAdmin" variant="outline" color="primary" icon="i-heroicons-information-circle" to="/tournament/request/info"
-              label="دليل انشاء البطولة" class="px-6" />
-            <UButton v-if="isAdmin" variant="solid" color="primary" icon="ic:baseline-plus" to="/tournament/request/add"
-              label="إضافة بطولة جديدة" class="px-6" />
-          </div> -->
+          <UButton
+            v-if="canViewRequests"
+            variant="outline"
+            color="primary"
+            icon="i-heroicons-clipboard-document-list"
+            to="/tournament/request"
+            label="الطلبات"
+            class="px-6"
+          />
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center w-full">
           <UFormField label="الحالة " class="flex-1">
@@ -222,7 +224,12 @@ async function onDeleteTournament(tournament: Tournament) {
 }
 
 const userStore = useMyAuthStore();
-const { isAdmin } = storeToRefs(userStore);
+const { isAdmin, isSuperAdmin, isStaffAdmin, isOrganizer } =
+  storeToRefs(userStore);
+const canViewRequests = computed(
+  () =>
+    !!isSuperAdmin.value || !!isStaffAdmin.value || !!isOrganizer.value,
+);
 
 const getReq = await getAllTournament(filters);
 const stateOptions = getTournamnetStateOptions();

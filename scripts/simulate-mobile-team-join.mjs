@@ -29,7 +29,7 @@ const PLAYER_PASSWORD = process.env.PLAYER_PASSWORD || "";
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
 const TOURNAMENT_ID =
-  process.env.TOURNAMENT_ID || "5349fd42-1044-48cb-b266-6e234d4a117c";
+  process.env.TOURNAMENT_ID || "166a5ac5-ebb3-4a86-89b2-adf1561a3847";
 const USER_PREFIX = process.env.JOIN_USER_PREFIX || "user";
 const USER_START = Number(process.env.JOIN_USER_START || 1);
 const USER_END = Number(process.env.JOIN_USER_END || 16);

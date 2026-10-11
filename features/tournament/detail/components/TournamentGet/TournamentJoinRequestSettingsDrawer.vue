@@ -3,6 +3,7 @@
     v-model:open="open"
     direction="left"
     :handle="false"
+    :dismissible="false"
     :ui="{
       content:
         'max-w-[min(100vw-1rem,42rem)] w-full border-gray-200/90 dark:border-gray-800 sm:max-w-lg',
@@ -12,13 +13,24 @@
     }"
   >
     <template #header>
-      <div class="space-y-1 p-2 text-start">
-        <h2 class="text-lg font-bold text-gray-900 dark:text-white">
-          إعدادات طلبات الانضمام
-        </h2>
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          تعديل فترة الانضمام والحد الأقصى للطلبات ونوع المشاركة.
-        </p>
+      <div class="flex items-start justify-between gap-3 p-2">
+        <div class="space-y-1 text-start">
+          <h2 class="text-lg font-bold text-gray-900 dark:text-white">
+            إعدادات طلبات الانضمام
+          </h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            تعديل فترة الانضمام والحد الأقصى للطلبات ونوع المشاركة.
+          </p>
+        </div>
+        <UButton
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          icon="i-heroicons-x-mark"
+          aria-label="إغلاق"
+          :disabled="isPending"
+          @click="closeDrawer"
+        />
       </div>
     </template>
 
@@ -27,18 +39,18 @@
         <UForm ref="formRef" :schema="schema" :state="formState" class="flex flex-col gap-4">
           <UFormField label="بداية طلبات الانضمام" name="joinRequestStartAt">
             <AsyncDatePicker
-            :disabled="true"
               v-model="formState.joinRequestStartAt"
-              :min-date="new Date()"
-              :max-date="tournamentStartAt"
+              disabled
+              placement="bottom"
             />
           </UFormField>
 
           <UFormField label="نهاية طلبات الانضمام" name="joinRequestEndAt">
             <AsyncDatePicker
               v-model="formState.joinRequestEndAt"
-              :min-date="joinRequestStartMin"
-              :max-date="tournamentStartAt"
+              placement="bottom"
+              :min-date="joinRequestMinAt"
+              :max-date="joinRequestMaxAt"
             />
           </UFormField>
 
@@ -73,12 +85,12 @@
     <template #footer>
       <div class="flex flex-wrap items-center justify-end gap-2 px-4 py-3">
         <UButton
-          label="إلغاء"
+          label="إغلاق"
           color="neutral"
           variant="soft"
           class="min-h-10"
           :disabled="isPending"
-          @click="open = false"
+          @click="closeDrawer"
         />
         <UButton
           label="حفظ الإعدادات"
@@ -130,7 +142,18 @@ const formState = ref<UpdateJoinRequestSeetingsBody>({
 
 const schema = object({
   joinRequestStartAt: string().required("تاريخ بداية طلبات الانضمام مطلوب"),
-  joinRequestEndAt: string().required("تاريخ نهاية طلبات الانضمام مطلوب"),
+  joinRequestEndAt: string()
+    .required("تاريخ نهاية طلبات الانضمام مطلوب")
+    .test(
+      "after-now",
+      "يجب أن يكون تاريخ النهاية بعد الوقت الحالي",
+      (value) => {
+        if (!value) return false;
+        const end = new Date(value);
+        if (Number.isNaN(end.getTime())) return false;
+        return end.getTime() > Date.now();
+      },
+    ),
   joinRequestMaxCount: number()
     .typeError("أقصى عدد الطلبات مطلوب")
     .required("أقصى عدد الطلبات مطلوب")
@@ -144,14 +167,23 @@ const schema = object({
 
 const isPending = computed(() => updateReq.pending.value);
 
-const tournamentStartAt = computed(() => {
-  const start = props.tournament.startAt;
-  return start ? new Date(start) : undefined;
-});
+/** Min join-request end: current date/time (must be after now). */
+const joinRequestMinAt = ref(new Date());
 
-const joinRequestStartMin = computed(() => {
-  const start = formState.value.joinRequestStartAt;
-  return start ? new Date(start) : new Date();
+/** Max join-request end: earliest qualification start, else final stage start. */
+const joinRequestMaxAt = computed(() => {
+  const qualStarts = (props.tournament.qualificationStagePlaces ?? [])
+    .map((place) => place.startAt)
+    .filter((value): value is string => !!value)
+    .map((value) => new Date(value).getTime())
+    .filter((time) => !Number.isNaN(time));
+
+  if (qualStarts.length > 0) {
+    return new Date(Math.min(...qualStarts));
+  }
+
+  const finalStart = props.tournament.startAt;
+  return finalStart ? new Date(finalStart) : undefined;
 });
 
 function syncFormFromTournament() {
@@ -168,8 +200,16 @@ function syncFormFromTournament() {
 }
 
 watch(open, (isOpen) => {
-  if (isOpen) syncFormFromTournament();
+  if (isOpen) {
+    joinRequestMinAt.value = new Date();
+    syncFormFromTournament();
+  }
 });
+
+function closeDrawer() {
+  if (isPending.value) return;
+  open.value = false;
+}
 
 async function handleSubmit() {
   try {
@@ -185,7 +225,7 @@ async function handleSubmit() {
       title: "تم حفظ إعدادات طلبات الانضمام",
       color: "success",
     });
-    open.value = false;
+    closeDrawer();
     emit("success");
   } else {
     toast.add({
