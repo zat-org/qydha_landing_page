@@ -78,5 +78,7 @@ export function useNavLinks(options: UseNavLinksOptions = {}) {
     return onSelect ? result.map((item) => withSelect(item)) : result;
   });
 
-  return { links };
+  const reversedLinks = computed(() => [...links.value].reverse());
+
+  return { links, reversedLinks };
 }

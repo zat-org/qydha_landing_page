@@ -12,9 +12,18 @@
     />
 
     <UNavigationMenu
-      :items="links"
+    dir="rtl" 
+      :items="reversedLinks"
       class="hidden lg:flex"
       content-orientation="vertical"
+      :ui="{
+        root: 'justify-start',
+        viewportWrapper: 'justify-start',
+        viewport:
+          'w-(--reka-navigation-menu-viewport-width)! left-(--reka-navigation-menu-viewport-left)! rtl:left-auto! rtl:right-[calc(100%-var(--reka-navigation-menu-viewport-left)-var(--reka-navigation-menu-viewport-width))]!',
+        content: 'static! w-max! max-h-[70vh]',
+        childList: 'grid w-max min-w-44 p-2',
+      }"
     />
 
     <div class="flex items-center gap-2">
@@ -46,7 +55,7 @@ const userStore = useMyAuthStore();
 const { user } = storeToRefs(userStore);
 const authstore = useMyAuthStore();
 
-const { links } = useNavLinks();
+const { links  ,reversedLinks} = useNavLinks();
 
 const onLogOut = () => {
   user.value = null;
